@@ -318,6 +318,7 @@
   </div>
   <h3 style="margin-top:14px">Work hours</h3>
   <div class="row">From <select id="whStart"></select> to <select id="whEnd"></select></div>
+  <div class="row"><label style="display:flex;align-items:center;gap:8px;cursor:pointer;"><input type="checkbox" id="wkndChk" style="width:15px;height:15px;accent-color:var(--blue);"> Show weekends</label></div>
   <h3 style="margin-top:14px">Links in your email snippet</h3>
   <div class="row"><input type="text" id="lkCal" placeholder="Booking page URL (optional)" style="width:100%"></div>
   <div class="row"><input type="text" id="lkSoc" placeholder="LinkedIn / social URL (optional)" style="width:100%"></div>
@@ -469,6 +470,7 @@ const S = {
   workStart: +(localStorage.getItem("wh1") || 9),
   workEnd:   +(localStorage.getItem("wh2") || 18),
   theme: localStorage.getItem("theme") || "light",
+  showWknd: localStorage.getItem("wknd") !== "0",
   profileName: localStorage.getItem("profileName") || "",
   linkCal: localStorage.getItem("linkCal") || "",
   linkSoc: localStorage.getItem("linkSoc") || "",
@@ -521,6 +523,9 @@ lkCal.value = S.linkCal; lkSoc.value = S.linkSoc;
 function normUrl(u){ u = u.trim(); if (u && !/^https?:\/\//i.test(u)) u = "https://" + u; return u; }
 lkCal.onchange = () => { S.linkCal = normUrl(lkCal.value); lkCal.value = S.linkCal; localStorage.setItem("linkCal", S.linkCal); renderPreview(); };
 lkSoc.onchange = () => { S.linkSoc = normUrl(lkSoc.value); lkSoc.value = S.linkSoc; localStorage.setItem("linkSoc", S.linkSoc); renderPreview(); };
+const wkndChk = document.getElementById("wkndChk");
+wkndChk.checked = S.showWknd;
+wkndChk.onchange = () => { S.showWknd = wkndChk.checked; localStorage.setItem("wknd", S.showWknd ? "1" : "0"); renderAll(); };
 
 // ---- painted-slot persistence ----
 function saveSel(){
@@ -636,13 +641,14 @@ function sundayOf(weekOffset){
 }
 function weekDays(){
   const sun = sundayOf(S.week), days = [];
-  for (let i = 0; i < 7; i++){ const d = new Date(sun); d.setDate(d.getDate()+i); days.push(d); }
+  const idx = S.showWknd ? [0,1,2,3,4,5,6] : [1,2,3,4,5];
+  idx.forEach(i => { const d = new Date(sun); d.setDate(d.getDate()+i); days.push(d); });
   return days;
 }
 function weekRange(){
-  const days = weekDays();
-  const ws = new Date(days[0]); ws.setHours(0,0,0,0);
-  const we = new Date(days[6]); we.setDate(we.getDate()+1); we.setHours(0,0,0,0);
+  const sun = sundayOf(S.week);
+  const ws = new Date(sun); ws.setHours(0,0,0,0);
+  const we = new Date(sun); we.setDate(we.getDate()+7); we.setHours(0,0,0,0);
   return [ws, we];
 }
 document.getElementById("todayBtn").onclick = () => { S.week = 0; load(); };
@@ -850,6 +856,14 @@ async function load(){
     const evs = await fetchEvents(ws, we, ids);
     if (seq !== loadSeq) return;
     S.events = evs;
+    // auto-clean: painted slots that got booked (now overlap a real meeting)
+    const before = S.sel.length;
+    S.sel = S.sel.filter(s => !S.events.some(ev => overlaps(s.start, s.end, ev.start, ev.end)));
+    if (S.sel.length < before){
+      saveSel();
+      const n = before - S.sel.length;
+      toast("🎉 " + n + " of your offered slot" + (n > 1 ? "s" : "") + " got booked — removed from your offers");
+    }
     status(evs.length + " meetings this week · click or drag on the grid to paint availability.");
   } catch(e){ console.error(e); status('<span class="err">Couldn’t load calendar events.</span>'); }
   if (S.people.length) await loadSchedules();
@@ -900,7 +914,7 @@ function renderHeadAndMonth(){
 }
 function keyOf(d){ return d.getFullYear()+"-"+d.getMonth()+"-"+d.getDate(); }
 
-function gridCols(){ return (S.tz2 ? "58px " : "") + "58px repeat(7,1fr)"; }
+function gridCols(){ return (S.tz2 ? "58px " : "") + "58px repeat(" + weekDays().length + ",1fr)"; }
 function renderBody(){
   const days = weekDays();
   const body = document.getElementById("calBody");
