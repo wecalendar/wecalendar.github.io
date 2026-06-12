@@ -153,7 +153,9 @@
   .cal-head { display:grid; grid-template-columns:58px repeat(7,1fr); }
   .cal-head .gut { display:flex; align-items:center; justify-content:center; padding:10px 0; }
   .tzchip { border:1px solid var(--line); border-radius:10px; font-size:12px; font-weight:600; color:var(--muted2); padding:6px 8px; background:var(--surface); cursor:pointer; }
-  .tzchip:hover { border-color:var(--blue); color:var(--blue-dark); }
+  .tzchip:hover { border-color:var(--blue); }
+  .tzchip .tzx { margin-left:6px; font-weight:700; opacity:.55; cursor:pointer; }
+  .tzchip .tzx:hover { opacity:1; color:#b91c1c; }
   .dh { text-align:center; padding:10px 4px 12px; }
   .dh .wd { font-size:12px; font-weight:600; color:var(--muted2); letter-spacing:.06em; }
   .dh .dn { font-size:22px; font-weight:500; margin-top:2px; width:40px; height:40px; line-height:40px; border-radius:10px; display:inline-block; }
@@ -504,7 +506,7 @@ const PCOLORS = ["#FFC400","#FF9F1A","#FFB800","#F77F00"];
 const S = {
   week: 0,
   tz: localStorage.getItem("tz2") || LOCAL_TZ,
-  tzs: (() => { try { const a = JSON.parse(localStorage.getItem("tzRulers") || "[]"); const old = localStorage.getItem("tzSecond"); if (old && !a.includes(old)) a.push(old); return a.slice(0,3); } catch(e){ return []; } })(),   // extra rulers
+  tzs: (() => { try { const a = JSON.parse(localStorage.getItem("tzRulers") || "[]"); const old = localStorage.getItem("tzSecond"); if (old && !a.includes(old)) a.push(old); return a.slice(0,1); } catch(e){ return []; } })(),   // extra ruler (max 1)
   workStart: +(localStorage.getItem("wh1") || 9),
   workEnd:   +(localStorage.getItem("wh2") || 18),
   theme: localStorage.getItem("theme") || "light",
@@ -627,7 +629,7 @@ function extraRulers(){
   if (S.tz !== LOCAL_TZ && !ex.includes(LOCAL_TZ)) ex.unshift(LOCAL_TZ);
   return ex.slice(0, 3);
 }
-function saveTzs(){ localStorage.setItem("tzRulers", JSON.stringify(S.tzs.slice(0,3))); }
+function saveTzs(){ S.tzs = S.tzs.slice(0,1); localStorage.setItem("tzRulers", JSON.stringify(S.tzs)); }
 function fmt(d, opts){ return new Intl.DateTimeFormat("en-US", Object.assign({timeZone:S.tz}, opts)).format(d); }
 function fmtTime(d){ return fmt(d, {hour:"numeric", minute:"2-digit"}); }
 function fmtRange(a, b){
@@ -680,7 +682,7 @@ function renderTzList(q){
     d.querySelector(".nm").textContent = z.city;
     d.querySelector(".ct").textContent = fmtInZone(z.name);
     d.onclick = () => {
-      if (tzTarget === "add"){ if (!S.tzs.includes(z.name) && z.name !== S.tz) S.tzs.push(z.name); saveTzs(); }
+      if (tzTarget === "add"){ if (z.name !== S.tz) S.tzs = [z.name]; saveTzs(); }
       else if (typeof tzTarget === "number"){ S.tzs[tzTarget] = z.name; saveTzs(); }
       else { S.tz = z.name; localStorage.setItem("tz2", z.name); }
       tzPop.style.display = "none"; renderAll();
@@ -1012,7 +1014,11 @@ function renderHeadAndMonth(){
       chipX.title = zone + " — your local time (always shown)";
       chipX.style.cursor = "default";
     } else {
-      chipX.title = zone + " — click to change or remove";
+      chipX.title = zone + " — click to change";
+      const x = document.createElement("span");
+      x.className = "tzx"; x.textContent = "×"; x.title = "Remove this timezone";
+      x.onclick = e => { e.stopPropagation(); S.tzs.splice(userIdx, 1); saveTzs(); renderAll(); };
+      chipX.appendChild(x);
       chipX.onclick = e => { e.stopPropagation(); openTzPop(chipX, userIdx); };
     }
     gutX.appendChild(chipX); head.appendChild(gutX);
@@ -1022,7 +1028,7 @@ function renderHeadAndMonth(){
   chip.title = S.tz + " — main timezone (labels & email)";
   chip.onclick = e => { e.stopPropagation(); openTzPop(chip); };
   gut.appendChild(chip);
-  if (extraRulers().length < 3){
+  if (S.tzs.length === 0){
     const add = document.createElement("button"); add.className = "addtz"; add.textContent = "+ TZ";
     add.title = "Add a timezone ruler to compare";
     add.onclick = e => { e.stopPropagation(); openTzPop(add, "add"); };
