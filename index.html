@@ -137,9 +137,12 @@
   .ppl-item .pe { font-size:11.5px; color:var(--muted2); }
 
   .calwrap { flex:1; min-width:0; position:relative; }
-  .fab { position:absolute; right:20px; bottom:20px; z-index:20; height:48px; border-radius:999px; border:none; background:#00C875; color:#fff; font-size:14px; font-weight:700; padding:0 22px; cursor:pointer; box-shadow:0 6px 20px rgba(0,200,117,.45); display:flex; align-items:center; gap:8px; font-family:inherit; transition:background .15s; }
+  .fab { position:absolute; right:20px; bottom:20px; z-index:20; width:52px; height:52px; border-radius:50%; border:none; background:#3DD9A4; color:#fff; cursor:pointer; box-shadow:0 6px 20px rgba(0,200,117,.4); display:flex; align-items:center; justify-content:center; transition:background .15s; }
   .fab:hover { background:#00B268; }
   .fab.on { background:#0E9F66; box-shadow:0 6px 20px rgba(14,159,102,.5); }
+  .evtip { position:fixed; z-index:99; background:#1f2937; color:#fff; padding:9px 12px; border-radius:10px; font-size:12px; line-height:1.45; max-width:250px; pointer-events:none; display:none; box-shadow:0 8px 24px rgba(0,0,0,.25); }
+  .evtip .t { font-weight:700; display:block; margin-bottom:2px; }
+  .evtip .d { color:#cbd5e1; }
   .daycol { cursor:default; }
   body.paint .daycol { cursor:crosshair; }
   .paintbadge { position:absolute; right:20px; bottom:76px; z-index:20; background:#00C875; color:#fff; font-size:12px; font-weight:600; border-radius:999px; padding:6px 14px; display:none; }
@@ -296,7 +299,9 @@
           </div>
         </div>
         <span class="paintbadge">Paint mode — click or drag to add slots</span>
-        <button class="fab" id="fabBtn" title="Toggle slot selection" aria-label="Toggle slot selection"><span style="font-size:18px;line-height:1">＋</span> Select availability</button>
+        <button class="fab" id="fabBtn" title="Select availability" aria-label="Select availability">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="13" height="14" rx="2"/><path d="M3 9h13"/><path d="M6.5 12.5v3.5M9.5 12.5v3.5"/><path d="M14 17l6.2-6.2a1.55 1.55 0 0 0-2.2-2.2L11.8 14.8 11.3 17.5z"/></svg>
+        </button>
       </div>
 
       <div class="panel">
@@ -980,7 +985,8 @@ function renderBody(){
       el.style.top = a + "px"; el.style.height = hgt + "px";
       el.innerHTML = '<span class="bn"></span><span class="bt">' + fmtRange(ev.start, ev.end) + "</span>";
       el.querySelector(".bn").textContent = ev.subject;
-      el.title = ev.subject + " · " + fmtRange(ev.start, ev.end);
+      el.onmouseenter = () => showEvTip(el, ev);
+      el.onmouseleave = hideEvTip;
       col.appendChild(el);
     });
 
@@ -1034,11 +1040,27 @@ fabBtn.onclick = () => {
   S.paintMode = !S.paintMode;
   fabBtn.classList.toggle("on", S.paintMode);
   document.body.classList.toggle("paint", S.paintMode);
-  fabBtn.innerHTML = S.paintMode
-    ? '<span style="font-size:16px;line-height:1">✓</span> Done selecting'
-    : '<span style="font-size:18px;line-height:1">＋</span> Select availability';
+  fabBtn.title = S.paintMode ? "Done selecting" : "Select availability";
   toast(S.paintMode ? "🖌 Selection on — click or drag on the grid" : "Selection off — browse freely");
 };
+
+// ---- hover tooltip for booked calls ----
+const evTip = document.createElement("div");
+evTip.className = "evtip";
+document.body.appendChild(evTip);
+function showEvTip(el, ev){
+  evTip.innerHTML = '<span class="t"></span><span class="d"></span>';
+  evTip.querySelector(".t").textContent = ev.subject;
+  evTip.querySelector(".d").textContent = fmt(ev.start, {weekday:"long", month:"short", day:"numeric"}) + " · " + fmtRange(ev.start, ev.end);
+  evTip.style.display = "block";
+  const r = el.getBoundingClientRect(), tw = evTip.offsetWidth, th = evTip.offsetHeight;
+  let left = Math.max(8, Math.min(r.left, innerWidth - tw - 8));
+  let top = r.top - th - 8;
+  if (top < 8) top = Math.min(r.bottom + 8, innerHeight - th - 8);
+  evTip.style.left = left + "px"; evTip.style.top = top + "px";
+}
+function hideEvTip(){ evTip.style.display = "none"; }
+document.getElementById("scroller").addEventListener("scroll", hideEvTip);
 
 // ---- paint interaction ----
 let paint = null;
