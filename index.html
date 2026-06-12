@@ -178,13 +178,7 @@
   .panel input[type="text"] { border:1px solid var(--line); border-radius:8px; padding:7px 10px; font-size:13px; font-family:inherit; background:var(--surface); color:var(--ink); }
   .panel-btns { display:flex; gap:8px; margin-top:12px; }
   .panel-btns .primary { flex:1; }
-  #bookList { margin-top:12px; }
-  #bookList .bk-h { font-size:12.5px; font-weight:600; color:var(--side); margin-bottom:6px; }
-  .bookbtn { display:flex; align-items:center; justify-content:space-between; width:100%; margin:5px 0; padding:8px 12px; border:1.5px solid #00C875; background:var(--surface); color:var(--ink); border-radius:10px; cursor:pointer; font-size:12.5px; font-weight:600; font-family:inherit; }
-  .bookbtn:hover { background:#00C875; color:#fff; }
-  .bookbtn .bka { font-weight:700; }
-  .bookbtn.warn { border-color:#F59E0B; }
-  .bookbtn.warn:hover { background:#F59E0B; }
+  #jointNote { color:var(--side); font-weight:600; }
   #preview { border:1px dashed var(--line); border-radius:10px; padding:12px; font-size:13.5px; line-height:1.7; min-height:56px; }
   #preview a { color:var(--blue-dark); font-weight:600; text-decoration:underline; }
   .hint { font-size:12px; color:var(--muted); margin-top:8px; }
@@ -301,7 +295,7 @@
         <input type="text" id="subj" style="width:100%">
         <div id="preview" style="margin-top:12px"><span style="color:var(--muted2)">Click or drag on the calendar to paint availability slots — a hyperlinked snippet appears here.</span></div>
         <div class="hint">Click a painted slot to remove it. Standard slots are 30 min; drag for longer (snaps to 15 min). Times shown in <b id="tzLabel"></b>.</div>
-        <div id="bookList"></div>
+        <div class="hint" id="jointNote" style="display:none"></div>
         <div class="panel-btns">
           <button class="btn" id="suggBtn" style="width:100%">✨ Suggest 5 slots</button>
         </div>
@@ -1072,13 +1066,17 @@ function drawPaint(){
 }
 
 // ---- booking link + share ----
+function attendeeNames(){
+  return [pname(), ...S.people.map(p => (p.name || p.email).split(" ")[0])];
+}
 function bookingLink(start, end){
+  const names = attendeeNames();
   const p = new URLSearchParams({
     path: "/calendar/action/compose", rru: "addevent",
     startdt: start.toISOString(), enddt: end.toISOString(),
-    subject: document.getElementById("subj").value || ("Meeting with " + pname()),
-    to: ME.email,
-    body: "Booked from " + pname() + "'s shared availability. Hit Send and it's confirmed.",
+    subject: document.getElementById("subj").value || ("Meeting with " + names.join(" & ")),
+    to: [ME.email, ...S.people.map(p => p.email)].join(","),
+    body: "Booked from the shared availability of " + names.join(" and ") + ". Hit Send and it's confirmed.",
   });
   return "https://outlook.office.com/calendar/deeplink/compose?" + p.toString();
 }
@@ -1087,7 +1085,11 @@ function buildHTML(){
   if (!S.sel.length) return null;
   const byDay = {};
   S.sel.slice().sort((a,b)=>a.start-b.start).forEach(x => { const k = dayKeyTz(x.start); (byDay[k] = byDay[k] || []).push(x); });
-  let h = "<div>Would any of these times work for you? Click one to book it directly <i>(times in " + tzLongName() + ")</i>:<br><br>";
+  const names = attendeeNames();
+  const intro = S.people.length
+    ? "Here are times when " + names.join(" and ") + " are all available. Click one to book it directly"
+    : "Would any of these times work for you? Click one to book it directly";
+  let h = "<div>" + intro + " <i>(times in " + tzLongName() + ")</i>:<br><br>";
   Object.keys(byDay).sort().forEach(k => {
     h += "<b>" + fmt(byDay[k][0].start, {weekday:"long", month:"long", day:"numeric"}) + "</b><br>";
     byDay[k].forEach(x => {
@@ -1104,43 +1106,13 @@ function buildHTML(){
 function renderPreview(){
   document.getElementById("preview").innerHTML = buildHTML() ||
     '<span style="color:var(--muted2)">Click or drag on the calendar to paint availability slots — a hyperlinked snippet appears here.</span>';
-  renderBookList();
-}
-
-// ---- book directly with Meet With teammates ----
-function teammateBusy(start, end){
-  for (const p of S.people)
-    for (const it of (S.schedules[p.email] || []))
-      if (overlaps(start, end, it.start, it.end)) return p.name || p.email;
-  return null;
-}
-function meetLink(start, end){
-  const first = n => (n || "").split(" ")[0];
-  const subject = first(pname()) + " <> " + S.people.map(p => first(p.name)).join(" <> ");
-  const p = new URLSearchParams({
-    path: "/calendar/action/compose", rru: "addevent",
-    startdt: start.toISOString(), enddt: end.toISOString(),
-    subject, to: S.people.map(p => p.email).join(","),
-    body: "Scheduled via WeCalendar — picked from our mutual free time.",
-  });
-  return "https://outlook.office.com/calendar/deeplink/compose?" + p.toString();
-}
-function renderBookList(){
-  const box = document.getElementById("bookList");
-  if (!box) return;
-  if (!S.people.length || !S.sel.length){ box.innerHTML = ""; return; }
-  const names = S.people.map(p => (p.name || p.email).split(" ")[0]).join(", ");
-  let html = '<div class="bk-h">Book directly with ' + names + "</div>";
-  box.innerHTML = html;
-  S.sel.slice().sort((a,b)=>a.start-b.start).forEach(s => {
-    const busyWith = teammateBusy(s.start, s.end);
-    const b = document.createElement("button");
-    b.className = "bookbtn" + (busyWith ? " warn" : "");
-    b.innerHTML = '<span>' + fmt(s.start, {weekday:"short", month:"short", day:"numeric"}) + " · " + fmtRange(s.start, s.end) + '</span><span class="bka">' + (busyWith ? "⚠ busy" : "Book →") + "</span>";
-    b.title = busyWith ? "Overlaps " + busyWith + "’s busy time — opens the invite anyway" : "Opens a pre-filled Outlook invite — just hit Send";
-    b.onclick = () => window.open(meetLink(s.start, s.end), "_blank");
-    box.appendChild(b);
-  });
+  const note = document.getElementById("jointNote");
+  if (note){
+    if (S.people.length){
+      note.style.display = "";
+      note.textContent = "👥 Joint availability: when the client books a slot, the invite goes to you AND " + S.people.map(p => (p.name || p.email).split(" ")[0]).join(", ") + ".";
+    } else note.style.display = "none";
+  }
 }
 document.getElementById("copyBtn").onclick = async () => {
   const h = buildHTML();
