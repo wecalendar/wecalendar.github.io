@@ -11,14 +11,25 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
-  :root { color-scheme: light;
+  :root {
     --blue:#3b82f6; --blue-dark:#2563eb; --blue-light:#eff6ff;
     --ink:#1f2937; --muted:#9ca3af; --muted2:#6b7280;
     --line:#ececec; --line2:#f4f4f5; --bg:#ffffff; --card:#ffffff;
-    --side:#6366f1;
+    --surface:#ffffff; --hover:#f4f4f5; --side:#6366f1;
+  }
+  body.dark {
+    --blue-light:#1e2a44;
+    --ink:#E7E9EE; --muted:#6b7280; --muted2:#9CA3AF;
+    --line:#2A2F3A; --line2:#232733; --bg:#0F1218; --card:#161A23;
+    --surface:#161A23; --hover:#232733; --side:#8B93F8;
+    color-scheme: dark;
   }
   * { box-sizing:border-box; margin:0; padding:0; }
   body { font-family:'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif; background:var(--bg); color:var(--ink); font-size:14px; }
+  body.dark .busy { background:rgba(240,71,156,.16); color:#F9A8D4; }
+  body.dark .busy .bt { color:#F472B6; }
+  body.dark .offh { background:rgba(255,255,255,.05); }
+  body.dark .hero, body.dark .hero-right { background:var(--card); }
   .app { max-width:1440px; margin:0 auto; padding:0 8px; }
 
   /* ---- top bar ---- */
@@ -32,19 +43,19 @@
   .month .m { font-size:19px; font-weight:600; letter-spacing:-.2px; white-space:nowrap; }
   .month .tzline { font-size:12px; color:var(--muted2); cursor:pointer; white-space:nowrap; }
   .month .tzline:hover { color:var(--blue-dark); }
-  .navgroup { display:flex; align-items:center; border:1px solid var(--line); border-radius:999px; overflow:hidden; background:#fff; }
+  .navgroup { display:flex; align-items:center; border:1px solid var(--line); border-radius:999px; overflow:hidden; background:var(--surface); }
   .navgroup .navarr { border:none; background:none; cursor:pointer; font-size:16px; color:var(--muted2); padding:7px 12px; }
-  .navgroup .navarr:hover { background:#f4f4f5; }
+  .navgroup .navarr:hover { background:var(--hover); }
   .navgroup .todaybtn { border:none; border-left:1px solid var(--line); border-right:1px solid var(--line); background:none; cursor:pointer; font-size:13.5px; font-weight:500; color:var(--ink); padding:7px 16px; font-family:inherit; }
-  .navgroup .todaybtn:hover { background:#f4f4f5; }
-  .btn { border:1px solid var(--line); background:#fff; border-radius:10px; padding:8px 16px; cursor:pointer; font-size:14px; color:var(--ink); font-family:inherit; }
-  .btn:hover { background:#fafafa; }
-  .gearbtn { border:1px solid var(--line); background:#fff; border-radius:999px; width:36px; height:36px; cursor:pointer; color:var(--muted2); display:flex; align-items:center; justify-content:center; flex-shrink:0; }
+  .navgroup .todaybtn:hover { background:var(--hover); }
+  .btn { border:1px solid var(--line); background:var(--surface); border-radius:10px; padding:8px 16px; cursor:pointer; font-size:14px; color:var(--ink); font-family:inherit; }
+  .btn:hover { background:var(--hover); }
+  .gearbtn { border:1px solid var(--line); background:var(--surface); border-radius:999px; width:36px; height:36px; cursor:pointer; color:var(--muted2); display:flex; align-items:center; justify-content:center; flex-shrink:0; }
   .gearbtn:hover { color:var(--blue-dark); border-color:var(--blue); }
-  .setpop { position:absolute; z-index:50; background:#fff; border:1px solid var(--line); border-radius:12px; box-shadow:0 12px 32px rgba(0,0,0,.12); width:270px; padding:16px; display:none; }
+  .setpop { position:absolute; z-index:50; background:var(--surface); border:1px solid var(--line); border-radius:12px; box-shadow:0 12px 32px rgba(0,0,0,.12); width:270px; padding:16px; display:none; }
   .setpop h3 { font-size:13.5px; font-weight:600; margin-bottom:10px; }
   .setpop .row { display:flex; align-items:center; gap:8px; margin:8px 0; font-size:13px; color:var(--muted2); }
-  .setpop select { border:1px solid var(--line); border-radius:8px; padding:6px 8px; font-size:13px; font-family:inherit; background:#fff; color:var(--ink); }
+  .setpop select, .setpop input[type=text] { border:1px solid var(--line); border-radius:8px; padding:6px 8px; font-size:13px; font-family:inherit; background:var(--surface); color:var(--ink); }
   .offh { position:absolute; left:0; right:0; background:rgba(100,116,139,.07); pointer-events:none; z-index:1; }
   .grow { flex:1; }
   .who { font-size:13px; color:var(--muted2); white-space:nowrap; }
@@ -52,7 +63,7 @@
   .statusline { padding:0 10px 10px; }
 
   /* ---- tz popover ---- */
-  .tzpop { position:absolute; z-index:50; background:#fff; border:1px solid var(--line); border-radius:12px; box-shadow:0 12px 32px rgba(0,0,0,.12); width:300px; padding:8px; display:none; }
+  .tzpop { position:absolute; z-index:50; background:var(--surface); border:1px solid var(--line); border-radius:12px; box-shadow:0 12px 32px rgba(0,0,0,.12); width:300px; padding:8px; display:none; }
   .tzpop input { width:100%; border:1px solid var(--line); border-radius:8px; padding:8px 10px; font-size:14px; font-family:inherit; outline:none; }
   .tzpop input:focus { border-color:var(--blue); }
   .tzlist { max-height:260px; overflow:auto; margin-top:6px; }
@@ -96,7 +107,7 @@
   .mcal .mc-head { display:flex; align-items:center; gap:6px; padding:0 2px 8px; }
   .mcal .mc-title { font-size:14px; font-weight:600; color:var(--ink); }
   .mcal .mc-nav { border:none; background:none; cursor:pointer; color:var(--muted2); font-size:15px; padding:2px 7px; border-radius:6px; }
-  .mcal .mc-nav:hover { background:#f4f4f5; }
+  .mcal .mc-nav:hover { background:var(--hover); }
   .mcal .mc-grid { display:grid; grid-template-columns:repeat(7,1fr); gap:1px; }
   .mcal .mc-dow { font-size:10.5px; color:var(--muted); text-align:center; padding:3px 0; font-weight:600; }
   .mcal .mc-day { font-size:12px; text-align:center; padding:5px 0; border-radius:8px; cursor:pointer; color:var(--ink); border:none; background:none; font-family:inherit; }
@@ -116,9 +127,9 @@
   .sb-note { font-size:12px; color:var(--muted); padding:2px 6px; }
   .chip { display:inline-flex; align-items:center; gap:6px; border-radius:999px; padding:4px 10px; font-size:12.5px; font-weight:600; color:#fff; margin:3px 4px 0 0; }
   .chip .x { cursor:pointer; opacity:.8; font-weight:700; }
-  .sb-people-in { width:100%; border:1px solid var(--line); border-radius:10px; padding:8px 10px; font-size:13.5px; font-family:inherit; outline:none; }
+  .sb-people-in { width:100%; border:1px solid var(--line); border-radius:10px; padding:8px 10px; font-size:13.5px; font-family:inherit; outline:none; background:var(--surface); color:var(--ink); }
   .sb-people-in:focus { border-color:var(--blue); }
-  .ppl-pop { position:absolute; top:calc(100% + 4px); left:0; right:0; background:#fff; border:1px solid var(--line); border-radius:10px; box-shadow:0 10px 24px rgba(0,0,0,.12); z-index:40; display:none; overflow:hidden; }
+  .ppl-pop { position:absolute; top:calc(100% + 4px); left:0; right:0; background:var(--surface); border:1px solid var(--line); border-radius:10px; box-shadow:0 10px 24px rgba(0,0,0,.12); z-index:40; display:none; overflow:hidden; }
   .ppl-item { padding:8px 10px; cursor:pointer; }
   .ppl-item:hover, .ppl-item.active { background:var(--blue-light); }
   .ppl-item .pn { font-size:13.5px; font-weight:600; }
@@ -128,7 +139,7 @@
   .cal { border-top:1px solid var(--line); }
   .cal-head { display:grid; grid-template-columns:58px repeat(7,1fr); }
   .cal-head .gut { display:flex; align-items:center; justify-content:center; padding:10px 0; }
-  .tzchip { border:1px solid var(--line); border-radius:10px; font-size:12px; font-weight:600; color:var(--muted2); padding:6px 8px; background:#fff; cursor:pointer; }
+  .tzchip { border:1px solid var(--line); border-radius:10px; font-size:12px; font-weight:600; color:var(--muted2); padding:6px 8px; background:var(--surface); cursor:pointer; }
   .tzchip:hover { border-color:var(--blue); color:var(--blue-dark); }
   .dh { text-align:center; padding:10px 4px 12px; }
   .dh .wd { font-size:12px; font-weight:600; color:var(--muted2); letter-spacing:.06em; }
@@ -139,7 +150,7 @@
   .scroller { height:calc(100vh - 215px); min-height:430px; overflow-y:auto; border-top:1px solid var(--line); }
   .cal-body { display:grid; grid-template-columns:58px repeat(7,1fr); position:relative; }
   .gutter { position:relative; }
-  .gutter .hl { position:absolute; right:8px; transform:translateY(-50%); font-size:11px; color:var(--muted); background:#fff; padding:0 2px; }
+  .gutter .hl { position:absolute; right:8px; transform:translateY(-50%); font-size:11px; color:var(--muted); background:var(--bg); padding:0 2px; }
   .daycol { position:relative; border-left:1px solid var(--line2); cursor:crosshair; }
   .daycol .lines { position:absolute; inset:0; pointer-events:none;
     background:repeating-linear-gradient(to bottom, transparent 0, transparent calc(var(--hourpx) - 1px), var(--line) calc(var(--hourpx) - 1px), var(--line) var(--hourpx)); }
@@ -163,7 +174,7 @@
 
   .panel { width:290px; flex-shrink:0; position:sticky; top:10px; border:1px solid var(--line); border-radius:14px; padding:14px; margin:0 0 20px; box-shadow:0 2px 10px rgba(0,0,0,.04); }
   .panel h2 { font-size:14px; font-weight:600; }
-  .panel input[type="text"] { border:1px solid var(--line); border-radius:8px; padding:7px 10px; font-size:13px; font-family:inherit; }
+  .panel input[type="text"] { border:1px solid var(--line); border-radius:8px; padding:7px 10px; font-size:13px; font-family:inherit; background:var(--surface); color:var(--ink); }
   .panel-btns { display:flex; gap:8px; margin-top:12px; }
   .panel-btns .primary { flex:1; }
   #preview { border:1px dashed var(--line); border-radius:10px; padding:12px; font-size:13.5px; line-height:1.7; min-height:56px; }
@@ -239,12 +250,12 @@
         <button class="todaybtn" id="todayBtn">Today</button>
         <button class="navarr" id="nextW">&#8250;</button>
       </div>
-      <button class="gearbtn" id="setBtn" title="Settings — work hours" aria-label="Settings">
-        <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 1 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 1 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 1 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 1 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
-      </button>
       <div class="grow"></div>
       <span class="who" id="who"></span>
       <button class="linklike" id="signOut">Sign out</button>
+      <button class="gearbtn" id="setBtn" title="Settings" aria-label="Settings">
+        <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 1 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 1 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 1 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 1 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+      </button>
     </div>
     <div class="statusline" id="status"></div>
 
@@ -295,9 +306,22 @@
   </div>
 </div>
 <div class="setpop" id="setPop">
-  <h3>Work hours</h3>
+  <h3>Profile</h3>
+  <div class="row"><input type="text" id="pfName" placeholder="Your display name" style="width:100%"></div>
+  <div class="row" style="font-size:11.5px;line-height:1.4;">Used in invite titles and booking links.</div>
+  <h3 style="margin-top:14px">Theme</h3>
+  <div class="row">
+    <div class="navgroup" style="border-radius:10px;">
+      <button class="todaybtn" id="thLight" style="border-left:none;">☀ Light</button>
+      <button class="todaybtn" id="thDark" style="border-right:none;">☾ Dark</button>
+    </div>
+  </div>
+  <h3 style="margin-top:14px">Work hours</h3>
   <div class="row">From <select id="whStart"></select> to <select id="whEnd"></select></div>
-  <div class="row" style="font-size:12px;line-height:1.5;">Hours outside this window are shaded on the grid, and "Suggest 5 slots" only picks times inside it.</div>
+  <h3 style="margin-top:14px">Links in your email snippet</h3>
+  <div class="row"><input type="text" id="lkCal" placeholder="Booking page URL (optional)" style="width:100%"></div>
+  <div class="row"><input type="text" id="lkSoc" placeholder="LinkedIn / social URL (optional)" style="width:100%"></div>
+  <div class="row" style="font-size:11.5px;line-height:1.4;">Added at the bottom of "Copy for email" as a backup booking link and a connect link.</div>
 </div>
 <div class="tzpop" id="tzPop">
   <input type="text" id="tzSearch" placeholder="Search timezone — CET, EST, London…">
@@ -401,8 +425,9 @@ async function fetchSchedules(emails, weekStart, weekEnd){
 function onSignedIn(){
   document.getElementById("signinView").style.display = "none";
   document.getElementById("appView").style.display = "";
-  document.getElementById("who").textContent = ME.name + " · " + ME.email;
-  document.getElementById("subj").value = "Meeting with " + ME.name;
+  const prof = localStorage.getItem("profileName") || "";
+  document.getElementById("who").textContent = (prof || ME.name) + " · " + ME.email;
+  document.getElementById("subj").value = "Meeting with " + (prof || ME.name);
   boot();
 }
 init();
@@ -443,6 +468,10 @@ const S = {
   tz2: localStorage.getItem("tzSecond") || null,   // secondary ruler
   workStart: +(localStorage.getItem("wh1") || 9),
   workEnd:   +(localStorage.getItem("wh2") || 18),
+  theme: localStorage.getItem("theme") || "light",
+  profileName: localStorage.getItem("profileName") || "",
+  linkCal: localStorage.getItem("linkCal") || "",
+  linkSoc: localStorage.getItem("linkSoc") || "",
   events: [], sel: [], q: "",
   cals: [],          // {id,name,isDefault,checked}
   people: [],        // {email,name,color}
@@ -463,10 +492,35 @@ document.getElementById("setBtn").onclick = e => {
   e.stopPropagation();
   const r = e.currentTarget.getBoundingClientRect();
   setPop.style.display = setPop.style.display === "block" ? "none" : "block";
-  setPop.style.left = Math.min(r.left, innerWidth - 290) + "px";
+  setPop.style.left = Math.min(r.left, innerWidth - 300) + "px";
   setPop.style.top = (r.bottom + 6 + scrollY) + "px";
 };
 document.addEventListener("click", e => { if (!setPop.contains(e.target)) setPop.style.display = "none"; });
+
+// ---- profile, theme, links ----
+function pname(){ return S.profileName || ME.name || "me"; }
+const pfName = document.getElementById("pfName");
+pfName.value = S.profileName;
+pfName.oninput = () => {
+  S.profileName = pfName.value.trim();
+  localStorage.setItem("profileName", S.profileName);
+  document.getElementById("subj").value = "Meeting with " + pname();
+  renderPreview();
+};
+function applyTheme(){
+  document.body.classList.toggle("dark", S.theme === "dark");
+  const on = "background:var(--hover);font-weight:600;", off = "";
+  document.getElementById("thLight").style.cssText = "border-left:none;" + (S.theme === "light" ? on : off);
+  document.getElementById("thDark").style.cssText = "border-right:none;" + (S.theme === "dark" ? on : off);
+}
+document.getElementById("thLight").onclick = () => { S.theme = "light"; localStorage.setItem("theme","light"); applyTheme(); };
+document.getElementById("thDark").onclick = () => { S.theme = "dark"; localStorage.setItem("theme","dark"); applyTheme(); };
+applyTheme();
+const lkCal = document.getElementById("lkCal"), lkSoc = document.getElementById("lkSoc");
+lkCal.value = S.linkCal; lkSoc.value = S.linkSoc;
+function normUrl(u){ u = u.trim(); if (u && !/^https?:\/\//i.test(u)) u = "https://" + u; return u; }
+lkCal.onchange = () => { S.linkCal = normUrl(lkCal.value); lkCal.value = S.linkCal; localStorage.setItem("linkCal", S.linkCal); renderPreview(); };
+lkSoc.onchange = () => { S.linkSoc = normUrl(lkSoc.value); lkSoc.value = S.linkSoc; localStorage.setItem("linkSoc", S.linkSoc); renderPreview(); };
 
 // ---- painted-slot persistence ----
 function saveSel(){
@@ -1000,9 +1054,9 @@ function bookingLink(start, end){
   const p = new URLSearchParams({
     path: "/calendar/action/compose", rru: "addevent",
     startdt: start.toISOString(), enddt: end.toISOString(),
-    subject: document.getElementById("subj").value || ("Meeting with " + ME.name),
+    subject: document.getElementById("subj").value || ("Meeting with " + pname()),
     to: ME.email,
-    body: "Booked from " + ME.name + "'s shared availability. Hit Send and it's confirmed.",
+    body: "Booked from " + pname() + "'s shared availability. Hit Send and it's confirmed.",
   });
   return "https://outlook.office.com/calendar/deeplink/compose?" + p.toString();
 }
@@ -1019,6 +1073,10 @@ function buildHTML(){
     });
     h += "<br>";
   });
+  const extras = [];
+  if (S.linkCal) extras.push('None of these work? <a href="' + S.linkCal + '">Pick another time here</a>.');
+  if (S.linkSoc) extras.push('<a href="' + S.linkSoc + '">Connect with ' + pname().split(" ")[0] + "</a>.");
+  if (extras.length) h += extras.join(" ") + "<br>";
   return h + "</div>";
 }
 function renderPreview(){
