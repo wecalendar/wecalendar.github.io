@@ -1,0 +1,890 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>WeCalendar — WeTransact</title>
+<meta name="description" content="WeCalendar — share your Outlook availability with hyperlinked booking slots. WeTransact team tool.">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect x='8' y='14' width='84' height='78' rx='14' fill='%237C6FF7'/%3E%3Crect x='8' y='34' width='84' height='58' rx='10' fill='%23fff'/%3E%3Crect x='22' y='46' width='18' height='14' rx='4' fill='%23e8e5ff'/%3E%3Crect x='46' y='46' width='18' height='14' rx='4' fill='%237C6FF7'/%3E%3Crect x='22' y='68' width='18' height='14' rx='4' fill='%23e8e5ff'/%3E%3Crect x='46' y='68' width='18' height='14' rx='4' fill='%23e8e5ff'/%3E%3Ccircle cx='30' cy='8' r='7' fill='%232C1C6C'/%3E%3Ccircle cx='70' cy='8' r='7' fill='%232C1C6C'/%3E%3C/svg%3E">
+<script src="https://cdn.jsdelivr.net/npm/@azure/msal-browser@3/lib/msal-browser.min.js"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root { color-scheme: light;
+    --blue:#3b82f6; --blue-dark:#2563eb; --blue-light:#eff6ff;
+    --ink:#1f2937; --muted:#9ca3af; --muted2:#6b7280;
+    --line:#ececec; --line2:#f4f4f5; --bg:#ffffff; --card:#ffffff;
+    --side:#6366f1;
+  }
+  * { box-sizing:border-box; margin:0; padding:0; }
+  body { font-family:'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif; background:var(--bg); color:var(--ink); font-size:14px; }
+  .app { max-width:1440px; margin:0 auto; padding:0 8px; }
+
+  /* ---- top bar ---- */
+  .top { display:flex; align-items:center; gap:14px; padding:14px 10px 10px; }
+  .top .logo { height:24px; display:block; }
+  .month { line-height:1.15; }
+  .month .m { font-size:22px; font-weight:600; letter-spacing:-.2px; }
+  .month .tzline { font-size:13px; color:var(--muted2); cursor:pointer; }
+  .month .tzline:hover { color:var(--blue-dark); }
+  .btn { border:1px solid var(--line); background:#fff; border-radius:10px; padding:8px 16px; cursor:pointer; font-size:14px; color:var(--ink); font-family:inherit; }
+  .btn:hover { background:#fafafa; }
+  .navarr { border:none; background:none; cursor:pointer; font-size:18px; color:var(--muted2); padding:6px 8px; border-radius:8px; }
+  .navarr:hover { background:#f4f4f5; }
+  .grow { flex:1; }
+  .who { font-size:13px; color:var(--muted2); }
+  .linklike { background:none; border:none; color:var(--blue-dark); cursor:pointer; font-size:13px; text-decoration:underline; font-family:inherit; }
+
+  /* ---- tz popover ---- */
+  .tzpop { position:absolute; z-index:50; background:#fff; border:1px solid var(--line); border-radius:12px; box-shadow:0 12px 32px rgba(0,0,0,.12); width:300px; padding:8px; display:none; }
+  .tzpop input { width:100%; border:1px solid var(--line); border-radius:8px; padding:8px 10px; font-size:14px; font-family:inherit; outline:none; }
+  .tzpop input:focus { border-color:var(--blue); }
+  .tzlist { max-height:260px; overflow:auto; margin-top:6px; }
+  .tzitem { display:flex; gap:10px; align-items:center; padding:7px 8px; border-radius:8px; cursor:pointer; font-size:13.5px; }
+  .tzitem:hover { background:var(--blue-light); }
+  .tzitem .ab { font-weight:600; width:52px; color:var(--blue-dark); }
+  .tzitem .ct { color:var(--muted); margin-left:auto; font-size:12px; }
+
+  /* ---- signin ---- */
+  .signin { text-align:center; padding:90px 20px; }
+  .signin h2 { font-size:22px; margin-bottom:8px; font-weight:600; }
+  .signin p { color:var(--muted2); margin-bottom:24px; }
+  .btn.primary { background:var(--blue); border-color:var(--blue); color:#fff; font-weight:600; }
+  .btn.primary:hover { background:var(--blue-dark); }
+  .btn.big { padding:12px 30px; font-size:15px; border-radius:12px; }
+
+  .statusline { font-size:12.5px; color:var(--muted); padding:0 10px 8px; }
+
+  /* ---- layout: sidebar | calendar | share panel ---- */
+  .layout { display:flex; gap:14px; align-items:flex-start; }
+  .sidebar { width:232px; flex-shrink:0; position:sticky; top:10px; padding:2px 2px 20px; }
+  .sb-search { display:flex; align-items:center; gap:8px; border:1px solid var(--line); border-radius:10px; padding:8px 10px; }
+  .sb-search input { border:none; outline:none; font-size:13.5px; font-family:inherit; width:100%; color:var(--ink); background:transparent; }
+  .sb-h { color:var(--side); font-weight:700; font-size:14px; margin:18px 4px 8px; }
+  .sb-item { display:flex; align-items:center; gap:10px; padding:7px 6px; border-radius:8px; font-size:14px; color:var(--ink); }
+  .sb-item label { display:flex; align-items:center; gap:10px; cursor:pointer; width:100%; }
+  .sb-item input[type=checkbox]{ width:16px; height:16px; accent-color:var(--blue); }
+  .sb-item .nm { white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+  .sb-note { font-size:12px; color:var(--muted); padding:2px 6px; }
+  .chip { display:inline-flex; align-items:center; gap:6px; border-radius:999px; padding:4px 10px; font-size:12.5px; font-weight:600; color:#fff; margin:3px 4px 0 0; }
+  .chip .x { cursor:pointer; opacity:.8; font-weight:700; }
+  .sb-people-in { width:100%; border:1px solid var(--line); border-radius:10px; padding:8px 10px; font-size:13.5px; font-family:inherit; outline:none; }
+  .sb-people-in:focus { border-color:var(--blue); }
+  .ppl-pop { position:absolute; top:calc(100% + 4px); left:0; right:0; background:#fff; border:1px solid var(--line); border-radius:10px; box-shadow:0 10px 24px rgba(0,0,0,.12); z-index:40; display:none; overflow:hidden; }
+  .ppl-item { padding:8px 10px; cursor:pointer; }
+  .ppl-item:hover, .ppl-item.active { background:var(--blue-light); }
+  .ppl-item .pn { font-size:13.5px; font-weight:600; }
+  .ppl-item .pe { font-size:11.5px; color:var(--muted2); }
+
+  .calwrap { flex:1; min-width:0; }
+  .cal { border-top:1px solid var(--line); }
+  .cal-head { display:grid; grid-template-columns:58px repeat(7,1fr); }
+  .cal-head .gut { display:flex; align-items:center; justify-content:center; padding:10px 0; }
+  .tzchip { border:1px solid var(--line); border-radius:10px; font-size:12px; font-weight:600; color:var(--muted2); padding:6px 8px; background:#fff; cursor:pointer; }
+  .tzchip:hover { border-color:var(--blue); color:var(--blue-dark); }
+  .dh { text-align:center; padding:10px 4px 12px; }
+  .dh .wd { font-size:12px; font-weight:600; color:var(--muted2); letter-spacing:.06em; }
+  .dh .dn { font-size:22px; font-weight:500; margin-top:2px; width:40px; height:40px; line-height:40px; border-radius:10px; display:inline-block; }
+  .dh.today .wd { color:var(--blue); }
+  .dh.today .dn { background:var(--blue); color:#fff; font-weight:600; }
+
+  .scroller { height:calc(100vh - 215px); min-height:430px; overflow-y:auto; border-top:1px solid var(--line); }
+  .cal-body { display:grid; grid-template-columns:58px repeat(7,1fr); position:relative; }
+  .gutter { position:relative; }
+  .gutter .hl { position:absolute; right:8px; transform:translateY(-50%); font-size:11px; color:var(--muted); background:#fff; padding:0 2px; }
+  .daycol { position:relative; border-left:1px solid var(--line2); cursor:crosshair; }
+  .daycol .lines { position:absolute; inset:0; pointer-events:none;
+    background:repeating-linear-gradient(to bottom, transparent 0, transparent calc(var(--hourpx) - 1px), var(--line) calc(var(--hourpx) - 1px), var(--line) var(--hourpx)); }
+  .nowline { position:absolute; left:0; right:0; height:2px; background:#ef4444; z-index:6; pointer-events:none; }
+  .nowline::before { content:""; position:absolute; left:-4px; top:-3px; width:8px; height:8px; border-radius:50%; background:#ef4444; }
+
+  .evt { position:absolute; left:3px; right:3px; border-radius:6px; overflow:hidden; }
+  .busy { background:#f1f5f9; border-left:3px solid #94a3b8; color:#475569; font-size:11px; padding:3px 6px; line-height:1.3; pointer-events:none; z-index:2; }
+  .busy .bn { white-space:nowrap; overflow:hidden; text-overflow:ellipsis; display:block; font-weight:600; }
+  .busy .bt { color:#94a3b8; font-size:10.5px; }
+  .busy.dim { opacity:.18; }
+  .ovl { pointer-events:none; z-index:3; opacity:.5; border-radius:6px; font-size:10px; color:#fff; padding:2px 5px; font-weight:600; overflow:hidden; white-space:nowrap; }
+  .sel { background:rgba(59,130,246,.85); color:#fff; font-size:11px; font-weight:600; padding:3px 6px; line-height:1.3; z-index:4; cursor:pointer; box-shadow:0 1px 4px rgba(37,99,235,.35); }
+  .sel:hover { background:rgba(37,99,235,.92); }
+  .sel .x { position:absolute; top:2px; right:5px; font-weight:700; opacity:.75; }
+  .sel.tmp { background:rgba(59,130,246,.45); box-shadow:none; }
+  .sel.conflict { background:rgba(245,158,11,.92); box-shadow:0 1px 4px rgba(217,119,6,.4); }
+  .addtz { display:block; margin:4px auto 0; border:none; background:none; color:var(--muted); font-size:10px; cursor:pointer; font-family:inherit; }
+  .addtz:hover { color:var(--blue-dark); }
+  .tzremove { color:#b91c1c; font-weight:600; }
+
+  .panel { width:290px; flex-shrink:0; position:sticky; top:10px; border:1px solid var(--line); border-radius:14px; padding:14px; margin:0 0 20px; box-shadow:0 2px 10px rgba(0,0,0,.04); }
+  .panel h2 { font-size:14px; font-weight:600; }
+  .panel input[type="text"] { border:1px solid var(--line); border-radius:8px; padding:7px 10px; font-size:13px; font-family:inherit; }
+  .panel-btns { display:flex; gap:8px; margin-top:12px; }
+  .panel-btns .primary { flex:1; }
+  #preview { border:1px dashed var(--line); border-radius:10px; padding:12px; font-size:13.5px; line-height:1.7; min-height:56px; }
+  #preview a { color:var(--blue-dark); font-weight:600; text-decoration:underline; }
+  .hint { font-size:12px; color:var(--muted); margin-top:8px; }
+  @media (max-width: 1020px){ .sidebar { display:none; } }
+  @media (max-width: 900px){ .layout { flex-direction:column; } .panel { width:100%; position:static; } .calwrap { width:100%; } }
+
+  .toast { position:fixed; bottom:20px; left:50%; transform:translateX(-50%); background:var(--ink); color:#fff; padding:10px 18px; border-radius:999px; font-size:13px; opacity:0; transition:opacity .2s; pointer-events:none; z-index:99; }
+  .toast.show { opacity:1; }
+  .spin { display:inline-block; width:12px; height:12px; border:2px solid var(--line); border-top-color:var(--blue); border-radius:50%; animation:sp .8s linear infinite; vertical-align:-2px; margin-right:6px; }
+  @keyframes sp { to { transform:rotate(360deg); } }
+  .err { color:#b91c1c; }
+</style>
+</head>
+<body>
+<div class="app">
+  <div class="signin" id="signinView">
+    <h2>Share your availability in seconds</h2>
+    <p>Drag on your calendar to paint booking slots and copy hyperlinked times into any email.</p>
+    <button class="btn primary big" id="signInBtn">Sign in with Microsoft</button>
+    <p class="hint" id="signinErr"></p>
+  </div>
+
+  <div id="appView" style="display:none">
+    <div class="top">
+      <svg class="logo" viewBox="35 215 640 105" xmlns="http://www.w3.org/2000/svg" aria-label="WeTransact">
+        <style>.lg1{fill:#7C6FF7}.lg2{fill:#2C1C6C}</style>
+        <circle class="lg1" cx="56.1" cy="231.01" r="9.71"/><circle class="lg1" cx="156.1" cy="231.01" r="9.71"/>
+        <path class="lg1" d="M270.34,267.48c-.55,0-1,.45-1,1v18.2c0,4.38-1.79,8.49-4.91,11.29-2.58,2.31-4.84,2.78-6.79,2.75,2.03-3.57,3.09-7.6,3.09-11.74l-.05-1.47c-.06-7.36-6.08-13.34-13.44-13.34s-13.29,5.9-13.44,13.18v1.04c0,4.32,1.14,8.56,3.29,12.32-2.99.05-5.85-1.03-8.09-3.08-2.42-2.21-3.8-5.36-3.8-8.63l-.03-20.61c0-.55-.45-1-1-1h-10.05c-.55,0-1,.45-1,1v20.08c0,12.34,8.97,22.73,20.87,24.16,4.61.56,9.23-.21,13.36-2.23,2.97,1.47,6.13,2.28,9.4,2.4.29.01.58.02.87.02,6.2,0,12.04-2.35,16.52-6.68,4.7-4.53,7.29-10.62,7.29-17.13l-.03-20.52c0-.55-.45-1-1-1h-10.05ZM247.22,300.05c-1.83-2.93-2.79-6.56-2.79-9.94l-.08-2.94c0-1.46,1.3-2.65,2.89-2.65s2.88,1.18,2.89,2.63v2.45c0,3.54-1.01,7.35-2.93,10.45Z"/>
+        <path class="lg1" d="M309.78,301.01c3.28,0,6.13-1.17,7.94-2.84.32-.3.8-.33,1.18-.11l8.86,5.09c.54.31.69,1.03.31,1.52-4.3,5.37-10.55,8.13-18.46,8.13-15.04,0-24.36-10.11-24.36-23.22s9.5-23.22,23.39-23.22c12.84,0,22.34,9.94,22.34,23.22,0,1.85-.18,3.61-.53,5.28h-31.22c1.67,4.57,5.72,6.16,10.55,6.16ZM317.87,285c-1.41-5.1-5.37-6.95-9.32-6.95-5.01,0-8.36,2.46-9.59,6.95h18.91Z"/>
+        <circle class="lg2" cx="106.06" cy="243.16" r="9.71"/>
+        <path class="lg2" d="M163.77,260.78c0-4.21-3.43-7.63-7.64-7.63s-7.64,3.43-7.64,7.64v25.54c0,6.98-2.53,13.61-7.12,18.67-7.25,7.98-13.51,8.67-18.67,8.28l-3.49-.26,1.85-2.97c3.85-6.21,5.89-13.36,5.89-20.66l-.08-2.65c-.09-11.41-9.44-20.69-20.84-20.69s-20.52,9.02-20.84,20.24v2.01c0,7.67,2.16,15.19,6.23,21.73l1.83,2.93-3.44.3c-6.82.6-13.34-1.6-18.37-6.2-4.95-4.53-7.79-10.97-7.79-17.66l-.05-28.68c0-4.21-3.43-7.63-7.64-7.63s-7.64,3.43-7.64,7.64v29.99c0,14.97,8.63,28.42,21.97,34.25,11.77,5.15,24.19,4.99,34.96-.44l.96-.48.96.49c5.02,2.56,10.37,3.96,15.89,4.16,10.73.38,20.97-3.52,28.72-11,7.76-7.49,12.04-17.54,12.04-28.29l-.05-28.6ZM111.15,288.63c0,6.48-1.88,12.66-5.15,17.9-3.11-4.95-4.94-10.77-4.94-17.04l-.08-3.66h0c0-2.81,2.28-5.09,5.09-5.09s5.09,2.28,5.09,5.09h0v2.8Z"/>
+        <path class="lg2" d="M362.01,268.42v10.61c0,.57-.46,1.03-1.03,1.03h-8.03v15.57c0,3.54,2.85,4.08,7.99,3.84.58-.03,1.07.44,1.07,1.03v9.94c0,.53-.41.98-.94,1.03-16.48,1.47-21.31-3.75-21.31-15.83v-15.57h-6.01c-.57,0-1.03-.46-1.03-1.03v-10.61c0-.57.46-1.03,1.03-1.03h27.23c.57,0,1.03.46,1.03,1.03Z"/>
+        <path class="lg2" d="M393.2,267.77v12.73c0,.6-.5,1.07-1.1,1.02-5.34-.43-12.1,2.02-12.1,10.16v18.85c0,.57-.46,1.03-1.03,1.03h-11.13c-.57,0-1.03-.46-1.03-1.03v-41.92c0-.57.46-1.03,1.03-1.03h11.13c.57,0,1.03.46,1.03,1.03v6.8c1.64-5.5,6.88-8.32,12.08-8.67.6-.04,1.12.43,1.12,1.03Z"/>
+        <path class="lg2" d="M442.28,268.62v41.92c0,.57-.46,1.03-1.03,1.03h-11.13c-.57,0-1.03-.46-1.03-1.03v-3.1c-2.9,3.34-7.21,5.36-13.1,5.36-11.52,0-21.02-10.11-21.02-23.22s9.5-23.22,21.02-23.22c5.89,0,10.2,2.02,13.1,5.36v-3.1c0-.57.46-1.03,1.03-1.03h11.13c.57,0,1.03.46,1.03,1.03ZM429.09,289.57c0-6.6-4.4-10.73-10.47-10.73s-10.47,4.13-10.47,10.73,4.4,10.73,10.47,10.73,10.47-4.13,10.47-10.73Z"/>
+        <path class="lg2" d="M490.62,284.56v25.97c0,.57-.46,1.03-1.03,1.03h-11.13c-.57,0-1.03-.46-1.03-1.03v-24.04c0-5.45-3.43-8-7.65-8-4.84,0-8.18,2.81-8.18,9.06v22.98c0,.57-.46,1.03-1.03,1.03h-11.13c-.57,0-1.03-.46-1.03-1.03v-41.92c0-.57.46-1.03,1.03-1.03h11.13c.57,0,1.03.46,1.03,1.03v3.1c2.38-3.25,6.77-5.36,12.58-5.36,8.88,0,16.45,6.33,16.45,18.21Z"/>
+        <path class="lg2" d="M531.25,298.37c0,10.11-8.79,14.42-18.29,14.42-8.42,0-14.91-3.07-18.46-9.58-.26-.49-.07-1.1.41-1.37l9.56-5.44c.52-.3,1.18-.08,1.43.46,1.28,2.69,3.61,4.15,7.06,4.15,3.17,0,4.75-.97,4.75-2.73,0-4.84-21.64-2.29-21.64-17.5,0-9.59,8.09-14.42,17.24-14.42,6.76,0,12.81,2.85,16.56,8.48.33.5.14,1.17-.38,1.46l-9.42,5.08c-.47.25-1.05.1-1.35-.35-1.2-1.84-2.87-3.06-5.41-3.06-2.29,0-3.69.88-3.69,2.46,0,5.01,21.64,1.67,21.64,17.94Z"/>
+        <path class="lg2" d="M581.64,268.62v41.92c0,.57-.46,1.03-1.03,1.03h-11.13c-.57,0-1.03-.46-1.03-1.03v-3.1c-2.9,3.34-7.21,5.36-13.1,5.36-11.52,0-21.02-10.11-21.02-23.22s9.5-23.22,21.02-23.22c5.89,0,10.2,2.02,13.1,5.36v-3.1c0-.57.46-1.03,1.03-1.03h11.13c.57,0,1.03.46,1.03,1.03ZM568.45,289.57c0-6.6-4.4-10.73-10.47-10.73s-10.47,4.13-10.47,10.73,4.4,10.73,10.47,10.73,10.47-4.13,10.47-10.73Z"/>
+        <path class="lg2" d="M585.77,289.57c0-13.1,9.94-23.22,23.31-23.22,8.15,0,15.42,4.09,19.35,10.36.3.49.13,1.13-.37,1.42l-9.72,5.64c-.47.27-1.08.13-1.37-.33-1.63-2.57-4.56-4.08-8.06-4.08-5.72,0-9.94,4.13-9.94,10.2s4.22,10.2,9.94,10.2c3.49,0,6.48-1.5,8.07-4.06.29-.47.9-.62,1.37-.34l9.71,5.56c.5.28.68.93.38,1.42-3.92,6.35-11.11,10.45-19.35,10.45-13.37,0-23.31-10.11-23.31-23.22Z"/>
+        <path class="lg2" d="M660.27,268.42v10.61c0,.57-.46,1.03-1.03,1.03h-8.03v15.57c0,3.54,2.85,4.08,7.99,3.84.58-.03,1.07.44,1.07,1.03v9.94c0,.53-.41.98-.94,1.03-16.48,1.47-21.31-3.75-21.31-15.83v-15.57h-6.01c-.57,0-1.03-.46-1.03-1.03v-10.61c0-.57.46-1.03,1.03-1.03h27.23c.57,0,1.03.46,1.03,1.03Z"/>
+      </svg>
+      <span class="sub" style="font-size:13px;color:var(--muted2);border-left:1px solid var(--line);padding-left:12px;margin-left:-2px">WeCalendar</span>
+      <div class="month">
+        <div class="m" id="monthLabel">June 2026</div>
+        <div class="tzline" id="tzLine">(WEST) Europe/Lisbon</div>
+      </div>
+      <button class="btn" id="todayBtn">Today</button>
+      <button class="navarr" id="prevW">&#8249;</button>
+      <button class="navarr" id="nextW">&#8250;</button>
+      <div class="grow"></div>
+      <span class="who" id="who"></span>
+      <button class="linklike" id="signOut">Sign out</button>
+    </div>
+    <div class="statusline" id="status"></div>
+
+    <div class="layout">
+      <aside class="sidebar">
+        <div class="sb-search">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#9ca3af" stroke-width="2.4"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
+          <input type="text" id="sbSearch" placeholder="Search meetings">
+        </div>
+
+        <div class="sb-h" id="meetWithH">Meet With</div>
+        <div style="position:relative">
+          <input type="text" class="sb-people-in" id="meetIn" placeholder="Search teammates…" autocomplete="off">
+          <div class="ppl-pop" id="pplPop"></div>
+        </div>
+        <div id="meetChips"></div>
+        <div class="sb-note" id="meetNote">Overlay a teammate’s busy times to find mutual slots.</div>
+
+        <div class="sb-h" id="calsH">Calendars</div>
+        <div id="calList"><div class="sb-note">Loading…</div></div>
+      </aside>
+
+      <div class="calwrap">
+        <div class="cal">
+          <div class="cal-head" id="calHead"></div>
+          <div class="scroller" id="scroller">
+            <div class="cal-body" id="calBody"></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="panel">
+        <h2>Share availability</h2>
+        <label class="hint" style="display:block;margin:10px 0 4px">Invite title</label>
+        <input type="text" id="subj" style="width:100%">
+        <div id="preview" style="margin-top:12px"><span style="color:var(--muted2)">Click or drag on the calendar to paint availability slots — a hyperlinked snippet appears here.</span></div>
+        <div class="hint">Click a painted slot to remove it. Standard slots are 30 min; drag for longer (snaps to 15 min). Times shown in <b id="tzLabel"></b>.</div>
+        <div class="panel-btns">
+          <button class="btn" id="suggBtn" style="width:100%">✨ Suggest 5 slots</button>
+        </div>
+        <div class="panel-btns">
+          <button class="btn" id="clearBtn">Clear</button>
+          <button class="btn primary" id="copyBtn">Copy for email</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="tzpop" id="tzPop">
+  <input type="text" id="tzSearch" placeholder="Search timezone — CET, EST, London…">
+  <div class="tzlist" id="tzList"></div>
+</div>
+<div class="toast" id="toast">Copied</div>
+
+<script>
+// ====== CONFIG ======
+const CONFIG = { clientId: "d64e24c4-3c00-4b04-9ab0-e337d5fcc34b", tenantId: "wetransact.io" };
+// ====================
+
+// === DATA LAYER (web) ===
+const CAPS = { calendars: true, meetWith: true };
+const pca = new msal.PublicClientApplication({
+  auth: {
+    clientId: CONFIG.clientId,
+    authority: "https://login.microsoftonline.com/" + CONFIG.tenantId,
+    redirectUri: window.location.origin + window.location.pathname,
+  },
+  cache: { cacheLocation: "localStorage" },
+});
+const SCOPES = ["User.Read", "Calendars.Read.Shared", "User.ReadBasic.All"];
+let account = null;
+let ME = { name: "", email: "" };
+
+async function init(){
+  await pca.initialize();
+  try {
+    const resp = await pca.handleRedirectPromise();
+    if (resp && resp.account) pca.setActiveAccount(resp.account);
+  } catch(e){ showSigninErr(e); }
+  const accts = pca.getAllAccounts();
+  if (accts.length) { account = accts[0]; pca.setActiveAccount(account); ME = { name: account.name, email: account.username }; onSignedIn(); }
+}
+document.getElementById("signInBtn").onclick = () => pca.loginRedirect({ scopes: SCOPES }).catch(showSigninErr);
+document.getElementById("signOut").onclick = () => pca.logoutRedirect({ account });
+function showSigninErr(e){ document.getElementById("signinErr").innerHTML = '<span class="err">' + (e.errorMessage || e.message || e) + "</span>"; }
+async function token(){
+  try { return (await pca.acquireTokenSilent({ scopes: SCOPES, account })).accessToken; }
+  catch(e){ await pca.acquireTokenRedirect({ scopes: SCOPES }); }
+}
+async function gget(url){
+  const tk = await token();
+  const r = await fetch("https://graph.microsoft.com/v1.0" + url, { headers: { Authorization: "Bearer " + tk, Prefer: 'outlook.timezone="UTC"' } });
+  if (!r.ok) throw new Error("Graph " + r.status);
+  return r.json();
+}
+async function fetchCalendars(){
+  const obj = await gget("/me/calendars?$select=id,name,hexColor,isDefaultCalendar&$top=50");
+  return (obj.value || []).map(c => ({ id: c.id, name: c.name, isDefault: !!c.isDefaultCalendar }));
+}
+async function fetchEvents(weekStart, weekEnd, calIds){
+  const ids = (calIds && calIds.length) ? calIds : [null];
+  const all = [];
+  await Promise.all(ids.map(async id => {
+    const base = id ? "/me/calendars/" + encodeURIComponent(id) + "/calendarView" : "/me/calendarView";
+    const obj = await gget(base + "?" + new URLSearchParams({
+      startDateTime: weekStart.toISOString(), endDateTime: weekEnd.toISOString(),
+      $select: "subject,start,end,showAs,isAllDay", $orderby: "start/dateTime", $top: "150",
+    }));
+    (obj.value || []).filter(ev => !ev.isAllDay && ev.showAs !== "free")
+      .forEach(ev => all.push({ subject: ev.subject || "(busy)", start: new Date(ev.start.dateTime + "Z"), end: new Date(ev.end.dateTime + "Z") }));
+  }));
+  return all;
+}
+async function searchPeople(q){
+  const safe = q.replace(/'/g, "''");
+  const obj = await gget("/users?" + new URLSearchParams({
+    "$filter": "startswith(displayName,'" + safe + "') or startswith(givenName,'" + safe + "') or startswith(surname,'" + safe + "') or startswith(mail,'" + safe + "')",
+    "$select": "displayName,mail,userPrincipalName",
+    "$top": "8",
+  }));
+  return (obj.value || [])
+    .map(u => ({ name: u.displayName, email: (u.mail || u.userPrincipalName || "").toLowerCase() }))
+    .filter(u => u.email && !u.email.startsWith("emeabookingpage"));
+}
+async function fetchSchedules(emails, weekStart, weekEnd){
+  if (!emails.length) return {};
+  const tk = await token();
+  const r = await fetch("https://graph.microsoft.com/v1.0/me/calendar/getSchedule", {
+    method: "POST",
+    headers: { Authorization: "Bearer " + tk, "Content-Type": "application/json", Prefer: 'outlook.timezone="UTC"' },
+    body: JSON.stringify({
+      schedules: emails,
+      startTime: { dateTime: weekStart.toISOString().slice(0,19), timeZone: "UTC" },
+      endTime:   { dateTime: weekEnd.toISOString().slice(0,19),   timeZone: "UTC" },
+      availabilityViewInterval: 30,
+    }),
+  });
+  if (!r.ok) throw new Error("Graph " + r.status);
+  const obj = await r.json();
+  const out = {};
+  (obj.value || []).forEach(s => {
+    out[s.scheduleId] = (s.scheduleItems || [])
+      .filter(it => it.status !== "free")
+      .map(it => ({ start: new Date(it.start.dateTime + "Z"), end: new Date(it.end.dateTime + "Z") }));
+  });
+  return out;
+}
+function onSignedIn(){
+  document.getElementById("signinView").style.display = "none";
+  document.getElementById("appView").style.display = "";
+  document.getElementById("who").textContent = ME.name + " · " + ME.email;
+  document.getElementById("subj").value = "Meeting with " + ME.name;
+  boot();
+}
+init();
+// === END DATA LAYER ===
+
+// ---- timezones ----
+const TZS = [
+  { ab:"PST", name:"America/Los_Angeles", city:"Los Angeles · Pacific", alias:"pst pdt pacific la california san francisco seattle" },
+  { ab:"MST", name:"America/Denver", city:"Denver · Mountain", alias:"mst mdt mountain" },
+  { ab:"CST", name:"America/Chicago", city:"Chicago · Central US", alias:"cst cdt central texas austin dallas" },
+  { ab:"EST", name:"America/New_York", city:"New York · Eastern", alias:"est edt eastern nyc boston miami toronto" },
+  { ab:"BRT", name:"America/Sao_Paulo", city:"São Paulo", alias:"brt brazil brasil" },
+  { ab:"GMT", name:"Europe/London", city:"London", alias:"gmt bst uk britain england london" },
+  { ab:"WET", name:"Europe/Lisbon", city:"Lisbon", alias:"wet west portugal lisbon lisboa" },
+  { ab:"CET", name:"Europe/Amsterdam", city:"Amsterdam · Central Europe", alias:"cet cest central europe netherlands amsterdam brussels paris berlin madrid rome" },
+  { ab:"EET", name:"Europe/Athens", city:"Athens · Eastern Europe", alias:"eet eest athens helsinki bucharest" },
+  { ab:"TRT", name:"Europe/Istanbul", city:"Istanbul", alias:"trt turkey istanbul" },
+  { ab:"GST", name:"Asia/Dubai", city:"Dubai", alias:"gst uae dubai gulf" },
+  { ab:"PKT", name:"Asia/Karachi", city:"Karachi", alias:"pkt pakistan karachi" },
+  { ab:"IST", name:"Asia/Kolkata", city:"India", alias:"ist india kolkata mumbai delhi bangalore" },
+  { ab:"SGT", name:"Asia/Singapore", city:"Singapore · APAC", alias:"sgt singapore apac" },
+  { ab:"HKT", name:"Asia/Hong_Kong", city:"Hong Kong · APAC", alias:"hkt hong kong apac" },
+  { ab:"CST", name:"Asia/Shanghai", city:"China", alias:"china shanghai beijing apac" },
+  { ab:"JST", name:"Asia/Tokyo", city:"Tokyo", alias:"jst japan tokyo apac" },
+  { ab:"KST", name:"Asia/Seoul", city:"Seoul", alias:"kst korea seoul apac" },
+  { ab:"AEST", name:"Australia/Sydney", city:"Sydney · APAC", alias:"aest aedt australia sydney melbourne apac" },
+  { ab:"AWST", name:"Australia/Perth", city:"Perth", alias:"awst perth australia" },
+  { ab:"NZST", name:"Pacific/Auckland", city:"Auckland", alias:"nzst nzdt new zealand auckland" },
+  { ab:"UTC", name:"UTC", city:"Coordinated Universal Time", alias:"utc universal" },
+];
+const LOCAL_TZ = Intl.DateTimeFormat().resolvedOptions().timeZone;
+const PPM = 0.8, SNAP = 15, DEFAULT_LEN = 30;
+const PCOLORS = ["#f59e0b","#10b981","#ec4899","#8b5cf6"];
+
+const S = {
+  week: 0,
+  tz: localStorage.getItem("tz2") || LOCAL_TZ,
+  tz2: localStorage.getItem("tzSecond") || null,   // secondary ruler
+  events: [], sel: [], q: "",
+  cals: [],          // {id,name,isDefault,checked}
+  people: [],        // {email,name,color}
+  schedules: {},     // email -> [{start,end}]
+};
+
+// ---- painted-slot persistence ----
+function saveSel(){
+  try { localStorage.setItem("paintedSlots", JSON.stringify(S.sel.map(x => [x.start.toISOString(), x.end.toISOString()]))); } catch(e){}
+}
+function loadSel(){
+  try {
+    const raw = JSON.parse(localStorage.getItem("paintedSlots") || "[]");
+    const now = new Date();
+    S.sel = raw.map(([a,b]) => ({ start: new Date(a), end: new Date(b) })).filter(x => x.end > now);
+  } catch(e){ S.sel = []; }
+}
+loadSel();
+
+// ---- conflict detection ----
+function overlaps(aS, aE, bS, bE){ return bS < aE && aS < bE; }
+function findConflict(start, end){
+  for (const ev of S.events) if (overlaps(start, end, ev.start, ev.end)) return "your “" + ev.subject + "”";
+  for (const p of S.people)
+    for (const it of (S.schedules[p.email] || []))
+      if (overlaps(start, end, it.start, it.end)) return (p.name || p.email) + "’s busy time";
+  return null;
+}
+
+function tzAbbr(zone){
+  const t = TZS.find(z => z.name === zone);
+  if (t) return liveAbbr(zone) || t.ab;
+  return liveAbbr(zone) || zone.split("/").pop().replace(/_/g," ");
+}
+function liveAbbr(zone){
+  try {
+    const p = new Intl.DateTimeFormat("en-GB", {timeZone:zone, timeZoneName:"short"}).formatToParts(new Date()).find(x=>x.type==="timeZoneName").value;
+    return /^[A-Z]{2,5}$/.test(p) ? p : null;
+  } catch(e){ return null; }
+}
+function fmt(d, opts){ return new Intl.DateTimeFormat("en-US", Object.assign({timeZone:S.tz}, opts)).format(d); }
+function fmtTime(d){ return fmt(d, {hour:"numeric", minute:"2-digit"}); }
+function tzTitleLine(){ return "(" + tzAbbr(S.tz) + ") " + S.tz.replace(/_/g," "); }
+function tzLongName(){
+  try { return new Intl.DateTimeFormat("en", {timeZone:S.tz, timeZoneName:"long"}).formatToParts(new Date()).find(p=>p.type==="timeZoneName").value + " — " + tzAbbr(S.tz); }
+  catch(e){ return S.tz; }
+}
+
+// ---- tz popover ----
+const tzPop = document.getElementById("tzPop"), tzSearch = document.getElementById("tzSearch"), tzList = document.getElementById("tzList");
+let tzTarget = "main";   // "main" | "second"
+function openTzPop(anchor, target){
+  tzTarget = target || "main";
+  const r = anchor.getBoundingClientRect();
+  tzPop.style.display = "block";
+  tzPop.style.left = Math.min(r.left, innerWidth - 320) + "px";
+  tzPop.style.top = (r.bottom + 6 + scrollY) + "px";
+  tzSearch.value = ""; renderTzList(""); tzSearch.focus();
+}
+document.addEventListener("click", e => {
+  if (!tzPop.contains(e.target) && e.target.id !== "tzLine" && !e.target.classList.contains("tzchip")) tzPop.style.display = "none";
+});
+tzSearch.oninput = () => renderTzList(tzSearch.value.trim().toLowerCase());
+function renderTzList(q){
+  const items = TZS.filter(z => !q || z.ab.toLowerCase().includes(q) || z.name.toLowerCase().includes(q) || z.city.toLowerCase().includes(q) || z.alias.includes(q));
+  tzList.innerHTML = "";
+  if (tzTarget === "second" && S.tz2){
+    const rm = document.createElement("div"); rm.className = "tzitem tzremove";
+    rm.textContent = "✕ Remove this timezone ruler";
+    rm.onclick = () => { S.tz2 = null; localStorage.removeItem("tzSecond"); tzPop.style.display = "none"; renderAll(); };
+    tzList.appendChild(rm);
+  }
+  items.forEach(z => {
+    const d = document.createElement("div"); d.className = "tzitem";
+    d.innerHTML = '<span class="ab"></span><span class="nm"></span><span class="ct"></span>';
+    d.querySelector(".ab").textContent = z.ab;
+    d.querySelector(".nm").textContent = z.city;
+    d.querySelector(".ct").textContent = fmtInZone(z.name);
+    d.onclick = () => {
+      if (tzTarget === "second"){ S.tz2 = z.name; localStorage.setItem("tzSecond", z.name); }
+      else { S.tz = z.name; localStorage.setItem("tz2", z.name); }
+      tzPop.style.display = "none"; renderAll();
+    };
+    tzList.appendChild(d);
+  });
+  if (!items.length) tzList.innerHTML = '<div class="tzitem" style="color:var(--muted)">No match</div>';
+}
+function fmtInZone(zone){
+  try { return new Intl.DateTimeFormat("en-US", {timeZone:zone, hour:"numeric", minute:"2-digit"}).format(new Date()); } catch(e){ return ""; }
+}
+document.getElementById("tzLine").onclick = e => openTzPop(e.target);
+
+// ---- week ----
+function sundayOf(weekOffset){
+  const now = new Date();
+  const d = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+  d.setDate(d.getDate() - d.getDay() + weekOffset * 7);
+  return d;
+}
+function weekDays(){
+  const sun = sundayOf(S.week), days = [];
+  for (let i = 0; i < 7; i++){ const d = new Date(sun); d.setDate(d.getDate()+i); days.push(d); }
+  return days;
+}
+function weekRange(){
+  const days = weekDays();
+  const ws = new Date(days[0]); ws.setHours(0,0,0,0);
+  const we = new Date(days[6]); we.setDate(we.getDate()+1); we.setHours(0,0,0,0);
+  return [ws, we];
+}
+document.getElementById("todayBtn").onclick = () => { S.week = 0; load(); };
+document.getElementById("prevW").onclick = () => { S.week--; load(); };
+document.getElementById("nextW").onclick = () => { S.week++; load(); };
+document.getElementById("clearBtn").onclick = () => { S.sel = []; saveSel(); renderAll(); };
+
+// ---- auto-suggest 5 free slots ----
+document.getElementById("suggBtn").onclick = () => {
+  const days = weekDays(), now = new Date();
+  const busy = S.events.slice();
+  S.people.forEach(p => (S.schedules[p.email] || []).forEach(it => busy.push({ start: it.start, end: it.end })));
+  const byDay = {};
+  days.forEach(d => {
+    if (d.getDay() === 0 || d.getDay() === 6) return;
+    const cands = [];
+    for (let m = 9*60; m <= 17.5*60; m += 30){
+      const st = new Date(d.getFullYear(), d.getMonth(), d.getDate(), 0, m);
+      const en = new Date(st.getTime() + 30*60000);
+      if (st < now) continue;
+      if (busy.some(b => b.start < en && st < b.end)) continue;
+      if (S.sel.some(b => b.start < en && st < b.end)) continue;
+      // prefer 10:30 or 15:00 starts
+      const score = Math.min(Math.abs(m - 10.5*60), Math.abs(m - 15*60));
+      cands.push({ st, en, score });
+    }
+    cands.sort((a,b) => a.score - b.score);
+    if (cands.length) byDay[keyOf(d)] = cands;
+  });
+  const picked = [];
+  let progress = true;
+  while (picked.length < 5 && progress){
+    progress = false;
+    for (const k of Object.keys(byDay)){
+      if (picked.length >= 5) break;
+      const cands = byDay[k];
+      while (cands.length){
+        const c = cands.shift();
+        const tooClose = picked.some(p => keyOf(p.st) === k && Math.abs(p.st - c.st) < 120*60000);
+        if (!tooClose){ picked.push(c); progress = true; break; }
+      }
+    }
+  }
+  if (!picked.length){ toast("No free 30-min gaps found (9 AM–6 PM)"); return; }
+  picked.forEach(c => S.sel.push({ start: c.st, end: c.en }));
+  S.sel.sort((a,b) => a.start - b.start);
+  saveSel(); renderAll();
+  toast("Painted " + picked.length + " suggested slots");
+};
+document.getElementById("subj").oninput = renderPreview;
+
+// ---- sidebar: search ----
+document.getElementById("sbSearch").oninput = e => { S.q = e.target.value.trim().toLowerCase(); renderBody(); };
+
+// ---- sidebar: meet with ----
+const meetIn = document.getElementById("meetIn");
+const pplPop = document.getElementById("pplPop");
+if (!CAPS.meetWith){ meetIn.parentElement.style.display = "none"; document.getElementById("meetWithH").style.display = "none"; document.getElementById("meetNote").style.display = "none"; }
+
+async function addPerson(email, name){
+  email = email.toLowerCase();
+  pplPop.style.display = "none"; meetIn.value = "";
+  if (S.people.find(p => p.email === email)) return;
+  if (S.people.length >= 4) { toast("Up to 4 people"); return; }
+  S.people.push({ email, name: name || email.split("@")[0], color: PCOLORS[S.people.length % PCOLORS.length] });
+  renderChips();
+  await loadSchedules();
+}
+
+let pplSeq = 0, pplResults = [], pplActive = -1, pplTimer = null;
+meetIn.addEventListener("input", () => {
+  const q = meetIn.value.trim();
+  clearTimeout(pplTimer);
+  if (q.length < 2 || q.includes("@")) { pplPop.style.display = "none"; pplResults = []; return; }
+  pplTimer = setTimeout(async () => {
+    const seq = ++pplSeq;
+    try {
+      const res = await searchPeople(q);
+      if (seq !== pplSeq) return;
+      pplResults = res.filter(u => u.email !== ME.email); pplActive = -1;
+      renderPplPop();
+    } catch(e){
+      console.error(e);
+      pplPop.style.display = "block";
+      pplPop.innerHTML = '<div class="ppl-item"><span class="pe">Directory search needs admin consent (User.ReadBasic.All). You can still type a full email and press Enter.</span></div>';
+    }
+  }, 250);
+});
+function renderPplPop(){
+  if (!pplResults.length){ pplPop.style.display = "block"; pplPop.innerHTML = '<div class="ppl-item"><span class="pe">No teammates found</span></div>'; return; }
+  pplPop.style.display = "block";
+  pplPop.innerHTML = "";
+  pplResults.forEach((u, i) => {
+    const d = document.createElement("div"); d.className = "ppl-item" + (i === pplActive ? " active" : "");
+    d.innerHTML = '<div class="pn"></div><div class="pe"></div>';
+    d.querySelector(".pn").textContent = u.name;
+    d.querySelector(".pe").textContent = u.email;
+    d.onmousedown = e => { e.preventDefault(); addPerson(u.email, u.name); };
+    pplPop.appendChild(d);
+  });
+}
+meetIn.addEventListener("keydown", async e => {
+  if (e.key === "ArrowDown" && pplResults.length){ pplActive = (pplActive + 1) % pplResults.length; renderPplPop(); e.preventDefault(); return; }
+  if (e.key === "ArrowUp" && pplResults.length){ pplActive = (pplActive - 1 + pplResults.length) % pplResults.length; renderPplPop(); e.preventDefault(); return; }
+  if (e.key === "Escape"){ pplPop.style.display = "none"; return; }
+  if (e.key !== "Enter") return;
+  e.preventDefault();
+  if (pplActive >= 0 && pplResults[pplActive]) { addPerson(pplResults[pplActive].email, pplResults[pplActive].name); return; }
+  if (pplResults.length === 1) { addPerson(pplResults[0].email, pplResults[0].name); return; }
+  let v = meetIn.value.trim().toLowerCase();
+  if (!v) return;
+  if (!v.includes("@")) { return; } // wait for a directory pick
+  addPerson(v);
+});
+meetIn.addEventListener("blur", () => setTimeout(() => pplPop.style.display = "none", 150));
+function renderChips(){
+  const box = document.getElementById("meetChips");
+  box.innerHTML = "";
+  S.people.forEach((p, i) => {
+    const c = document.createElement("span"); c.className = "chip"; c.style.background = p.color;
+    c.innerHTML = '<span class="nm"></span><span class="x">×</span>';
+    c.querySelector(".nm").textContent = p.name || p.email.split("@")[0];
+    c.title = p.email;
+    c.querySelector(".x").onclick = () => { S.people.splice(i,1); delete S.schedules[p.email]; renderChips(); renderBody(); };
+    box.appendChild(c);
+  });
+}
+async function loadSchedules(){
+  if (!CAPS.meetWith || !S.people.length) { S.schedules = {}; renderBody(); return; }
+  const [ws, we] = weekRange();
+  try {
+    S.schedules = await fetchSchedules(S.people.map(p => p.email), ws, we);
+    const missing = S.people.filter(p => !(S.schedules[p.email] || []).length);
+    status(missing.length ? "No busy data for " + missing.map(p=>p.email).join(", ") + " (check the address)." : "");
+  } catch(e){ console.error(e); toast("Couldn’t load their calendar"); }
+  renderBody();
+}
+
+// ---- sidebar: calendars ----
+async function loadCalendars(){
+  const box = document.getElementById("calList");
+  if (!CAPS.calendars){ box.innerHTML = '<div class="sb-note">Your default Outlook calendar.</div>'; document.getElementById("calsH").textContent = "Calendar"; return; }
+  try {
+    const cals = await fetchCalendars();
+    S.cals = cals.map(c => ({ ...c, checked: c.isDefault }));
+    box.innerHTML = "";
+    S.cals.forEach(c => {
+      const d = document.createElement("div"); d.className = "sb-item";
+      const lab = document.createElement("label");
+      const cb = document.createElement("input"); cb.type = "checkbox"; cb.checked = c.checked;
+      cb.onchange = () => { c.checked = cb.checked; load(); };
+      const nm = document.createElement("span"); nm.className = "nm"; nm.textContent = c.name; nm.title = c.name;
+      lab.appendChild(cb); lab.appendChild(nm); d.appendChild(lab); box.appendChild(d);
+    });
+  } catch(e){ console.error(e); box.innerHTML = '<div class="sb-note">Couldn’t load calendars.</div>'; }
+}
+
+// ---- load ----
+let loadSeq = 0;
+async function boot(){ await loadCalendars(); load(); }
+async function load(){
+  const seq = ++loadSeq;
+  const [ws, we] = weekRange();
+  status('<span class="spin"></span>Syncing your Outlook calendar…');
+  renderAll();
+  try {
+    const ids = S.cals.filter(c => c.checked).map(c => c.id);
+    const evs = await fetchEvents(ws, we, ids);
+    if (seq !== loadSeq) return;
+    S.events = evs;
+    status(evs.length + " meetings this week · click or drag on the grid to paint availability.");
+  } catch(e){ console.error(e); status('<span class="err">Couldn’t load calendar events.</span>'); }
+  if (S.people.length) await loadSchedules();
+  renderAll();
+}
+function status(html){ document.getElementById("status").innerHTML = html; }
+
+// ---- render ----
+function renderAll(){ renderHeadAndMonth(); renderBody(); renderPreview(); }
+
+function renderHeadAndMonth(){
+  const days = weekDays();
+  document.getElementById("tzLine").textContent = tzTitleLine();
+  document.getElementById("tzLabel").textContent = tzLongName();
+  const first = days[0], last = days[6];
+  const m1 = fmt(new Date(first.getFullYear(), first.getMonth(), first.getDate(), 12), {month:"long", year:"numeric"});
+  const m2 = fmt(new Date(last.getFullYear(), last.getMonth(), last.getDate(), 12), {month:"long", year:"numeric"});
+  document.getElementById("monthLabel").textContent = (m1 === m2) ? m1 : m1.split(" ")[0] + " – " + m2;
+
+  const head = document.getElementById("calHead");
+  head.innerHTML = "";
+  head.style.gridTemplateColumns = gridCols();
+  if (S.tz2){
+    const gut2 = document.createElement("div"); gut2.className = "gut";
+    const chip2 = document.createElement("button"); chip2.className = "tzchip"; chip2.textContent = tzAbbr(S.tz2);
+    chip2.title = S.tz2;
+    chip2.onclick = e => { e.stopPropagation(); openTzPop(chip2, "second"); };
+    gut2.appendChild(chip2); head.appendChild(gut2);
+  }
+  const gut = document.createElement("div"); gut.className = "gut"; gut.style.flexDirection = "column";
+  const chip = document.createElement("button"); chip.className = "tzchip"; chip.textContent = tzAbbr(S.tz);
+  chip.onclick = e => { e.stopPropagation(); openTzPop(chip); };
+  gut.appendChild(chip);
+  if (!S.tz2){
+    const add = document.createElement("button"); add.className = "addtz"; add.textContent = "+ TZ";
+    add.title = "Add a second timezone ruler";
+    add.onclick = e => { e.stopPropagation(); openTzPop(add, "second"); };
+    gut.appendChild(add);
+  }
+  head.appendChild(gut);
+  const todayK = keyOf(new Date());
+  days.forEach(d => {
+    const noon = new Date(d.getFullYear(), d.getMonth(), d.getDate(), 12);
+    const dh = document.createElement("div"); dh.className = "dh" + (keyOf(d) === todayK ? " today" : "");
+    dh.innerHTML = '<div class="wd">' + fmt(noon, {weekday:"short"}).toUpperCase() + '</div><div class="dn">' + d.getDate() + "</div>";
+    head.appendChild(dh);
+  });
+}
+function keyOf(d){ return d.getFullYear()+"-"+d.getMonth()+"-"+d.getDate(); }
+
+function gridCols(){ return (S.tz2 ? "58px " : "") + "58px repeat(7,1fr)"; }
+function renderBody(){
+  const days = weekDays();
+  const body = document.getElementById("calBody");
+  body.innerHTML = "";
+  body.style.gridTemplateColumns = gridCols();
+  const hourpx = 60 * PPM, H = 24 * hourpx;
+  body.style.height = H + "px";
+
+  if (S.tz2){
+    const gut2 = document.createElement("div"); gut2.className = "gutter";
+    for (let i = 1; i < 24; i++){
+      const t = new Date(days[0].getFullYear(), days[0].getMonth(), days[0].getDate(), i);
+      const hl = document.createElement("div"); hl.className = "hl"; hl.style.color = "#c2410c";
+      hl.style.top = (i * hourpx) + "px";
+      hl.textContent = new Intl.DateTimeFormat("en-US", {timeZone:S.tz2, hour:"numeric", minute:"2-digit"}).format(t).replace(":00","");
+      gut2.appendChild(hl);
+    }
+    body.appendChild(gut2);
+  }
+
+  const gut = document.createElement("div"); gut.className = "gutter";
+  for (let i = 1; i < 24; i++){
+    const t = new Date(days[0].getFullYear(), days[0].getMonth(), days[0].getDate(), i);
+    const hl = document.createElement("div"); hl.className = "hl";
+    hl.style.top = (i * hourpx) + "px";
+    hl.textContent = fmt(t, {hour:"numeric"});
+    gut.appendChild(hl);
+  }
+  body.appendChild(gut);
+
+  const now = new Date();
+  days.forEach(d => {
+    const dayStart = new Date(d.getFullYear(), d.getMonth(), d.getDate(), 0, 0, 0, 0);
+    const dayEnd = new Date(dayStart.getTime() + 86400000);
+    const col = document.createElement("div"); col.className = "daycol";
+    col.style.setProperty("--hourpx", hourpx + "px");
+    col.insertAdjacentHTML("beforeend", '<div class="lines"></div>');
+    const top = t => (t - dayStart) / 60000 * PPM;
+
+    // my busy events (dimmed when search active and not matching)
+    S.events.forEach(ev => {
+      if (ev.end <= dayStart || ev.start >= dayEnd) return;
+      const a = Math.max(top(ev.start), 0), b = Math.min(top(ev.end), H);
+      if (b - a < 4) return;
+      const el = document.createElement("div");
+      const match = !S.q || (ev.subject || "").toLowerCase().includes(S.q);
+      el.className = "evt busy" + (match ? "" : " dim");
+      el.style.top = a + "px"; el.style.height = Math.max(b - a - 1, 10) + "px";
+      el.innerHTML = '<span class="bn"></span><span class="bt">' + fmtTime(ev.start) + "–" + fmtTime(ev.end) + "</span>";
+      el.querySelector(".bn").textContent = ev.subject;
+      col.appendChild(el);
+    });
+
+    // colleagues' busy overlays
+    S.people.forEach(p => {
+      (S.schedules[p.email] || []).forEach(it => {
+        if (it.end <= dayStart || it.start >= dayEnd) return;
+        const a = Math.max(top(it.start), 0), b = Math.min(top(it.end), H);
+        if (b - a < 4) return;
+        const el = document.createElement("div"); el.className = "evt ovl";
+        el.style.top = a + "px"; el.style.height = Math.max(b - a - 1, 8) + "px";
+        el.style.background = p.color;
+        el.textContent = (p.name || p.email.split("@")[0]).split(" ")[0];
+        col.appendChild(el);
+      });
+    });
+
+    // painted selections
+    S.sel.forEach((s, idx) => {
+      if (s.end <= dayStart || s.start >= dayEnd) return;
+      const a = Math.max(top(s.start), 0), b = Math.min(top(s.end), H);
+      const conflict = findConflict(s.start, s.end);
+      const el = document.createElement("div"); el.className = "evt sel" + (conflict ? " conflict" : "");
+      el.style.top = a + "px"; el.style.height = Math.max(b - a - 1, 12) + "px";
+      el.textContent = (conflict ? "⚠ " : "") + fmtTime(s.start) + " – " + fmtTime(s.end);
+      el.insertAdjacentHTML("beforeend", '<span class="x">×</span>');
+      el.title = conflict ? "Overlaps " + conflict + " — click to remove" : "Click to remove";
+      el.onpointerdown = e => e.stopPropagation();
+      el.onclick = e => { e.stopPropagation(); S.sel.splice(idx, 1); saveSel(); renderAll(); };
+      col.appendChild(el);
+    });
+
+    if (keyOf(d) === keyOf(now)){
+      const nl = document.createElement("div"); nl.className = "nowline";
+      nl.style.top = top(now) + "px";
+      col.appendChild(nl);
+    }
+
+    attachPaint(col, dayStart);
+    body.appendChild(col);
+  });
+
+  const sc = document.getElementById("scroller");
+  if (!sc.dataset.scrolled){ sc.scrollTop = 8 * hourpx - 10; sc.dataset.scrolled = "1"; }
+}
+
+// ---- paint interaction ----
+let paint = null;
+function snap(min){ return Math.round(min / SNAP) * SNAP; }
+function attachPaint(col, dayStart){
+  col.onpointerdown = e => {
+    if (e.button !== 0) return;
+    const rect = col.getBoundingClientRect();
+    const min = Math.max(0, Math.min(1410, Math.floor((e.clientY - rect.top) / PPM / SNAP) * SNAP));
+    const el = document.createElement("div"); el.className = "evt sel tmp";
+    col.appendChild(el);
+    paint = { col, dayStart, anchor: min, startMin: min, endMin: min + DEFAULT_LEN, el, moved: false };
+    drawPaint();
+    col.setPointerCapture(e.pointerId);
+  };
+  col.onpointermove = e => {
+    if (!paint || paint.col !== col) return;
+    const rect = col.getBoundingClientRect();
+    const cur = Math.max(0, Math.min(1440, snap((e.clientY - rect.top) / PPM)));
+    paint.moved = true;
+    if (cur >= paint.anchor + SNAP) { paint.startMin = paint.anchor; paint.endMin = cur; }
+    else if (cur <= paint.anchor - SNAP) { paint.startMin = cur; paint.endMin = paint.anchor; }
+    else { paint.startMin = paint.anchor; paint.endMin = paint.anchor + DEFAULT_LEN; }
+    drawPaint();
+  };
+  col.onpointerup = () => {
+    if (!paint || paint.col !== col) return;
+    let s = paint.startMin, en = paint.endMin;
+    if (!paint.moved || en - s < SNAP) en = s + DEFAULT_LEN;
+    const start = new Date(paint.dayStart.getTime() + s * 60000);
+    const end   = new Date(paint.dayStart.getTime() + en * 60000);
+    paint.el.remove(); paint = null;
+    S.sel.push({ start, end });
+    S.sel.sort((a,b) => a.start - b.start);
+    saveSel();
+    const c = findConflict(start, end);
+    if (c) toast("⚠ Heads up — this overlaps " + c);
+    renderAll();
+  };
+}
+function drawPaint(){
+  if (!paint) return;
+  const a = Math.min(paint.startMin, paint.endMin), b = Math.max(paint.startMin, paint.endMin);
+  paint.el.style.top = (a * PPM) + "px";
+  paint.el.style.height = Math.max((b - a) * PPM - 1, 12) + "px";
+  const st = new Date(paint.dayStart.getTime() + a * 60000), en = new Date(paint.dayStart.getTime() + b * 60000);
+  paint.el.textContent = fmtTime(st) + " – " + fmtTime(en);
+}
+
+// ---- booking link + share ----
+function bookingLink(start, end){
+  const p = new URLSearchParams({
+    path: "/calendar/action/compose", rru: "addevent",
+    startdt: start.toISOString(), enddt: end.toISOString(),
+    subject: document.getElementById("subj").value || ("Meeting with " + ME.name),
+    to: ME.email,
+    body: "Booked from " + ME.name + "'s shared availability. Hit Send and it's confirmed.",
+  });
+  return "https://outlook.office.com/calendar/deeplink/compose?" + p.toString();
+}
+function dayKeyTz(d){ return new Intl.DateTimeFormat("en-CA", {timeZone:S.tz, year:"numeric", month:"2-digit", day:"2-digit"}).format(d); }
+function buildHTML(){
+  if (!S.sel.length) return null;
+  const byDay = {};
+  S.sel.slice().sort((a,b)=>a.start-b.start).forEach(x => { const k = dayKeyTz(x.start); (byDay[k] = byDay[k] || []).push(x); });
+  let h = "<div>Would any of these times work for you? Click one to book it directly <i>(times in " + tzLongName() + ")</i>:<br><br>";
+  Object.keys(byDay).sort().forEach(k => {
+    h += "<b>" + fmt(byDay[k][0].start, {weekday:"long", month:"long", day:"numeric"}) + "</b><br>";
+    byDay[k].forEach(x => {
+      h += '&nbsp;&nbsp;•&nbsp;<a href="' + bookingLink(x.start, x.end) + '">' + fmtTime(x.start) + " – " + fmtTime(x.end) + "</a><br>";
+    });
+    h += "<br>";
+  });
+  return h + "</div>";
+}
+function renderPreview(){
+  document.getElementById("preview").innerHTML = buildHTML() ||
+    '<span style="color:var(--muted2)">Click or drag on the calendar to paint availability slots — a hyperlinked snippet appears here.</span>';
+}
+document.getElementById("copyBtn").onclick = async () => {
+  const h = buildHTML();
+  if (!h) { toast("Paint some slots first"); return; }
+  const plain = document.getElementById("preview").innerText;
+  try {
+    await navigator.clipboard.write([new ClipboardItem({
+      "text/html": new Blob([h], {type:"text/html"}),
+      "text/plain": new Blob([plain], {type:"text/plain"}),
+    })]);
+    toast("Copied — paste into your email");
+  } catch(e){
+    const el = document.getElementById("preview");
+    const r = document.createRange(); r.selectNodeContents(el);
+    const sel = getSelection(); sel.removeAllRanges(); sel.addRange(r);
+    document.execCommand("copy"); sel.removeAllRanges();
+    toast("Copied — paste into your email");
+  }
+};
+function toast(msg){
+  const t = document.getElementById("toast"); t.textContent = msg;
+  t.classList.add("show"); setTimeout(() => t.classList.remove("show"), 2200);
+}
+</script>
+</body>
+</html>
