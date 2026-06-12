@@ -861,7 +861,7 @@ function attachPaint(col, dayStart){
   col.onpointerup = () => {
     if (!paint || paint.col !== col) return;
     let s = paint.startMin, en = paint.endMin;
-    if (!paint.moved || en - s < SNAP) en = s + DEFAULT_LEN;
+    if (!paint.moved || en - s < DEFAULT_LEN) en = s + DEFAULT_LEN;
     const start = new Date(paint.dayStart.getTime() + s * 60000);
     const end   = new Date(paint.dayStart.getTime() + en * 60000);
     paint.el.remove(); paint = null;
