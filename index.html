@@ -159,11 +159,12 @@
   .nowline::before { content:""; position:absolute; left:-4px; top:-3px; width:8px; height:8px; border-radius:50%; background:#ef4444; }
 
   .evt { position:absolute; left:3px; right:3px; border-radius:6px; overflow:hidden; }
-  .busy { background:#FFDFEE; border-left:3px solid #F0479C; color:#C01574; font-size:11px; padding:3px 6px; line-height:1.3; pointer-events:none; z-index:2; }
-  .busy .bn { white-space:nowrap; overflow:hidden; text-overflow:ellipsis; display:block; font-weight:600; }
+  .busy { background:#FFDFEE; border-left:3px solid #F0479C; color:#C01574; font-size:11px; padding:3px 6px; line-height:1.25; pointer-events:auto; z-index:2; }
+  .busy .bn { display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden; font-weight:600; word-break:break-word; }
+  .busy.short .bn { -webkit-line-clamp:1; }
   .busy .bt { color:#E8559F; font-size:10.5px; }
   .busy.dim { opacity:.18; }
-  .ovl { pointer-events:none; z-index:3; opacity:.7; border-radius:6px; font-size:10px; color:#fff; padding:2px 5px; font-weight:600; overflow:hidden; white-space:nowrap; }
+  .ovl { pointer-events:none; z-index:3; opacity:.8; border-radius:6px; font-size:9.5px; color:#fff; padding:2px 4px; font-weight:600; overflow:hidden; white-space:nowrap; left:55% !important; }
   .sel { background:#00C875; color:#fff; font-size:11px; font-weight:600; padding:3px 6px; line-height:1.3; z-index:4; cursor:pointer; box-shadow:0 2px 6px rgba(0,200,117,.45); display:flex; align-items:center; }
   .sel:hover { background:#00B268; }
   .sel .x { position:absolute; top:2px; right:5px; font-weight:700; opacity:.75; }
@@ -462,7 +463,7 @@ const TZS = [
   { ab:"UTC", name:"UTC", city:"Coordinated Universal Time", alias:"utc universal" },
 ];
 const LOCAL_TZ = Intl.DateTimeFormat().resolvedOptions().timeZone;
-const PPM = 0.8, SNAP = 15, DEFAULT_LEN = 30;
+const PPM = 1.05, SNAP = 15, DEFAULT_LEN = 30;
 const PCOLORS = ["#FFC400","#FF9F1A","#FFB800","#F77F00"];
 
 const S = {
@@ -965,10 +966,12 @@ function renderBody(){
       if (b - a < 4) return;
       const el = document.createElement("div");
       const match = !S.q || (ev.subject || "").toLowerCase().includes(S.q);
-      el.className = "evt busy" + (match ? "" : " dim");
-      el.style.top = a + "px"; el.style.height = Math.max(b - a - 1, 10) + "px";
+      const hgt = Math.max(b - a - 1, 10);
+      el.className = "evt busy" + (match ? "" : " dim") + (hgt < 46 ? " short" : "");
+      el.style.top = a + "px"; el.style.height = hgt + "px";
       el.innerHTML = '<span class="bn"></span><span class="bt">' + fmtRange(ev.start, ev.end) + "</span>";
       el.querySelector(".bn").textContent = ev.subject;
+      el.title = ev.subject + " · " + fmtRange(ev.start, ev.end);
       col.appendChild(el);
     });
 
