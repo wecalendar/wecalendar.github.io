@@ -137,12 +137,12 @@
   .ppl-item .pe { font-size:11.5px; color:var(--muted2); }
 
   .calwrap { flex:1; min-width:0; position:relative; }
-  .fab { position:absolute; right:20px; bottom:20px; z-index:20; width:54px; height:54px; border-radius:50%; border:none; background:#00C875; color:#fff; font-size:30px; line-height:1; cursor:pointer; box-shadow:0 6px 20px rgba(0,200,117,.45); display:flex; align-items:center; justify-content:center; transition:transform .15s, background .15s; }
+  .fab { position:absolute; right:20px; bottom:20px; z-index:20; height:48px; border-radius:999px; border:none; background:#00C875; color:#fff; font-size:14px; font-weight:700; padding:0 22px; cursor:pointer; box-shadow:0 6px 20px rgba(0,200,117,.45); display:flex; align-items:center; gap:8px; font-family:inherit; transition:background .15s; }
   .fab:hover { background:#00B268; }
-  .fab.on { transform:rotate(45deg); background:#0E9F66; box-shadow:0 6px 20px rgba(14,159,102,.5); }
+  .fab.on { background:#0E9F66; box-shadow:0 6px 20px rgba(14,159,102,.5); }
   .daycol { cursor:default; }
   body.paint .daycol { cursor:crosshair; }
-  .paintbadge { position:absolute; right:84px; bottom:32px; z-index:20; background:#00C875; color:#fff; font-size:12px; font-weight:600; border-radius:999px; padding:6px 14px; display:none; }
+  .paintbadge { position:absolute; right:20px; bottom:76px; z-index:20; background:#00C875; color:#fff; font-size:12px; font-weight:600; border-radius:999px; padding:6px 14px; display:none; }
   body.paint .paintbadge { display:block; }
   .cal { border-top:1px solid var(--line); }
   .cal-head { display:grid; grid-template-columns:58px repeat(7,1fr); }
@@ -159,7 +159,7 @@
   .cal-body { display:grid; grid-template-columns:58px repeat(7,1fr); position:relative; }
   .gutter { position:relative; }
   .gutter .hl { position:absolute; right:8px; transform:translateY(-50%); font-size:11px; color:var(--muted); background:var(--bg); padding:0 2px; }
-  .daycol { position:relative; border-left:1px solid var(--line2); cursor:crosshair; }
+  .daycol { position:relative; border-left:1px solid var(--line2); }
   .daycol .lines { position:absolute; inset:0; pointer-events:none;
     background:repeating-linear-gradient(to bottom, transparent 0, transparent calc(var(--hourpx) - 1px), var(--line) calc(var(--hourpx) - 1px), var(--line) var(--hourpx)); }
   .nowline { position:absolute; left:0; right:0; height:2px; background:#ef4444; z-index:6; pointer-events:none; }
@@ -296,7 +296,7 @@
           </div>
         </div>
         <span class="paintbadge">Paint mode — click or drag to add slots</span>
-        <button class="fab" id="fabBtn" title="Add availability slots" aria-label="Toggle paint mode">+</button>
+        <button class="fab" id="fabBtn" title="Toggle slot selection" aria-label="Toggle slot selection"><span style="font-size:18px;line-height:1">＋</span> Select availability</button>
       </div>
 
       <div class="panel">
@@ -1034,7 +1034,10 @@ fabBtn.onclick = () => {
   S.paintMode = !S.paintMode;
   fabBtn.classList.toggle("on", S.paintMode);
   document.body.classList.toggle("paint", S.paintMode);
-  toast(S.paintMode ? "🖌 Paint mode on — click or drag on the grid" : "Paint mode off — browse freely");
+  fabBtn.innerHTML = S.paintMode
+    ? '<span style="font-size:16px;line-height:1">✓</span> Done selecting'
+    : '<span style="font-size:18px;line-height:1">＋</span> Select availability';
+  toast(S.paintMode ? "🖌 Selection on — click or drag on the grid" : "Selection off — browse freely");
 };
 
 // ---- paint interaction ----
