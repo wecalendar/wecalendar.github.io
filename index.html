@@ -671,8 +671,10 @@ function renderTzList(q){
     rm.onclick = () => { S.tzs.splice(tzTarget, 1); saveTzs(); tzPop.style.display = "none"; renderAll(); };
     tzList.appendChild(rm);
   }
+  const current = (typeof tzTarget === "number") ? S.tzs[tzTarget] : (tzTarget === "main" ? S.tz : null);
   items.forEach(z => {
     const d = document.createElement("div"); d.className = "tzitem";
+    if (z.name === current){ d.style.background = "var(--blue-light)"; d.style.fontWeight = "600"; }
     d.innerHTML = '<span class="ab"></span><span class="nm"></span><span class="ct"></span>';
     d.querySelector(".ab").textContent = z.ab;
     d.querySelector(".nm").textContent = z.city;
@@ -1004,7 +1006,6 @@ function renderHeadAndMonth(){
   extraRulers().forEach((zone, i) => {
     const gutX = document.createElement("div"); gutX.className = "gut";
     const chipX = document.createElement("button"); chipX.className = "tzchip"; chipX.textContent = tzAbbr(zone);
-    chipX.style.color = RULER_COLORS[i % RULER_COLORS.length];
     const userIdx = S.tzs.indexOf(zone);
     if (zone === LOCAL_TZ && userIdx === -1){
       chipX.title = zone + " — your local time (always shown)";
@@ -1051,7 +1052,6 @@ function renderBody(){
     for (let i = 1; i < 24; i++){
       const t = new Date(days[0].getFullYear(), days[0].getMonth(), days[0].getDate(), i);
       const hl = document.createElement("div"); hl.className = "hl";
-      hl.style.color = RULER_COLORS[idx % RULER_COLORS.length];
       hl.style.top = (i * hourpx) + "px";
       hl.textContent = new Intl.DateTimeFormat("en-US", {timeZone:zone, hour:"numeric", minute:"2-digit"}).format(t).replace(":00","");
       gutX.appendChild(hl);
