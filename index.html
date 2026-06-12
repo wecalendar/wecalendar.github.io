@@ -504,7 +504,7 @@ const PCOLORS = ["#FFC400","#FF9F1A","#FFB800","#F77F00"];
 const S = {
   week: 0,
   tz: localStorage.getItem("tz2") || LOCAL_TZ,
-  tz2: localStorage.getItem("tzSecond") || null,   // secondary ruler
+  tzs: (() => { try { const a = JSON.parse(localStorage.getItem("tzRulers") || "[]"); const old = localStorage.getItem("tzSecond"); if (old && !a.includes(old)) a.push(old); return a.slice(0,3); } catch(e){ return []; } })(),   // extra rulers
   workStart: +(localStorage.getItem("wh1") || 9),
   workEnd:   +(localStorage.getItem("wh2") || 18),
   theme: localStorage.getItem("theme") || "light",
@@ -621,6 +621,13 @@ function liveAbbr(zone){
     return /^[A-Z]{2,5}$/.test(p) ? p : null;
   } catch(e){ return null; }
 }
+const RULER_COLORS = ["#c2410c", "#0e7490", "#7c3aed"];
+function extraRulers(){
+  const ex = S.tzs.filter(z => z !== S.tz);
+  if (S.tz !== LOCAL_TZ && !ex.includes(LOCAL_TZ)) ex.unshift(LOCAL_TZ);
+  return ex.slice(0, 3);
+}
+function saveTzs(){ localStorage.setItem("tzRulers", JSON.stringify(S.tzs.slice(0,3))); }
 function fmt(d, opts){ return new Intl.DateTimeFormat("en-US", Object.assign({timeZone:S.tz}, opts)).format(d); }
 function fmtTime(d){ return fmt(d, {hour:"numeric", minute:"2-digit"}); }
 function fmtRange(a, b){
@@ -642,7 +649,7 @@ function tzLongName(){
 
 // ---- tz popover ----
 const tzPop = document.getElementById("tzPop"), tzSearch = document.getElementById("tzSearch"), tzList = document.getElementById("tzList");
-let tzTarget = "main";   // "main" | "second"
+let tzTarget = "main";   // "main" | "add" | {idx} of S.tzs
 function openTzPop(anchor, target){
   tzTarget = target || "main";
   const r = anchor.getBoundingClientRect();
@@ -658,10 +665,10 @@ tzSearch.oninput = () => renderTzList(tzSearch.value.trim().toLowerCase());
 function renderTzList(q){
   const items = TZS.filter(z => !q || z.ab.toLowerCase().includes(q) || z.name.toLowerCase().includes(q) || z.city.toLowerCase().includes(q) || z.alias.includes(q));
   tzList.innerHTML = "";
-  if (tzTarget === "second" && S.tz2){
+  if (typeof tzTarget === "number"){
     const rm = document.createElement("div"); rm.className = "tzitem tzremove";
     rm.textContent = "✕ Remove this timezone ruler";
-    rm.onclick = () => { S.tz2 = null; localStorage.removeItem("tzSecond"); tzPop.style.display = "none"; renderAll(); };
+    rm.onclick = () => { S.tzs.splice(tzTarget, 1); saveTzs(); tzPop.style.display = "none"; renderAll(); };
     tzList.appendChild(rm);
   }
   items.forEach(z => {
@@ -671,7 +678,8 @@ function renderTzList(q){
     d.querySelector(".nm").textContent = z.city;
     d.querySelector(".ct").textContent = fmtInZone(z.name);
     d.onclick = () => {
-      if (tzTarget === "second"){ S.tz2 = z.name; localStorage.setItem("tzSecond", z.name); }
+      if (tzTarget === "add"){ if (!S.tzs.includes(z.name) && z.name !== S.tz) S.tzs.push(z.name); saveTzs(); }
+      else if (typeof tzTarget === "number"){ S.tzs[tzTarget] = z.name; saveTzs(); }
       else { S.tz = z.name; localStorage.setItem("tz2", z.name); }
       tzPop.style.display = "none"; renderAll();
     };
@@ -993,21 +1001,29 @@ function renderHeadAndMonth(){
   const head = document.getElementById("calHead");
   head.innerHTML = "";
   head.style.gridTemplateColumns = gridCols();
-  if (S.tz2){
-    const gut2 = document.createElement("div"); gut2.className = "gut";
-    const chip2 = document.createElement("button"); chip2.className = "tzchip"; chip2.textContent = tzAbbr(S.tz2);
-    chip2.title = S.tz2;
-    chip2.onclick = e => { e.stopPropagation(); openTzPop(chip2, "second"); };
-    gut2.appendChild(chip2); head.appendChild(gut2);
-  }
+  extraRulers().forEach((zone, i) => {
+    const gutX = document.createElement("div"); gutX.className = "gut";
+    const chipX = document.createElement("button"); chipX.className = "tzchip"; chipX.textContent = tzAbbr(zone);
+    chipX.style.color = RULER_COLORS[i % RULER_COLORS.length];
+    const userIdx = S.tzs.indexOf(zone);
+    if (zone === LOCAL_TZ && userIdx === -1){
+      chipX.title = zone + " — your local time (always shown)";
+      chipX.style.cursor = "default";
+    } else {
+      chipX.title = zone + " — click to change or remove";
+      chipX.onclick = e => { e.stopPropagation(); openTzPop(chipX, userIdx); };
+    }
+    gutX.appendChild(chipX); head.appendChild(gutX);
+  });
   const gut = document.createElement("div"); gut.className = "gut"; gut.style.flexDirection = "column";
   const chip = document.createElement("button"); chip.className = "tzchip"; chip.textContent = tzAbbr(S.tz);
+  chip.title = S.tz + " — main timezone (labels & email)";
   chip.onclick = e => { e.stopPropagation(); openTzPop(chip); };
   gut.appendChild(chip);
-  if (!S.tz2){
+  if (extraRulers().length < 3){
     const add = document.createElement("button"); add.className = "addtz"; add.textContent = "+ TZ";
-    add.title = "Add a second timezone ruler";
-    add.onclick = e => { e.stopPropagation(); openTzPop(add, "second"); };
+    add.title = "Add a timezone ruler to compare";
+    add.onclick = e => { e.stopPropagation(); openTzPop(add, "add"); };
     gut.appendChild(add);
   }
   head.appendChild(gut);
@@ -1021,7 +1037,7 @@ function renderHeadAndMonth(){
 }
 function keyOf(d){ return d.getFullYear()+"-"+d.getMonth()+"-"+d.getDate(); }
 
-function gridCols(){ return (S.tz2 ? "58px " : "") + "58px repeat(" + weekDays().length + ",1fr)"; }
+function gridCols(){ return extraRulers().map(() => "58px").join(" ") + (extraRulers().length ? " " : "") + "58px repeat(" + weekDays().length + ",1fr)"; }
 function renderBody(){
   const days = weekDays();
   const body = document.getElementById("calBody");
@@ -1030,17 +1046,18 @@ function renderBody(){
   const hourpx = 60 * PPM, H = 24 * hourpx;
   body.style.height = H + "px";
 
-  if (S.tz2){
-    const gut2 = document.createElement("div"); gut2.className = "gutter";
+  extraRulers().forEach((zone, idx) => {
+    const gutX = document.createElement("div"); gutX.className = "gutter";
     for (let i = 1; i < 24; i++){
       const t = new Date(days[0].getFullYear(), days[0].getMonth(), days[0].getDate(), i);
-      const hl = document.createElement("div"); hl.className = "hl"; hl.style.color = "#c2410c";
+      const hl = document.createElement("div"); hl.className = "hl";
+      hl.style.color = RULER_COLORS[idx % RULER_COLORS.length];
       hl.style.top = (i * hourpx) + "px";
-      hl.textContent = new Intl.DateTimeFormat("en-US", {timeZone:S.tz2, hour:"numeric", minute:"2-digit"}).format(t).replace(":00","");
-      gut2.appendChild(hl);
+      hl.textContent = new Intl.DateTimeFormat("en-US", {timeZone:zone, hour:"numeric", minute:"2-digit"}).format(t).replace(":00","");
+      gutX.appendChild(hl);
     }
-    body.appendChild(gut2);
-  }
+    body.appendChild(gutX);
+  });
 
   const gut = document.createElement("div"); gut.className = "gutter";
   for (let i = 1; i < 24; i++){
