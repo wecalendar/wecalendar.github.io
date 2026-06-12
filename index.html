@@ -64,9 +64,9 @@
   .mini .dh2 { font-size:10.5px; color:#9ca3af; text-align:center; font-weight:600; letter-spacing:.06em; padding-bottom:2px; }
   .mini .dh2.on { color:#7C6FF7; }
   .mini .cell { height:30px; border-radius:7px; }
-  .mini .busy2 { background:#F2EEFF; }
+  .mini .busy2 { background:#FDEDF4; }
   .mini .free2 { background:#fff; border:1.5px dashed #C9BCFF; }
-  .mini .slot2 { background:#7C6FF7; position:relative; }
+  .mini .slot2 { background:#10B981; position:relative; }
   .mini .slot2::after { content:"✓"; color:#fff; font-size:11px; position:absolute; inset:0; display:flex; align-items:center; justify-content:center; }
   .mini-cap { font-size:11px; color:#9ca3af; text-align:center; margin-top:14px; }
   @media (max-width:800px){ .hero { grid-template-columns:1fr; } .hero-right { border-left:none; border-top:1px solid #E2DBFF; } }
@@ -118,16 +118,16 @@
   .nowline::before { content:""; position:absolute; left:-4px; top:-3px; width:8px; height:8px; border-radius:50%; background:#ef4444; }
 
   .evt { position:absolute; left:3px; right:3px; border-radius:6px; overflow:hidden; }
-  .busy { background:#f1f5f9; border-left:3px solid #94a3b8; color:#475569; font-size:11px; padding:3px 6px; line-height:1.3; pointer-events:none; z-index:2; }
+  .busy { background:#FDEDF4; border-left:3px solid #EC6FA8; color:#9D2B5C; font-size:11px; padding:3px 6px; line-height:1.3; pointer-events:none; z-index:2; }
   .busy .bn { white-space:nowrap; overflow:hidden; text-overflow:ellipsis; display:block; font-weight:600; }
-  .busy .bt { color:#94a3b8; font-size:10.5px; }
+  .busy .bt { color:#D4537E; font-size:10.5px; }
   .busy.dim { opacity:.18; }
   .ovl { pointer-events:none; z-index:3; opacity:.5; border-radius:6px; font-size:10px; color:#fff; padding:2px 5px; font-weight:600; overflow:hidden; white-space:nowrap; }
-  .sel { background:rgba(59,130,246,.85); color:#fff; font-size:11px; font-weight:600; padding:3px 6px; line-height:1.3; z-index:4; cursor:pointer; box-shadow:0 1px 4px rgba(37,99,235,.35); }
-  .sel:hover { background:rgba(37,99,235,.92); }
+  .sel { background:rgba(16,185,129,.88); color:#fff; font-size:11px; font-weight:600; padding:3px 6px; line-height:1.3; z-index:4; cursor:pointer; box-shadow:0 1px 4px rgba(5,150,105,.35); }
+  .sel:hover { background:rgba(5,150,105,.95); }
   .sel .x { position:absolute; top:2px; right:5px; font-weight:700; opacity:.75; }
-  .sel.tmp { background:rgba(59,130,246,.45); box-shadow:none; }
-  .sel.conflict { background:rgba(245,158,11,.92); box-shadow:0 1px 4px rgba(217,119,6,.4); }
+  .sel.tmp { background:rgba(16,185,129,.45); box-shadow:none; }
+  .sel.conflict { background:rgba(239,68,68,.9); box-shadow:0 1px 4px rgba(220,38,38,.4); }
   .addtz { display:block; margin:4px auto 0; border:none; background:none; color:var(--muted); font-size:10px; cursor:pointer; font-family:inherit; }
   .addtz:hover { color:var(--blue-dark); }
   .tzremove { color:#b91c1c; font-weight:600; }
@@ -189,7 +189,7 @@
           <span class="cell slot2"></span><span class="cell free2"></span><span class="cell busy2"></span>
           <span class="cell busy2"></span><span class="cell slot2"></span><span class="cell free2"></span>
         </div>
-        <div class="mini-cap">Purple = slots you're offering · tinted = your meetings</div>
+        <div class="mini-cap">Green = slots you're offering · pink = your meetings</div>
       </div>
     </div>
   </div>
@@ -392,7 +392,7 @@ const TZS = [
 ];
 const LOCAL_TZ = Intl.DateTimeFormat().resolvedOptions().timeZone;
 const PPM = 0.8, SNAP = 15, DEFAULT_LEN = 30;
-const PCOLORS = ["#f59e0b","#10b981","#ec4899","#8b5cf6"];
+const PCOLORS = ["#EAB308","#F59E0B","#FB923C","#D97706"];
 
 const S = {
   week: 0,
