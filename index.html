@@ -651,7 +651,7 @@ function tzLongName(){
 const tzPop = document.getElementById("tzPop"), tzSearch = document.getElementById("tzSearch"), tzList = document.getElementById("tzList");
 let tzTarget = "main";   // "main" | "add" | {idx} of S.tzs
 function openTzPop(anchor, target){
-  tzTarget = target || "main";
+  tzTarget = (target === undefined || target === null) ? "main" : target;
   const r = anchor.getBoundingClientRect();
   tzPop.style.display = "block";
   tzPop.style.left = Math.min(r.left, innerWidth - 320) + "px";
@@ -1006,6 +1006,7 @@ function renderHeadAndMonth(){
   extraRulers().forEach((zone, i) => {
     const gutX = document.createElement("div"); gutX.className = "gut";
     const chipX = document.createElement("button"); chipX.className = "tzchip"; chipX.textContent = tzAbbr(zone);
+    chipX.style.color = RULER_COLORS[i % RULER_COLORS.length];
     const userIdx = S.tzs.indexOf(zone);
     if (zone === LOCAL_TZ && userIdx === -1){
       chipX.title = zone + " — your local time (always shown)";
@@ -1052,6 +1053,7 @@ function renderBody(){
     for (let i = 1; i < 24; i++){
       const t = new Date(days[0].getFullYear(), days[0].getMonth(), days[0].getDate(), i);
       const hl = document.createElement("div"); hl.className = "hl";
+      hl.style.color = RULER_COLORS[idx % RULER_COLORS.length];
       hl.style.top = (i * hourpx) + "px";
       hl.textContent = new Intl.DateTimeFormat("en-US", {timeZone:zone, hour:"numeric", minute:"2-digit"}).format(t).replace(":00","");
       gutX.appendChild(hl);
