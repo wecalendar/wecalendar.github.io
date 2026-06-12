@@ -191,6 +191,10 @@
   .panel input[type="text"] { border:1px solid var(--line); border-radius:8px; padding:7px 10px; font-size:13px; font-family:inherit; background:var(--surface); color:var(--ink); }
   .panel-btns { display:flex; gap:8px; margin-top:12px; }
   .panel-btns .primary { flex:1; }
+  .ai-box { display:flex; gap:6px; margin-top:12px; }
+  .ai-box input { flex:1; min-width:0; border:1px solid var(--line); border-radius:10px; padding:8px 10px; font-size:12.5px; font-family:inherit; background:var(--surface); color:var(--ink); outline:none; }
+  .ai-box input:focus { border-color:var(--side); }
+  .ai-box .btn { padding:8px 14px; }
   #jointNote { color:var(--side); font-weight:600; }
   #preview { border:1px dashed var(--line); border-radius:10px; padding:12px; font-size:13.5px; line-height:1.7; min-height:56px; }
   #preview a { color:var(--blue-dark); font-weight:600; text-decoration:underline; }
@@ -266,7 +270,7 @@
       </div>
       <div class="grow"></div>
       <span class="avatar" id="avatar" title="Your profile — see Settings"></span>
-      <button class="linklike" id="signOut">Sign out</button>
+      <span class="who" id="whoName" style="color:var(--ink);font-weight:600;"></span>
       <button class="gearbtn" id="setBtn" title="Settings" aria-label="Settings">
         <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 1 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 1 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 1 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 1 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
       </button>
@@ -300,7 +304,7 @@
             <div class="cal-body" id="calBody"></div>
           </div>
         </div>
-        <span class="paintbadge">Paint mode — click or drag to add slots</span>
+        <span class="paintbadge">Click or drag to add slots</span>
         <button class="fab" id="fabBtn" title="Select availability" aria-label="Select availability">
           <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="13" height="14" rx="2"/><path d="M3 9h13"/><path d="M6.5 12.5v3.5M9.5 12.5v3.5"/><path d="M14 17l6.2-6.2a1.55 1.55 0 0 0-2.2-2.2L11.8 14.8 11.3 17.5z"/></svg>
         </button>
@@ -313,8 +317,9 @@
         <div id="preview" style="margin-top:12px"><span style="color:var(--muted2)">Hit the green + on the calendar, then click or drag to paint availability slots — a hyperlinked snippet appears here.</span></div>
         <div class="hint">Green + toggles paint mode; otherwise hover meetings to read them. Click a painted slot to remove it. Standard slots are 30 min; drag for longer (snaps to 15 min). Times shown in <b id="tzLabel"></b>.</div>
         <div class="hint" id="jointNote" style="display:none"></div>
-        <div class="panel-btns">
-          <button class="btn" id="suggBtn" style="width:100%">✨ Suggest 5 slots</button>
+        <div class="ai-box">
+          <input type="text" id="aiIn" placeholder='✨ e.g. "5 slots in the afternoon next 5 days"'>
+          <button class="btn primary" id="aiGo">Go</button>
         </div>
         <div class="panel-btns">
           <button class="btn" id="clearBtn">Clear</button>
@@ -343,6 +348,9 @@
   <div class="row"><input type="text" id="lkCal" placeholder="Booking page URL (optional)" style="width:100%"></div>
   <div class="row"><input type="text" id="lkSoc" placeholder="LinkedIn / social URL (optional)" style="width:100%"></div>
   <div class="row" style="font-size:11.5px;line-height:1.4;">Added at the bottom of "Copy for email" as a backup booking link and a connect link.</div>
+  <div class="row" style="margin-top:14px;border-top:1px solid var(--line);padding-top:12px;">
+    <button class="linklike" id="signOut" style="color:#b91c1c;">Sign out</button>
+  </div>
 </div>
 <div class="tzpop" id="tzPop">
   <input type="text" id="tzSearch" placeholder="Search timezone — CET, EST, London…">
@@ -456,6 +464,7 @@ function onSignedIn(){
   document.getElementById("appView").style.display = "";
   const prof = localStorage.getItem("profileName") || "";
   document.getElementById("who").textContent = (prof || ME.name) + " · " + ME.email;
+  document.getElementById("whoName").textContent = prof || ME.name;
   document.getElementById("subj").value = "Meeting with " + (prof || ME.name);
   loadPhoto();
   boot();
@@ -547,6 +556,8 @@ pfName.oninput = () => {
   S.profileName = pfName.value.trim();
   localStorage.setItem("profileName", S.profileName);
   document.getElementById("subj").value = "Meeting with " + pname();
+  document.getElementById("whoName").textContent = pname();
+  document.getElementById("who").textContent = pname() + " · " + ME.email;
   setAvatar(undefined);
   renderPreview();
 };
@@ -697,49 +708,104 @@ document.getElementById("prevW").onclick = () => { S.week--; load(); };
 document.getElementById("nextW").onclick = () => { S.week++; load(); };
 document.getElementById("clearBtn").onclick = () => { S.sel = []; saveSel(); renderAll(); };
 
-// ---- auto-suggest 5 free slots ----
-document.getElementById("suggBtn").onclick = () => {
-  const days = weekDays(), now = new Date();
-  const busy = S.events.slice();
-  S.people.forEach(p => (S.schedules[p.email] || []).forEach(it => busy.push({ start: it.start, end: it.end })));
-  const byDay = {};
+// ---- AI slot request box ----
+async function aiSuggest(qRaw){
+  const q = (qRaw || "").toLowerCase().trim();
+  const numOf = (re) => { const m = q.match(re); return m ? parseInt(m[1]) : 0; };
+  let count = numOf(/(\d{1,2})\s*(?:slots?|times?|options?|calls?)/) || numOf(/book\s+(\d{1,2})\b/) || 5;
+  count = Math.max(1, Math.min(count, 15));
+  let dur = 30, m;
+  m = q.match(/(\d{1,3})\s*min/); if (m) dur = +m[1];
+  m = q.match(/(\d+(?:\.\d+)?)\s*(?:hours?|hrs?)\b/); if (m) dur = Math.round(parseFloat(m[1]) * 60);
+  dur = Math.max(15, Math.min(dur, 240));
+  // time window
+  let wS = S.workStart * 60, wE = S.workEnd * 60;
+  if (q.includes("morning"))   { wS = Math.max(wS, 8*60);  wE = Math.min(wE, 12*60); }
+  if (q.includes("afternoon")) { wS = Math.max(wS, 12*60); wE = Math.min(wE, 17*60 + 30); }
+  if (q.includes("evening"))   { wS = 17*60; wE = 20*60; }
+  const clock = (hh, mm, ap) => { let v = (+hh) % 12; if ((ap||"").startsWith("p")) v += 12; else if (!ap && +hh <= 8) v = +hh + 12; return v*60 + (+(mm||0)); };
+  m = q.match(/after\s+(\d{1,2})(?::(\d{2}))?\s*(am|pm)?/);  if (m) wS = Math.max(wS, clock(m[1], m[2], m[3]));
+  m = q.match(/before\s+(\d{1,2})(?::(\d{2}))?\s*(am|pm)?/); if (m) wE = Math.min(wE, clock(m[1], m[2], m[3]));
+  m = q.match(/between\s+(\d{1,2})(?::(\d{2}))?\s*(am|pm)?\s*(?:and|to|-)\s*(\d{1,2})(?::(\d{2}))?\s*(am|pm)?/);
+  if (m){ wS = clock(m[1], m[2], m[3] || m[6]); wE = clock(m[4], m[5], m[6]); }
+  if (wE - wS < dur){ toast("That time window is too narrow for " + dur + "-min slots"); return; }
+  // date range (weekdays unless "weekend" mentioned)
+  const now = new Date();
+  const today0 = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+  const wknd = q.includes("weekend");
+  const days = [];
+  const pushDays = (startD, n) => { let d = new Date(startD); while (days.length < n && days.length < 30){ if (wknd || (d.getDay() !== 0 && d.getDay() !== 6)) days.push(new Date(d)); d.setDate(d.getDate() + 1); } };
+  m = q.match(/next\s+(\d{1,2})\s*days?/);
+  if (m) pushDays(new Date(today0.getTime() + 86400000), +m[1]);
+  else if (q.includes("tomorrow")) pushDays(new Date(today0.getTime() + 86400000), 1);
+  else if (q.includes("next week")){ const sun = sundayOf(1); pushDays(new Date(sun.getTime() + 86400000), 5); }
+  else pushDays(today0, 5);
+  const perDay = /\b(per|each|every)\s*day\b/.test(q);
+  // busy times across the whole range (own calendars + Meet With teammates)
+  status('<span class="spin"></span>Finding free times…');
+  const rs = new Date(days[0]); rs.setHours(0,0,0,0);
+  const re2 = new Date(days[days.length-1]); re2.setDate(re2.getDate()+1); re2.setHours(0,0,0,0);
+  let busy = [];
+  try {
+    const ids = S.cals.filter(c => c.checked).map(c => c.id);
+    busy = await fetchEvents(rs, re2, ids);
+    if (S.people.length){
+      const sch = await fetchSchedules(S.people.map(p => p.email), rs, re2);
+      Object.values(sch).forEach(a => a.forEach(it => busy.push({ start: it.start, end: it.end })));
+    }
+  } catch(e){ console.error(e); }
+  // candidates per day, preferring the middle of the requested window
+  const dayC = {};
   days.forEach(d => {
-    if (d.getDay() === 0 || d.getDay() === 6) return;
-    const cands = [];
-    for (let m = S.workStart*60; m <= S.workEnd*60 - 30; m += 30){
-      const st = new Date(d.getFullYear(), d.getMonth(), d.getDate(), 0, m);
-      const en = new Date(st.getTime() + 30*60000);
+    const c = [];
+    for (let mm = Math.ceil(wS / SNAP) * SNAP; mm <= wE - dur; mm += 30){
+      const st = new Date(d.getFullYear(), d.getMonth(), d.getDate(), 0, mm);
+      const en = new Date(st.getTime() + dur * 60000);
       if (st < now) continue;
       if (busy.some(b => b.start < en && st < b.end)) continue;
       if (S.sel.some(b => b.start < en && st < b.end)) continue;
-      // prefer mid-morning / mid-afternoon within the work window
-      const a1 = S.workStart*60 + 90, a2 = S.workEnd*60 - 180;
-      const score = Math.min(Math.abs(m - a1), Math.abs(m - Math.max(a2, a1)));
-      cands.push({ st, en, score });
+      c.push({ st, en, score: Math.abs(mm - (wS + wE) / 2) });
     }
-    cands.sort((a,b) => a.score - b.score);
-    if (cands.length) byDay[keyOf(d)] = cands;
+    c.sort((a,b) => a.score - b.score);
+    dayC[keyOf(d)] = c;
   });
   const picked = [];
-  let progress = true;
-  while (picked.length < 5 && progress){
-    progress = false;
-    for (const k of Object.keys(byDay)){
-      if (picked.length >= 5) break;
-      const cands = byDay[k];
-      while (cands.length){
-        const c = cands.shift();
-        const tooClose = picked.some(p => keyOf(p.st) === k && Math.abs(p.st - c.st) < 120*60000);
-        if (!tooClose){ picked.push(c); progress = true; break; }
+  if (perDay){
+    days.forEach(d => {
+      const c = dayC[keyOf(d)]; let got = 0;
+      while (c.length && got < count){
+        const x = c.shift();
+        if (!picked.some(p => keyOf(p.st) === keyOf(d) && Math.abs(p.st - x.st) < (dur + 60) * 60000)){ picked.push(x); got++; }
+      }
+    });
+  } else {
+    let progress = true;
+    while (picked.length < count && progress){
+      progress = false;
+      for (const d of days){
+        if (picked.length >= count) break;
+        const c = dayC[keyOf(d)];
+        while (c && c.length){
+          const x = c.shift();
+          if (!picked.some(p => keyOf(p.st) === keyOf(d) && Math.abs(p.st - x.st) < 120 * 60000)){ picked.push(x); progress = true; break; }
+        }
       }
     }
   }
-  if (!picked.length){ toast("No free 30-min gaps found (9 AM–6 PM)"); return; }
-  picked.forEach(c => S.sel.push({ start: c.st, end: c.en }));
+  if (!picked.length){ status(""); toast("No matching free slots found — try a wider window"); return; }
+  picked.sort((a,b) => a.st - b.st);
+  picked.forEach(x => S.sel.push({ start: x.st, end: x.en }));
   S.sel.sort((a,b) => a.start - b.start);
-  saveSel(); renderAll();
-  toast("Painted " + picked.length + " suggested slots");
-};
+  saveSel();
+  const firstSun = new Date(picked[0].st);
+  firstSun.setDate(firstSun.getDate() - firstSun.getDay()); firstSun.setHours(0,0,0,0);
+  S.week = Math.round((firstSun - sundayOf(0)) / (7 * 86400000));
+  await load();
+  toast("✨ Added " + picked.length + " slot" + (picked.length > 1 ? "s" : ""));
+}
+const aiIn = document.getElementById("aiIn");
+document.getElementById("aiGo").onclick = () => aiSuggest(aiIn.value);
+aiIn.addEventListener("keydown", e => { if (e.key === "Enter") aiSuggest(aiIn.value); });
 document.getElementById("subj").oninput = renderPreview;
 
 // ---- sidebar: mini month calendar ----
@@ -1060,13 +1126,37 @@ function renderBody(){
 // ---- paint mode toggle ----
 S.paintMode = false;
 const fabBtn = document.getElementById("fabBtn");
-fabBtn.onclick = () => {
+function togglePaint(){
   S.paintMode = !S.paintMode;
   fabBtn.classList.toggle("on", S.paintMode);
   document.body.classList.toggle("paint", S.paintMode);
   fabBtn.title = S.paintMode ? "Done selecting" : "Select availability";
   toast(S.paintMode ? "🖌 Selection on — click or drag on the grid" : "Selection off — browse freely");
-};
+}
+// draggable FAB: drag to reposition, plain click toggles
+let fabDrag = null;
+fabBtn.addEventListener("pointerdown", e => {
+  fabDrag = { x: e.clientX, y: e.clientY, moved: false };
+  fabBtn.setPointerCapture(e.pointerId);
+  e.preventDefault();
+});
+fabBtn.addEventListener("pointermove", e => {
+  if (!fabDrag) return;
+  if (!fabDrag.moved && Math.hypot(e.clientX - fabDrag.x, e.clientY - fabDrag.y) < 6) return;
+  fabDrag.moved = true;
+  const wrap = fabBtn.parentElement.getBoundingClientRect();
+  const L = Math.max(4, Math.min(e.clientX - wrap.left - 26, wrap.width - 56));
+  const T = Math.max(4, Math.min(e.clientY - wrap.top - 26, wrap.height - 56));
+  fabBtn.style.left = L + "px"; fabBtn.style.top = T + "px";
+  fabBtn.style.right = "auto"; fabBtn.style.bottom = "auto";
+  const badge = document.querySelector(".paintbadge");
+  if (badge){ badge.style.left = Math.max(4, L - 90) + "px"; badge.style.top = (T - 36) + "px"; badge.style.right = "auto"; badge.style.bottom = "auto"; }
+});
+fabBtn.addEventListener("pointerup", () => {
+  const wasDrag = fabDrag && fabDrag.moved;
+  fabDrag = null;
+  if (!wasDrag) togglePaint();
+});
 
 // ---- hover tooltip for booked calls ----
 const evTip = document.createElement("div");
