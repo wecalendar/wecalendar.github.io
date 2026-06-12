@@ -1207,6 +1207,7 @@ function attachPaint(col, dayStart){
     const start = new Date(paint.dayStart.getTime() + s * 60000);
     const end   = new Date(paint.dayStart.getTime() + en * 60000);
     paint.el.remove(); paint = null;
+    if (start < new Date()){ toast("⏰ You can't select a slot in the past"); return; }
     const hard = hardConflict(start, end);
     if (hard){ toast("🚫 That time overlaps " + hard); return; }
     S.sel.push({ start, end });
