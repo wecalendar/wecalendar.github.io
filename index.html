@@ -39,6 +39,13 @@
   .navgroup .todaybtn:hover { background:#f4f4f5; }
   .btn { border:1px solid var(--line); background:#fff; border-radius:10px; padding:8px 16px; cursor:pointer; font-size:14px; color:var(--ink); font-family:inherit; }
   .btn:hover { background:#fafafa; }
+  .gearbtn { border:1px solid var(--line); background:#fff; border-radius:999px; width:36px; height:36px; cursor:pointer; color:var(--muted2); display:flex; align-items:center; justify-content:center; flex-shrink:0; }
+  .gearbtn:hover { color:var(--blue-dark); border-color:var(--blue); }
+  .setpop { position:absolute; z-index:50; background:#fff; border:1px solid var(--line); border-radius:12px; box-shadow:0 12px 32px rgba(0,0,0,.12); width:270px; padding:16px; display:none; }
+  .setpop h3 { font-size:13.5px; font-weight:600; margin-bottom:10px; }
+  .setpop .row { display:flex; align-items:center; gap:8px; margin:8px 0; font-size:13px; color:var(--muted2); }
+  .setpop select { border:1px solid var(--line); border-radius:8px; padding:6px 8px; font-size:13px; font-family:inherit; background:#fff; color:var(--ink); }
+  .offh { position:absolute; left:0; right:0; background:rgba(100,116,139,.07); pointer-events:none; z-index:1; }
   .grow { flex:1; }
   .who { font-size:13px; color:var(--muted2); white-space:nowrap; }
   .linklike { background:none; border:none; color:var(--blue-dark); cursor:pointer; font-size:13px; text-decoration:underline; font-family:inherit; }
@@ -85,6 +92,20 @@
   /* ---- layout: sidebar | calendar | share panel ---- */
   .layout { display:flex; gap:14px; align-items:flex-start; }
   .sidebar { width:232px; flex-shrink:0; position:sticky; top:10px; padding:2px 2px 20px; }
+  .mcal { margin-bottom:16px; user-select:none; }
+  .mcal .mc-head { display:flex; align-items:center; gap:6px; padding:0 2px 8px; }
+  .mcal .mc-title { font-size:14px; font-weight:600; color:var(--ink); }
+  .mcal .mc-nav { border:none; background:none; cursor:pointer; color:var(--muted2); font-size:15px; padding:2px 7px; border-radius:6px; }
+  .mcal .mc-nav:hover { background:#f4f4f5; }
+  .mcal .mc-grid { display:grid; grid-template-columns:repeat(7,1fr); gap:1px; }
+  .mcal .mc-dow { font-size:10.5px; color:var(--muted); text-align:center; padding:3px 0; font-weight:600; }
+  .mcal .mc-day { font-size:12px; text-align:center; padding:5px 0; border-radius:8px; cursor:pointer; color:var(--ink); border:none; background:none; font-family:inherit; }
+  .mcal .mc-day:hover { background:var(--blue-light); }
+  .mcal .mc-out { color:#c7cad1; }
+  .mcal .mc-inweek { background:var(--blue-light); border-radius:0; }
+  .mcal .mc-inweek.mc-wkfirst { border-radius:8px 0 0 8px; }
+  .mcal .mc-inweek.mc-wklast { border-radius:0 8px 8px 0; }
+  .mcal .mc-today { background:var(--blue); color:#fff; font-weight:600; border-radius:8px; }
   .sb-search { display:flex; align-items:center; gap:8px; border:1px solid var(--line); border-radius:10px; padding:8px 10px; }
   .sb-search input { border:none; outline:none; font-size:13.5px; font-family:inherit; width:100%; color:var(--ink); background:transparent; }
   .sb-h { color:var(--side); font-weight:700; font-size:14px; margin:18px 4px 8px; }
@@ -218,6 +239,9 @@
         <button class="todaybtn" id="todayBtn">Today</button>
         <button class="navarr" id="nextW">&#8250;</button>
       </div>
+      <button class="gearbtn" id="setBtn" title="Settings — work hours" aria-label="Settings">
+        <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 1 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 1 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 1 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 1 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+      </button>
       <div class="grow"></div>
       <span class="who" id="who"></span>
       <button class="linklike" id="signOut">Sign out</button>
@@ -226,6 +250,7 @@
 
     <div class="layout">
       <aside class="sidebar">
+        <div class="mcal" id="mcal"></div>
         <div class="sb-search">
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#9ca3af" stroke-width="2.4"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
           <input type="text" id="sbSearch" placeholder="Search meetings">
@@ -268,6 +293,11 @@
       </div>
     </div>
   </div>
+</div>
+<div class="setpop" id="setPop">
+  <h3>Work hours</h3>
+  <div class="row">From <select id="whStart"></select> to <select id="whEnd"></select></div>
+  <div class="row" style="font-size:12px;line-height:1.5;">Hours outside this window are shaded on the grid, and "Suggest 5 slots" only picks times inside it.</div>
 </div>
 <div class="tzpop" id="tzPop">
   <input type="text" id="tzSearch" placeholder="Search timezone — CET, EST, London…">
@@ -411,11 +441,32 @@ const S = {
   week: 0,
   tz: localStorage.getItem("tz2") || LOCAL_TZ,
   tz2: localStorage.getItem("tzSecond") || null,   // secondary ruler
+  workStart: +(localStorage.getItem("wh1") || 9),
+  workEnd:   +(localStorage.getItem("wh2") || 18),
   events: [], sel: [], q: "",
   cals: [],          // {id,name,isDefault,checked}
   people: [],        // {email,name,color}
   schedules: {},     // email -> [{start,end}]
 };
+
+// ---- settings popover (work hours) ----
+const setPop = document.getElementById("setPop");
+const whStart = document.getElementById("whStart"), whEnd = document.getElementById("whEnd");
+for (let hh = 5; hh <= 23; hh++){
+  const lbl = new Date(2000,0,1,hh).toLocaleTimeString("en-US",{hour:"numeric"});
+  whStart.add(new Option(lbl, hh)); whEnd.add(new Option(lbl, hh));
+}
+whStart.value = S.workStart; whEnd.value = S.workEnd;
+whStart.onchange = () => { S.workStart = +whStart.value; if (S.workEnd <= S.workStart){ S.workEnd = Math.min(S.workStart+1,23); whEnd.value = S.workEnd; localStorage.setItem("wh2", S.workEnd); } localStorage.setItem("wh1", whStart.value); renderBody(); };
+whEnd.onchange = () => { S.workEnd = +whEnd.value; if (S.workEnd <= S.workStart){ S.workStart = Math.max(S.workEnd-1,5); whStart.value = S.workStart; localStorage.setItem("wh1", S.workStart); } localStorage.setItem("wh2", whEnd.value); renderBody(); };
+document.getElementById("setBtn").onclick = e => {
+  e.stopPropagation();
+  const r = e.currentTarget.getBoundingClientRect();
+  setPop.style.display = setPop.style.display === "block" ? "none" : "block";
+  setPop.style.left = Math.min(r.left, innerWidth - 290) + "px";
+  setPop.style.top = (r.bottom + 6 + scrollY) + "px";
+};
+document.addEventListener("click", e => { if (!setPop.contains(e.target)) setPop.style.display = "none"; });
 
 // ---- painted-slot persistence ----
 function saveSel(){
@@ -432,6 +483,14 @@ loadSel();
 
 // ---- conflict detection ----
 function overlaps(aS, aE, bS, bE){ return bS < aE && aS < bE; }
+function hardConflict(start, end, skipIdx){
+  for (const ev of S.events) if (overlaps(start, end, ev.start, ev.end)) return "your “" + ev.subject + "”";
+  for (let i = 0; i < S.sel.length; i++){
+    if (i === skipIdx) continue;
+    if (overlaps(start, end, S.sel[i].start, S.sel[i].end)) return "a slot you already painted";
+  }
+  return null;
+}
 function findConflict(start, end){
   for (const ev of S.events) if (overlaps(start, end, ev.start, ev.end)) return "your “" + ev.subject + "”";
   for (const p of S.people)
@@ -546,14 +605,15 @@ document.getElementById("suggBtn").onclick = () => {
   days.forEach(d => {
     if (d.getDay() === 0 || d.getDay() === 6) return;
     const cands = [];
-    for (let m = 9*60; m <= 17.5*60; m += 30){
+    for (let m = S.workStart*60; m <= S.workEnd*60 - 30; m += 30){
       const st = new Date(d.getFullYear(), d.getMonth(), d.getDate(), 0, m);
       const en = new Date(st.getTime() + 30*60000);
       if (st < now) continue;
       if (busy.some(b => b.start < en && st < b.end)) continue;
       if (S.sel.some(b => b.start < en && st < b.end)) continue;
-      // prefer 10:30 or 15:00 starts
-      const score = Math.min(Math.abs(m - 10.5*60), Math.abs(m - 15*60));
+      // prefer mid-morning / mid-afternoon within the work window
+      const a1 = S.workStart*60 + 90, a2 = S.workEnd*60 - 180;
+      const score = Math.min(Math.abs(m - a1), Math.abs(m - Math.max(a2, a1)));
       cands.push({ st, en, score });
     }
     cands.sort((a,b) => a.score - b.score);
@@ -580,6 +640,40 @@ document.getElementById("suggBtn").onclick = () => {
   toast("Painted " + picked.length + " suggested slots");
 };
 document.getElementById("subj").oninput = renderPreview;
+
+// ---- sidebar: mini month calendar ----
+const MC = (() => { const n = new Date(); return { y: n.getFullYear(), m: n.getMonth() }; })();
+function renderMCal(){
+  const box = document.getElementById("mcal");
+  if (!box) return;
+  const first = new Date(MC.y, MC.m, 1);
+  const gridStart = new Date(MC.y, MC.m, 1 - first.getDay());
+  const todayK = keyOf(new Date());
+  const wkStart = sundayOf(S.week), wkEnd = new Date(wkStart.getTime() + 7*86400000);
+  const monLbl = first.toLocaleDateString("en-US", {month:"short", year:"numeric"});
+  let html = '<div class="mc-head"><span class="mc-title">' + monLbl + '</span>' +
+    '<button class="mc-nav" id="mcPrev">&#8249;</button><button class="mc-nav" id="mcNext">&#8250;</button></div>' +
+    '<div class="mc-grid">';
+  "SMTWTFS".split("").forEach(d => html += '<span class="mc-dow">' + d + "</span>");
+  for (let i = 0; i < 42; i++){
+    const d = new Date(gridStart.getFullYear(), gridStart.getMonth(), gridStart.getDate() + i);
+    const cls = ["mc-day"];
+    if (d.getMonth() !== MC.m) cls.push("mc-out");
+    if (d >= wkStart && d < wkEnd){ cls.push("mc-inweek"); if (d.getDay() === 0) cls.push("mc-wkfirst"); if (d.getDay() === 6) cls.push("mc-wklast"); }
+    if (keyOf(d) === todayK) cls.push("mc-today");
+    html += '<button class="' + cls.join(" ") + '" data-t="' + d.getTime() + '">' + d.getDate() + "</button>";
+  }
+  html += "</div>";
+  box.innerHTML = html;
+  document.getElementById("mcPrev").onclick = () => { MC.m--; if (MC.m < 0){ MC.m = 11; MC.y--; } renderMCal(); };
+  document.getElementById("mcNext").onclick = () => { MC.m++; if (MC.m > 11){ MC.m = 0; MC.y++; } renderMCal(); };
+  box.querySelectorAll(".mc-day").forEach(b => b.addEventListener("click", () => {
+    const d = new Date(+b.dataset.t);
+    const sun = new Date(d.getFullYear(), d.getMonth(), d.getDate() - d.getDay());
+    S.week = Math.round((sun - sundayOf(0)) / (7*86400000));
+    load();
+  }));
+}
 
 // ---- sidebar: search ----
 document.getElementById("sbSearch").oninput = e => { S.q = e.target.value.trim().toLowerCase(); renderBody(); };
@@ -693,6 +787,8 @@ async function boot(){ await loadCalendars(); load(); }
 async function load(){
   const seq = ++loadSeq;
   const [ws, we] = weekRange();
+  const mid = new Date(ws.getTime() + 3*86400000);
+  MC.y = mid.getFullYear(); MC.m = mid.getMonth();
   status('<span class="spin"></span>Syncing your Outlook calendar…');
   renderAll();
   try {
@@ -708,7 +804,7 @@ async function load(){
 function status(html){ document.getElementById("status").innerHTML = html; }
 
 // ---- render ----
-function renderAll(){ renderHeadAndMonth(); renderBody(); renderPreview(); }
+function renderAll(){ renderHeadAndMonth(); renderBody(); renderPreview(); renderMCal(); }
 
 function renderHeadAndMonth(){
   const days = weekDays();
@@ -788,6 +884,8 @@ function renderBody(){
     const col = document.createElement("div"); col.className = "daycol";
     col.style.setProperty("--hourpx", hourpx + "px");
     col.insertAdjacentHTML("beforeend", '<div class="lines"></div>');
+    col.insertAdjacentHTML("beforeend", '<div class="offh" style="top:0;height:' + (S.workStart * hourpx) + 'px"></div>');
+    col.insertAdjacentHTML("beforeend", '<div class="offh" style="top:' + (S.workEnd * hourpx) + 'px;height:' + ((24 - S.workEnd) * hourpx) + 'px"></div>');
     const top = t => (t - dayStart) / 60000 * PPM;
 
     // my busy events (dimmed when search active and not matching)
@@ -878,6 +976,8 @@ function attachPaint(col, dayStart){
     const start = new Date(paint.dayStart.getTime() + s * 60000);
     const end   = new Date(paint.dayStart.getTime() + en * 60000);
     paint.el.remove(); paint = null;
+    const hard = hardConflict(start, end);
+    if (hard){ toast("🚫 That time overlaps " + hard); return; }
     S.sel.push({ start, end });
     S.sel.sort((a,b) => a.start - b.start);
     saveSel();
