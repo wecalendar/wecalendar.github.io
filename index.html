@@ -33,15 +33,16 @@
   .app { max-width:1440px; margin:0 auto; padding:0 8px; }
 
   /* ---- top bar ---- */
-  .top { display:flex; align-items:center; gap:18px; padding:16px 10px 12px; }
+  .top { display:flex; align-items:center; gap:18px; padding:16px 10px 12px; position:relative; }
   .brand { display:flex; align-items:center; gap:12px; }
   .brand .logo { height:22px; display:block; }
-  .brand .divider { width:1px; height:22px; background:var(--line); }
-  .brand .appname { font-size:15px; font-weight:600; white-space:nowrap; }
-  .brand .appname .a1 { color:#7C6FF7; } .brand .appname .a2 { color:#2C1C6C; }
-  .month { line-height:1.2; }
-  .month .m { font-size:19px; font-weight:600; letter-spacing:-.2px; white-space:nowrap; }
-  .month .tzline { font-size:12px; color:var(--muted2); cursor:pointer; white-space:nowrap; }
+  .appname { font-size:16px; font-weight:600; white-space:nowrap; }
+  .appname.center { position:absolute; left:50%; transform:translateX(-50%); }
+  .appname .a1 { color:#7C6FF7; } .appname .a2 { color:#2C1C6C; }
+  body.dark .appname .a2 { color:#C9BCFF; }
+  .month { line-height:1.25; }
+  .month .m { font-size:15px; font-weight:600; letter-spacing:-.1px; white-space:nowrap; }
+  .month .tzline { font-size:11px; color:var(--muted2); cursor:pointer; white-space:nowrap; }
   .month .tzline:hover { color:var(--blue-dark); }
   .navgroup { display:flex; align-items:center; border:1px solid var(--line); border-radius:999px; overflow:hidden; background:var(--surface); }
   .navgroup .navarr { border:none; background:none; cursor:pointer; font-size:16px; color:var(--muted2); padding:7px 12px; }
@@ -238,9 +239,8 @@
     <div class="top">
       <div class="brand">
       <svg class="logo" viewBox="0 0 640 105" xmlns="http://www.w3.org/2000/svg" aria-label="WeTransact"><use href="#wtlogo"/></svg>
-      <div class="divider"></div>
-      <span class="appname"><span class="a1">we</span><span class="a2">calendar</span></span>
       </div>
+      <span class="appname center"><span class="a1">we</span><span class="a2">calendar</span></span>
       <div class="month">
         <div class="m" id="monthLabel">June 2026</div>
         <div class="tzline" id="tzLine">(WEST) Europe/Lisbon</div>
