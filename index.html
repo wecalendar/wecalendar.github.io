@@ -136,7 +136,14 @@
   .ppl-item .pn { font-size:13.5px; font-weight:600; }
   .ppl-item .pe { font-size:11.5px; color:var(--muted2); }
 
-  .calwrap { flex:1; min-width:0; }
+  .calwrap { flex:1; min-width:0; position:relative; }
+  .fab { position:absolute; right:20px; bottom:20px; z-index:20; width:54px; height:54px; border-radius:50%; border:none; background:#00C875; color:#fff; font-size:30px; line-height:1; cursor:pointer; box-shadow:0 6px 20px rgba(0,200,117,.45); display:flex; align-items:center; justify-content:center; transition:transform .15s, background .15s; }
+  .fab:hover { background:#00B268; }
+  .fab.on { transform:rotate(45deg); background:#0E9F66; box-shadow:0 6px 20px rgba(14,159,102,.5); }
+  .daycol { cursor:default; }
+  body.paint .daycol { cursor:crosshair; }
+  .paintbadge { position:absolute; right:84px; bottom:32px; z-index:20; background:#00C875; color:#fff; font-size:12px; font-weight:600; border-radius:999px; padding:6px 14px; display:none; }
+  body.paint .paintbadge { display:block; }
   .cal { border-top:1px solid var(--line); }
   .cal-head { display:grid; grid-template-columns:58px repeat(7,1fr); }
   .cal-head .gut { display:flex; align-items:center; justify-content:center; padding:10px 0; }
@@ -288,14 +295,16 @@
             <div class="cal-body" id="calBody"></div>
           </div>
         </div>
+        <span class="paintbadge">Paint mode — click or drag to add slots</span>
+        <button class="fab" id="fabBtn" title="Add availability slots" aria-label="Toggle paint mode">+</button>
       </div>
 
       <div class="panel">
         <h2>Share availability</h2>
         <label class="hint" style="display:block;margin:10px 0 4px">Invite title</label>
         <input type="text" id="subj" style="width:100%">
-        <div id="preview" style="margin-top:12px"><span style="color:var(--muted2)">Click or drag on the calendar to paint availability slots — a hyperlinked snippet appears here.</span></div>
-        <div class="hint">Click a painted slot to remove it. Standard slots are 30 min; drag for longer (snaps to 15 min). Times shown in <b id="tzLabel"></b>.</div>
+        <div id="preview" style="margin-top:12px"><span style="color:var(--muted2)">Hit the green + on the calendar, then click or drag to paint availability slots — a hyperlinked snippet appears here.</span></div>
+        <div class="hint">Green + toggles paint mode; otherwise hover meetings to read them. Click a painted slot to remove it. Standard slots are 30 min; drag for longer (snaps to 15 min). Times shown in <b id="tzLabel"></b>.</div>
         <div class="hint" id="jointNote" style="display:none"></div>
         <div class="panel-btns">
           <button class="btn" id="suggBtn" style="width:100%">✨ Suggest 5 slots</button>
@@ -1018,12 +1027,22 @@ function renderBody(){
   if (!sc.dataset.scrolled){ sc.scrollTop = 8 * hourpx - 10; sc.dataset.scrolled = "1"; }
 }
 
+// ---- paint mode toggle ----
+S.paintMode = false;
+const fabBtn = document.getElementById("fabBtn");
+fabBtn.onclick = () => {
+  S.paintMode = !S.paintMode;
+  fabBtn.classList.toggle("on", S.paintMode);
+  document.body.classList.toggle("paint", S.paintMode);
+  toast(S.paintMode ? "🖌 Paint mode on — click or drag on the grid" : "Paint mode off — browse freely");
+};
+
 // ---- paint interaction ----
 let paint = null;
 function snap(min){ return Math.round(min / SNAP) * SNAP; }
 function attachPaint(col, dayStart){
   col.onpointerdown = e => {
-    if (e.button !== 0) return;
+    if (e.button !== 0 || !S.paintMode) return;
     const rect = col.getBoundingClientRect();
     const min = Math.max(0, Math.min(1410, Math.floor((e.clientY - rect.top) / PPM / SNAP) * SNAP));
     const el = document.createElement("div"); el.className = "evt sel tmp";
@@ -1108,7 +1127,7 @@ function buildHTML(){
 }
 function renderPreview(){
   document.getElementById("preview").innerHTML = buildHTML() ||
-    '<span style="color:var(--muted2)">Click or drag on the calendar to paint availability slots — a hyperlinked snippet appears here.</span>';
+    '<span style="color:var(--muted2)">Hit the green + on the calendar, then click or drag to paint availability slots — a hyperlinked snippet appears here.</span>';
   const note = document.getElementById("jointNote");
   if (note){
     if (S.people.length){
