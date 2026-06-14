@@ -122,6 +122,8 @@
   .mcal .mc-inweek.mc-wklast { border-radius:0 8px 8px 0; }
   .mcal .mc-today { background:var(--blue); color:#fff; font-weight:600; border-radius:8px; }
   .mcal .mc-sel { box-shadow:inset 0 0 0 2px var(--blue); border-radius:8px; font-weight:700; }
+  .dh .ptoaway { margin-top:5px; font-size:10px; line-height:1.3; color:#0F7A52; background:#E6F7EE; border-radius:6px; padding:1px 7px; display:inline-block; max-width:96%; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; cursor:default; }
+  .dh .ptonames { margin:5px auto 0; font-size:11px; line-height:1.45; color:#0F7A52; max-width:360px; }
   .sb-search { display:flex; align-items:center; gap:8px; border:1px solid var(--line); border-radius:10px; padding:8px 10px; }
   .sb-search input { border:none; outline:none; font-size:13.5px; font-family:inherit; width:100%; color:var(--ink); background:transparent; }
   .sb-h { color:var(--side); font-weight:700; font-size:14px; margin:18px 4px 8px; }
@@ -469,6 +471,36 @@ async function fetchEvents(weekStart, weekEnd, calIds){
   }));
   return all;
 }
+async function fetchPTO(weekStart, weekEnd, calIds){
+  const ids = (calIds && calIds.length) ? calIds : [null];
+  const out = [];
+  const DET = /(\bpto\b|oo+o\b|out of office|annual leave|\bvacation\b|on leave|\bleave\b|day off)/i;
+  const STRIP = /\s*[-–—:]?\s*(pto|oo+o|out of office|annual leave|vacation|on leave|leave|holiday|day off)\b.*/i;
+  const pad = n => String(n).padStart(2, "0");
+  await Promise.all(ids.map(async id => {
+    const base = id ? "/me/calendars/" + encodeURIComponent(id) + "/calendarView" : "/me/calendarView";
+    const obj = await gget(base + "?" + new URLSearchParams({
+      startDateTime: weekStart.toISOString(), endDateTime: weekEnd.toISOString(),
+      $select: "subject,start,end,isAllDay", $orderby: "start/dateTime", $top: "200",
+    }));
+    (obj.value || []).filter(ev => ev.isAllDay && DET.test(ev.subject || "")).forEach(ev => {
+      const name = ((ev.subject || "").replace(STRIP, "").trim()) || (ev.subject || "").trim();
+      const sd = (ev.start.dateTime || "").slice(0, 10), ed = (ev.end.dateTime || "").slice(0, 10);
+      const dates = []; let d = new Date(sd + "T00:00:00"); const endD = new Date(ed + "T00:00:00"); let g = 0;
+      while (d < endD && g++ < 60){ dates.push(d.getFullYear() + "-" + pad(d.getMonth()+1) + "-" + pad(d.getDate())); d.setDate(d.getDate()+1); }
+      if (!dates.length && sd) dates.push(sd);
+      out.push({ name, dates });
+    });
+  }));
+  return out;
+}
+function ptoNamesForDay(d){
+  const pad = n => String(n).padStart(2, "0");
+  const dk = d.getFullYear() + "-" + pad(d.getMonth()+1) + "-" + pad(d.getDate());
+  const names = [];
+  (S.pto || []).forEach(p => { if (p.dates.includes(dk) && !names.includes(p.name)) names.push(p.name); });
+  return names;
+}
 async function searchPeople(q){
   const safe = q.replace(/'/g, "''");
   const obj = await gget("/users?" + new URLSearchParams({
@@ -556,6 +588,7 @@ const PCOLORS = ["#FFC400","#FF9F1A","#FFB800","#F77F00"];
 const S = {
   week: 0,
   dayView: null,
+  pto: [],
   tz: localStorage.getItem("tz2") || LOCAL_TZ,
   tzs: (() => { try { const a = JSON.parse(localStorage.getItem("tzRulers") || "[]"); const old = localStorage.getItem("tzSecond"); if (old && !a.includes(old)) a.push(old); return a.slice(0,3); } catch(e){ return []; } })(),   // up to 3 extra rulers
   workStart: +(localStorage.getItem("wh1") || 9),
@@ -1080,9 +1113,9 @@ async function load(){
   renderAll();
   try {
     const ids = S.cals.filter(c => c.checked).map(c => c.id);
-    const evs = await fetchEvents(ws, we, ids);
+    const [evs, pto] = await Promise.all([ fetchEvents(ws, we, ids), fetchPTO(ws, we, ids).catch(() => []) ]);
     if (seq !== loadSeq) return;
-    S.events = evs;
+    S.events = evs; S.pto = pto;
     // auto-clean: painted slots that got booked (now overlap a real meeting)
     const before = S.sel.length;
     S.sel = S.sel.filter(s => !S.events.some(ev => overlaps(s.start, s.end, ev.start, ev.end)));
@@ -1148,6 +1181,12 @@ function renderHeadAndMonth(){
     dh.style.cursor = "pointer";
     dh.title = S.dayView ? "Back to week view" : "View just this day";
     dh.onclick = () => { if (S.dayView){ S.dayView = null; } else { setDayView(d); } load(); };
+    const away = ptoNamesForDay(d);
+    if (away.length){
+      const full = away.join(", ").replace(/"/g, "&quot;");
+      dh.innerHTML += '<div class="ptoaway" title="Out of office: ' + full + '">🌴 ' + (S.dayView ? away.length + " out of office" : String(away.length)) + '</div>'
+        + (S.dayView ? '<div class="ptonames">' + away.join(", ").replace(/</g, "&lt;") + '</div>' : '');
+    }
     head.appendChild(dh);
   });
 }
@@ -1623,9 +1662,11 @@ function renderLoad(){
   const insight = heavy.total <= 0
     ? 'A blissfully empty week — protect it.'
     : dayLong(heavy.date) + ' is your heaviest at ' + fmtMin(heavy.total) + '.';
+  const awayFocus = ptoNamesForDay(focus ? focus.date : new Date());
+  const awayLine = awayFocus.length ? '<div style="display:flex; align-items:flex-start; gap:7px; margin:-2px 0 16px; padding:9px 11px; background:#E6F7EE; border-radius:10px; font-size:12px; color:#0F7A52; line-height:1.45;">🌴 <span><b>' + awayFocus.length + (awayFocus.length === 1 ? ' person' : ' people') + ' away</b> · ' + awayFocus.join(", ") + '</span></div>' : '';
   document.getElementById("loadModalBody").innerHTML =
     '<div style="display:flex; align-items:center; gap:7px; color:#2C1C6C; font-weight:600; font-size:15px; margin-bottom:16px;">🕘 Meeting load</div>'
-    + todayBig + tiles
+    + todayBig + tiles + awayLine
     + '<div style="font-size:12px; color:#6b7280; font-weight:500; margin-bottom:10px;">This week</div>'
     + '<div style="display:flex; align-items:flex-end; gap:7px; height:96px; padding:0 2px;">' + loadBars(per, focusK, maxV, 90) + '</div>'
     + '<div style="display:flex; align-items:center; gap:6px; margin-top:14px; padding:9px 11px; background:#FFF8EC; border-radius:10px; font-size:12px; color:#8A6D2F;">💡 ' + insight + '</div>';
