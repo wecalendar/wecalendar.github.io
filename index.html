@@ -1541,27 +1541,27 @@ function ovMin(s1, e1, s2, e2){ const a = Math.max(s1, s2), b = Math.min(e1, e2)
 function dayLetter(d){ return fmt(new Date(d.getFullYear(), d.getMonth(), d.getDate(), 12), { weekday: "short" })[0]; }
 function dayLong(d){ return fmt(new Date(d.getFullYear(), d.getMonth(), d.getDate(), 12), { weekday: "long" }); }
 
+function dayLoad(d){
+  const ds = new Date(d.getFullYear(), d.getMonth(), d.getDate(), 0, 0, 0, 0).getTime();
+  const de = ds + 86400000;
+  const ws = new Date(d.getFullYear(), d.getMonth(), d.getDate(), S.workStart).getTime();
+  const we = new Date(d.getFullYear(), d.getMonth(), d.getDate(), S.workEnd).getTime();
+  let total = 0, work = 0, count = 0; const segs = [];
+  (S.events || []).forEach(ev => {
+    const s = ev.start.getTime(), e = ev.end.getTime();
+    const t = ovMin(s, e, ds, de); if (t > 0){ total += t; count++; }
+    const w = ovMin(s, e, ws, we); if (w > 0){ work += w; segs.push([Math.max(s, ws), Math.min(e, we)]); }
+  });
+  segs.sort((a, b) => a[0] - b[0]);
+  let cur = ws, gap = 0;
+  segs.forEach(seg => { if (seg[0] - cur > gap) gap = seg[0] - cur; if (seg[1] > cur) cur = seg[1]; });
+  if (we - cur > gap) gap = we - cur;
+  return { date: d, total, work, count, gap: Math.max(0, gap / 60000) };
+}
 function computeLoad(){
   const days = weekDaysFull();
   const workMin = Math.max(60, (S.workEnd - S.workStart) * 60);
-  const per = days.map(d => {
-    const ds = new Date(d.getFullYear(), d.getMonth(), d.getDate(), 0, 0, 0, 0).getTime();
-    const de = ds + 86400000;
-    const ws = new Date(d.getFullYear(), d.getMonth(), d.getDate(), S.workStart).getTime();
-    const we = new Date(d.getFullYear(), d.getMonth(), d.getDate(), S.workEnd).getTime();
-    let total = 0, work = 0, count = 0; const segs = [];
-    (S.events || []).forEach(ev => {
-      const s = ev.start.getTime(), e = ev.end.getTime();
-      const t = ovMin(s, e, ds, de); if (t > 0){ total += t; count++; }
-      const w = ovMin(s, e, ws, we); if (w > 0){ work += w; segs.push([Math.max(s, ws), Math.min(e, we)]); }
-    });
-    segs.sort((a, b) => a[0] - b[0]);
-    let cur = ws, gap = 0;
-    segs.forEach(seg => { if (seg[0] - cur > gap) gap = seg[0] - cur; if (seg[1] > cur) cur = seg[1]; });
-    if (we - cur > gap) gap = we - cur;
-    return { date: d, total, work, count, gap: Math.max(0, gap / 60000) };
-  });
-  return { days, per, workMin };
+  return { days, per: days.map(dayLoad), workMin };
 }
 
 function loadBars(per, todayK, maxV, maxH){
@@ -1580,21 +1580,25 @@ function renderLoad(){
   if (!account){ card.style.display = "none"; return; }
   const cl = computeLoad(), per = cl.per, workMin = cl.workMin;
   const todayK = keyOf(new Date());
-  const today = per.find(p => keyOf(p.date) === todayK) || null;
-  const dow = new Date().getDay();
-  const showWeek = (dow === 5 || dow === 6 || dow === 0);
+  const focusK = S.dayView ? keyOf(S.dayView) : todayK;
+  let focus = per.find(p => keyOf(p.date) === focusK) || null;
+  if (!focus && S.dayView) focus = dayLoad(new Date(S.dayView));
+  const isToday = focusK === todayK;
+  const realDow = new Date().getDay();
+  const showWeek = !!S.dayView || realDow === 5 || realDow === 6 || realDow === 0;
   const maxV = Math.max(workMin, ...per.map(p => p.total), 1);
-  const pct = today ? Math.min(100, Math.round(today.total / workMin * 100)) : 0;
+  const pct = focus ? Math.min(100, Math.round(focus.total / workMin * 100)) : 0;
+  const whenLbl = isToday ? "today" : (focus ? fmt(new Date(focus.date.getFullYear(), focus.date.getMonth(), focus.date.getDate(), 12), {weekday:"short", month:"short", day:"numeric"}) : "");
 
   // sidebar mini
-  card.querySelector("#loadToday").innerHTML = today
-    ? '<div style="font-size:12.5px; color:#2C1C6C;"><b style="font-size:15px;">' + fmtMin(today.total) + '</b> in meetings today</div>'
+  card.querySelector("#loadToday").innerHTML = focus
+    ? '<div style="font-size:12.5px; color:#2C1C6C;"><b style="font-size:15px;">' + fmtMin(focus.total) + '</b> in meetings ' + (isToday ? 'today' : '· ' + whenLbl) + '</div>'
       + '<div style="margin:7px 0 1px; height:7px; background:#ECE9FE; border-radius:5px; overflow:hidden;"><div style="width:' + pct + '%; height:100%; background:#7C6FF7;"></div></div>'
-    : '<div style="font-size:12px; color:#6b7280;">No meetings today.</div>';
+    : '<div style="font-size:12px; color:#6b7280;">No meetings ' + (isToday ? 'today' : 'that day') + '.</div>';
   const wm = card.querySelector("#loadWeekMini");
   if (showWeek){
     wm.innerHTML = '<div style="font-size:10.5px; color:#9890C4; margin:10px 0 5px; font-weight:500;">Your week</div>'
-      + '<div style="display:flex; align-items:flex-end; gap:4px; height:42px;">' + loadBars(per, todayK, maxV, 38) + '</div>';
+      + '<div style="display:flex; align-items:flex-end; gap:4px; height:42px;">' + loadBars(per, focusK, maxV, 38) + '</div>';
     wm.style.display = "block";
   } else { wm.innerHTML = ""; wm.style.display = "none"; }
   card.style.display = "block";
@@ -1602,17 +1606,18 @@ function renderLoad(){
   // enlarge modal (full)
   let hi = 0; per.forEach((p, i) => { if (p.total > per[hi].total) hi = i; });
   const heavy = per[hi];
-  const todayBig = today
-    ? '<div style="font-size:12px; color:#6b7280; font-weight:500; margin-bottom:4px;">Today</div>'
-      + '<div style="display:flex; align-items:baseline; gap:8px;"><span style="font-size:30px; font-weight:700; color:#2C1C6C; line-height:1;">' + fmtMin(today.total) + '</span><span style="font-size:12.5px; color:#6b7280;">in meetings</span></div>'
+  const headLbl = isToday ? "Today" : whenLbl;
+  const todayBig = focus
+    ? '<div style="font-size:12px; color:#6b7280; font-weight:500; margin-bottom:4px;">' + headLbl + '</div>'
+      + '<div style="display:flex; align-items:baseline; gap:8px;"><span style="font-size:30px; font-weight:700; color:#2C1C6C; line-height:1;">' + fmtMin(focus.total) + '</span><span style="font-size:12.5px; color:#6b7280;">in meetings</span></div>'
       + '<div style="margin:11px 0 6px; height:9px; background:#ECE9FE; border-radius:6px; overflow:hidden;"><div style="width:' + pct + '%; height:100%; background:#7C6FF7;"></div></div>'
       + '<div style="font-size:11px; color:#9890C4; margin-bottom:14px;">' + pct + '% of a ' + (S.workEnd - S.workStart) + '-hour day</div>'
-    : '<div style="font-size:13px; color:#6b7280; margin:4px 0 14px;">Today is outside the week shown.</div>';
-  const tiles = today
+    : '<div style="font-size:13px; color:#6b7280; margin:4px 0 14px;">No meetings that day.</div>';
+  const tiles = focus
     ? '<div style="display:flex; gap:8px; margin-bottom:18px;">'
-      + '<div style="flex:1; background:#F8F6FF; border-radius:10px; padding:9px 10px;"><div style="font-size:16px; font-weight:700; color:#2C1C6C;">' + today.count + '</div><div style="font-size:11px; color:#6b7280;">meetings</div></div>'
-      + '<div style="flex:1; background:#F0FBF5; border-radius:10px; padding:9px 10px;"><div style="font-size:16px; font-weight:700; color:#00A85F;">' + fmtMin(Math.max(0, workMin - today.work)) + '</div><div style="font-size:11px; color:#6b7280;">focus left</div></div>'
-      + '<div style="flex:1; background:#F8F6FF; border-radius:10px; padding:9px 10px;"><div style="font-size:16px; font-weight:700; color:#2C1C6C;">' + fmtMin(today.gap) + '</div><div style="font-size:11px; color:#6b7280;">longest break</div></div>'
+      + '<div style="flex:1; background:#F8F6FF; border-radius:10px; padding:9px 10px;"><div style="font-size:16px; font-weight:700; color:#2C1C6C;">' + focus.count + '</div><div style="font-size:11px; color:#6b7280;">meetings</div></div>'
+      + '<div style="flex:1; background:#F0FBF5; border-radius:10px; padding:9px 10px;"><div style="font-size:16px; font-weight:700; color:#00A85F;">' + fmtMin(Math.max(0, workMin - focus.work)) + '</div><div style="font-size:11px; color:#6b7280;">focus left</div></div>'
+      + '<div style="flex:1; background:#F8F6FF; border-radius:10px; padding:9px 10px;"><div style="font-size:16px; font-weight:700; color:#2C1C6C;">' + fmtMin(focus.gap) + '</div><div style="font-size:11px; color:#6b7280;">longest break</div></div>'
       + '</div>'
     : '';
   const insight = heavy.total <= 0
@@ -1622,7 +1627,7 @@ function renderLoad(){
     '<div style="display:flex; align-items:center; gap:7px; color:#2C1C6C; font-weight:600; font-size:15px; margin-bottom:16px;">🕘 Meeting load</div>'
     + todayBig + tiles
     + '<div style="font-size:12px; color:#6b7280; font-weight:500; margin-bottom:10px;">This week</div>'
-    + '<div style="display:flex; align-items:flex-end; gap:7px; height:96px; padding:0 2px;">' + loadBars(per, todayK, maxV, 90) + '</div>'
+    + '<div style="display:flex; align-items:flex-end; gap:7px; height:96px; padding:0 2px;">' + loadBars(per, focusK, maxV, 90) + '</div>'
     + '<div style="display:flex; align-items:center; gap:6px; margin-top:14px; padding:9px 11px; background:#FFF8EC; border-radius:10px; font-size:12px; color:#8A6D2F;">💡 ' + insight + '</div>';
 }
 
