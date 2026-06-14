@@ -307,21 +307,17 @@
 
         <div class="sb-h" id="calsH">Calendars</div>
         <div id="calList"><div class="sb-note">Loading…</div></div>
-        <div id="vibeCard" style="display:none; margin-top:18px; background:#FFF3E6; border:1px solid #FAE3C8; border-radius:14px; padding:12px 13px; position:relative;">
-          <span id="vibeShuffle" title="Shuffle" style="position:absolute; top:6px; right:27px; cursor:pointer; color:#C9925A; font-size:13px; line-height:1; opacity:.8;">↻</span>
-          <span id="vibeClose" title="Hide" style="position:absolute; top:6px; right:9px; cursor:pointer; color:#C9925A; font-size:15px; line-height:1; font-weight:700; opacity:.85;">×</span>
-          <div style="display:flex; gap:10px; align-items:center;">
-            <span id="vibeEmoji" style="font-size:21px; line-height:1; flex:none;"></span>
-            <div id="vibeText" style="font-size:12.5px; line-height:1.45; font-weight:500; color:#7A4A1E; padding-right:22px;"></div>
-          </div>
-        </div>
-        <div id="loadCard" title="Your meeting load — tap to enlarge" style="display:none; margin-top:14px; background:#fff; border:1px solid #E2DBFF; border-radius:14px; padding:11px 12px; cursor:pointer;">
+        <div id="loadCard" title="Your meeting load — tap to enlarge" style="display:none; margin-top:18px; background:#fff; border:1px solid #E2DBFF; border-radius:14px; padding:11px 12px; cursor:pointer;">
           <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:7px;">
             <span style="color:#2C1C6C; font-weight:600; font-size:12px;">🕘 Meeting load</span>
             <span style="color:#C2BBE8; font-size:12px;">⤢</span>
           </div>
           <div id="loadToday"></div>
           <div id="loadWeekMini" style="display:none;"></div>
+        </div>
+        <div id="ptoBox" style="display:none; margin-top:16px; border-top:1px solid var(--line); padding-top:13px;">
+          <div style="font-size:12px; font-weight:600; color:var(--ink); margin-bottom:10px; display:flex; align-items:center; gap:6px;">🌴 Out of office <span id="ptoScope" style="font-weight:500; color:var(--muted2); font-size:11px;">· this week</span></div>
+          <div id="ptoList"></div>
         </div>
       </aside>
 
@@ -366,9 +362,13 @@
         <div class="panel-btns" id="linkRow" style="display:none">
           <button class="btn primary" id="linkBtn" style="flex:1;background:#00C875;border-color:#00C875" title="Create a real one-click booking link — slots lock when taken">🔗 Create booking link</button>
         </div>
-        <div id="ptoBox" style="display:none; margin-top:20px; border-top:1px solid var(--line); padding-top:14px;">
-          <div style="font-size:13px; font-weight:600; color:var(--ink); margin-bottom:12px; display:flex; align-items:center; gap:7px;">🌴 Out of office <span id="ptoScope" style="font-weight:500; color:var(--muted2); font-size:11.5px;">· this week</span></div>
-          <div id="ptoList"></div>
+        <div id="vibeCard" style="display:none; margin-top:20px; background:#FFF3E6; border:1px solid #FAE3C8; border-radius:14px; padding:12px 13px; position:relative;">
+          <span id="vibeShuffle" title="Shuffle" style="position:absolute; top:6px; right:27px; cursor:pointer; color:#C9925A; font-size:13px; line-height:1; opacity:.8;">↻</span>
+          <span id="vibeClose" title="Hide" style="position:absolute; top:6px; right:9px; cursor:pointer; color:#C9925A; font-size:15px; line-height:1; font-weight:700; opacity:.85;">×</span>
+          <div style="display:flex; gap:10px; align-items:center;">
+            <span id="vibeEmoji" style="font-size:21px; line-height:1; flex:none;"></span>
+            <div id="vibeText" style="font-size:12.5px; line-height:1.45; font-weight:500; color:#7A4A1E; padding-right:22px;"></div>
+          </div>
         </div>
       </div>
     </div>
