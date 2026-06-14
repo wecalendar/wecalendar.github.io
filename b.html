@@ -100,7 +100,7 @@ function timeLabel(d){ return new Intl.DateTimeFormat("en-US",{timeZone:TZ,hour:
 function render(){
   const open = SLOTS.filter(s => s.status === "open" && new Date(s.start_utc) > new Date())
                     .sort((a,b)=> new Date(a.start_utc) - new Date(b.start_utc));
-  if (!open.length){ fail("🎉 All booked — looks like you're in demand!<br>Reach out and they'll send you fresh times."); return; }
+  if (!open.length){ fail("🎉 All booked! Thank you."); return; }
   const byDay = {};
   open.forEach(s => { const k = dayKey(new Date(s.start_utc)); (byDay[k] = byDay[k] || []).push(s); });
   let html = "";
