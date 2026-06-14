@@ -1478,7 +1478,7 @@ if (new URLSearchParams(location.search).get("connected")) setTimeout(() => toas
 // ---- sidebar vibe card (dismissible, rotates each visit) ----
 (function(){
   const card = document.getElementById("vibeCard");
-  if (!card || localStorage.getItem("hideVibe") === "1") return;
+  if (!card || sessionStorage.getItem("hideVibe") === "1") return;
   const lines = [
     ["☕", "It's always coffee o'clock somewhere."],
     ["🛡️", "Protect your focus time like it owes you money."],
@@ -1494,7 +1494,7 @@ if (new URLSearchParams(location.search).get("connected")) setTimeout(() => toas
   show();
   card.style.display = "block";
   document.getElementById("vibeShuffle").onclick = () => { idx = (idx + 1) % lines.length; show(); };
-  document.getElementById("vibeClose").onclick = () => { card.style.display = "none"; localStorage.setItem("hideVibe", "1"); };
+  document.getElementById("vibeClose").onclick = () => { card.style.display = "none"; sessionStorage.setItem("hideVibe", "1"); };
 })();
 
 function toast(msg){
