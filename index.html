@@ -491,7 +491,7 @@ function onSignedIn(){
   document.getElementById("signinView").style.display = "none";
   document.getElementById("appView").style.display = "";
   const prof = localStorage.getItem("profileName") || "";
-  document.getElementById("who").textContent = (prof || ME.name) + " · " + ME.email;
+  document.getElementById("who").textContent = ME.email;
   document.getElementById("whoName").textContent = prof || ME.name;
   document.getElementById("subj").value = "Meeting with " + (prof || ME.name);
   loadPhoto();
@@ -590,7 +590,7 @@ pfName.oninput = () => {
   localStorage.setItem("profileName", S.profileName);
   document.getElementById("subj").value = "Meeting with " + pname();
   document.getElementById("whoName").textContent = pname();
-  document.getElementById("who").textContent = pname() + " · " + ME.email;
+  document.getElementById("who").textContent = ME.email;
   setAvatar(undefined);
   renderPreview();
 };
