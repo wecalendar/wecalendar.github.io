@@ -372,14 +372,6 @@
   <h3 style="margin-top:14px">Video link</h3>
   <div class="row"><input type="text" id="lkVid" placeholder="Teams / Zoom / Meet room URL" style="width:100%"></div>
   <div class="row" style="font-size:11.5px;line-height:1.4;">Auto-added to every booking — shows in the calendar invite and the email snippet.</div>
-  <div id="bkSetup" style="display:none">
-    <h3 style="margin-top:14px">Real bookings</h3>
-    <div class="row" style="font-size:11.5px;line-height:1.4;">Connect your calendar once so booking links create real events on your behalf.</div>
-    <div class="row" style="gap:6px;flex-wrap:wrap;">
-      <button class="btn" id="connectMs" style="padding:6px 12px;font-size:12.5px">Connect Microsoft</button>
-      <button class="btn" id="connectGg" style="padding:6px 12px;font-size:12.5px">Connect Google</button>
-    </div>
-  </div>
   <h3 style="margin-top:14px">Links in your email snippet</h3>
   <div class="row"><input type="text" id="lkCal" placeholder="Booking page URL (optional)" style="width:100%"></div>
   <div class="row"><input type="text" id="lkSoc" placeholder="LinkedIn / social URL (optional)" style="width:100%"></div>
@@ -1453,7 +1445,7 @@ async function createBookingLink(){
       }),
     });
     const j = await r.json().catch(() => ({}));
-    if (r.status === 412 || j.error === "not_connected"){ status(""); toast("First connect your calendar (⚙ Settings → Real bookings)"); return; }
+    if (r.status === 412 || j.error === "not_connected"){ status(""); toast("Calendar not connected for booking — reconnect needed."); return; }
     if (!r.ok || !j.url){ status(""); toast("Couldn't create link" + (j.detail ? ": " + j.detail : "")); return; }
     try { await navigator.clipboard.writeText(j.url); } catch(e){}
     status("");
@@ -1478,11 +1470,8 @@ function consentUrl(provider){
 }
 if (WECAL_ON){
   const lr = document.getElementById("linkRow"); if (lr) lr.style.display = "";
-  const bs = document.getElementById("bkSetup"); if (bs) bs.style.display = "";
 }
 { const b = document.getElementById("linkBtn"); if (b) b.onclick = createBookingLink; }
-{ const b = document.getElementById("connectMs"); if (b) b.onclick = () => { location.href = consentUrl("microsoft"); }; }
-{ const b = document.getElementById("connectGg"); if (b) b.onclick = () => { if (!WECAL.GOOGLE_CLIENT_ID){ toast("Add GOOGLE_CLIENT_ID to wecal-config.js first"); return; } location.href = consentUrl("google"); }; }
 if (new URLSearchParams(location.search).get("connected")) setTimeout(() => toast("✓ Calendar connected for booking"), 600);
 
 function toast(msg){
