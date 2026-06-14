@@ -362,13 +362,20 @@
         <div class="panel-btns" id="linkRow" style="display:none">
           <button class="btn primary" id="linkBtn" style="flex:1;background:#00C875;border-color:#00C875" title="Create a real one-click booking link — slots lock when taken">🔗 Create booking link</button>
         </div>
-        <div id="vibeCard" style="display:none; margin-top:20px; background:#FFF3E6; border:1px solid #FAE3C8; border-radius:14px; padding:12px 13px; position:relative;">
-          <span id="vibeShuffle" title="Shuffle" style="position:absolute; top:6px; right:27px; cursor:pointer; color:#C9925A; font-size:13px; line-height:1; opacity:.8;">↻</span>
-          <span id="vibeClose" title="Hide" style="position:absolute; top:6px; right:9px; cursor:pointer; color:#C9925A; font-size:15px; line-height:1; font-weight:700; opacity:.85;">×</span>
-          <div style="display:flex; gap:10px; align-items:center;">
-            <span id="vibeEmoji" style="font-size:21px; line-height:1; flex:none;"></span>
-            <div id="vibeText" style="font-size:12.5px; line-height:1.45; font-weight:500; color:#7A4A1E; padding-right:22px;"></div>
+        <div id="focusCard" title="Tap for another tip" style="display:none; margin-top:20px; background:#fff; border:1px solid #E2DBFF; border-radius:16px; padding:15px 16px; cursor:pointer;">
+          <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:11px;">
+            <span style="font-size:11px; font-weight:600; letter-spacing:.07em; color:#7C6FF7; text-transform:uppercase;">Focus tip</span>
+            <span id="focusCtx" style="font-size:11px; font-weight:600; padding:2px 8px; border-radius:20px; background:#F1F0FB; color:#6b7280;"></span>
           </div>
+          <div style="display:flex; gap:11px; align-items:flex-start;">
+            <span id="focusEmoji" style="font-size:21px; line-height:1.1; flex:none;"></span>
+            <div>
+              <div id="focusName" style="font-size:14px; font-weight:600; color:#2C1C6C; line-height:1.25;"></div>
+              <div id="focusHow" style="font-size:12.5px; color:#4b5563; line-height:1.5; margin-top:4px;"></div>
+            </div>
+          </div>
+          <div id="focusWhy" style="font-size:11.5px; color:#9890C4; margin-top:11px; padding-top:10px; border-top:1px dashed #ECE9FE;"></div>
+          <div style="font-size:11px; color:#C2BBE8; margin-top:9px;">↻ tap for another</div>
         </div>
       </div>
     </div>
@@ -1136,7 +1143,7 @@ async function load(){
 function status(html){ document.getElementById("status").innerHTML = html; }
 
 // ---- render ----
-function renderAll(){ renderHeadAndMonth(); renderBody(); renderPreview(); renderMCal(); renderLoad(); renderPTOBox(); }
+function renderAll(){ renderHeadAndMonth(); renderBody(); renderPreview(); renderMCal(); renderLoad(); renderPTOBox(); renderFocusTip(); }
 
 function renderHeadAndMonth(){
   const days = weekDays();
@@ -1538,38 +1545,54 @@ if (WECAL_ON){
 { const b = document.getElementById("linkBtn"); if (b) b.onclick = createBookingLink; }
 if (new URLSearchParams(location.search).get("connected")) setTimeout(() => toast("✓ Calendar connected for booking"), 600);
 
-// ---- sidebar vibe card (dismissible, rotates each visit) ----
-(function(){
-  const card = document.getElementById("vibeCard");
-  if (!card || sessionStorage.getItem("hideVibe") === "1") return;
-  const lines = [
-    ["☕", "It's always coffee o'clock somewhere."],
-    ["🛡️", "Protect your focus time like it owes you money."],
-    ["🍹", "Somewhere on Earth it's already 5 PM."],
-    ["🌱", "You're allowed to decline a meeting. Wild, I know."],
-    ["✨", "Back-to-back calls? Not on this calendar."],
-    ["💅", "Booked solid — emotionally unavailable."],
-    ["🧘", "Breathe. The calendar can wait 30 seconds."],
-    ["💚", "Green health scores are a love language."],
-    ["🤝", "Co-sell energy: nobody wins alone."],
-    ["🚀", "Another ISV live on Marketplace — that's the dream."],
-    ["📈", "Renewals love a CSM who shows up early."],
-    ["🎯", "Adoption today, expansion tomorrow."],
-    ["💰", "Somewhere a MACC is waiting to be spent."],
-    ["🦸", "Make the customer the hero — you're the guide."],
-    ["🔑", "Every private offer is a door. Go open one."],
-    ["🌟", "You're not chasing tasks — you're building champions."],
-    ["💼", "Pipeline is just optimism with a deadline."],
-    ["📨", "That QBR won't prep itself, legend."],
-    ["😌", "Quiet customer? Time for a friendly nudge."],
-  ];
-  let idx = Math.floor(Math.random() * lines.length);
-  const em = document.getElementById("vibeEmoji"), tx = document.getElementById("vibeText");
-  const show = () => { em.textContent = lines[idx][0]; tx.textContent = lines[idx][1]; };
-  show();
+// ---- focus tip card (contextual productivity principle, reacts to today's load) ----
+const FOCUS_TIPS = [
+  { tags:["packed"], emoji:"🛡️", name:"Protect a focus block", how:"Block one 90-minute no-meeting window before the day fills up.", why:"Your day's packed — guard what's left." },
+  { tags:["packed"], emoji:"🙅", name:"Decline the optional", how:"Not needed for a decision? Decline and ask for the notes.", why:"Back-to-back — reclaim time where you can." },
+  { tags:["packed","frag"], emoji:"⏳", name:"Add buffers", how:"Leave 5–10 minutes between meetings to reset and capture notes.", why:"No gaps means no recovery time." },
+  { tags:["open"], emoji:"🧠", name:"Start a deep-work session", how:"Take your hardest task and give it a 90-minute uninterrupted run.", why:"Your calendar's open — make it count." },
+  { tags:["open","any"], emoji:"🐸", name:"Eat the frog", how:"Do the hardest thing first, while your energy is highest.", why:"Momentum beats motivation." },
+  { tags:["frag"], emoji:"📦", name:"Batch your calls", how:"Group calls and email into set windows instead of all-day pings.", why:"Lots of small gaps — consolidate them." },
+  { tags:["any"], emoji:"⏱️", name:"Parkinson's law", how:"Give a task less time and it shrinks to fit the slot.", why:"Tight windows focus the mind." },
+  { tags:["any"], emoji:"🎯", name:"Eisenhower matrix", how:"Sort tasks: urgent vs important. Do the important, schedule the rest.", why:"Not all tasks deserve equal urgency." },
+  { tags:["any","open"], emoji:"🎧", name:"Single-task", how:"One thing at a time — switching can cost ~20 minutes of focus.", why:"Focus compounds." },
+  { tags:["any"], emoji:"🗓️", name:"Time-block", how:"Put your top task on the calendar; what's scheduled gets done.", why:"A plan beats a to-do list." },
+];
+const FOCUS_TONES = { packed:["#FFF1E0","#B45309"], open:["#E6F7EE","#0F7A52"], frag:["#EEEDFE","#534AB7"], neutral:["#F1F0FB","#6b7280"] };
+const focusState = { idx:0, mode:null, ctx:"", tone:"neutral" };
+function focusList(mode){ return FOCUS_TIPS.filter(t => t.tags.includes(mode) || t.tags.includes("any")); }
+function paintFocus(){
+  const card = document.getElementById("focusCard"); if (!card) return;
+  const list = focusList(focusState.mode); if (!list.length) return;
+  const t = list[focusState.idx % list.length];
+  document.getElementById("focusEmoji").textContent = t.emoji;
+  document.getElementById("focusName").textContent = t.name;
+  document.getElementById("focusHow").textContent = t.how;
+  document.getElementById("focusWhy").textContent = t.why;
+  const ctx = document.getElementById("focusCtx"), c = FOCUS_TONES[focusState.tone] || FOCUS_TONES.neutral;
+  ctx.textContent = focusState.ctx; ctx.style.background = c[0]; ctx.style.color = c[1];
+}
+function renderFocusTip(){
+  const card = document.getElementById("focusCard"); if (!card) return;
+  if (!account){ card.style.display = "none"; return; }
+  const today = new Date(), tk = keyOf(today);
+  const inWeek = weekDaysFull().some(d => keyOf(d) === tk);
+  let mode = "neutral", ctx = "Any day";
+  if (inWeek){
+    const L = dayLoad(today);
+    if (L.total >= 240 || L.count >= 5){ mode = "packed"; ctx = "Today · " + fmtMin(L.total); }
+    else if (L.total <= 60){ mode = "open"; ctx = "Today · " + fmtMin(L.total); }
+    else if (L.count >= 3 && L.gap < 90){ mode = "frag"; ctx = "Today · scattered gaps"; }
+    else { mode = "neutral"; ctx = "Today · " + fmtMin(L.total); }
+  }
+  if (mode !== focusState.mode){ focusState.mode = mode; const l = focusList(mode); focusState.idx = Math.floor(Math.random() * l.length); }
+  focusState.ctx = ctx; focusState.tone = mode;
+  paintFocus();
   card.style.display = "block";
-  document.getElementById("vibeShuffle").onclick = () => { idx = (idx + 1) % lines.length; show(); };
-  document.getElementById("vibeClose").onclick = () => { card.style.display = "none"; sessionStorage.setItem("hideVibe", "1"); };
+}
+(function(){
+  const card = document.getElementById("focusCard"); if (!card) return;
+  card.addEventListener("click", () => { const list = focusList(focusState.mode); focusState.idx = (focusState.idx + 1) % list.length; paintFocus(); });
 })();
 
 // ---- meeting load (daily total + weekly graph, tap to enlarge) ----
