@@ -1471,9 +1471,9 @@ function consentUrl(provider){
     return "https://accounts.google.com/o/oauth2/v2/auth?response_type=code&access_type=offline&prompt=consent&client_id=" +
       encodeURIComponent(WECAL.GOOGLE_CLIENT_ID || "") + "&redirect_uri=" + redirect + "&scope=" + scope + "&state=google:" + encodeURIComponent(ME.email);
   }
-  const scope = encodeURIComponent("openid profile email offline_access Calendars.ReadWrite");
+  const scope = encodeURIComponent("openid profile email offline_access User.Read Calendars.ReadWrite.Shared");
   return "https://login.microsoftonline.com/" + encodeURIComponent(WECAL.MS_TENANT || "common") +
-    "/oauth2/v2.0/authorize?response_type=code&response_mode=query&prompt=consent&client_id=" +
+    "/oauth2/v2.0/authorize?response_type=code&response_mode=query&client_id=" +
     encodeURIComponent(WECAL.MS_CLIENT_ID || CONFIG.clientId) + "&redirect_uri=" + redirect + "&scope=" + scope + "&state=microsoft";
 }
 if (WECAL_ON){
