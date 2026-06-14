@@ -303,6 +303,10 @@
 
         <div class="sb-h" id="calsH">Calendars</div>
         <div id="calList"><div class="sb-note">Loading…</div></div>
+        <div id="vibeCard" style="display:none; margin-top:18px; background:var(--hover); border-radius:12px; padding:11px 12px; position:relative;">
+          <span id="vibeClose" title="Hide" style="position:absolute; top:5px; right:8px; cursor:pointer; color:var(--muted); font-size:15px; line-height:1; font-weight:700;">×</span>
+          <div id="vibeText" style="font-size:12px; line-height:1.5; color:var(--muted2); padding-right:14px;"></div>
+        </div>
       </aside>
 
       <div class="calwrap">
@@ -1466,6 +1470,24 @@ if (WECAL_ON){
 }
 { const b = document.getElementById("linkBtn"); if (b) b.onclick = createBookingLink; }
 if (new URLSearchParams(location.search).get("connected")) setTimeout(() => toast("✓ Calendar connected for booking"), 600);
+
+// ---- sidebar vibe card (dismissible, rotates each visit) ----
+(function(){
+  const card = document.getElementById("vibeCard");
+  if (!card || localStorage.getItem("hideVibe") === "1") return;
+  const lines = [
+    "Protect your focus time like it owes you money. 🛡️",
+    "Somewhere on Earth it's already 5 PM. 🍹",
+    "You're allowed to decline a meeting. Wild, I know. 🌱",
+    "Back-to-back calls? Not on this calendar. ✨",
+    "Booked solid — emotionally unavailable. 💅",
+    "It's always coffee o'clock somewhere. ☕",
+    "Breathe. The calendar can wait 30 seconds. 🧘",
+  ];
+  document.getElementById("vibeText").textContent = lines[Math.floor(Math.random() * lines.length)];
+  card.style.display = "block";
+  document.getElementById("vibeClose").onclick = () => { card.style.display = "none"; localStorage.setItem("hideVibe", "1"); };
+})();
 
 function toast(msg){
   const t = document.getElementById("toast"); t.textContent = msg;
