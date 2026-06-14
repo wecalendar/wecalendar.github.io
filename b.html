@@ -8,6 +8,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.3/dist/confetti.browser.min.js"></script>
 <script src="wecal-config.js"></script>
 <style>
   :root{ --accent:#7C6FF7; --accent-d:#5E43C8; --ink:#2C1C6C; --muted:#6b7280; --line:#E2DBFF; --green:#00C875; --green-d:#00B268; }
@@ -99,7 +100,7 @@ function timeLabel(d){ return new Intl.DateTimeFormat("en-US",{timeZone:TZ,hour:
 function render(){
   const open = SLOTS.filter(s => s.status === "open" && new Date(s.start_utc) > new Date())
                     .sort((a,b)=> new Date(a.start_utc) - new Date(b.start_utc));
-  if (!open.length){ fail("All times here have been booked.<br>Reach out for more options."); return; }
+  if (!open.length){ fail("🎉 All booked — looks like you're in demand!<br>Reach out and they'll send you fresh times."); return; }
   const byDay = {};
   open.forEach(s => { const k = dayKey(new Date(s.start_utc)); (byDay[k] = byDay[k] || []).push(s); });
   let html = "";
@@ -151,19 +152,24 @@ async function doBook(slotId){
     }
     if (!r.ok || !j.ok){ $("mErr").textContent = "Something went wrong — please try again."; btn.disabled=false; btn.textContent="Book it"; return; }
     const s = SLOTS.find(x=>x.id===slotId); if (s) s.status = "booked";
-    confirmView(j.joinUrl);
+    const whenStr = s ? "See you " + new Intl.DateTimeFormat("en-US", { timeZone: TZ, weekday: "long" }).format(new Date(s.start_utc)) + " at " + timeLabel(new Date(s.start_utc)) : "";
+    confirmView(j.joinUrl, name, whenStr);
   } catch(e){ $("mErr").textContent = "Network error — please try again."; btn.disabled=false; btn.textContent="Book it"; }
 }
 
-function confirmView(joinUrl){
+function confirmView(joinUrl, name, whenStr){
+  const first = ((name || "").trim().split(/\s+/)[0] || "").replace(/[<>&"]/g, "");
   $("modal").innerHTML =
     '<div class="ok-ico">✓</div>'+
-    '<h2 style="text-align:center">You’re booked!</h2>'+
-    '<p style="text-align:center;color:var(--muted);margin-top:6px;font-size:13.5px">A calendar invite is on its way to your inbox.</p>'+
+    '<h2 style="text-align:center">You’re booked' + (first ? ", " + first : "") + '! 🎉</h2>'+
+    '<p style="text-align:center;color:var(--muted);margin-top:6px;font-size:13.5px">' + (whenStr ? whenStr + ". " : "") + 'A calendar invite is on its way to your inbox.</p>'+
     (joinUrl ? '<div style="text-align:center"><a class="joinbtn" href="'+joinUrl+'" target="_blank" rel="noopener">Join link</a></div>' : '')+
     '<button class="btn sec" id="done" style="margin-top:18px">Done</button>';
   $("done").onclick = () => { closeModal(); render(); };
+  if (window.confetti) { try { window.confetti({ particleCount: 130, spread: 78, origin: { y: 0.6 }, colors: ['#7C6FF7','#00C875','#C9BCFF','#FFC400'] }); } catch(e){} }
 }
+
+function greeting(){ const h = new Date().getHours(); return h < 12 ? "Good morning! ☀️" : h < 18 ? "Good afternoon! 👋" : "Good evening! 🌙"; }
 
 async function init(){
   buildTzSel();
@@ -177,7 +183,7 @@ async function init(){
   if (!link || link.status !== "active"){ fail("This booking link has expired or doesn’t exist."); return; }
   LINK = link;
   $("title").textContent = link.title || "Book a time";
-  $("sub").textContent = "Pick a time that works for you — it books instantly.";
+  $("sub").textContent = greeting() + " Pick a time that works for you — it books instantly.";
   if (link.tz && TZS.some(z=>z[0]===link.tz)) { /* keep visitor's tz as default */ }
 
   const { data: slots } = await sb.from("slots").select("id,start_utc,end_utc,status").eq("link_id", link.id);
