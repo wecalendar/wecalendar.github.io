@@ -303,9 +303,12 @@
 
         <div class="sb-h" id="calsH">Calendars</div>
         <div id="calList"><div class="sb-note">Loading…</div></div>
-        <div id="vibeCard" style="display:none; margin-top:18px; background:var(--hover); border-radius:12px; padding:11px 12px; position:relative;">
-          <span id="vibeClose" title="Hide" style="position:absolute; top:5px; right:8px; cursor:pointer; color:var(--muted); font-size:15px; line-height:1; font-weight:700;">×</span>
-          <div id="vibeText" style="font-size:12px; line-height:1.5; color:var(--muted2); padding-right:14px;"></div>
+        <div id="vibeCard" style="display:none; margin-top:18px; background:#FFF3E6; border:1px solid #FAE3C8; border-radius:14px; padding:12px 13px; position:relative;">
+          <span id="vibeClose" title="Hide" style="position:absolute; top:6px; right:9px; cursor:pointer; color:#C9925A; font-size:15px; line-height:1; font-weight:700; opacity:.85;">×</span>
+          <div style="display:flex; gap:10px; align-items:center;">
+            <span id="vibeEmoji" style="font-size:21px; line-height:1; flex:none;"></span>
+            <div id="vibeText" style="font-size:12.5px; line-height:1.45; font-weight:500; color:#7A4A1E; padding-right:6px;"></div>
+          </div>
         </div>
       </aside>
 
@@ -1476,15 +1479,17 @@ if (new URLSearchParams(location.search).get("connected")) setTimeout(() => toas
   const card = document.getElementById("vibeCard");
   if (!card || localStorage.getItem("hideVibe") === "1") return;
   const lines = [
-    "Protect your focus time like it owes you money. 🛡️",
-    "Somewhere on Earth it's already 5 PM. 🍹",
-    "You're allowed to decline a meeting. Wild, I know. 🌱",
-    "Back-to-back calls? Not on this calendar. ✨",
-    "Booked solid — emotionally unavailable. 💅",
-    "It's always coffee o'clock somewhere. ☕",
-    "Breathe. The calendar can wait 30 seconds. 🧘",
+    ["☕", "It's always coffee o'clock somewhere."],
+    ["🛡️", "Protect your focus time like it owes you money."],
+    ["🍹", "Somewhere on Earth it's already 5 PM."],
+    ["🌱", "You're allowed to decline a meeting. Wild, I know."],
+    ["✨", "Back-to-back calls? Not on this calendar."],
+    ["💅", "Booked solid — emotionally unavailable."],
+    ["🧘", "Breathe. The calendar can wait 30 seconds."],
   ];
-  document.getElementById("vibeText").textContent = lines[Math.floor(Math.random() * lines.length)];
+  const pick = lines[Math.floor(Math.random() * lines.length)];
+  document.getElementById("vibeEmoji").textContent = pick[0];
+  document.getElementById("vibeText").textContent = pick[1];
   card.style.display = "block";
   document.getElementById("vibeClose").onclick = () => { card.style.display = "none"; localStorage.setItem("hideVibe", "1"); };
 })();
