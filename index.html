@@ -311,6 +311,14 @@
             <div id="vibeText" style="font-size:12.5px; line-height:1.45; font-weight:500; color:#7A4A1E; padding-right:22px;"></div>
           </div>
         </div>
+        <div id="loadCard" title="Your meeting load — tap to enlarge" style="display:none; margin-top:14px; background:#fff; border:1px solid #E2DBFF; border-radius:14px; padding:11px 12px; cursor:pointer;">
+          <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:7px;">
+            <span style="color:#2C1C6C; font-weight:600; font-size:12px;">🕘 Meeting load</span>
+            <span style="color:#C2BBE8; font-size:12px;">⤢</span>
+          </div>
+          <div id="loadToday"></div>
+          <div id="loadWeekMini" style="display:none;"></div>
+        </div>
       </aside>
 
       <div class="calwrap">
@@ -386,6 +394,12 @@
   <div class="row" style="font-size:11.5px;line-height:1.4;">Added at the bottom of "Copy for email" as a backup booking link and a connect link.</div>
   <div class="row" style="margin-top:14px;border-top:1px solid var(--line);padding-top:12px;">
     <button class="linklike" id="signOut" style="color:#b91c1c;">Sign out</button>
+  </div>
+</div>
+<div id="loadModal" style="display:none; position:fixed; inset:0; background:rgba(20,16,40,.45); z-index:1200; align-items:center; justify-content:center; padding:20px;">
+  <div style="background:#fff; border-radius:18px; padding:22px 22px 20px; width:min(420px,94vw); box-shadow:0 24px 70px rgba(20,16,40,.3); position:relative;">
+    <span id="loadModalClose" title="Close" style="position:absolute; top:13px; right:16px; cursor:pointer; font-size:20px; line-height:1; color:#B8B0DE;">×</span>
+    <div id="loadModalBody"></div>
   </div>
 </div>
 <div class="tzpop" id="tzPop">
@@ -1078,7 +1092,7 @@ async function load(){
 function status(html){ document.getElementById("status").innerHTML = html; }
 
 // ---- render ----
-function renderAll(){ renderHeadAndMonth(); renderBody(); renderPreview(); renderMCal(); }
+function renderAll(){ renderHeadAndMonth(); renderBody(); renderPreview(); renderMCal(); renderLoad(); }
 
 function renderHeadAndMonth(){
   const days = weekDays();
@@ -1507,6 +1521,106 @@ if (new URLSearchParams(location.search).get("connected")) setTimeout(() => toas
   card.style.display = "block";
   document.getElementById("vibeShuffle").onclick = () => { idx = (idx + 1) % lines.length; show(); };
   document.getElementById("vibeClose").onclick = () => { card.style.display = "none"; sessionStorage.setItem("hideVibe", "1"); };
+})();
+
+// ---- meeting load (daily total + weekly graph, tap to enlarge) ----
+function fmtMin(m){ m = Math.round(m); if (m <= 0) return "0m"; const h = Math.floor(m/60), mm = m%60; return h ? (h + "h" + (mm ? " " + mm + "m" : "")) : mm + "m"; }
+function ovMin(s1, e1, s2, e2){ const a = Math.max(s1, s2), b = Math.min(e1, e2); return b > a ? (b - a) / 60000 : 0; }
+function dayLetter(d){ return fmt(new Date(d.getFullYear(), d.getMonth(), d.getDate(), 12), { weekday: "short" })[0]; }
+function dayLong(d){ return fmt(new Date(d.getFullYear(), d.getMonth(), d.getDate(), 12), { weekday: "long" }); }
+
+function computeLoad(){
+  const days = weekDays();
+  const workMin = Math.max(60, (S.workEnd - S.workStart) * 60);
+  const per = days.map(d => {
+    const ds = new Date(d.getFullYear(), d.getMonth(), d.getDate(), 0, 0, 0, 0).getTime();
+    const de = ds + 86400000;
+    const ws = new Date(d.getFullYear(), d.getMonth(), d.getDate(), S.workStart).getTime();
+    const we = new Date(d.getFullYear(), d.getMonth(), d.getDate(), S.workEnd).getTime();
+    let total = 0, work = 0, count = 0; const segs = [];
+    (S.events || []).forEach(ev => {
+      const s = ev.start.getTime(), e = ev.end.getTime();
+      const t = ovMin(s, e, ds, de); if (t > 0){ total += t; count++; }
+      const w = ovMin(s, e, ws, we); if (w > 0){ work += w; segs.push([Math.max(s, ws), Math.min(e, we)]); }
+    });
+    segs.sort((a, b) => a[0] - b[0]);
+    let cur = ws, gap = 0;
+    segs.forEach(seg => { if (seg[0] - cur > gap) gap = seg[0] - cur; if (seg[1] > cur) cur = seg[1]; });
+    if (we - cur > gap) gap = we - cur;
+    return { date: d, total, work, count, gap: Math.max(0, gap / 60000) };
+  });
+  return { days, per, workMin };
+}
+
+function loadBars(per, todayK, maxV, maxH){
+  return per.map(p => {
+    const h = p.total > 0 ? Math.max(4, Math.round(p.total / maxV * maxH)) : 2;
+    const t = keyOf(p.date) === todayK;
+    return '<div style="display:flex; flex-direction:column; align-items:center; gap:4px; flex:1;">'
+      + '<div title="' + fmtMin(p.total) + '" style="width:60%; max-width:22px; height:' + h + 'px; border-radius:4px 4px 2px 2px; background:' + (t ? '#7C6FF7' : '#D9D2FB') + ';"></div>'
+      + '<span style="font-size:10px; color:' + (t ? '#7C6FF7' : '#9890C4') + '; font-weight:' + (t ? '600' : '400') + ';">' + dayLetter(p.date) + '</span></div>';
+  }).join("");
+}
+
+function renderLoad(){
+  const card = document.getElementById("loadCard");
+  if (!card) return;
+  if (!account){ card.style.display = "none"; return; }
+  const cl = computeLoad(), per = cl.per, workMin = cl.workMin;
+  const todayK = keyOf(new Date());
+  const today = per.find(p => keyOf(p.date) === todayK) || null;
+  const dow = new Date().getDay();
+  const showWeek = (dow === 5 || dow === 6 || dow === 0);
+  const maxV = Math.max(workMin, ...per.map(p => p.total), 1);
+  const pct = today ? Math.min(100, Math.round(today.total / workMin * 100)) : 0;
+
+  // sidebar mini
+  card.querySelector("#loadToday").innerHTML = today
+    ? '<div style="font-size:12.5px; color:#2C1C6C;"><b style="font-size:15px;">' + fmtMin(today.total) + '</b> in meetings today</div>'
+      + '<div style="margin:7px 0 1px; height:7px; background:#ECE9FE; border-radius:5px; overflow:hidden;"><div style="width:' + pct + '%; height:100%; background:#7C6FF7;"></div></div>'
+    : '<div style="font-size:12px; color:#6b7280;">No meetings today.</div>';
+  const wm = card.querySelector("#loadWeekMini");
+  if (showWeek){
+    wm.innerHTML = '<div style="font-size:10.5px; color:#9890C4; margin:10px 0 5px; font-weight:500;">Your week</div>'
+      + '<div style="display:flex; align-items:flex-end; gap:4px; height:42px;">' + loadBars(per, todayK, maxV, 38) + '</div>';
+    wm.style.display = "block";
+  } else { wm.innerHTML = ""; wm.style.display = "none"; }
+  card.style.display = "block";
+
+  // enlarge modal (full)
+  let hi = 0; per.forEach((p, i) => { if (p.total > per[hi].total) hi = i; });
+  const heavy = per[hi];
+  const todayBig = today
+    ? '<div style="font-size:12px; color:#6b7280; font-weight:500; margin-bottom:4px;">Today</div>'
+      + '<div style="display:flex; align-items:baseline; gap:8px;"><span style="font-size:30px; font-weight:700; color:#2C1C6C; line-height:1;">' + fmtMin(today.total) + '</span><span style="font-size:12.5px; color:#6b7280;">in meetings</span></div>'
+      + '<div style="margin:11px 0 6px; height:9px; background:#ECE9FE; border-radius:6px; overflow:hidden;"><div style="width:' + pct + '%; height:100%; background:#7C6FF7;"></div></div>'
+      + '<div style="font-size:11px; color:#9890C4; margin-bottom:14px;">' + pct + '% of a ' + (S.workEnd - S.workStart) + '-hour day</div>'
+    : '<div style="font-size:13px; color:#6b7280; margin:4px 0 14px;">Today is outside the week shown.</div>';
+  const tiles = today
+    ? '<div style="display:flex; gap:8px; margin-bottom:18px;">'
+      + '<div style="flex:1; background:#F8F6FF; border-radius:10px; padding:9px 10px;"><div style="font-size:16px; font-weight:700; color:#2C1C6C;">' + today.count + '</div><div style="font-size:11px; color:#6b7280;">meetings</div></div>'
+      + '<div style="flex:1; background:#F0FBF5; border-radius:10px; padding:9px 10px;"><div style="font-size:16px; font-weight:700; color:#00A85F;">' + fmtMin(Math.max(0, workMin - today.work)) + '</div><div style="font-size:11px; color:#6b7280;">focus left</div></div>'
+      + '<div style="flex:1; background:#F8F6FF; border-radius:10px; padding:9px 10px;"><div style="font-size:16px; font-weight:700; color:#2C1C6C;">' + fmtMin(today.gap) + '</div><div style="font-size:11px; color:#6b7280;">longest break</div></div>'
+      + '</div>'
+    : '';
+  const insight = heavy.total <= 0
+    ? 'A blissfully empty week — protect it.'
+    : dayLong(heavy.date) + ' is your heaviest at ' + fmtMin(heavy.total) + '.';
+  document.getElementById("loadModalBody").innerHTML =
+    '<div style="display:flex; align-items:center; gap:7px; color:#2C1C6C; font-weight:600; font-size:15px; margin-bottom:16px;">🕘 Meeting load</div>'
+    + todayBig + tiles
+    + '<div style="font-size:12px; color:#6b7280; font-weight:500; margin-bottom:10px;">This week</div>'
+    + '<div style="display:flex; align-items:flex-end; gap:7px; height:96px; padding:0 2px;">' + loadBars(per, todayK, maxV, 90) + '</div>'
+    + '<div style="display:flex; align-items:center; gap:6px; margin-top:14px; padding:9px 11px; background:#FFF8EC; border-radius:10px; font-size:12px; color:#8A6D2F;">💡 ' + insight + '</div>';
+}
+
+(function(){
+  const card = document.getElementById("loadCard"), modal = document.getElementById("loadModal");
+  if (!card || !modal) return;
+  card.addEventListener("click", () => { modal.style.display = "flex"; });
+  document.getElementById("loadModalClose").addEventListener("click", () => { modal.style.display = "none"; });
+  modal.addEventListener("click", e => { if (e.target === modal) modal.style.display = "none"; });
+  document.addEventListener("keydown", e => { if (e.key === "Escape") modal.style.display = "none"; });
 })();
 
 function toast(msg){
