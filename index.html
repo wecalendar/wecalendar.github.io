@@ -366,6 +366,10 @@
         <div class="panel-btns" id="linkRow" style="display:none">
           <button class="btn primary" id="linkBtn" style="flex:1;background:#00C875;border-color:#00C875" title="Create a real one-click booking link — slots lock when taken">🔗 Create booking link</button>
         </div>
+        <div id="ptoBox" style="display:none; margin-top:20px; border-top:1px solid var(--line); padding-top:14px;">
+          <div style="font-size:13px; font-weight:600; color:var(--ink); margin-bottom:12px; display:flex; align-items:center; gap:7px;">🌴 Out of office <span id="ptoScope" style="font-weight:500; color:var(--muted2); font-size:11.5px;">· this week</span></div>
+          <div id="ptoList"></div>
+        </div>
       </div>
     </div>
   </div>
@@ -1132,7 +1136,7 @@ async function load(){
 function status(html){ document.getElementById("status").innerHTML = html; }
 
 // ---- render ----
-function renderAll(){ renderHeadAndMonth(); renderBody(); renderPreview(); renderMCal(); renderLoad(); }
+function renderAll(){ renderHeadAndMonth(); renderBody(); renderPreview(); renderMCal(); renderLoad(); renderPTOBox(); }
 
 function renderHeadAndMonth(){
   const days = weekDays();
@@ -1181,12 +1185,6 @@ function renderHeadAndMonth(){
     dh.style.cursor = "pointer";
     dh.title = S.dayView ? "Back to week view" : "View just this day";
     dh.onclick = () => { if (S.dayView){ S.dayView = null; } else { setDayView(d); } load(); };
-    const away = ptoNamesForDay(d);
-    if (away.length){
-      const full = away.join(", ").replace(/"/g, "&quot;");
-      dh.innerHTML += '<div class="ptoaway" title="Out of office: ' + full + '">🌴 ' + (S.dayView ? away.length + " out of office" : String(away.length)) + '</div>'
-        + (S.dayView ? '<div class="ptonames">' + away.join(", ").replace(/</g, "&lt;") + '</div>' : '');
-    }
     head.appendChild(dh);
   });
 }
@@ -1680,6 +1678,29 @@ function renderLoad(){
   modal.addEventListener("click", e => { if (e.target === modal) modal.style.display = "none"; });
   document.addEventListener("keydown", e => { if (e.key === "Escape") modal.style.display = "none"; });
 })();
+
+function renderPTOBox(){
+  const box = document.getElementById("ptoBox"), list = document.getElementById("ptoList"), scope = document.getElementById("ptoScope");
+  if (!box || !list) return;
+  if (!account){ box.style.display = "none"; return; }
+  const days = S.dayView ? [new Date(S.dayView)] : weekDaysFull();
+  if (scope) scope.textContent = S.dayView ? "· this day" : "· this week";
+  const todayK = keyOf(new Date());
+  let html = "", total = 0;
+  days.forEach(d => {
+    const names = ptoNamesForDay(d);
+    if (!names.length) return;
+    total += names.length;
+    const isToday = keyOf(d) === todayK;
+    const dlbl = fmt(new Date(d.getFullYear(), d.getMonth(), d.getDate(), 12), { weekday: "short", day: "numeric" });
+    html += '<div style="margin-bottom:11px;">'
+      + '<div style="font-size:11px; font-weight:600; color:' + (isToday ? '#7C6FF7' : 'var(--muted2)') + '; margin-bottom:5px; letter-spacing:.02em;">' + dlbl + (isToday ? ' · today' : '') + '</div>'
+      + names.map(n => '<div style="font-size:12.5px; color:var(--ink); padding:2px 0; display:flex; gap:8px; align-items:center;"><span style="width:6px; height:6px; border-radius:50%; background:#00C875; flex:none;"></span>' + n.replace(/</g, "&lt;") + '</div>').join("")
+      + '</div>';
+  });
+  list.innerHTML = total ? html : '<div style="font-size:12.5px; color:var(--muted2);">No one’s off ' + (S.dayView ? "that day" : "this week") + '. 🎉</div>';
+  box.style.display = "block";
+}
 
 function toast(msg){
   const t = document.getElementById("toast"); t.textContent = msg;
