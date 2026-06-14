@@ -304,10 +304,11 @@
         <div class="sb-h" id="calsH">Calendars</div>
         <div id="calList"><div class="sb-note">Loading…</div></div>
         <div id="vibeCard" style="display:none; margin-top:18px; background:#FFF3E6; border:1px solid #FAE3C8; border-radius:14px; padding:12px 13px; position:relative;">
+          <span id="vibeShuffle" title="Shuffle" style="position:absolute; top:6px; right:27px; cursor:pointer; color:#C9925A; font-size:13px; line-height:1; opacity:.8;">↻</span>
           <span id="vibeClose" title="Hide" style="position:absolute; top:6px; right:9px; cursor:pointer; color:#C9925A; font-size:15px; line-height:1; font-weight:700; opacity:.85;">×</span>
           <div style="display:flex; gap:10px; align-items:center;">
             <span id="vibeEmoji" style="font-size:21px; line-height:1; flex:none;"></span>
-            <div id="vibeText" style="font-size:12.5px; line-height:1.45; font-weight:500; color:#7A4A1E; padding-right:6px;"></div>
+            <div id="vibeText" style="font-size:12.5px; line-height:1.45; font-weight:500; color:#7A4A1E; padding-right:22px;"></div>
           </div>
         </div>
       </aside>
@@ -1487,10 +1488,12 @@ if (new URLSearchParams(location.search).get("connected")) setTimeout(() => toas
     ["💅", "Booked solid — emotionally unavailable."],
     ["🧘", "Breathe. The calendar can wait 30 seconds."],
   ];
-  const pick = lines[Math.floor(Math.random() * lines.length)];
-  document.getElementById("vibeEmoji").textContent = pick[0];
-  document.getElementById("vibeText").textContent = pick[1];
+  let idx = Math.floor(Math.random() * lines.length);
+  const em = document.getElementById("vibeEmoji"), tx = document.getElementById("vibeText");
+  const show = () => { em.textContent = lines[idx][0]; tx.textContent = lines[idx][1]; };
+  show();
   card.style.display = "block";
+  document.getElementById("vibeShuffle").onclick = () => { idx = (idx + 1) % lines.length; show(); };
   document.getElementById("vibeClose").onclick = () => { card.style.display = "none"; localStorage.setItem("hideVibe", "1"); };
 })();
 
