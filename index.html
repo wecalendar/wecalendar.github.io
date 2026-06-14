@@ -121,6 +121,7 @@
   .mcal .mc-inweek.mc-wkfirst { border-radius:8px 0 0 8px; }
   .mcal .mc-inweek.mc-wklast { border-radius:0 8px 8px 0; }
   .mcal .mc-today { background:var(--blue); color:#fff; font-weight:600; border-radius:8px; }
+  .mcal .mc-sel { box-shadow:inset 0 0 0 2px var(--blue); border-radius:8px; font-weight:700; }
   .sb-search { display:flex; align-items:center; gap:8px; border:1px solid var(--line); border-radius:10px; padding:8px 10px; }
   .sb-search input { border:none; outline:none; font-size:13.5px; font-family:inherit; width:100%; color:var(--ink); background:transparent; }
   .sb-h { color:var(--side); font-weight:700; font-size:14px; margin:18px 4px 8px; }
@@ -275,6 +276,7 @@
         <button class="navarr" id="prevW">&#8249;</button>
         <button class="todaybtn" id="todayBtn">Today</button>
         <button class="navarr" id="nextW">&#8250;</button>
+        <button class="todaybtn" id="viewTog" title="Switch between day and week view">Day</button>
       </div>
       <div class="grow"></div>
       <span class="avatar" id="avatar" title="Your profile — see Settings"></span>
@@ -553,6 +555,7 @@ const PCOLORS = ["#FFC400","#FF9F1A","#FFB800","#F77F00"];
 
 const S = {
   week: 0,
+  dayView: null,
   tz: localStorage.getItem("tz2") || LOCAL_TZ,
   tzs: (() => { try { const a = JSON.parse(localStorage.getItem("tzRulers") || "[]"); const old = localStorage.getItem("tzSecond"); if (old && !a.includes(old)) a.push(old); return a.slice(0,3); } catch(e){ return []; } })(),   // up to 3 extra rulers
   workStart: +(localStorage.getItem("wh1") || 9),
@@ -766,21 +769,24 @@ function sundayOf(weekOffset){
   d.setDate(d.getDate() - d.getDay() + weekOffset * 7);
   return d;
 }
-function weekDays(){
+function weekDaysFull(){
   const sun = sundayOf(S.week), days = [];
   const idx = S.showWknd ? [0,1,2,3,4,5,6] : [1,2,3,4,5];
   idx.forEach(i => { const d = new Date(sun); d.setDate(d.getDate()+i); days.push(d); });
   return days;
 }
+function weekDays(){ return S.dayView ? [new Date(S.dayView)] : weekDaysFull(); }
+function setDayView(d){ d = new Date(d.getFullYear(), d.getMonth(), d.getDate()); S.dayView = d; const sun = new Date(d.getFullYear(), d.getMonth(), d.getDate() - d.getDay()); S.week = Math.round((sun - sundayOf(0)) / (7 * 86400000)); }
 function weekRange(){
   const sun = sundayOf(S.week);
   const ws = new Date(sun); ws.setHours(0,0,0,0);
   const we = new Date(sun); we.setDate(we.getDate()+7); we.setHours(0,0,0,0);
   return [ws, we];
 }
-document.getElementById("todayBtn").onclick = () => { S.week = 0; load(); };
-document.getElementById("prevW").onclick = () => { S.week--; load(); };
-document.getElementById("nextW").onclick = () => { S.week++; load(); };
+document.getElementById("todayBtn").onclick = () => { S.week = 0; if (S.dayView) setDayView(new Date()); load(); };
+document.getElementById("prevW").onclick = () => { if (S.dayView){ const d = new Date(S.dayView); d.setDate(d.getDate() - 1); setDayView(d); } else S.week--; load(); };
+document.getElementById("nextW").onclick = () => { if (S.dayView){ const d = new Date(S.dayView); d.setDate(d.getDate() + 1); setDayView(d); } else S.week++; load(); };
+document.getElementById("viewTog").onclick = () => { if (S.dayView){ S.dayView = null; } else { const ds = weekDaysFull(), tk = keyOf(new Date()); setDayView(ds.find(d => keyOf(d) === tk) || ds[0]); } load(); };
 document.getElementById("clearBtn").onclick = () => { S.sel = []; saveSel(); renderAll(); };
 
 // ---- AI slot request box ----
@@ -941,6 +947,7 @@ function renderMCal(){
     if (d.getMonth() !== MC.m) cls.push("mc-out");
     if (d >= wkStart && d < wkEnd){ cls.push("mc-inweek"); if (d.getDay() === 0) cls.push("mc-wkfirst"); if (d.getDay() === 6) cls.push("mc-wklast"); }
     if (keyOf(d) === todayK) cls.push("mc-today");
+    if (S.dayView && keyOf(d) === keyOf(S.dayView)) cls.push("mc-sel");
     html += '<button class="' + cls.join(" ") + '" data-t="' + d.getTime() + '">' + d.getDate() + "</button>";
   }
   html += "</div>";
@@ -949,8 +956,8 @@ function renderMCal(){
   document.getElementById("mcNext").onclick = () => { MC.m++; if (MC.m > 11){ MC.m = 0; MC.y++; } renderMCal(); };
   box.querySelectorAll(".mc-day").forEach(b => b.addEventListener("click", () => {
     const d = new Date(+b.dataset.t);
-    const sun = new Date(d.getFullYear(), d.getMonth(), d.getDate() - d.getDay());
-    S.week = Math.round((sun - sundayOf(0)) / (7*86400000));
+    if (S.dayView){ setDayView(d); }
+    else { const sun = new Date(d.getFullYear(), d.getMonth(), d.getDate() - d.getDay()); S.week = Math.round((sun - sundayOf(0)) / (7*86400000)); }
     load();
   }));
 }
@@ -1102,6 +1109,8 @@ function renderHeadAndMonth(){
   const m1 = fmt(new Date(first.getFullYear(), first.getMonth(), first.getDate(), 12), {month:"long", year:"numeric"});
   const m2 = fmt(new Date(last.getFullYear(), last.getMonth(), last.getDate(), 12), {month:"long", year:"numeric"});
   document.getElementById("monthLabel").textContent = (m1 === m2) ? m1 : m1.split(" ")[0] + " – " + m2;
+  if (S.dayView) document.getElementById("monthLabel").textContent = fmt(new Date(first.getFullYear(), first.getMonth(), first.getDate(), 12), {weekday:"long", month:"long", day:"numeric"});
+  const vt = document.getElementById("viewTog"); if (vt) vt.textContent = S.dayView ? "Week" : "Day";
 
   const head = document.getElementById("calHead");
   head.innerHTML = "";
@@ -1136,6 +1145,9 @@ function renderHeadAndMonth(){
     const noon = new Date(d.getFullYear(), d.getMonth(), d.getDate(), 12);
     const dh = document.createElement("div"); dh.className = "dh" + (keyOf(d) === todayK ? " today" : "");
     dh.innerHTML = '<div class="wd">' + fmt(noon, {weekday:"short"}).toUpperCase() + '</div><div class="dn">' + d.getDate() + "</div>";
+    dh.style.cursor = "pointer";
+    dh.title = S.dayView ? "Back to week view" : "View just this day";
+    dh.onclick = () => { if (S.dayView){ S.dayView = null; } else { setDayView(d); } load(); };
     head.appendChild(dh);
   });
 }
@@ -1530,7 +1542,7 @@ function dayLetter(d){ return fmt(new Date(d.getFullYear(), d.getMonth(), d.getD
 function dayLong(d){ return fmt(new Date(d.getFullYear(), d.getMonth(), d.getDate(), 12), { weekday: "long" }); }
 
 function computeLoad(){
-  const days = weekDays();
+  const days = weekDaysFull();
   const workMin = Math.max(60, (S.workEnd - S.workStart) * 60);
   const per = days.map(d => {
     const ds = new Date(d.getFullYear(), d.getMonth(), d.getDate(), 0, 0, 0, 0).getTime();
