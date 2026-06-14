@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>WeCalendar — Analytics</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect x='8' y='14' width='84' height='78' rx='14' fill='%237C6FF7'/%3E%3Crect x='8' y='34' width='84' height='58' rx='10' fill='%23fff'/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4"></script>
+<script src="wecal-config.js"></script>
+<style>
+  :root{ --accent:#7C6FF7; --ink:#2C1C6C; --muted:#6b7280; --line:#E2DBFF; --green:#00C875; }
+  *{ box-sizing:border-box; margin:0; padding:0; }
+  body{ font-family:'Plus Jakarta Sans',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif; background:#FBF9FF; color:var(--ink); padding:28px 18px; }
+  .wrap{ max-width:920px; margin:0 auto; }
+  .top{ display:flex; align-items:baseline; gap:12px; margin-bottom:6px; }
+  .wordmark{ font-size:15px; font-weight:600; } .wordmark .a1{ color:var(--accent); } .wordmark .a2{ color:var(--ink); }
+  h1{ font-size:24px; font-weight:600; margin:14px 0 2px; }
+  .sub{ color:var(--muted); font-size:13.5px; margin-bottom:20px; }
+  .cards{ display:grid; grid-template-columns:repeat(auto-fit,minmax(150px,1fr)); gap:12px; margin-bottom:24px; }
+  .card{ background:#fff; border:1px solid var(--line); border-radius:14px; padding:16px 18px; }
+  .card .n{ font-size:30px; font-weight:700; line-height:1.1; }
+  .card .l{ font-size:12.5px; color:var(--muted); margin-top:4px; font-weight:500; }
+  .card.hl .n{ color:var(--accent); }
+  .panel{ background:#fff; border:1px solid var(--line); border-radius:14px; padding:18px; margin-bottom:18px; }
+  .panel h2{ font-size:15px; font-weight:600; margin-bottom:14px; }
+  table{ width:100%; border-collapse:collapse; font-size:13.5px; }
+  th,td{ text-align:left; padding:9px 8px; border-bottom:1px solid #F0ECFF; }
+  th{ color:var(--muted); font-weight:600; font-size:12px; text-transform:uppercase; letter-spacing:.04em; }
+  td.num,th.num{ text-align:right; }
+  .msg{ color:var(--muted); padding:40px; text-align:center; }
+  .reload{ margin-left:auto; border:1px solid var(--line); background:#fff; border-radius:9px; padding:6px 12px; font-family:inherit; font-size:13px; cursor:pointer; color:var(--ink); }
+  .reload:hover{ background:#F4F0FF; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="top">
+    <span class="wordmark"><span class="a1">we</span><span class="a2">calendar</span></span>
+    <button class="reload" onclick="load()">↻ Refresh</button>
+  </div>
+  <h1>Booking analytics</h1>
+  <div class="sub" id="sub">Loading…</div>
+  <div id="content" style="display:none">
+    <div class="cards" id="cards"></div>
+    <div class="panel"><h2>Views vs. bookings by link</h2><canvas id="chart" height="120"></canvas></div>
+    <div class="panel"><h2>Links</h2><div id="tableWrap"></div></div>
+  </div>
+  <div class="msg" id="msg" style="display:none"></div>
+</div>
+<script>
+const C = window.WECAL || {};
+let chart = null;
+const fmt = (n) => (n ?? 0).toLocaleString();
+
+function card(n, label, hl){ return '<div class="card'+(hl?' hl':'')+'"><div class="n">'+n+'</div><div class="l">'+label+'</div></div>'; }
+
+async function load(){
+  document.getElementById("sub").textContent = "Loading…";
+  if (!C.SUPABASE_URL || !C.SUPABASE_ANON_KEY){
+    document.getElementById("msg").style.display = "block";
+    document.getElementById("msg").textContent = "Backend not configured (wecal-config.js).";
+    return;
+  }
+  try {
+    const r = await fetch(C.SUPABASE_URL + "/rest/v1/rpc/get_stats", {
+      method: "POST",
+      headers: { apikey: C.SUPABASE_ANON_KEY, Authorization: "Bearer " + C.SUPABASE_ANON_KEY, "Content-Type": "application/json" },
+      body: "{}",
+    });
+    const s = await r.json();
+    render(s);
+  } catch (e) {
+    document.getElementById("msg").style.display = "block";
+    document.getElementById("msg").textContent = "Couldn't load analytics: " + e.message;
+  }
+}
+
+function render(s){
+  document.getElementById("content").style.display = "";
+  document.getElementById("msg").style.display = "none";
+  document.getElementById("sub").textContent = "Across " + fmt(s.links) + " booking link" + (s.links === 1 ? "" : "s") + " · updates live each time you open this page.";
+  document.getElementById("cards").innerHTML =
+    card(fmt(s.views), "Link views") +
+    card(fmt(s.slot_clicks), "Slot clicks") +
+    card(fmt(s.bookings), "Bookings", true) +
+    card((s.booking_rate ?? 0) + "%", "Booking rate", true) +
+    card(s.avg_time_to_book_min != null ? Math.round(s.avg_time_to_book_min) + "m" : "—", "Avg time to book") +
+    card(fmt(s.no_shows), "No‑shows");
+
+  const links = s.by_link || [];
+  const labels = links.map(l => (l.title || l.slug || "—").slice(0, 22));
+  if (chart) chart.destroy();
+  chart = new Chart(document.getElementById("chart"), {
+    type: "bar",
+    data: { labels, datasets: [
+      { label: "Views", data: links.map(l => l.views), backgroundColor: "#C9BCFF" },
+      { label: "Bookings", data: links.map(l => l.bookings), backgroundColor: "#7C6FF7" },
+    ]},
+    options: { responsive: true, scales: { y: { beginAtZero: true, ticks: { precision: 0 } } }, plugins: { legend: { position: "bottom" } } },
+  });
+
+  let rows = links.map(l => "<tr><td>" + (l.title || "(untitled)") + "</td><td class='num'>" + fmt(l.views) + "</td><td class='num'>" + fmt(l.bookings) + "</td><td>" + new Date(l.created_at).toLocaleDateString() + "</td></tr>").join("");
+  if (!rows) rows = "<tr><td colspan='4' style='color:var(--muted)'>No links yet — create one in WeCalendar.</td></tr>";
+  document.getElementById("tableWrap").innerHTML =
+    "<table><thead><tr><th>Link</th><th class='num'>Views</th><th class='num'>Bookings</th><th>Created</th></tr></thead><tbody>" + rows + "</tbody></table>";
+}
+load();
+</script>
+</body>
+</html>
