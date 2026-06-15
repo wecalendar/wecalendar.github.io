@@ -1504,7 +1504,18 @@ async function createBookingLink(){
       }),
     });
     const j = await r.json().catch(() => ({}));
-    if (r.status === 412 || j.error === "not_connected"){ status(""); toast("Calendar not connected for booking — reconnect needed."); return; }
+    if (r.status === 412 || j.error === "not_connected"){
+      status("");
+      document.getElementById("preview").innerHTML =
+        '<div style="background:#FFF4E6;border:1px solid #FACC8E;border-radius:10px;padding:13px;font-size:13px;color:#92400E;line-height:1.5">' +
+        '🔌 <b>One quick setup step</b><br>To create booking links, connect your calendar so WeCalendar can place the booked meeting for you. It\'s one-time and takes a few seconds.' +
+        '<button id="connectCal" class="btn primary" style="margin-top:11px;background:#7C6FF7;border-color:#7C6FF7">Connect my calendar</button>' +
+        '</div>';
+      const cc = document.getElementById("connectCal");
+      if (cc) cc.onclick = () => { location.href = consentUrl("microsoft"); };
+      toast("Connect your calendar to enable booking links");
+      return;
+    }
     if (!r.ok || !j.url){ status(""); toast("Couldn't create link" + (j.detail ? ": " + j.detail : "")); return; }
     status("");
     const snip = buildHTML(j.url);
