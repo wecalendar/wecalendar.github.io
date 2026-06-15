@@ -124,25 +124,41 @@ function openModal(id){
     '<h2>Confirm your booking</h2><div class="when">'+when+'</div>'+
     '<label>Your name</label><input id="gName" autocomplete="name">'+
     '<label>Your email</label><input id="gEmail" type="email" autocomplete="email">'+
+    '<label style="margin-bottom:2px">Bring your team <span style="color:var(--muted);font-weight:400">(optional)</span></label>'+
+    '<div id="guestWrap"></div>'+
+    '<button type="button" id="addGuest" style="background:none;border:none;color:var(--accent);font:inherit;font-size:13px;cursor:pointer;padding:6px 0 0">+ Add a teammate</button>'+
     '<div class="err" id="mErr"></div>'+
     '<button class="btn" id="confirm">Book it</button>'+
     '<button class="btn sec" id="cancel">Cancel</button>';
   $("ov").classList.add("on");
   $("cancel").onclick = closeModal;
   $("confirm").onclick = () => doBook(id);
+  $("addGuest").onclick = addGuestRow;
   $("gName").focus();
+}
+function addGuestRow(){
+  const wrap = $("guestWrap");
+  if (wrap.querySelectorAll(".gGuest").length >= 10) return;
+  const row = document.createElement("div");
+  row.style.cssText = "display:flex;gap:6px;align-items:center;margin-top:8px";
+  row.innerHTML = '<input class="gGuest" type="email" placeholder="teammate@company.com" autocomplete="off" style="flex:1">'+
+    '<button type="button" aria-label="Remove" style="background:none;border:none;color:var(--muted);font-size:18px;cursor:pointer;line-height:1;padding:0 4px">×</button>';
+  row.querySelector("button").onclick = () => row.remove();
+  wrap.appendChild(row);
+  row.querySelector("input").focus();
 }
 function closeModal(){ $("ov").classList.remove("on"); }
 
 async function doBook(slotId){
   const name = $("gName").value.trim(), email = $("gEmail").value.trim();
   if (!name || !/.+@.+\..+/.test(email)){ $("mErr").textContent = "Please enter your name and a valid email."; return; }
+  const guests = [...new Set([...document.querySelectorAll(".gGuest")].map(i => i.value.trim().toLowerCase()).filter(v => /.+@.+\..+/.test(v) && v !== email.toLowerCase()))];
   const btn = $("confirm"); btn.disabled = true; btn.textContent = "Booking…"; $("mErr").textContent = "";
   try {
     const r = await fetch(FN + "/book-slot", {
       method: "POST",
       headers: { "Content-Type":"application/json", "apikey": C.SUPABASE_ANON_KEY, "Authorization":"Bearer "+C.SUPABASE_ANON_KEY },
-      body: JSON.stringify({ slug, slotId, name, email }),
+      body: JSON.stringify({ slug, slotId, name, email, guests }),
     });
     const j = await r.json().catch(()=>({}));
     if (r.status === 409 || j.reason === "taken"){
