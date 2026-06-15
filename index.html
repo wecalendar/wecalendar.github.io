@@ -357,10 +357,7 @@
         </div>
         <div class="panel-btns">
           <button class="btn" id="clearBtn">Clear</button>
-          <button class="btn primary" id="copyBtn">Copy for email</button>
-        </div>
-        <div class="panel-btns" id="linkRow" style="display:none">
-          <button class="btn primary" id="linkBtn" style="flex:1;background:#00C875;border-color:#00C875" title="Create a real one-click booking link — slots lock when taken">🔗 Create booking link</button>
+          <button class="btn primary" id="linkBtn" style="flex:2;background:#00C875;border-color:#00C875" title="Create a link anyone can use to book — works for Google, Apple or Outlook, no account needed">🔗 Create booking link</button>
         </div>
         <div id="focusCard" title="Tap for another tip" style="display:none; margin-top:20px; background:#fff; border:1px solid #E2DBFF; border-radius:16px; padding:15px 16px; cursor:pointer;">
           <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:11px;">
@@ -1441,32 +1438,33 @@ function bookingLink(start, end){
   return "https://outlook.office.com/calendar/deeplink/compose?" + p.toString();
 }
 function dayKeyTz(d){ return new Intl.DateTimeFormat("en-CA", {timeZone:S.tz, year:"numeric", month:"2-digit", day:"2-digit"}).format(d); }
-function buildHTML(){
-  if (!S.sel.length) return null;
+function buildHTML(url){
+  if (!S.sel.length || !url) return "";
   const byDay = {};
   S.sel.slice().sort((a,b)=>a.start-b.start).forEach(x => { const k = dayKeyTz(x.start); (byDay[k] = byDay[k] || []).push(x); });
   const names = attendeeNames();
   const intro = S.people.length
-    ? "Here are times when " + names.join(" and ") + " are all available. Click one to book it directly"
-    : "Would any of these times work for you? Click one to book it directly";
+    ? "Here are times when " + names.join(" and ") + " are all available — click one to book instantly"
+    : "Would any of these times work for you? Click one to book instantly";
   let h = "<div>" + intro + " <i>(times in " + tzLongName() + ")</i>:<br><br>";
   Object.keys(byDay).sort().forEach(k => {
     h += "<b>" + fmt(byDay[k][0].start, {weekday:"long", month:"long", day:"numeric"}) + "</b><br>";
     byDay[k].forEach(x => {
-      h += '&nbsp;&nbsp;•&nbsp;<a href="' + bookingLink(x.start, x.end) + '">' + fmtTime(x.start) + " – " + fmtTime(x.end) + "</a><br>";
+      h += '&nbsp;&nbsp;•&nbsp;<a href="' + url + '">' + fmtTime(x.start) + " – " + fmtTime(x.end) + "</a><br>";
     });
     h += "<br>";
   });
-  const extras = [];
-  if (S.linkVid) extras.push('Calls are on video — <a href="' + S.linkVid + '">join link</a>, also added to your invite.');
-  if (S.linkCal) extras.push('None of these work? <a href="' + S.linkCal + '">Pick another time here</a>.');
-  if (S.linkSoc) extras.push('<a href="' + S.linkSoc + '">Connect with ' + pname().split(" ")[0] + "</a>.");
-  if (extras.length) h += extras.join(" ") + "<br>";
-  return h + "</div>";
+  h += '<a href="' + url + '">See all times &amp; book →</a></div>';
+  return h;
 }
 function renderPreview(){
-  document.getElementById("preview").innerHTML = buildHTML() ||
-    '<span style="color:var(--muted2)">Hit the green + on the calendar, then click or drag to paint availability slots — a hyperlinked snippet appears here.</span>';
+  const el = document.getElementById("preview");
+  if (!S.sel.length){
+    el.innerHTML = '<span style="color:var(--muted2)">Hit the green + on the calendar and paint your free slots. Then hit <b>Create booking link</b> for a page anyone can book — no account needed.</span>';
+  } else {
+    const days = new Set(S.sel.map(x => dayKeyTz(x.start))).size;
+    el.innerHTML = '<div style="font-size:13px;color:var(--ink)"><b>' + S.sel.length + '</b> slot' + (S.sel.length > 1 ? 's' : '') + ' painted across ' + days + ' day' + (days > 1 ? 's' : '') + '.<br><span style="color:var(--muted2);font-size:12px">Hit <b>Create booking link</b> below for a shareable booking page.</span></div>';
+  }
   const note = document.getElementById("jointNote");
   if (note){
     if (S.people.length){
@@ -1475,24 +1473,7 @@ function renderPreview(){
     } else note.style.display = "none";
   }
 }
-document.getElementById("copyBtn").onclick = async () => {
-  const h = buildHTML();
-  if (!h) { toast("Paint some slots first"); return; }
-  const plain = document.getElementById("preview").innerText;
-  try {
-    await navigator.clipboard.write([new ClipboardItem({
-      "text/html": new Blob([h], {type:"text/html"}),
-      "text/plain": new Blob([plain], {type:"text/plain"}),
-    })]);
-    toast("Copied — paste into your email");
-  } catch(e){
-    const el = document.getElementById("preview");
-    const r = document.createRange(); r.selectNodeContents(el);
-    const sel = getSelection(); sel.removeAllRanges(); sel.addRange(r);
-    document.execCommand("copy"); sel.removeAllRanges();
-    toast("Copied — paste into your email");
-  }
-};
+// Copy-for-email (Outlook deeplinks) removed — sharing is now the universal booking link.
 
 // ---- backend booking loop (optional; activates only when wecal-config.js is filled) ----
 const WECAL = window.WECAL || {};
@@ -1520,10 +1501,21 @@ async function createBookingLink(){
     if (!r.ok || !j.url){ status(""); toast("Couldn't create link" + (j.detail ? ": " + j.detail : "")); return; }
     try { await navigator.clipboard.writeText(j.url); } catch(e){}
     status("");
-    document.getElementById("preview").insertAdjacentHTML("afterbegin",
-      '<div style="background:#E6FBF1;border:1px solid #00C875;border-radius:10px;padding:10px;margin-bottom:10px;font-size:13px">' +
-      '🔗 <b>Booking link created &amp; copied</b><br><a href="' + j.url + '" target="_blank" style="word-break:break-all">' + j.url + '</a>' +
-      '<br><span style="color:var(--muted2);font-size:11.5px">' + j.count + ' slots · taken slots lock automatically.</span></div>');
+    const snip = buildHTML(j.url);
+    document.getElementById("preview").innerHTML =
+      '<div style="background:#E6FBF1;border:1px solid #00C875;border-radius:10px;padding:12px;margin-bottom:12px;font-size:13px">' +
+      '🔗 <b>Booking link ready &amp; copied</b><br>' +
+      '<a href="' + j.url + '" target="_blank" style="word-break:break-all;color:#0B7A4B">' + j.url + '</a>' +
+      '<div style="color:var(--muted2);font-size:11.5px;margin-top:6px">' + j.count + ' slot' + (j.count === 1 ? '' : 's') + ' · works for anyone — Google, Apple or Outlook, no account needed · booked times lock automatically.</div>' +
+      '<button id="copySnip" class="btn" style="margin-top:10px">📋 Copy times for email</button>' +
+      '</div>' + snip;
+    const cs = document.getElementById("copySnip");
+    if (cs) cs.onclick = async () => {
+      const tmp = document.createElement("div"); tmp.innerHTML = snip;
+      const plain = tmp.innerText + "\n" + j.url;
+      try { await navigator.clipboard.write([new ClipboardItem({ "text/html": new Blob([snip], {type:"text/html"}), "text/plain": new Blob([plain], {type:"text/plain"}) })]); toast("Copied — paste into your email"); }
+      catch(e){ try { await navigator.clipboard.writeText(plain); toast("Copied"); } catch(e2){ toast("Copy failed"); } }
+    };
     toast("🔗 Booking link copied");
   } catch(e){ status(""); toast("Error creating link"); }
 }
@@ -1539,10 +1531,7 @@ function consentUrl(provider){
     "/oauth2/v2.0/authorize?response_type=code&response_mode=query&client_id=" +
     encodeURIComponent(WECAL.MS_CLIENT_ID || CONFIG.clientId) + "&redirect_uri=" + redirect + "&scope=" + scope + "&state=microsoft";
 }
-if (WECAL_ON){
-  const lr = document.getElementById("linkRow"); if (lr) lr.style.display = "";
-}
-{ const b = document.getElementById("linkBtn"); if (b) b.onclick = createBookingLink; }
+{ const b = document.getElementById("linkBtn"); if (b){ b.onclick = createBookingLink; if (!WECAL_ON) b.style.display = "none"; } }
 if (new URLSearchParams(location.search).get("connected")) setTimeout(() => toast("✓ Calendar connected for booking"), 600);
 
 // ---- focus tip card (contextual productivity principle, reacts to today's load) ----
