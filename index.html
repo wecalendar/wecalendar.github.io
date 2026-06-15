@@ -183,6 +183,8 @@
   .busy .bn { display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden; font-weight:600; word-break:break-word; }
   .busy.short .bn { -webkit-line-clamp:1; }
   .busy .bt { color:#E8559F; font-size:10.5px; }
+  .busy .joinbtn{ position:absolute; top:3px; right:4px; background:#7C6FF7; color:#fff; font-size:9.5px; font-weight:700; padding:1px 6px; border-radius:6px; text-decoration:none; line-height:1.5; z-index:2; }
+  .busy .joinbtn:hover{ background:#6B5FE0; }
   .busy.dim { opacity:.18; }
   .ovl { pointer-events:none; z-index:3; opacity:.8; border-radius:6px; font-size:9.5px; color:#fff; padding:2px 4px; font-weight:600; overflow:hidden; white-space:nowrap; left:55% !important; }
   .sel { background:#00C875; color:#fff; font-size:11px; font-weight:600; padding:3px 6px; line-height:1.3; z-index:4; cursor:pointer; box-shadow:0 2px 6px rgba(0,200,117,.45); display:flex; align-items:center; }
@@ -356,8 +358,7 @@
           <button class="btn primary" id="aiGo">Go</button>
         </div>
         <div class="panel-btns">
-          <button class="btn" id="tplSave" title="Save this week's painted slots as your reusable template">💾 Save week</button>
-          <button class="btn" id="tplApply" title="Paint your saved template onto the visible week">📋 Apply week</button>
+          <button class="btn" id="fillBtn" style="flex:1" title="Auto-select all your open slots within work hours for the day or week you're viewing — skips meetings, buffers and past times">✨ Fill free slots</button>
         </div>
         <div id="focusCard" title="Tap for another tip" style="display:none; margin-top:20px; background:#fff; border:1px solid #E2DBFF; border-radius:16px; padding:15px 16px; cursor:pointer;">
           <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:11px;">
@@ -472,10 +473,10 @@ async function fetchEvents(weekStart, weekEnd, calIds){
     const base = id ? "/me/calendars/" + encodeURIComponent(id) + "/calendarView" : "/me/calendarView";
     const obj = await gget(base + "?" + new URLSearchParams({
       startDateTime: weekStart.toISOString(), endDateTime: weekEnd.toISOString(),
-      $select: "subject,start,end,showAs,isAllDay", $orderby: "start/dateTime", $top: "150",
+      $select: "subject,start,end,showAs,isAllDay,isOnlineMeeting,onlineMeeting,webLink", $orderby: "start/dateTime", $top: "150",
     }));
     (obj.value || []).filter(ev => !ev.isAllDay && ev.showAs !== "free")
-      .forEach(ev => all.push({ subject: ev.subject || "(busy)", start: new Date(ev.start.dateTime + "Z"), end: new Date(ev.end.dateTime + "Z") }));
+      .forEach(ev => all.push({ subject: ev.subject || "(busy)", start: new Date(ev.start.dateTime + "Z"), end: new Date(ev.end.dateTime + "Z"), join: (ev.onlineMeeting && ev.onlineMeeting.joinUrl) || null, web: ev.webLink || null }));
   }));
   return all;
 }
@@ -930,39 +931,30 @@ async function aiSuggest(qRaw){
   await load();
   toast("✨ Added " + picked.length + " slot" + (picked.length > 1 ? "s" : ""));
 }
-// ---- weekly availability template ----
-document.getElementById("tplSave").onclick = () => {
+// ---- fill free slots (auto-select open work-hours time for the day/week in view) ----
+function fillFreeSlots(){
   const days = weekDays();
-  const keys = new Set(days.map(d => keyOf(d)));
-  const items = S.sel.filter(s => keys.has(keyOf(s.start))).map(s => ({
-    dow: s.start.getDay(),
-    min: s.start.getHours() * 60 + s.start.getMinutes(),
-    dur: Math.round((s.end - s.start) / 60000),
-  }));
-  if (!items.length){ toast("Paint some slots this week first, then save"); return; }
-  localStorage.setItem("weekTemplate", JSON.stringify(items));
-  toast("💾 Template saved (" + items.length + " slots)");
-};
-document.getElementById("tplApply").onclick = () => {
-  let tpl;
-  try { tpl = JSON.parse(localStorage.getItem("weekTemplate") || "[]"); } catch(e){ tpl = []; }
-  if (!tpl.length){ toast("No template yet — paint a week and hit 💾 Save week"); return; }
-  const days = weekDays();
-  let added = 0, skipped = 0;
+  const slotLen = S.slotLen || 30;
   const cutoff = new Date(Date.now() + (S.minNotice || 0) * 3600000);
-  tpl.forEach(t => {
-    const d = days.find(x => x.getDay() === t.dow);
-    if (!d){ skipped++; return; }
-    const start = new Date(d.getFullYear(), d.getMonth(), d.getDate(), 0, t.min);
-    const end = new Date(start.getTime() + t.dur * 60000);
-    if (start < cutoff){ skipped++; return; }
-    if (hardConflict(start, end)){ skipped++; return; }
-    if (S.dayCap && S.sel.filter(x => keyOf(x.start) === keyOf(start)).length >= S.dayCap){ skipped++; return; }
-    S.sel.push({ start, end }); added++;
+  let added = 0;
+  days.forEach(d => {
+    let dayCount = S.sel.filter(x => keyOf(x.start) === keyOf(d)).length;
+    for (let m = S.workStart * 60; m + slotLen <= S.workEnd * 60; m += slotLen){
+      if (S.dayCap && dayCount >= S.dayCap) break;
+      const start = new Date(d.getFullYear(), d.getMonth(), d.getDate(), 0, m);
+      const end = new Date(start.getTime() + slotLen * 60000);
+      if (start < cutoff) continue;
+      if (hardConflict(start, end)) continue;
+      S.sel.push({ start, end }); added++; dayCount++;
+    }
   });
-  if (added){ S.sel.sort((a,b) => a.start - b.start); saveSel(); renderAll(); }
-  toast(added ? ("📋 Applied " + added + " slot" + (added>1?"s":"") + (skipped ? " (" + skipped + " skipped — busy or past)" : "")) : "Nothing applied — all template slots are busy or past");
-};
+  if (added){ S.sel.sort((a, b) => a.start - b.start); saveSel(); renderAll(); }
+  const scope = S.dayView ? "day" : "week";
+  toast(added
+    ? ("✨ Filled " + added + " free slot" + (added > 1 ? "s" : "") + " this " + scope)
+    : ("No open slots in your work hours this " + scope + " — looks full."));
+}
+document.getElementById("fillBtn").onclick = fillFreeSlots;
 
 const aiIn = document.getElementById("aiIn");
 document.getElementById("aiGo").onclick = () => aiSuggest(aiIn.value);
@@ -1153,6 +1145,7 @@ function renderHeadAndMonth(){
   document.getElementById("monthLabel").textContent = (m1 === m2) ? m1 : m1.split(" ")[0] + " – " + m2;
   if (S.dayView) document.getElementById("monthLabel").textContent = fmt(new Date(first.getFullYear(), first.getMonth(), first.getDate(), 12), {weekday:"long", month:"long", day:"numeric"});
   const vt = document.getElementById("viewTog"); if (vt) vt.textContent = S.dayView ? "Week" : "Day";
+  const fb = document.getElementById("fillBtn"); if (fb) fb.textContent = S.dayView ? "✨ Fill this day" : "✨ Fill this week";
 
   const head = document.getElementById("calHead");
   head.innerHTML = "";
@@ -1266,6 +1259,14 @@ function renderBody(){
       el.style.top = a + "px"; el.style.height = hgt + "px";
       el.innerHTML = '<span class="bn"></span><span class="bt">' + fmtRange(ev.start, ev.end) + "</span>";
       el.querySelector(".bn").textContent = ev.subject;
+      if (ev.join && ev.end > now){
+        const jb = document.createElement("a");
+        jb.className = "joinbtn"; jb.href = ev.join; jb.target = "_blank"; jb.rel = "noopener";
+        jb.textContent = "Join"; jb.title = "Join the call";
+        jb.onclick = e => e.stopPropagation();
+        jb.onpointerdown = e => e.stopPropagation();
+        el.appendChild(jb);
+      }
       el.onmouseenter = () => showEvTip(el, ev);
       el.onmouseleave = hideEvTip;
       col.appendChild(el);
