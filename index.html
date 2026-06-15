@@ -552,6 +552,7 @@ async function loadPhoto(){
   setAvatar(null);
 }
 function onSignedIn(){
+  if (ensureBookingConnected()) return;
   document.getElementById("signinView").style.display = "none";
   document.getElementById("appView").style.display = "";
   const prof = localStorage.getItem("profileName") || "";
@@ -1539,6 +1540,16 @@ function consentUrl(provider){
   return "https://login.microsoftonline.com/" + encodeURIComponent(WECAL.MS_TENANT || "common") +
     "/oauth2/v2.0/authorize?response_type=code&response_mode=query&client_id=" +
     encodeURIComponent(WECAL.MS_CLIENT_ID || CONFIG.clientId) + "&redirect_uri=" + redirect + "&scope=" + scope + "&state=microsoft";
+}
+// One-time: connect the calendar for booking right after sign-in (loop-guarded).
+function ensureBookingConnected(){
+  if (!WECAL_ON) return false;
+  if (new URLSearchParams(location.search).get("connected")){ localStorage.setItem("bookingConnected", "1"); return false; }
+  if (localStorage.getItem("bookingConnected") === "1") return false;
+  if (sessionStorage.getItem("connectTried") === "1") return false;
+  sessionStorage.setItem("connectTried", "1");
+  location.href = consentUrl("microsoft");
+  return true;
 }
 { const b = document.getElementById("linkBtn"); if (b){ b.onclick = createBookingLink; if (!WECAL_ON) b.style.display = "none"; } }
 if (new URLSearchParams(location.search).get("connected")) setTimeout(() => toast("✓ Calendar connected for booking"), 600);
