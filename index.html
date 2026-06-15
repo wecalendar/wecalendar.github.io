@@ -347,6 +347,10 @@
         <div id="preview" style="margin-top:12px"><span style="color:var(--muted2)">Hit the green + on the calendar, then click or drag to paint availability slots — a hyperlinked snippet appears here.</span></div>
         <div class="hint">Green + toggles paint mode; otherwise hover meetings to read them. Click a painted slot to remove it. Standard slots are 30 min; drag for longer (snaps to 15 min). Times shown in <b id="tzLabel"></b>.</div>
         <div class="hint" id="jointNote" style="display:none"></div>
+        <div class="panel-btns">
+          <button class="btn" id="clearBtn">Clear</button>
+          <button class="btn primary" id="linkBtn" style="flex:2;background:#00C875;border-color:#00C875" title="Copy a booking link for these slots — anyone can use it to book (Google, Apple or Outlook), no account needed">📋 Copy slots</button>
+        </div>
         <div class="ai-box">
           <input type="text" id="aiIn" placeholder='✨ e.g. "5 slots in the afternoon next 5 days"'>
           <button class="btn primary" id="aiGo">Go</button>
@@ -354,10 +358,6 @@
         <div class="panel-btns">
           <button class="btn" id="tplSave" title="Save this week's painted slots as your reusable template">💾 Save week</button>
           <button class="btn" id="tplApply" title="Paint your saved template onto the visible week">📋 Apply week</button>
-        </div>
-        <div class="panel-btns">
-          <button class="btn" id="clearBtn">Clear</button>
-          <button class="btn primary" id="linkBtn" style="flex:2;background:#00C875;border-color:#00C875" title="Copy a booking link for these slots — anyone can use it to book (Google, Apple or Outlook), no account needed">📋 Copy slots</button>
         </div>
         <div id="focusCard" title="Tap for another tip" style="display:none; margin-top:20px; background:#fff; border:1px solid #E2DBFF; border-radius:16px; padding:15px 16px; cursor:pointer;">
           <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:11px;">
@@ -1454,7 +1454,7 @@ function buildHTML(url){
     });
     h += "<br>";
   });
-  h += '<a href="' + url + '">See all times &amp; book →</a></div>';
+  h += '</div>';
   return h;
 }
 function renderPreview(){
@@ -1513,12 +1513,7 @@ async function createBookingLink(){
       const plain = tmp.innerText + "\n" + j.url;
       await navigator.clipboard.write([new ClipboardItem({ "text/html": new Blob([snip], {type:"text/html"}), "text/plain": new Blob([plain], {type:"text/plain"}) })]);
     } catch(e){ try { await navigator.clipboard.writeText(j.url); } catch(e2){} }
-    document.getElementById("preview").innerHTML =
-      '<div style="background:#E6FBF1;border:1px solid #00C875;border-radius:10px;padding:12px;margin-bottom:12px;font-size:13px">' +
-      '✓ <b>Slots copied — paste to share</b><br>' +
-      '<a href="' + j.url + '" target="_blank" style="word-break:break-all;color:#0B7A4B">' + j.url + '</a>' +
-      '<div style="color:var(--muted2);font-size:11.5px;margin-top:6px">' + j.count + ' slot' + (j.count === 1 ? '' : 's') + ' · works for anyone (Google, Apple or Outlook), no account needed · booked times lock automatically.</div>' +
-      '</div>' + snip;
+    document.getElementById("preview").innerHTML = snip;
     toast("📋 Slots copied — paste to share");
   } catch(e){ status(""); toast("Error creating link"); }
 }
