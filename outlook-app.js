@@ -1,6 +1,8 @@
 (function(){
   var WC = window.WECAL || {};
   var ready = false, TOKEN = null, EMAIL = "", SLOTS = [], SLOTLEN = 30, WS = 9, WE = 18, SELDAY = null;
+  var TZ = (function(){ try { return Intl.DateTimeFormat().resolvedOptions().timeZone; } catch(e){ return "UTC"; } })();
+  var TZLIST = [["America/Los_Angeles","Los Angeles · PT"],["America/Denver","Denver · MT"],["America/Chicago","Chicago · CT"],["America/New_York","New York · ET"],["America/Sao_Paulo","São Paulo"],["Europe/London","London"],["Europe/Lisbon","Lisbon"],["Europe/Paris","Paris · CET"],["Europe/Berlin","Berlin"],["Europe/Madrid","Madrid"],["Africa/Johannesburg","Johannesburg"],["Asia/Dubai","Dubai"],["Asia/Kolkata","India"],["Asia/Singapore","Singapore"],["Asia/Tokyo","Tokyo"],["Australia/Sydney","Sydney"],["Pacific/Auckland","Auckland"],["UTC","UTC"]];
   var now0 = new Date(), MC = { y: now0.getFullYear(), m: now0.getMonth() };
 
   var STYLE = ''
@@ -17,7 +19,7 @@
     + '.seg button{flex:1;border:none;background:#fff;padding:8px;font-family:inherit;font-size:13px;color:var(--ink);cursor:pointer}'
     + '.seg button.on{background:var(--accent);color:#fff;font-weight:600}'
     + 'label{display:block;font-size:12px;color:var(--muted);margin:12px 0 5px;font-weight:500}'
-    + 'textarea,input[type=text]{width:100%;border:1px solid var(--line);border-radius:10px;padding:10px 12px;font-size:13px;font-family:inherit;color:var(--ink);outline:none;resize:vertical}'
+    + 'textarea,input[type=text],select{width:100%;border:1px solid var(--line);border-radius:10px;padding:10px 12px;font-size:13px;font-family:inherit;color:var(--ink);background:#fff;outline:none}textarea{resize:vertical}'
     + '.mcal{border:1px solid var(--line);border-radius:12px;padding:8px;margin:6px 0 4px}'
     + '.mc-head{display:flex;justify-content:space-between;align-items:center;font-size:12.5px;font-weight:600;margin-bottom:6px;padding:0 2px}'
     + '.mc-nav{border:none;background:none;font-size:16px;cursor:pointer;color:var(--accent);padding:0 6px}'
@@ -41,6 +43,8 @@
     + '<div id="picker" class="hide">'
     +   '<label>Slot length</label>'
     +   '<div class="seg" id="seg"><button data-l="15">15m</button><button data-l="30" class="on">30m</button><button data-l="60">60m</button></div>'
+    +   '<label>Show times in</label>'
+    +   '<select id="tzSel"></select>'
     +   '<label>Pick a day</label>'
     +   '<div class="mcal" id="mcal"></div>'
     +   '<button class="btn sec" id="pickWeek">Or select the whole week</button>'
@@ -57,15 +61,17 @@
   document.getElementById("app").innerHTML = HTML;
   var $ = function(id){ return document.getElementById(id); };
   function keyOf(d){ return d.getFullYear() + "-" + d.getMonth() + "-" + d.getDate(); }
-  function fmtTime(d){ return d.toLocaleTimeString([], { hour: "numeric", minute: "2-digit" }); }
-  function fmtDay(d){ return d.toLocaleDateString([], { weekday: "long", day: "numeric", month: "short" }); }
-  function fmtDayLong(d){ return d.toLocaleDateString([], { weekday: "long", month: "long", day: "numeric" }); }
-  function tzLong(){ var tz = Intl.DateTimeFormat().resolvedOptions().timeZone, d = new Date(); function part(style){ try { return new Intl.DateTimeFormat("en-US", { timeZone: tz, timeZoneName: style }).formatToParts(d).find(function(p){ return p.type === "timeZoneName"; }).value; } catch(e){ return ""; } } var lng = part("long"), shrt = part("short"); if (shrt && /^[A-Za-z]+$/.test(shrt) && shrt !== lng) return lng + " — " + shrt; return lng || tz; }
-  function snippet(url){ var sel = selected(), byDay = {}, order = []; sel.forEach(function(x){ var k = x.start.toDateString(); if (!byDay[k]){ byDay[k] = []; order.push(k); } byDay[k].push(x); }); var h = "<div>Would any of these times work for you? Click one to book instantly <i>(times in " + tzLong() + ")</i>:<br><br>"; order.forEach(function(k){ h += "<b>" + fmtDayLong(byDay[k][0].start) + "</b><br>"; byDay[k].forEach(function(x){ h += '&nbsp;&nbsp;&#8226;&nbsp;<a href="' + url + '">' + fmtTime(x.start) + " &ndash; " + fmtTime(x.end) + "</a><br>"; }); h += "<br>"; }); return h + "</div>"; }
+  function fmtTime(d){ return d.toLocaleTimeString([], { hour: "numeric", minute: "2-digit", timeZone: TZ }); }
+  function fmtDay(d){ return d.toLocaleDateString([], { weekday: "long", day: "numeric", month: "short", timeZone: TZ }); }
+  function fmtDayLong(d){ return d.toLocaleDateString([], { weekday: "long", month: "long", day: "numeric", timeZone: TZ }); }
+  function dayKey(d){ try { return new Intl.DateTimeFormat("en-CA", { timeZone: TZ, year: "numeric", month: "2-digit", day: "2-digit" }).format(d); } catch(e){ return d.toDateString(); } }
+  function tzLong(){ var d = new Date(); function part(style){ try { return new Intl.DateTimeFormat("en-US", { timeZone: TZ, timeZoneName: style }).formatToParts(d).find(function(p){ return p.type === "timeZoneName"; }).value; } catch(e){ return ""; } } var lng = part("long"), shrt = part("short"); if (shrt && /^[A-Za-z]+$/.test(shrt) && shrt !== lng) return lng + " — " + shrt; return lng || TZ; }
+  function snippet(url){ var sel = selected(), byDay = {}, order = []; sel.forEach(function(x){ var k = dayKey(x.start); if (!byDay[k]){ byDay[k] = []; order.push(k); } byDay[k].push(x); }); var h = "<div>Would any of these times work for you? Click one to book instantly <i>(times in " + tzLong() + ")</i>:<br><br>"; order.forEach(function(k){ h += "<b>" + fmtDayLong(byDay[k][0].start) + "</b><br>"; byDay[k].forEach(function(x){ h += '&nbsp;&nbsp;&#8226;&nbsp;<a href="' + url + '">' + fmtTime(x.start) + " &ndash; " + fmtTime(x.end) + "</a><br>"; }); h += "<br>"; }); return h + "</div>"; }
 
   Office.onReady(function(info){ ready = !!(info && info.host === Office.HostType.Outlook); });
 
   $("seg").addEventListener("click", function(e){ var b = e.target.closest("button"); if (!b) return; SLOTLEN = +b.dataset.l; [].forEach.call($("seg").querySelectorAll("button"), function(x){ x.classList.toggle("on", x === b); }); });
+  (function(){ var sel = $("tzSel"); if (!sel) return; var opts = '<option value="' + TZ + '">My timezone</option>'; TZLIST.forEach(function(z){ if (z[0] !== TZ) opts += '<option value="' + z[0] + '">' + z[1] + '</option>'; }); sel.innerHTML = opts; sel.value = TZ; sel.onchange = function(){ TZ = sel.value; renderSlots(); }; })();
 
   $("signin").onclick = function(){
     var m = $("soMsg"); m.className = "msg"; m.textContent = "Opening sign in…";
@@ -136,7 +142,7 @@
     $("actions").style.display = SLOTS.length ? "block" : "none";
     if (!SLOTS.length){ $("slots").innerHTML = ""; return; }
     var byDay = {}, order = [];
-    SLOTS.forEach(function(x, i){ var k = x.start.toDateString(); if (!byDay[k]){ byDay[k] = []; order.push(k); } byDay[k].push(i); });
+    SLOTS.forEach(function(x, i){ var k = dayKey(x.start); if (!byDay[k]){ byDay[k] = []; order.push(k); } byDay[k].push(i); });
     var h = "";
     order.forEach(function(k){ h += '<div class="day">' + fmtDay(SLOTS[byDay[k][0]].start) + '</div>'; byDay[k].forEach(function(i){ var x = SLOTS[i]; h += '<label class="srow"><input type="checkbox" data-i="' + i + '"' + (x.sel ? " checked" : "") + '> ' + fmtTime(x.start) + ' &ndash; ' + fmtTime(x.end) + '</label>'; }); });
     $("slots").innerHTML = h;
@@ -144,7 +150,7 @@
   }
 
   function createLink(slots){
-    var tz = Intl.DateTimeFormat().resolvedOptions().timeZone;
+    var tz = TZ;
     return fetch(WC.FN_BASE + "/publish-link", { method: "POST", headers: { "Content-Type": "application/json", apikey: WC.SUPABASE_ANON_KEY, Authorization: "Bearer " + TOKEN }, body: JSON.stringify({ title: "Meeting with " + (EMAIL || "me"), tz: tz, slots: slots.map(function(x){ return { start: x.start.toISOString(), end: x.end.toISOString() }; }), attendees: [], videoLink: "", settings: { workStart: WS, workEnd: WE, buffer: 0, minNotice: 0, dayCap: 0 } }) })
       .then(function(r){ return r.json().then(function(j){ return { status: r.status, j: j }; }); })
       .then(function(o){ if (o.status === 412 || (o.j && o.j.error === "not_connected")) throw { notConnected: true }; if (!o.j || !o.j.url) throw new Error((o.j && o.j.detail) || "Couldn't create link"); return o.j.url; });
