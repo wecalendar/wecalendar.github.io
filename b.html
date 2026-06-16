@@ -118,6 +118,7 @@ function render(){
 function openModal(id){
   const s = SLOTS.find(x => x.id === id);
   if (!s) return;
+  booking = false;
   if (sb && LINK) sb.from("analytics_events").insert({ link_id: LINK.id, type: "slot_click", meta:{ slotId:id } });
   const when = dayLabel(new Date(s.start_utc)) + " · " + timeLabel(new Date(s.start_utc)) + "–" + timeLabel(new Date(s.end_utc));
   $("modal").innerHTML =
@@ -149,9 +150,11 @@ function addGuestRow(){
 }
 function closeModal(){ $("ov").classList.remove("on"); }
 
+let booking = false;
 async function doBook(slotId){
   const name = $("gName").value.trim(), email = $("gEmail").value.trim();
   if (!name || !/.+@.+\..+/.test(email)){ $("mErr").textContent = "Please enter your name and a valid email."; return; }
+  if (booking) return; booking = true;
   const guests = [...new Set([...document.querySelectorAll(".gGuest")].map(i => i.value.trim().toLowerCase()).filter(v => /.+@.+\..+/.test(v) && v !== email.toLowerCase()))];
   const btn = $("confirm"); btn.disabled = true; btn.textContent = "Booking…"; $("mErr").textContent = "";
   try {
@@ -166,20 +169,21 @@ async function doBook(slotId){
       const s = SLOTS.find(x=>x.id===slotId); if (s) s.status = "booked";
       setTimeout(() => { closeModal(); render(); }, 1400); return;
     }
-    if (!r.ok || !j.ok){ $("mErr").textContent = "Something went wrong — please try again."; btn.disabled=false; btn.textContent="Book it"; return; }
+    if (!r.ok || !j.ok){ $("mErr").textContent = "Something went wrong — please try again."; btn.disabled=false; btn.textContent="Book it"; booking=false; return; }
     const s = SLOTS.find(x=>x.id===slotId); if (s) s.status = "booked";
     const whenStr = s ? "See you " + new Intl.DateTimeFormat("en-US", { timeZone: TZ, weekday: "long" }).format(new Date(s.start_utc)) + " at " + timeLabel(new Date(s.start_utc)) : "";
     confirmView(j.joinUrl, name, whenStr);
-  } catch(e){ $("mErr").textContent = "Network error — please try again."; btn.disabled=false; btn.textContent="Book it"; }
+  } catch(e){ $("mErr").textContent = "Network error — please try again."; btn.disabled=false; btn.textContent="Book it"; booking=false; }
 }
 
 function confirmView(joinUrl, name, whenStr){
+  const safeJoin = (joinUrl && /^https?:\/\/[^\s"'<>]+$/i.test(joinUrl)) ? joinUrl : "";
   const first = ((name || "").trim().split(/\s+/)[0] || "").replace(/[<>&"]/g, "");
   $("modal").innerHTML =
     '<div class="ok-ico">✓</div>'+
     '<h2 style="text-align:center">You’re booked' + (first ? ", " + first : "") + '! 🎉</h2>'+
     '<p style="text-align:center;color:var(--muted);margin-top:6px;font-size:13.5px">' + (whenStr ? whenStr + ". " : "") + 'A calendar invite is on its way to your inbox.</p>'+
-    (joinUrl ? '<div style="text-align:center"><a class="joinbtn" href="'+joinUrl+'" target="_blank" rel="noopener">Join link</a></div>' : '')+
+    (safeJoin ? '<div style="text-align:center"><a class="joinbtn" href="'+safeJoin+'" target="_blank" rel="noopener">Join link</a></div>' : '')+
     '<button class="btn sec" id="done" style="margin-top:18px">Done</button>';
   $("done").onclick = () => { closeModal(); render(); };
   if (window.confetti) { try { window.confetti({ particleCount: 130, spread: 78, origin: { y: 0.6 }, colors: ['#7C6FF7','#00C875','#C9BCFF','#FFC400'] }); } catch(e){} }
@@ -195,7 +199,7 @@ async function init(){
   }
   sb = window.supabase.createClient(C.SUPABASE_URL, C.SUPABASE_ANON_KEY);
 
-  const { data: link } = await sb.from("links").select("id,title,tz,attendees,status").eq("slug", slug).maybeSingle();
+  const { data: link } = await sb.from("links").select("id,title,tz,status").eq("slug", slug).maybeSingle();
   if (!link || link.status !== "active"){ fail("This booking link has expired or doesn’t exist."); return; }
   LINK = link;
   $("title").textContent = link.title || "Book a time";

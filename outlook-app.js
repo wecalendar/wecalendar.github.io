@@ -136,6 +136,7 @@
     var out = []; for (var i = 0; i < 5; i++){ var d = new Date(base + i * 86400000); out.push(new Date(d.getUTCFullYear(), d.getUTCMonth(), d.getUTCDate())); } return out;
   }
 
+  function graphAll(url, acc){ return fetch(url, { headers: { Authorization: "Bearer " + TOKEN, Prefer: 'outlook.timezone="UTC"' } }).then(function(r){ if (r.status === 401) throw { expired: true }; return r.json(); }).then(function(j){ acc = acc.concat(j.value || []); var nx = j["@odata.nextLink"]; if (nx && acc.length < 2000) return graphAll(nx, acc); return acc; }); }
   function pick(scope, date){
     var msg = $("msg"); msg.className = "msg"; msg.textContent = "Reading your calendar…"; SLOTS = []; renderSlots();
     LAST = { scope: scope, date: date };
@@ -143,14 +144,14 @@
     var PAD = 48 * 3600000;
     var ws = new Date(new Date(days[0].getFullYear(), days[0].getMonth(), days[0].getDate()).getTime() - PAD);
     var last = days[days.length - 1], we = new Date(new Date(last.getFullYear(), last.getMonth(), last.getDate() + 1).getTime() + PAD);
-    var url = "https://graph.microsoft.com/v1.0/me/calendarView?" + new URLSearchParams({ startDateTime: ws.toISOString(), endDateTime: we.toISOString(), "$select": "start,end,showAs,isAllDay", "$top": "500" });
-    fetch(url, { headers: { Authorization: "Bearer " + TOKEN, Prefer: 'outlook.timezone="UTC"' } })
-      .then(function(r){ if (r.status === 401) throw { expired: true }; return r.json(); })
-      .then(function(j){
+    var url = "https://graph.microsoft.com/v1.0/me/calendarView?" + new URLSearchParams({ startDateTime: ws.toISOString(), endDateTime: we.toISOString(), "$select": "start,end,showAs,isAllDay,responseStatus", "$top": "200" });
+    graphAll(url, []).then(function(items){
         var busy = [], offDays = {};
-        (j.value || []).forEach(function(ev){
-          if (!ev.start || !ev.end || ev.showAs === "free") return;
+        items.forEach(function(ev){
+          if (!ev.start || !ev.start.dateTime || !ev.end || !ev.end.dateTime || ev.showAs === "free" || ev.showAs === "workingElsewhere") return;
+          if (ev.responseStatus && ev.responseStatus.response === "declined") return;
           var s = new Date(ev.start.dateTime + "Z"), e = new Date(ev.end.dateTime + "Z");
+          if (isNaN(s.getTime()) || isNaN(e.getTime())) return;
           if (ev.isAllDay){ for (var t = s.getTime(); t < e.getTime(); t += 86400000){ var od = new Date(t); offDays[od.getUTCFullYear() + "-" + od.getUTCMonth() + "-" + od.getUTCDate()] = true; } }
           else { busy.push({ start: s, end: e }); }
         });

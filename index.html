@@ -513,10 +513,10 @@ async function init(){
 }
 document.getElementById("signInBtn").onclick = () => pca.loginRedirect({ scopes: SCOPES }).catch(showSigninErr);
 document.getElementById("signOut").onclick = () => pca.logoutRedirect({ account });
-function showSigninErr(e){ document.getElementById("signinErr").innerHTML = '<span class="err">' + (e.errorMessage || e.message || e) + "</span>"; }
+function showSigninErr(e){ const b = document.getElementById("signinErr"); b.textContent = ""; const sp = document.createElement("span"); sp.className = "err"; sp.textContent = (e && (e.errorMessage || e.message)) || String(e); b.appendChild(sp); }
 async function token(){
   try { return (await pca.acquireTokenSilent({ scopes: SCOPES, account })).accessToken; }
-  catch(e){ await pca.acquireTokenRedirect({ scopes: SCOPES }); }
+  catch(e){ pca.acquireTokenRedirect({ scopes: SCOPES }); throw e; }
 }
 async function gget(url){
   const tk = await token();
@@ -533,12 +533,20 @@ async function fetchEvents(weekStart, weekEnd, calIds){
   const all = [];
   await Promise.all(ids.map(async id => {
     const base = id ? "/me/calendars/" + encodeURIComponent(id) + "/calendarView" : "/me/calendarView";
-    const obj = await gget(base + "?" + new URLSearchParams({
+    const tk = await token();
+    let next = "https://graph.microsoft.com/v1.0" + base + "?" + new URLSearchParams({
       startDateTime: weekStart.toISOString(), endDateTime: weekEnd.toISOString(),
-      $select: "subject,start,end,showAs,isAllDay,isOnlineMeeting,onlineMeeting,webLink", $orderby: "start/dateTime", $top: "150",
-    }));
-    (obj.value || []).filter(ev => ev.showAs !== "free" && (!ev.isAllDay || ev.showAs === "oof"))
-      .forEach(ev => all.push({ id: ev.id, subject: ev.subject || "(busy)", start: new Date(ev.start.dateTime + "Z"), end: new Date(ev.end.dateTime + "Z"), allDay: !!ev.isAllDay, oof: ev.showAs === "oof", join: (ev.onlineMeeting && ev.onlineMeeting.joinUrl) || null, web: ev.webLink || null }));
+      $select: "subject,start,end,showAs,isAllDay,isOnlineMeeting,onlineMeeting,webLink,responseStatus", $orderby: "start/dateTime", $top: "200",
+    });
+    let guard = 0;
+    while (next && guard++ < 25){
+      const r = await fetch(next, { headers: { Authorization: "Bearer " + tk, Prefer: 'outlook.timezone="UTC"' } });
+      if (!r.ok) throw new Error("Graph " + r.status);
+      const obj = await r.json();
+      (obj.value || []).filter(ev => ev.start && ev.start.dateTime && ev.end && ev.end.dateTime && ev.showAs !== "free" && ev.showAs !== "workingElsewhere" && !(ev.responseStatus && ev.responseStatus.response === "declined") && (!ev.isAllDay || ev.showAs === "oof"))
+        .forEach(ev => all.push({ id: ev.id, subject: ev.subject || "(busy)", start: new Date(ev.start.dateTime + "Z"), end: new Date(ev.end.dateTime + "Z"), allDay: !!ev.isAllDay, oof: ev.showAs === "oof", join: (ev.onlineMeeting && ev.onlineMeeting.joinUrl) || null, web: ev.webLink || null }));
+      next = obj["@odata.nextLink"] || null;
+    }
   }));
   return all;
 }
@@ -573,7 +581,8 @@ function ptoNamesForDay(d){
   return names;
 }
 async function searchPeople(q){
-  const safe = q.replace(/'/g, "''");
+  const safe = q.replace(/[^\p{L}\p{N}@.\- ]/gu, "").slice(0, 64);
+  if (!safe) return [];
   const obj = await gget("/users?" + new URLSearchParams({
     "$filter": "startswith(displayName,'" + safe + "') or startswith(givenName,'" + safe + "') or startswith(surname,'" + safe + "') or startswith(mail,'" + safe + "')",
     "$select": "displayName,mail,userPrincipalName",
