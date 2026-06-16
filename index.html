@@ -186,6 +186,7 @@
   .busy .bt { color:#E8559F; font-size:10.5px; }
   .evt.allday{ background:rgba(120,124,140,.13); border:1px solid #C7CCD6; color:#5b6270; }
   .evt.allday .bn{ font-weight:600; font-size:11px; }
+  #blockBtn:hover{ background:#F4F0FF !important; border-color:#C9BCFF !important; }
   .busy .joinbtn{ position:absolute; top:3px; right:4px; background:#7C6FF7; color:#fff; font-size:9.5px; font-weight:700; padding:1px 6px; border-radius:6px; text-decoration:none; line-height:1.5; z-index:2; }
   .busy .joinbtn:hover{ background:#6B5FE0; }
   .busy.dim { opacity:.18; }
@@ -286,7 +287,6 @@
         <button class="todaybtn" id="viewTog" title="Switch between day and week view">Day</button>
       </div>
       <div class="grow"></div>
-      <button class="todaybtn" id="blockBtn" title="Block time on your calendar (out of office)" style="margin-right:10px">🚫 Block for OOO</button>
       <span class="avatar" id="avatar" title="Your profile — see Settings"></span>
       <span class="who" id="whoName" style="color:var(--ink);font-weight:600;"></span>
       <button class="gearbtn" id="setBtn" title="Settings" aria-label="Settings">
@@ -325,6 +325,7 @@
           <div style="font-size:12px; font-weight:600; color:var(--ink); margin-bottom:10px; display:flex; align-items:center; gap:6px;">🌴 Out of office <span id="ptoScope" style="font-weight:500; color:var(--muted2); font-size:11px;">· this week</span></div>
           <div id="ptoList"></div>
         </div>
+        <button id="blockBtn" title="Block time on your calendar (out of office)" style="width:100%; margin-top:14px; display:flex; align-items:center; justify-content:center; gap:7px; background:#fff; border:1px solid var(--line); border-radius:10px; padding:10px; font-size:13px; font-weight:600; font-family:inherit; color:var(--ink); cursor:pointer;">🚫 Block OOO</button>
       </aside>
 
       <div class="calwrap">
