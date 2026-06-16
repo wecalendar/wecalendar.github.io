@@ -61,6 +61,11 @@
   var st = document.createElement("style"); st.textContent = STYLE; document.head.appendChild(st);
   document.getElementById("app").innerHTML = HTML;
   var $ = function(id){ return document.getElementById(id); };
+  var AUTHKEY = "wecal_addin_auth";
+  function tokExp(t){ try { var b = t.split(".")[1].replace(/-/g, "+").replace(/_/g, "/"); b += "===".slice((b.length + 3) % 4); var p = JSON.parse(atob(b)); return p.exp ? p.exp * 1000 : Date.now() + 40 * 60000; } catch(e){ return Date.now() + 40 * 60000; } }
+  function saveAuth(){ try { localStorage.setItem(AUTHKEY, JSON.stringify({ token: TOKEN, email: EMAIL, exp: tokExp(TOKEN) })); } catch(e){} }
+  function clearAuth(){ try { localStorage.removeItem(AUTHKEY); } catch(e){} }
+  function loadAuth(){ try { var a = JSON.parse(localStorage.getItem(AUTHKEY) || "null"); if (a && a.token && a.exp > Date.now() + 60000) return a; } catch(e){} return null; }
   function keyOf(d){ return d.getFullYear() + "-" + d.getMonth() + "-" + d.getDate(); }
   function fmtTime(d){ return d.toLocaleTimeString([], { hour: "numeric", minute: "2-digit", timeZone: TZ }); }
   function fmtDay(d){ return d.toLocaleDateString([], { weekday: "long", day: "numeric", month: "short", timeZone: TZ }); }
@@ -82,7 +87,7 @@
       dlg.addEventHandler(Office.EventType.DialogMessageReceived, function(arg){
         var d; try { d = JSON.parse(arg.message); } catch(e){ d = {}; }
         try { dlg.close(); } catch(e){}
-        if (d.token){ TOKEN = d.token; EMAIL = d.email || ""; $("signedout").classList.add("hide"); $("picker").classList.remove("hide"); drawMiniCal(); }
+        if (d.token){ TOKEN = d.token; EMAIL = d.email || ""; saveAuth(); $("signedout").classList.add("hide"); $("picker").classList.remove("hide"); drawMiniCal(); }
         else { m.className = "msg err"; m.textContent = "Sign in didn't complete" + (d.error ? (": " + d.error) : "") + ". Try again."; }
       });
       dlg.addEventHandler(Office.EventType.DialogEventReceived, function(){});
@@ -133,7 +138,7 @@
         if (!SLOTS.length){ msg.className = "msg err"; msg.textContent = "No open time in 9am–6pm " + (scope === "day" ? "that day" : "this week") + "."; }
       })
       .catch(function(err){
-        if (err && err.expired){ msg.className = "msg err"; msg.textContent = "Session expired — sign in again."; TOKEN = null; $("picker").classList.add("hide"); $("signedout").classList.remove("hide"); }
+        if (err && err.expired){ msg.className = "msg err"; msg.textContent = "Session expired — sign in again."; TOKEN = null; clearAuth(); $("picker").classList.add("hide"); $("signedout").classList.remove("hide"); }
         else { msg.className = "msg err"; msg.textContent = "Couldn't read calendar: " + ((err && err.message) || "try again"); }
       });
   }
@@ -170,4 +175,6 @@
     if (!ready || !Office.context.mailbox || !Office.context.mailbox.item || !Office.context.mailbox.item.body){ msg.className = "msg err"; msg.textContent = "Open this while composing an email."; return; }
     Office.context.mailbox.item.body.setSelectedDataAsync(html, { coercionType: Office.CoercionType.Html }, function(r){ if (r.status === Office.AsyncResultStatus.Succeeded){ msg.className = "msg ok"; msg.textContent = okText; } else { msg.className = "msg err"; msg.textContent = "Couldn't insert: " + ((r.error && r.error.message) || "try again"); } });
   }
+
+  (function restoreAuth(){ var a = loadAuth(); if (a){ TOKEN = a.token; EMAIL = a.email || ""; $("signedout").classList.add("hide"); $("picker").classList.remove("hide"); drawMiniCal(); } })();
 })();
