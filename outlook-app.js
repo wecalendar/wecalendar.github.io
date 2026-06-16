@@ -34,6 +34,13 @@
     + '.or{text-align:center;font-size:11px;color:var(--muted);margin:18px 0 4px;position:relative}'
     + '.or:before,.or:after{content:"";position:absolute;top:50%;width:36%;height:1px;background:var(--line)}.or:before{left:0}.or:after{right:0}'
     + '.msg{font-size:12px;margin-top:10px;min-height:16px}.ok{color:var(--green-d);font-weight:600}.err{color:#b91c1c}'
+    + '.mres{border:1px solid var(--line);border-radius:10px;margin-top:6px;overflow:hidden}'
+    + '.mres>div{padding:7px 10px;font-size:12.5px;cursor:pointer;border-bottom:1px solid #F0ECFF}'
+    + '.mres>div:last-child{border-bottom:none}.mres>div:hover{background:#F0ECFF}'
+    + '.mres .em{color:var(--muted);font-size:11px}'
+    + '.chips{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}'
+    + '.chip{display:inline-flex;align-items:center;gap:6px;background:#F0ECFF;color:var(--accent-d);border-radius:20px;padding:4px 10px;font-size:12px;font-weight:600}'
+    + '.chip .cx{cursor:pointer;font-weight:700;opacity:.7}.chip .cx:hover{opacity:1;color:#b91c1c}'
     + '.hide{display:none}';
 
   var HTML = ''
@@ -45,6 +52,10 @@
     +   '<div class="seg" id="seg"><button data-l="15">15m</button><button data-l="30" class="on">30m</button><button data-l="60">60m</button></div>'
     +   '<label>Show times in</label>'
     +   '<select id="tzSel"></select>'
+    +   '<label>Meet with (optional)</label>'
+    +   '<input type="text" id="mateIn" autocomplete="off" placeholder="Search a teammate by name">'
+    +   '<div id="mateRes"></div>'
+    +   '<div class="chips" id="mateChips"></div>'
     +   '<label>Pick a day</label>'
     +   '<div class="mcal" id="mcal"></div>'
     +   '<button class="btn sec" id="pickDay">✨ Select slots for day</button>'
@@ -78,6 +89,13 @@
 
   $("seg").addEventListener("click", function(e){ var b = e.target.closest("button"); if (!b) return; SLOTLEN = +b.dataset.l; [].forEach.call($("seg").querySelectorAll("button"), function(x){ x.classList.toggle("on", x === b); }); });
   (function(){ var sel = $("tzSel"); if (!sel) return; var opts = '<option value="' + TZ + '">My timezone</option>'; TZLIST.forEach(function(z){ if (z[0] !== TZ) opts += '<option value="' + z[0] + '">' + z[1] + '</option>'; }); sel.innerHTML = opts; sel.value = TZ; sel.onchange = function(){ TZ = sel.value; renderSlots(); }; })();
+
+  var MATES = [];
+  function renderMates(){ var c = $("mateChips"); c.innerHTML = ""; MATES.forEach(function(m, i){ var s = document.createElement("span"); s.className = "chip"; var t = document.createElement("span"); t.textContent = m.name; var x = document.createElement("span"); x.className = "cx"; x.innerHTML = "&times;"; x.onclick = function(){ MATES.splice(i, 1); renderMates(); }; s.appendChild(t); s.appendChild(x); c.appendChild(s); }); }
+  function addMate(name, email){ if (!email || MATES.some(function(m){ return m.email === email; })) return; MATES.push({ name: name || email, email: email }); renderMates(); }
+  var mateT = null;
+  function searchMates(term, box){ if (!TOKEN) return; var url = "https://graph.microsoft.com/v1.0/users?$search=%22displayName:" + encodeURIComponent(term) + "%22&$select=displayName,mail,userPrincipalName&$top=6"; fetch(url, { headers: { Authorization: "Bearer " + TOKEN, ConsistencyLevel: "eventual" } }).then(function(r){ return r.json(); }).then(function(j){ var list = (j.value || []).filter(function(u){ return u.mail || u.userPrincipalName; }); box.innerHTML = ""; if (!list.length) return; var wrap = document.createElement("div"); wrap.className = "mres"; list.forEach(function(u){ var em = u.mail || u.userPrincipalName; var row = document.createElement("div"); var nm = document.createElement("div"); nm.textContent = u.displayName || em; var e2 = document.createElement("div"); e2.className = "em"; e2.textContent = em; row.appendChild(nm); row.appendChild(e2); row.onclick = function(){ addMate(u.displayName || em, em); $("mateIn").value = ""; box.innerHTML = ""; }; wrap.appendChild(row); }); box.appendChild(wrap); }).catch(function(){ box.innerHTML = ""; }); }
+  $("mateIn").addEventListener("input", function(){ var term = $("mateIn").value.trim(), box = $("mateRes"); clearTimeout(mateT); if (term.length < 2){ box.innerHTML = ""; return; } mateT = setTimeout(function(){ searchMates(term, box); }, 300); });
 
   $("signin").onclick = function(){
     var m = $("soMsg"); m.className = "msg"; m.textContent = "Opening sign in…";
@@ -159,7 +177,7 @@
 
   function createLink(slots){
     var tz = TZ;
-    return fetch(WC.FN_BASE + "/publish-link", { method: "POST", headers: { "Content-Type": "application/json", apikey: WC.SUPABASE_ANON_KEY, Authorization: "Bearer " + TOKEN }, body: JSON.stringify({ title: "Meeting with " + (EMAIL || "me"), tz: tz, slots: slots.map(function(x){ return { start: x.start.toISOString(), end: x.end.toISOString() }; }), attendees: [], videoLink: "", settings: { workStart: WS, workEnd: WE, buffer: 0, minNotice: 0, dayCap: 0 } }) })
+    return fetch(WC.FN_BASE + "/publish-link", { method: "POST", headers: { "Content-Type": "application/json", apikey: WC.SUPABASE_ANON_KEY, Authorization: "Bearer " + TOKEN }, body: JSON.stringify({ title: "Meeting with " + (EMAIL || "me"), tz: tz, slots: slots.map(function(x){ return { start: x.start.toISOString(), end: x.end.toISOString() }; }), attendees: MATES.map(function(m){ return m.email; }), videoLink: "", settings: { workStart: WS, workEnd: WE, buffer: 0, minNotice: 0, dayCap: 0 } }) })
       .then(function(r){ return r.json().then(function(j){ return { status: r.status, j: j }; }); })
       .then(function(o){ if (o.status === 412 || (o.j && o.j.error === "not_connected")) throw { notConnected: true }; if (!o.j || !o.j.url) throw new Error((o.j && o.j.detail) || "Couldn't create link"); return o.j.url; });
   }
