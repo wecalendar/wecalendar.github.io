@@ -358,7 +358,8 @@
           <button class="btn primary" id="aiGo">Go</button>
         </div>
         <div class="panel-btns">
-          <button class="btn" id="fillBtn" style="flex:1" title="Auto-select all your open slots within work hours for the day or week you're viewing — skips meetings, buffers and past times">✨ Fill free slots</button>
+          <button class="btn" id="fillDayBtn" style="flex:1" title="Auto-select your open slots for the focused day (today, or the day you're viewing) — skips meetings, buffers and past times">✨ Auto-fill day</button>
+          <button class="btn" id="fillWeekBtn" style="flex:1" title="Auto-select your open slots across the whole week you're viewing — skips meetings, buffers and past times">✨ Auto-fill week</button>
         </div>
         <div id="focusCard" title="Tap for another tip" style="display:none; margin-top:20px; background:#fff; border:1px solid #E2DBFF; border-radius:16px; padding:15px 16px; cursor:pointer;">
           <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:11px;">
@@ -931,9 +932,14 @@ async function aiSuggest(qRaw){
   await load();
   toast("✨ Added " + picked.length + " slot" + (picked.length > 1 ? "s" : ""));
 }
-// ---- fill free slots (auto-select open work-hours time for the day/week in view) ----
-function fillFreeSlots(){
-  const days = weekDays();
+// ---- auto-fill free slots (open work-hours time, by day or week) ----
+function dayForFill(){
+  if (S.dayView) return new Date(S.dayView);
+  const days = weekDaysFull(), tk = keyOf(new Date());
+  return days.find(d => keyOf(d) === tk) || days[0];
+}
+function fillFreeSlots(scope){
+  const days = (scope === "day") ? [dayForFill()] : weekDaysFull();
   const slotLen = S.slotLen || 30;
   const cutoff = new Date(Date.now() + (S.minNotice || 0) * 3600000);
   let added = 0;
@@ -949,12 +955,12 @@ function fillFreeSlots(){
     }
   });
   if (added){ S.sel.sort((a, b) => a.start - b.start); saveSel(); renderAll(); }
-  const scope = S.dayView ? "day" : "week";
   toast(added
     ? ("✨ Filled " + added + " free slot" + (added > 1 ? "s" : "") + " this " + scope)
     : ("No open slots in your work hours this " + scope + " — looks full."));
 }
-document.getElementById("fillBtn").onclick = fillFreeSlots;
+document.getElementById("fillDayBtn").onclick = () => fillFreeSlots("day");
+document.getElementById("fillWeekBtn").onclick = () => fillFreeSlots("week");
 
 const aiIn = document.getElementById("aiIn");
 document.getElementById("aiGo").onclick = () => aiSuggest(aiIn.value);
@@ -1145,7 +1151,6 @@ function renderHeadAndMonth(){
   document.getElementById("monthLabel").textContent = (m1 === m2) ? m1 : m1.split(" ")[0] + " – " + m2;
   if (S.dayView) document.getElementById("monthLabel").textContent = fmt(new Date(first.getFullYear(), first.getMonth(), first.getDate(), 12), {weekday:"long", month:"long", day:"numeric"});
   const vt = document.getElementById("viewTog"); if (vt) vt.textContent = S.dayView ? "Week" : "Day";
-  const fb = document.getElementById("fillBtn"); if (fb) fb.textContent = S.dayView ? "✨ Fill this day" : "✨ Fill this week";
 
   const head = document.getElementById("calHead");
   head.innerHTML = "";
