@@ -66,7 +66,7 @@
   function fmtDayLong(d){ return d.toLocaleDateString([], { weekday: "long", month: "long", day: "numeric", timeZone: TZ }); }
   function dayKey(d){ try { return new Intl.DateTimeFormat("en-CA", { timeZone: TZ, year: "numeric", month: "2-digit", day: "2-digit" }).format(d); } catch(e){ return d.toDateString(); } }
   function tzLong(){ var d = new Date(); function part(style){ try { return new Intl.DateTimeFormat("en-US", { timeZone: TZ, timeZoneName: style }).formatToParts(d).find(function(p){ return p.type === "timeZoneName"; }).value; } catch(e){ return ""; } } var lng = part("long"), shrt = part("short"); if (shrt && /^[A-Za-z]+$/.test(shrt) && shrt !== lng) return lng + " — " + shrt; return lng || TZ; }
-  function snippet(url){ var sel = selected(), byDay = {}, order = []; sel.forEach(function(x){ var k = dayKey(x.start); if (!byDay[k]){ byDay[k] = []; order.push(k); } byDay[k].push(x); }); var h = "<div>Would any of these times work for you? Click one to book instantly <i>(times in " + tzLong() + ")</i>:<br><br>"; order.forEach(function(k){ h += "<b>" + fmtDayLong(byDay[k][0].start) + "</b><br>"; byDay[k].forEach(function(x){ h += '&nbsp;&nbsp;&#8226;&nbsp;<a href="' + url + '">' + fmtTime(x.start) + " &ndash; " + fmtTime(x.end) + "</a><br>"; }); h += "<br>"; }); return h + "</div>"; }
+  function snippet(url, slots){ var sel = slots || selected(), byDay = {}, order = []; sel.forEach(function(x){ var k = dayKey(x.start); if (!byDay[k]){ byDay[k] = []; order.push(k); } byDay[k].push(x); }); var h = "<div>Would any of these times work for you? Click one to book instantly <i>(times in " + tzLong() + ")</i>:<br><br>"; order.forEach(function(k){ h += "<b>" + fmtDayLong(byDay[k][0].start) + "</b><br>"; byDay[k].forEach(function(x){ h += '&nbsp;&nbsp;&#8226;&nbsp;<a href="' + url + '">' + fmtTime(x.start) + " &ndash; " + fmtTime(x.end) + "</a><br>"; }); h += "<br>"; }); return h + "</div>"; }
 
   Office.onReady(function(info){ ready = !!(info && info.host === Office.HostType.Outlook); });
 
@@ -118,18 +118,18 @@
       .then(function(r){ if (r.status === 401) throw { expired: true }; return r.json(); })
       .then(function(j){
         var busy = (j.value || []).filter(function(ev){ return !ev.isAllDay && ev.showAs !== "free"; }).map(function(ev){ return { start: new Date(ev.start.dateTime + "Z"), end: new Date(ev.end.dateTime + "Z") }; });
-        var nw = new Date();
+        var nw = Date.now(), minLen = SLOTLEN * 60000;
         days.forEach(function(d){
-          for (var mm = WS * 60; mm + SLOTLEN <= WE * 60; mm += SLOTLEN){
-            var s = new Date(d.getFullYear(), d.getMonth(), d.getDate(), 0, mm), e = new Date(s.getTime() + SLOTLEN * 60000);
-            if (s < nw) continue;
-            if (busy.some(function(b){ return b.start < e && s < b.end; })) continue;
-            SLOTS.push({ start: s, end: e, sel: true });
-          }
+          var ws2 = new Date(d.getFullYear(), d.getMonth(), d.getDate(), WS).getTime();
+          var we2 = new Date(d.getFullYear(), d.getMonth(), d.getDate(), WE).getTime();
+          var segs = busy.filter(function(b){ return b.end.getTime() > ws2 && b.start.getTime() < we2; }).map(function(b){ return [b.start.getTime(), b.end.getTime()]; }).sort(function(a, b){ return a[0] - b[0]; });
+          var cur = Math.max(ws2, nw);
+          segs.forEach(function(sg){ if (sg[0] > cur && Math.min(sg[0], we2) - cur >= minLen) SLOTS.push({ start: new Date(cur), end: new Date(Math.min(sg[0], we2)), sel: true }); if (sg[1] > cur) cur = sg[1]; });
+          if (we2 - cur >= minLen) SLOTS.push({ start: new Date(cur), end: new Date(we2), sel: true });
         });
         renderSlots();
-        msg.textContent = SLOTS.length ? (SLOTS.length + " open slot" + (SLOTS.length > 1 ? "s" : "") + " — untick any you don't want.") : "";
-        if (!SLOTS.length){ msg.className = "msg err"; msg.textContent = "No open slots in 9am–6pm " + (scope === "day" ? "that day" : "this week") + "."; }
+        msg.textContent = SLOTS.length ? (SLOTS.length + " free block" + (SLOTS.length > 1 ? "s" : "") + " — untick any. Copy splits them into client slots.") : "";
+        if (!SLOTS.length){ msg.className = "msg err"; msg.textContent = "No open time in 9am–6pm " + (scope === "day" ? "that day" : "this week") + "."; }
       })
       .catch(function(err){
         if (err && err.expired){ msg.className = "msg err"; msg.textContent = "Session expired — sign in again."; TOKEN = null; $("picker").classList.add("hide"); $("signedout").classList.remove("hide"); }
@@ -157,8 +157,9 @@
   }
   function linkErr(msg){ return function(e){ if (e && e.notConnected){ msg.className = "msg err"; msg.textContent = "Open WeCalendar in your browser and sign in once to connect for booking, then retry."; } else { msg.className = "msg err"; msg.textContent = "Error: " + ((e && e.message) || "try again"); } }; }
   function selected(){ return SLOTS.filter(function(s){ return s.sel; }); }
+  function splitWindows(wins){ var out = [], len = SLOTLEN * 60000; wins.slice().sort(function(a, b){ return a.start - b.start; }).forEach(function(w){ var ws = w.start.getTime(), we = w.end.getTime(), any = false; for (var t = ws; t + len <= we; t += len){ out.push({ start: new Date(t), end: new Date(t + len) }); any = true; } if (!any) out.push({ start: new Date(ws), end: new Date(we) }); }); return out; }
 
-  $("insertLink").onclick = function(){ var msg = $("msg"), sel = selected(); if (!sel.length){ msg.className = "msg err"; msg.textContent = "Tick at least one slot first."; return; } msg.className = "msg"; msg.textContent = "Creating link…"; createLink(sel).then(function(url){ insertHtml(snippet(url), msg, "✓ Slots added to your email."); }).catch(linkErr(msg)); };
+  $("insertLink").onclick = function(){ var msg = $("msg"), sel = selected(); if (!sel.length){ msg.className = "msg err"; msg.textContent = "Tick at least one block first."; return; } msg.className = "msg"; msg.textContent = "Creating link…"; createLink(splitWindows(sel)).then(function(url){ insertHtml(snippet(url, sel), msg, "✓ Times added to your email."); }).catch(linkErr(msg)); };
 
   $("insertPaste").onclick = function(){ var url = $("lnk").value.trim(), msg = $("pMsg"); if (!/^https?:\/\/.+/.test(url)){ msg.className = "msg err"; msg.textContent = "Paste a valid link first."; return; } insertHtml('<a href="' + url + '">Book a time with me</a>', msg, "✓ Link added to your email."); };
 
