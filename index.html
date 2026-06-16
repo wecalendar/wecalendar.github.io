@@ -1411,20 +1411,26 @@ function attachPaint(col, dayStart){
     if (!paint || paint.col !== col) return;
     let s = paint.startMin, en = paint.endMin;
     if (!paint.moved || en - s < S.slotLen) en = s + S.slotLen;
-    const start = new Date(paint.dayStart.getTime() + s * 60000);
-    const end   = new Date(paint.dayStart.getTime() + en * 60000);
+    const dayStart = paint.dayStart;
     paint.el.remove(); paint = null;
-    if (start < new Date()){ toast("⏰ You can't select a slot in the past"); return; }
-    if (S.minNotice && start < new Date(Date.now() + S.minNotice * 3600000)){ toast("⏰ Needs at least " + S.minNotice + " h notice"); return; }
-    if (S.dayCap && S.sel.filter(x => keyOf(x.start) === keyOf(start)).length >= S.dayCap){ toast("🚫 Daily limit reached (" + S.dayCap + " slots/day)"); return; }
-    const hard = hardConflict(start, end);
-    if (hard){ toast("🚫 That time overlaps " + hard); return; }
-    S.sel.push({ start, end });
-    S.sel.sort((a,b) => a.start - b.start);
-    saveSel();
-    const c = findConflict(start, end);
-    if (c) toast("⚠ Heads up — this overlaps " + c);
-    renderAll();
+    // Split the dragged window into standard-length (slotLen) bookable slots.
+    const now = new Date(), cutoff = new Date(Date.now() + (S.minNotice || 0) * 3600000);
+    let added = 0, skipped = 0, note = null;
+    for (let m = s; m + S.slotLen <= en; m += S.slotLen){
+      const start = new Date(dayStart.getTime() + m * 60000);
+      const end = new Date(dayStart.getTime() + (m + S.slotLen) * 60000);
+      if (start < now){ skipped++; continue; }
+      if (S.minNotice && start < cutoff){ skipped++; continue; }
+      if (S.dayCap && S.sel.filter(x => keyOf(x.start) === keyOf(start)).length >= S.dayCap){ skipped++; continue; }
+      if (hardConflict(start, end)){ skipped++; continue; }
+      S.sel.push({ start, end }); added++;
+      if (!note){ const c = findConflict(start, end); if (c) note = c; }
+    }
+    if (added){ S.sel.sort((a,b) => a.start - b.start); saveSel(); renderAll(); }
+    if (!added) toast(skipped ? "🚫 Those times are busy or in the past" : "Nothing added");
+    else if (skipped) toast("Added " + added + " × " + S.slotLen + "-min slot" + (added > 1 ? "s" : "") + " · " + skipped + " skipped");
+    else if (note) toast("⚠ Heads up — overlaps " + note);
+    else toast("Added " + added + " × " + S.slotLen + "-min slot" + (added > 1 ? "s" : ""));
   };
 }
 function drawPaint(){
