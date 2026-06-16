@@ -1015,6 +1015,7 @@ function freeWindows(d){
   const busy = [];
   (S.events || []).forEach(ev => { const bs = ev.start.getTime() - BUF, be = ev.end.getTime() + BUF; if (be > ws && bs < we) busy.push([bs, be]); });
   (S.sel || []).forEach(x => { if (keyOf(x.start) === keyOf(d)){ const bs = x.start.getTime(), be = x.end.getTime(); if (be > ws && bs < we) busy.push([bs, be]); } });
+  (S.people || []).forEach(p => { (S.schedules[p.email] || []).forEach(it => { const bs = it.start.getTime(), be = it.end.getTime(); if (be > ws && bs < we) busy.push([bs, be]); }); });
   busy.sort((a, b) => a[0] - b[0]);
   const out = [];
   busy.forEach(seg => { if (seg[0] > cur && Math.min(seg[0], we) - cur >= minLen) out.push({ start: new Date(cur), end: new Date(Math.min(seg[0], we)) }); if (seg[1] > cur) cur = seg[1]; });
