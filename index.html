@@ -186,6 +186,9 @@
   .busy .bt { color:#E8559F; font-size:10.5px; }
   .evt.allday{ background:rgba(120,124,140,.13); border:1px solid #C7CCD6; color:#5b6270; }
   .evt.allday .bn{ font-weight:600; font-size:11px; }
+  .evt.rmable{ cursor:pointer; }
+  .evt .rmx{ position:absolute; top:2px; right:5px; font-size:14px; font-weight:700; color:#9aa3b2; line-height:1; }
+  .evt.rmable:hover .rmx{ color:#b91c1c; }
   #blockBtn:hover{ background:#F4F0FF !important; border-color:#C9BCFF !important; }
   .busy .joinbtn{ position:absolute; top:3px; right:4px; background:#7C6FF7; color:#fff; font-size:9.5px; font-weight:700; padding:1px 6px; border-radius:6px; text-decoration:none; line-height:1.5; z-index:2; }
   .busy .joinbtn:hover{ background:#6B5FE0; }
@@ -503,7 +506,7 @@ async function fetchEvents(weekStart, weekEnd, calIds){
       $select: "subject,start,end,showAs,isAllDay,isOnlineMeeting,onlineMeeting,webLink", $orderby: "start/dateTime", $top: "150",
     }));
     (obj.value || []).filter(ev => ev.showAs !== "free" && (!ev.isAllDay || ev.showAs === "oof"))
-      .forEach(ev => all.push({ subject: ev.subject || "(busy)", start: new Date(ev.start.dateTime + "Z"), end: new Date(ev.end.dateTime + "Z"), allDay: !!ev.isAllDay, oof: ev.showAs === "oof", join: (ev.onlineMeeting && ev.onlineMeeting.joinUrl) || null, web: ev.webLink || null }));
+      .forEach(ev => all.push({ id: ev.id, subject: ev.subject || "(busy)", start: new Date(ev.start.dateTime + "Z"), end: new Date(ev.end.dateTime + "Z"), allDay: !!ev.isAllDay, oof: ev.showAs === "oof", join: (ev.onlineMeeting && ev.onlineMeeting.joinUrl) || null, web: ev.webLink || null }));
   }));
   return all;
 }
@@ -1288,7 +1291,7 @@ function renderBody(){
     // my busy events (dimmed when search active and not matching)
     S.events.forEach(ev => {
       if (ev.end <= dayStart || ev.start >= dayEnd) return;
-      if (ev.allDay){ const ad = document.createElement("div"); ad.className = "evt allday"; ad.style.top = "0px"; ad.style.height = H + "px"; ad.innerHTML = '<span class="bn"></span>'; ad.querySelector(".bn").textContent = ev.subject; col.appendChild(ad); return; }
+      if (ev.allDay){ const ad = document.createElement("div"); ad.className = "evt allday"; ad.style.top = "0px"; ad.style.height = H + "px"; ad.innerHTML = '<span class="bn"></span>'; ad.querySelector(".bn").textContent = ev.subject; if (ev.oof && ev.id){ ad.classList.add("rmable"); ad.title = "Click to remove this out-of-office block"; ad.onclick = () => removeOOO(ev); ad.insertAdjacentHTML("beforeend", '<span class="rmx">×</span>'); } col.appendChild(ad); return; }
       const a = Math.max(top(ev.start), 0), b = Math.min(top(ev.end), H);
       if (b - a < 4) return;
       const el = document.createElement("div");
@@ -1298,6 +1301,7 @@ function renderBody(){
       el.style.top = a + "px"; el.style.height = hgt + "px";
       el.innerHTML = '<span class="bn"></span><span class="bt">' + fmtRange(ev.start, ev.end) + "</span>";
       el.querySelector(".bn").textContent = ev.subject;
+      if (ev.oof && ev.id){ el.classList.add("rmable"); el.title = "Click to remove this out-of-office block"; el.onclick = () => removeOOO(ev); el.insertAdjacentHTML("beforeend", '<span class="rmx">×</span>'); }
       if (ev.join && ev.end > now){
         const jb = document.createElement("a");
         jb.className = "joinbtn"; jb.href = ev.join; jb.target = "_blank"; jb.rel = "noopener";
@@ -1405,6 +1409,17 @@ function showEvTip(el, ev){
   evTip.style.left = left + "px"; evTip.style.top = top + "px";
 }
 function hideEvTip(){ evTip.style.display = "none"; }
+async function removeOOO(ev){
+  if (!ev || !ev.id) return;
+  if (!confirm("Remove this out-of-office block from your calendar?")) return;
+  try {
+    const tk = await token();
+    const r = await fetch("https://graph.microsoft.com/v1.0/me/events/" + encodeURIComponent(ev.id), { method: "DELETE", headers: { Authorization: "Bearer " + tk } });
+    if (!r.ok && r.status !== 404) throw new Error("Graph " + r.status);
+    toast("✓ Out-of-office block removed");
+    load();
+  } catch(e){ toast("Couldn't remove — " + ((e && e.message) || "try again")); }
+}
 document.getElementById("scroller").addEventListener("scroll", hideEvTip);
 
 // ---- paint interaction ----
