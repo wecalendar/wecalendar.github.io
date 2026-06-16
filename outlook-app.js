@@ -45,7 +45,7 @@
     +   '<div class="mcal" id="mcal"></div>'
     +   '<button class="btn sec" id="pickWeek">Or select the whole week</button>'
     +   '<div class="slots" id="slots"></div>'
-    +   '<div class="row" id="actions" style="display:none"><button class="btn sec" id="copyLink" style="margin-top:0">Copy link</button><button class="btn green" id="insertLink" style="margin-top:0">Insert into email</button></div>'
+    +   '<div id="actions" style="display:none"><button class="btn green" id="insertLink" style="margin-top:0">Insert into email</button></div>'
     +   '<div class="msg" id="msg"></div>'
     + '</div>'
     + '<div class="or">or paste a link</div>'
@@ -133,7 +133,7 @@
   $("pickWeek").onclick = function(){ SELDAY = null; drawMiniCal(); pick("week"); };
 
   function renderSlots(){
-    $("actions").style.display = SLOTS.length ? "flex" : "none";
+    $("actions").style.display = SLOTS.length ? "block" : "none";
     if (!SLOTS.length){ $("slots").innerHTML = ""; return; }
     var byDay = {}, order = [];
     SLOTS.forEach(function(x, i){ var k = x.start.toDateString(); if (!byDay[k]){ byDay[k] = []; order.push(k); } byDay[k].push(i); });
@@ -152,7 +152,6 @@
   function linkErr(msg){ return function(e){ if (e && e.notConnected){ msg.className = "msg err"; msg.textContent = "Open WeCalendar in your browser and sign in once to connect for booking, then retry."; } else { msg.className = "msg err"; msg.textContent = "Error: " + ((e && e.message) || "try again"); } }; }
   function selected(){ return SLOTS.filter(function(s){ return s.sel; }); }
 
-  $("copyLink").onclick = function(){ var msg = $("msg"), sel = selected(); if (!sel.length){ msg.className = "msg err"; msg.textContent = "Tick at least one slot first."; return; } msg.className = "msg"; msg.textContent = "Creating link…"; createLink(sel).then(function(url){ var html = snippet(url); try { var tmp = document.createElement("div"); tmp.innerHTML = html; navigator.clipboard.write([new ClipboardItem({ "text/html": new Blob([html], {type:"text/html"}), "text/plain": new Blob([tmp.innerText + "\n" + url], {type:"text/plain"}) })]); } catch(e){ try { navigator.clipboard.writeText(url); } catch(e2){} } msg.className = "msg ok"; msg.textContent = "✓ Slots copied — paste anywhere."; }).catch(linkErr(msg)); };
   $("insertLink").onclick = function(){ var msg = $("msg"), sel = selected(); if (!sel.length){ msg.className = "msg err"; msg.textContent = "Tick at least one slot first."; return; } msg.className = "msg"; msg.textContent = "Creating link…"; createLink(sel).then(function(url){ insertHtml(snippet(url), msg, "✓ Times added to your email."); }).catch(linkErr(msg)); };
 
   $("insertPaste").onclick = function(){ var url = $("lnk").value.trim(), msg = $("pMsg"); if (!/^https?:\/\/.+/.test(url)){ msg.className = "msg err"; msg.textContent = "Paste a valid link first."; return; } insertHtml('<a href="' + url + '">Book a time with me</a>', msg, "✓ Link added to your email."); };
