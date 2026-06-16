@@ -5,7 +5,7 @@
   xmlns:ovr="http://schemas.microsoft.com/office/mailappversionoverrides"
   xsi:type="MailApp">
   <Id>cbfa1f46-148d-4780-8a04-a52ce1cd8eaf</Id>
-  <Version>1.0.0.0</Version>
+  <Version>1.0.2.0</Version>
   <ProviderName>WeCalendar</ProviderName>
   <DefaultLocale>en-US</DefaultLocale>
   <DisplayName DefaultValue="WeCalendar"/>
@@ -27,7 +27,7 @@
   <FormSettings>
     <Form xsi:type="ItemRead">
       <DesktopSettings>
-        <SourceLocation DefaultValue="https://wecalendar.github.io/outlook.html"/>
+        <SourceLocation DefaultValue="https://wecalendar.github.io/outlook.html?v=3"/>
         <RequestedHeight>260</RequestedHeight>
       </DesktopSettings>
     </Form>
@@ -78,7 +78,7 @@
         <bt:Image id="icon80" DefaultValue="https://wecalendar.github.io/wecal-80.png"/>
       </bt:Images>
       <bt:Urls>
-        <bt:Url id="taskpaneUrl" DefaultValue="https://wecalendar.github.io/outlook.html"/>
+        <bt:Url id="taskpaneUrl" DefaultValue="https://wecalendar.github.io/outlook.html?v=3"/>
       </bt:Urls>
       <bt:ShortStrings>
         <bt:String id="grpLabel" DefaultValue="WeCalendar"/>

@@ -8,7 +8,7 @@
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect x='8' y='14' width='84' height='78' rx='14' fill='%237C6FF7'/%3E%3Crect x='8' y='34' width='84' height='58' rx='10' fill='%23fff'/%3E%3Crect x='22' y='46' width='18' height='14' rx='4' fill='%23e8e5ff'/%3E%3Crect x='46' y='46' width='18' height='14' rx='4' fill='%237C6FF7'/%3E%3Crect x='22' y='68' width='18' height='14' rx='4' fill='%23e8e5ff'/%3E%3Crect x='46' y='68' width='18' height='14' rx='4' fill='%23e8e5ff'/%3E%3Ccircle cx='30' cy='8' r='7' fill='%232C1C6C'/%3E%3Ccircle cx='70' cy='8' r='7' fill='%232C1C6C'/%3E%3C/svg%3E">
 <script src="https://cdn.jsdelivr.net/npm/@azure/msal-browser@3/lib/msal-browser.min.js"></script>
 <script src="wecal-config.js"></script>
-<script>if(location.search.indexOf("dlg=1")>-1||(window.sessionStorage&&sessionStorage.getItem("dlgMode")==="1")){document.write('<script src="https://appsforoffice.microsoft.com/lib/1/hosted/office.js"><\/script>');}</script>
+<script>if((location.search.indexOf("dlg=")>-1)||(window.sessionStorage&&(sessionStorage.getItem("dlgMode")==="1"||sessionStorage.getItem("dlgAuth")==="1"))){document.write('<script src="https://appsforoffice.microsoft.com/lib/1/hosted/office.js"><\/script>');}</script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
@@ -556,7 +556,14 @@ async function loadPhoto(){
   } catch(e){}
   setAvatar(null);
 }
+async function returnTokenToPane(){
+  try {
+    const tk = await token();
+    if (window.Office && Office.context && Office.context.ui) Office.context.ui.messageParent(JSON.stringify({ token: tk, email: ME.email }));
+  } catch(e){ try { if (window.Office && Office.context && Office.context.ui) Office.context.ui.messageParent(JSON.stringify({ error: String((e && e.message) || e) })); } catch(e2){} }
+}
 function onSignedIn(){
+  if (AUTHDLG){ returnTokenToPane(); return; }
   if (ensureBookingConnected()) return;
   document.getElementById("signinView").style.display = "none";
   document.getElementById("appView").style.display = "";
@@ -1497,6 +1504,8 @@ const WECAL = window.WECAL || {};
 const WECAL_ON = !!(WECAL.SUPABASE_URL && WECAL.SUPABASE_ANON_KEY);
 if (new URLSearchParams(location.search).get("dlg") === "1") { try { sessionStorage.setItem("dlgMode", "1"); } catch(e){} }
 const DLG = (() => { try { return sessionStorage.getItem("dlgMode") === "1"; } catch(e){ return false; } })();
+if (new URLSearchParams(location.search).get("dlg") === "auth") { try { sessionStorage.setItem("dlgAuth", "1"); } catch(e){} }
+const AUTHDLG = (() => { try { return sessionStorage.getItem("dlgAuth") === "1"; } catch(e){ return false; } })();
 async function createBookingLink(){
   if (!WECAL_ON){ toast("Booking backend not set up yet — see wecalendar-backend/README.md"); return; }
   if (!S.sel.length){ toast("Paint some slots first"); return; }
