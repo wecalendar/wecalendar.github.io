@@ -984,26 +984,29 @@ function dayForFill(){
   const days = weekDaysFull(), tk = keyOf(new Date());
   return days.find(d => keyOf(d) === tk) || days[0];
 }
+function freeWindows(d){
+  const ws = new Date(d.getFullYear(), d.getMonth(), d.getDate(), S.workStart).getTime();
+  const we = new Date(d.getFullYear(), d.getMonth(), d.getDate(), S.workEnd).getTime();
+  const minLen = (S.slotLen || 30) * 60000, BUF = (S.buffer || 0) * 60000;
+  let cur = Math.max(ws, Date.now() + (S.minNotice || 0) * 3600000);
+  const busy = [];
+  (S.events || []).forEach(ev => { const bs = ev.start.getTime() - BUF, be = ev.end.getTime() + BUF; if (be > ws && bs < we) busy.push([bs, be]); });
+  (S.sel || []).forEach(x => { if (keyOf(x.start) === keyOf(d)){ const bs = x.start.getTime(), be = x.end.getTime(); if (be > ws && bs < we) busy.push([bs, be]); } });
+  busy.sort((a, b) => a[0] - b[0]);
+  const out = [];
+  busy.forEach(seg => { if (seg[0] > cur && Math.min(seg[0], we) - cur >= minLen) out.push({ start: new Date(cur), end: new Date(Math.min(seg[0], we)) }); if (seg[1] > cur) cur = seg[1]; });
+  if (we - cur >= minLen) out.push({ start: new Date(cur), end: new Date(we) });
+  return out;
+}
 function fillFreeSlots(scope){
   const days = (scope === "day") ? [dayForFill()] : weekDaysFull();
-  const slotLen = S.slotLen || 30;
-  const cutoff = new Date(Date.now() + (S.minNotice || 0) * 3600000);
   let added = 0;
-  days.forEach(d => {
-    let dayCount = S.sel.filter(x => keyOf(x.start) === keyOf(d)).length;
-    for (let m = S.workStart * 60; m + slotLen <= S.workEnd * 60; m += slotLen){
-      if (S.dayCap && dayCount >= S.dayCap) break;
-      const start = new Date(d.getFullYear(), d.getMonth(), d.getDate(), 0, m);
-      const end = new Date(start.getTime() + slotLen * 60000);
-      if (start < cutoff) continue;
-      if (hardConflict(start, end)) continue;
-      S.sel.push({ start, end }); added++; dayCount++;
-    }
-  });
+  days.forEach(d => { freeWindows(d).forEach(w => { S.sel.push(w); added++; }); });
   if (added){ S.sel.sort((a, b) => a.start - b.start); saveSel(); renderAll(); }
+  const lbl = scope === "day" ? "day" : "week";
   toast(added
-    ? ("✨ Filled " + added + " free slot" + (added > 1 ? "s" : "") + " this " + scope)
-    : ("No open slots in your work hours this " + scope + " — looks full."));
+    ? ("✨ Added " + added + " free block" + (added > 1 ? "s" : "") + " this " + lbl)
+    : ("No open blocks in your work hours this " + lbl + " — looks full."));
 }
 document.getElementById("fillDayBtn").onclick = () => fillFreeSlots("day");
 document.getElementById("fillWeekBtn").onclick = () => fillFreeSlots("week");
