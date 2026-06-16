@@ -47,9 +47,10 @@
     +   '<select id="tzSel"></select>'
     +   '<label>Pick a day</label>'
     +   '<div class="mcal" id="mcal"></div>'
-    +   '<button class="btn sec" id="pickWeek">Or select the whole week</button>'
+    +   '<button class="btn sec" id="pickDay">✨ Select slots for day</button>'
+    +   '<button class="btn sec" id="pickWeek">✨ Select slots for week</button>'
     +   '<div class="slots" id="slots"></div>'
-    +   '<div id="actions" style="display:none"><button class="btn green" id="insertLink" style="margin-top:0">📋 Copy slots</button></div>'
+    +   '<div id="actions" style="display:none"><button class="btn green" id="insertLink" style="margin-top:0">📋 Copy slots</button><button class="btn sec" id="clearBtn">Clear selection</button></div>'
     +   '<div class="msg" id="msg"></div>'
     + '</div>'
     + '<div class="or">or paste a link</div>'
@@ -136,7 +137,9 @@
         else { msg.className = "msg err"; msg.textContent = "Couldn't read calendar: " + ((err && err.message) || "try again"); }
       });
   }
+  $("pickDay").onclick = function(){ var d; if (SELDAY){ var p = SELDAY.split("-"); d = new Date(+p[0], +p[1], +p[2]); } else { d = new Date(); SELDAY = keyOf(d); drawMiniCal(); } pick("day", d); };
   $("pickWeek").onclick = function(){ SELDAY = null; drawMiniCal(); pick("week"); };
+  $("clearBtn").onclick = function(){ SLOTS = []; renderSlots(); var m = $("msg"); m.className = "msg"; m.textContent = "Cleared."; };
 
   function renderSlots(){
     $("actions").style.display = SLOTS.length ? "block" : "none";
