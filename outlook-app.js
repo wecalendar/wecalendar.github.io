@@ -89,7 +89,7 @@
 
   Office.onReady(function(info){ ready = !!(info && info.host === Office.HostType.Outlook); });
 
-  $("seg").addEventListener("click", function(e){ var b = e.target.closest("button"); if (!b) return; SLOTLEN = +b.dataset.l; [].forEach.call($("seg").querySelectorAll("button"), function(x){ x.classList.toggle("on", x === b); }); });
+  $("seg").addEventListener("click", function(e){ var b = e.target.closest("button"); if (!b) return; SLOTLEN = +b.dataset.l; [].forEach.call($("seg").querySelectorAll("button"), function(x){ x.classList.toggle("on", x === b); }); if (LAST && SLOTS.length){ pick(LAST.scope, LAST.date); } });
   (function(){ var sel = $("tzSel"); if (!sel) return; var opts = '<option value="' + TZ + '">My timezone</option>'; TZLIST.forEach(function(z){ if (z[0] !== TZ) opts += '<option value="' + z[0] + '">' + z[1] + '</option>'; }); sel.innerHTML = opts; sel.value = TZ; sel.onchange = function(){ TZ = sel.value; if (LAST && SLOTS.length){ pick(LAST.scope, LAST.date); } else { renderSlots(); } }; })();
 
   var MATES = [];
@@ -130,23 +130,33 @@
 
   function daysFor(scope, date){
     if (scope === "day") return [new Date(date.getFullYear(), date.getMonth(), date.getDate())];
-    var n = new Date(), mon = new Date(n.getFullYear(), n.getMonth(), n.getDate() - ((n.getDay() + 6) % 7));
-    var out = []; for (var i = 0; i < 5; i++){ var d = new Date(mon); d.setDate(mon.getDate() + i); out.push(d); } return out;
+    var p = {}; new Intl.DateTimeFormat("en-CA", { timeZone: TZ, year: "numeric", month: "2-digit", day: "2-digit", weekday: "short" }).formatToParts(new Date()).forEach(function(x){ p[x.type] = x.value; });
+    var wd = { Mon: 0, Tue: 1, Wed: 2, Thu: 3, Fri: 4, Sat: 5, Sun: 6 }[p.weekday];
+    var base = Date.UTC(+p.year, +p.month - 1, +p.day, 12) - wd * 86400000;
+    var out = []; for (var i = 0; i < 5; i++){ var d = new Date(base + i * 86400000); out.push(new Date(d.getUTCFullYear(), d.getUTCMonth(), d.getUTCDate())); } return out;
   }
 
   function pick(scope, date){
     var msg = $("msg"); msg.className = "msg"; msg.textContent = "Reading your calendar…"; SLOTS = []; renderSlots();
     LAST = { scope: scope, date: date };
     var days = daysFor(scope, date);
-    var ws = new Date(days[0].getFullYear(), days[0].getMonth(), days[0].getDate(), 0, 0, 0);
-    var last = days[days.length - 1], we = new Date(last.getFullYear(), last.getMonth(), last.getDate() + 1, 0, 0, 0);
-    var url = "https://graph.microsoft.com/v1.0/me/calendarView?" + new URLSearchParams({ startDateTime: ws.toISOString(), endDateTime: we.toISOString(), "$select": "start,end,showAs,isAllDay", "$top": "200" });
+    var PAD = 48 * 3600000;
+    var ws = new Date(new Date(days[0].getFullYear(), days[0].getMonth(), days[0].getDate()).getTime() - PAD);
+    var last = days[days.length - 1], we = new Date(new Date(last.getFullYear(), last.getMonth(), last.getDate() + 1).getTime() + PAD);
+    var url = "https://graph.microsoft.com/v1.0/me/calendarView?" + new URLSearchParams({ startDateTime: ws.toISOString(), endDateTime: we.toISOString(), "$select": "start,end,showAs,isAllDay", "$top": "500" });
     fetch(url, { headers: { Authorization: "Bearer " + TOKEN, Prefer: 'outlook.timezone="UTC"' } })
       .then(function(r){ if (r.status === 401) throw { expired: true }; return r.json(); })
       .then(function(j){
-        var busy = (j.value || []).filter(function(ev){ return !ev.isAllDay && ev.showAs !== "free"; }).map(function(ev){ return { start: new Date(ev.start.dateTime + "Z"), end: new Date(ev.end.dateTime + "Z") }; });
+        var busy = [], offDays = {};
+        (j.value || []).forEach(function(ev){
+          if (!ev.start || !ev.end || ev.showAs === "free") return;
+          var s = new Date(ev.start.dateTime + "Z"), e = new Date(ev.end.dateTime + "Z");
+          if (ev.isAllDay){ for (var t = s.getTime(); t < e.getTime(); t += 86400000){ var od = new Date(t); offDays[od.getUTCFullYear() + "-" + od.getUTCMonth() + "-" + od.getUTCDate()] = true; } }
+          else { busy.push({ start: s, end: e }); }
+        });
         var nw = Date.now(), minLen = SLOTLEN * 60000;
         days.forEach(function(d){
+          if (offDays[d.getFullYear() + "-" + d.getMonth() + "-" + d.getDate()]) return;
           var ws2 = zInstant(d.getFullYear(), d.getMonth(), d.getDate(), WS);
           var we2 = zInstant(d.getFullYear(), d.getMonth(), d.getDate(), WE);
           var segs = busy.filter(function(b){ return b.end.getTime() > ws2 && b.start.getTime() < we2; }).map(function(b){ return [b.start.getTime(), b.end.getTime()]; }).sort(function(a, b){ return a[0] - b[0]; });
@@ -163,7 +173,7 @@
         else { msg.className = "msg err"; msg.textContent = "Couldn't read calendar: " + ((err && err.message) || "try again"); }
       });
   }
-  $("pickDay").onclick = function(){ var d; if (SELDAY){ var p = SELDAY.split("-"); d = new Date(+p[0], +p[1], +p[2]); } else { d = new Date(); SELDAY = keyOf(d); drawMiniCal(); } pick("day", d); };
+  $("pickDay").onclick = function(){ var d; if (SELDAY){ var p = SELDAY.split("-"); d = new Date(+p[0], +p[1], +p[2]); } else { var q = {}; new Intl.DateTimeFormat("en-CA", { timeZone: TZ, year: "numeric", month: "2-digit", day: "2-digit" }).formatToParts(new Date()).forEach(function(x){ q[x.type] = x.value; }); d = new Date(+q.year, +q.month - 1, +q.day); SELDAY = keyOf(d); drawMiniCal(); } pick("day", d); };
   $("pickWeek").onclick = function(){ SELDAY = null; drawMiniCal(); pick("week"); };
   $("clearBtn").onclick = function(){ SLOTS = []; renderSlots(); var m = $("msg"); m.className = "msg"; m.textContent = "Cleared."; };
 
