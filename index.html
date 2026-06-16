@@ -1615,7 +1615,7 @@ async function createBookingLink(){
     }
     if (!r.ok || !j.url){ status(""); toast("Couldn't create link" + (j.detail ? ": " + j.detail : "")); return; }
     status("");
-    const snip = buildHTML(j.url, clientSlots);
+    const snip = buildHTML(j.url, S.sel);
     if (DLG && window.Office && Office.context && Office.context.ui){
       try { Office.context.ui.messageParent(JSON.stringify({ url: j.url, html: snip })); document.getElementById("preview").innerHTML = '<div style="font-size:13px;color:#0B7A4B;padding:6px 0">✓ Added to your email — you can close this window.</div>'; return; } catch(e){}
     }
