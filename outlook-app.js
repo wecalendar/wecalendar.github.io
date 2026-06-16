@@ -1,6 +1,6 @@
 (function(){
   var WC = window.WECAL || {};
-  var ready = false, TOKEN = null, EMAIL = "", SLOTS = [], SLOTLEN = 30, WS = 9, WE = 18, SELDAY = null;
+  var ready = false, TOKEN = null, EMAIL = "", SLOTS = [], SLOTLEN = 30, WS = 9, WE = 18, SELDAY = null, LAST = null;
   var TZ = (function(){ try { return Intl.DateTimeFormat().resolvedOptions().timeZone; } catch(e){ return "UTC"; } })();
   var TZLIST = [["America/Los_Angeles","Los Angeles · PT"],["America/Denver","Denver · MT"],["America/Chicago","Chicago · CT"],["America/New_York","New York · ET"],["America/Sao_Paulo","São Paulo"],["Europe/London","London"],["Europe/Lisbon","Lisbon"],["Europe/Paris","Paris · CET"],["Europe/Berlin","Berlin"],["Europe/Madrid","Madrid"],["Africa/Johannesburg","Johannesburg"],["Asia/Dubai","Dubai"],["Asia/Kolkata","India"],["Asia/Singapore","Singapore"],["Asia/Tokyo","Tokyo"],["Australia/Sydney","Sydney"],["Pacific/Auckland","Auckland"],["UTC","UTC"]];
   var now0 = new Date(), MC = { y: now0.getFullYear(), m: now0.getMonth() };
@@ -83,12 +83,14 @@
   function fmtDayLong(d){ return d.toLocaleDateString([], { weekday: "long", month: "long", day: "numeric", timeZone: TZ }); }
   function dayKey(d){ try { return new Intl.DateTimeFormat("en-CA", { timeZone: TZ, year: "numeric", month: "2-digit", day: "2-digit" }).format(d); } catch(e){ return d.toDateString(); } }
   function tzLong(){ var d = new Date(); function part(style){ try { return new Intl.DateTimeFormat("en-US", { timeZone: TZ, timeZoneName: style }).formatToParts(d).find(function(p){ return p.type === "timeZoneName"; }).value; } catch(e){ return ""; } } var lng = part("long"), shrt = part("short"); if (shrt && /^[A-Za-z]+$/.test(shrt) && shrt !== lng) return lng + " — " + shrt; return lng || TZ; }
+  function tzOff(ms){ try { var dtf = new Intl.DateTimeFormat("en-US", { timeZone: TZ, hourCycle: "h23", year: "numeric", month: "2-digit", day: "2-digit", hour: "2-digit", minute: "2-digit", second: "2-digit" }); var p = {}; dtf.formatToParts(new Date(ms)).forEach(function(x){ p[x.type] = x.value; }); return (Date.UTC(+p.year, +p.month - 1, +p.day, +p.hour, +p.minute, +p.second) - ms) / 60000; } catch(e){ return -new Date(ms).getTimezoneOffset(); } }
+  function zInstant(y, mo, day, hour){ var guess = Date.UTC(y, mo, day, hour, 0, 0); var ms = guess - tzOff(guess) * 60000; return guess - tzOff(ms) * 60000; }
   function snippet(url, slots){ var sel = slots || selected(), byDay = {}, order = []; sel.forEach(function(x){ var k = dayKey(x.start); if (!byDay[k]){ byDay[k] = []; order.push(k); } byDay[k].push(x); }); var h = "<div>Would any of these times work for you? Click one to book instantly <i>(times in " + tzLong() + ")</i>:<br><br>"; order.forEach(function(k){ h += "<b>" + fmtDayLong(byDay[k][0].start) + "</b><br>"; byDay[k].forEach(function(x){ h += '&nbsp;&nbsp;&#8226;&nbsp;<a href="' + url + '">' + fmtTime(x.start) + " &ndash; " + fmtTime(x.end) + "</a><br>"; }); h += "<br>"; }); return h + "</div>"; }
 
   Office.onReady(function(info){ ready = !!(info && info.host === Office.HostType.Outlook); });
 
   $("seg").addEventListener("click", function(e){ var b = e.target.closest("button"); if (!b) return; SLOTLEN = +b.dataset.l; [].forEach.call($("seg").querySelectorAll("button"), function(x){ x.classList.toggle("on", x === b); }); });
-  (function(){ var sel = $("tzSel"); if (!sel) return; var opts = '<option value="' + TZ + '">My timezone</option>'; TZLIST.forEach(function(z){ if (z[0] !== TZ) opts += '<option value="' + z[0] + '">' + z[1] + '</option>'; }); sel.innerHTML = opts; sel.value = TZ; sel.onchange = function(){ TZ = sel.value; renderSlots(); }; })();
+  (function(){ var sel = $("tzSel"); if (!sel) return; var opts = '<option value="' + TZ + '">My timezone</option>'; TZLIST.forEach(function(z){ if (z[0] !== TZ) opts += '<option value="' + z[0] + '">' + z[1] + '</option>'; }); sel.innerHTML = opts; sel.value = TZ; sel.onchange = function(){ TZ = sel.value; if (LAST && SLOTS.length){ pick(LAST.scope, LAST.date); } else { renderSlots(); } }; })();
 
   var MATES = [];
   function renderMates(){ var c = $("mateChips"); c.innerHTML = ""; MATES.forEach(function(m, i){ var s = document.createElement("span"); s.className = "chip"; var t = document.createElement("span"); t.textContent = m.name; var x = document.createElement("span"); x.className = "cx"; x.innerHTML = "&times;"; x.onclick = function(){ MATES.splice(i, 1); renderMates(); }; s.appendChild(t); s.appendChild(x); c.appendChild(s); }); }
@@ -134,6 +136,7 @@
 
   function pick(scope, date){
     var msg = $("msg"); msg.className = "msg"; msg.textContent = "Reading your calendar…"; SLOTS = []; renderSlots();
+    LAST = { scope: scope, date: date };
     var days = daysFor(scope, date);
     var ws = new Date(days[0].getFullYear(), days[0].getMonth(), days[0].getDate(), 0, 0, 0);
     var last = days[days.length - 1], we = new Date(last.getFullYear(), last.getMonth(), last.getDate() + 1, 0, 0, 0);
@@ -144,8 +147,8 @@
         var busy = (j.value || []).filter(function(ev){ return !ev.isAllDay && ev.showAs !== "free"; }).map(function(ev){ return { start: new Date(ev.start.dateTime + "Z"), end: new Date(ev.end.dateTime + "Z") }; });
         var nw = Date.now(), minLen = SLOTLEN * 60000;
         days.forEach(function(d){
-          var ws2 = new Date(d.getFullYear(), d.getMonth(), d.getDate(), WS).getTime();
-          var we2 = new Date(d.getFullYear(), d.getMonth(), d.getDate(), WE).getTime();
+          var ws2 = zInstant(d.getFullYear(), d.getMonth(), d.getDate(), WS);
+          var we2 = zInstant(d.getFullYear(), d.getMonth(), d.getDate(), WE);
           var segs = busy.filter(function(b){ return b.end.getTime() > ws2 && b.start.getTime() < we2; }).map(function(b){ return [b.start.getTime(), b.end.getTime()]; }).sort(function(a, b){ return a[0] - b[0]; });
           var cur = Math.max(ws2, nw);
           segs.forEach(function(sg){ if (sg[0] > cur && Math.min(sg[0], we2) - cur >= minLen) SLOTS.push({ start: new Date(cur), end: new Date(Math.min(sg[0], we2)), sel: true }); if (sg[1] > cur) cur = sg[1]; });
