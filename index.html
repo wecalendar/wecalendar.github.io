@@ -190,6 +190,19 @@
   .evt .rmx{ position:absolute; top:2px; right:5px; font-size:14px; font-weight:700; color:#9aa3b2; line-height:1; }
   .evt.rmable:hover .rmx{ color:#b91c1c; }
   #blockBtn:hover{ background:#F4F0FF !important; border-color:#C9BCFF !important; }
+  #tourSpot{ position:fixed; border-radius:12px; box-shadow:0 0 0 9999px rgba(20,16,40,.55); z-index:4000; pointer-events:none; transition:left .2s, top .2s, width .2s, height .2s; }
+  #tourTip{ position:fixed; z-index:4001; background:#fff; border-radius:14px; padding:16px; width:300px; max-width:90vw; box-shadow:0 18px 50px rgba(20,16,40,.32); }
+  #tourTip .tt-title{ font-size:15px; font-weight:700; color:var(--ink); margin-bottom:5px; }
+  #tourTip .tt-text{ font-size:13px; color:var(--muted2); line-height:1.5; }
+  #tourTip .tt-foot{ display:flex; align-items:center; justify-content:space-between; margin-top:14px; }
+  #tourTip .tt-count{ font-size:11.5px; color:var(--muted); }
+  #tourTip .tt-btns{ display:flex; gap:8px; }
+  #tourTip .tt-btns button{ border:none; border-radius:8px; padding:7px 13px; font-family:inherit; font-size:13px; font-weight:600; cursor:pointer; }
+  #tourSkip{ background:none; color:var(--muted2); }
+  #tourBack{ background:#F1F0F4; color:var(--ink); }
+  #tourNext{ background:#7C6FF7; color:#fff; }
+  #tourBtn{ border:1px solid var(--line); background:#fff; color:#7C6FF7; width:30px; height:30px; border-radius:50%; font-size:14px; font-weight:700; cursor:pointer; font-family:inherit; }
+  #tourBtn:hover{ background:#F4F0FF; }
   .busy .joinbtn{ position:absolute; top:3px; right:4px; background:#7C6FF7; color:#fff; font-size:9.5px; font-weight:700; padding:1px 6px; border-radius:6px; text-decoration:none; line-height:1.5; z-index:2; }
   .busy .joinbtn:hover{ background:#6B5FE0; }
   .busy.dim { opacity:.18; }
@@ -292,6 +305,7 @@
       <div class="grow"></div>
       <span class="avatar" id="avatar" title="Your profile — see Settings"></span>
       <span class="who" id="whoName" style="color:var(--ink);font-weight:600;"></span>
+      <button id="tourBtn" title="Take a quick tour" style="margin-right:10px">?</button>
       <button class="gearbtn" id="setBtn" title="Settings" aria-label="Settings">
         <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 1 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 1 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 1 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 1 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
       </button>
@@ -455,6 +469,14 @@
     </div>
   </div>
 </div>
+<div id="tourOverlay" style="display:none; position:fixed; inset:0; z-index:3999;">
+  <div id="tourSpot"></div>
+  <div id="tourTip">
+    <div class="tt-title" id="tourTitle"></div>
+    <div class="tt-text" id="tourText"></div>
+    <div class="tt-foot"><span class="tt-count" id="tourCount"></span><span class="tt-btns"><button id="tourSkip">Skip</button><button id="tourBack">Back</button><button id="tourNext">Next</button></span></div>
+  </div>
+</div>
 <div class="tzpop" id="tzPop">
   <input type="text" id="tzSearch" placeholder="Search timezone — CET, EST, London…">
   <div class="tzlist" id="tzList"></div>
@@ -609,6 +631,7 @@ function onSignedIn(){
   document.getElementById("subj").value = "Meeting with " + (prof || ME.name);
   loadPhoto();
   boot();
+  setTimeout(maybeStartTour, 1700);
 }
 init();
 // === END DATA LAYER ===
@@ -1879,6 +1902,66 @@ function renderPTOBox(){
       load();
     } catch(e){ msg.style.color = "#b91c1c"; msg.textContent = "Couldn't block — " + ((e && e.message) || "try again"); }
   };
+})();
+
+// ---- first-run guided tour ----
+const TOUR = [
+  { sel: null, title: "Welcome to WeCalendar 👋", text: "A 30-second tour of the essentials — you can skip anytime." },
+  { sel: "#calBody", title: "Mark when you're free 🗓️", text: "Hit the green + then drag on the calendar. Drag a big block — clients see it split into bookable slots." },
+  { sel: "#fillDayBtn", title: "Auto-fill a day ✨", text: "Don't want to drag? This drops in your open blocks for the focused day automatically." },
+  { sel: "#fillWeekBtn", title: "…or the whole week ✨", text: "Same idea, across every open block in the week." },
+  { sel: "#linkBtn", title: "Share it 📋", text: "Copy slots makes a booking link. Clients pick a slot — works for Google, Apple or Outlook, no account needed." },
+  { sel: "#viewTog", title: "Day or week 📆", text: "Switch the calendar between one day and the full week. Click any day header to zoom in." },
+  { sel: "#blockBtn", title: "Going away? 🏖️", text: "Set OOO blocks time on your calendar so it's never offered. Click a block later to remove it." },
+  { sel: "#ptoBox", title: "Who's off 🌴", text: "See teammates who are out of office, pulled from your calendar." },
+  { sel: "#loadCard", title: "Your meeting load 🕘", text: "How much of your day and week is in meetings. Tap it to enlarge." },
+  { sel: "#focusCard", title: "Focus tip 💡", text: "A productivity nudge that adapts to how busy your day is." },
+  { sel: null, title: "You're all set 🚀", text: "That's the tour! Replay it anytime from the ? button up top." },
+];
+let tourSteps = [], tourCur = 0;
+function tourPlaceTip(tip, r){
+  const tw = 300, th = tip.offsetHeight || 150;
+  let left = r.left; if (left + tw > innerWidth - 12) left = innerWidth - tw - 12; if (left < 12) left = 12;
+  let top = r.bottom + 12; if (top + th > innerHeight - 12) top = r.top - th - 12; if (top < 12) top = 12;
+  tip.style.left = left + "px"; tip.style.top = top + "px";
+}
+function tourShow(n){
+  tourCur = n; const step = tourSteps[n];
+  document.getElementById("tourTitle").textContent = step.title;
+  document.getElementById("tourText").textContent = step.text;
+  document.getElementById("tourCount").textContent = (n + 1) + " / " + tourSteps.length;
+  document.getElementById("tourBack").style.visibility = n === 0 ? "hidden" : "visible";
+  document.getElementById("tourNext").textContent = (n === tourSteps.length - 1) ? "Done" : "Next";
+  const spot = document.getElementById("tourSpot"), tip = document.getElementById("tourTip");
+  const el = step.sel ? document.querySelector(step.sel) : null;
+  if (el){
+    el.scrollIntoView({ block: "center", behavior: "smooth" });
+    setTimeout(() => {
+      const r = el.getBoundingClientRect(), P = 6;
+      spot.style.left = (r.left - P) + "px"; spot.style.top = (r.top - P) + "px";
+      spot.style.width = (r.width + 2 * P) + "px"; spot.style.height = (r.height + 2 * P) + "px";
+      tourPlaceTip(tip, r);
+    }, 230);
+  } else {
+    spot.style.left = (innerWidth / 2) + "px"; spot.style.top = (innerHeight / 2) + "px"; spot.style.width = "0px"; spot.style.height = "0px";
+    tip.style.left = Math.max(12, innerWidth / 2 - 150) + "px"; tip.style.top = Math.max(12, innerHeight / 2 - 90) + "px";
+  }
+}
+function startTour(){
+  tourSteps = TOUR.filter(s => { if (!s.sel) return true; const e = document.querySelector(s.sel); return e && e.offsetParent !== null; });
+  if (!tourSteps.length) return;
+  document.getElementById("tourOverlay").style.display = "block";
+  tourShow(0);
+}
+function endTour(){ document.getElementById("tourOverlay").style.display = "none"; try { localStorage.setItem("tourSeen", "1"); } catch(e){} }
+function maybeStartTour(){ try { if (localStorage.getItem("tourSeen")) return; } catch(e){} if (window.__tourDone) return; window.__tourDone = true; startTour(); }
+(function(){
+  const next = document.getElementById("tourNext"); if (!next) return;
+  next.onclick = () => { if (tourCur >= tourSteps.length - 1) endTour(); else tourShow(tourCur + 1); };
+  document.getElementById("tourBack").onclick = () => { if (tourCur > 0) tourShow(tourCur - 1); };
+  document.getElementById("tourSkip").onclick = endTour;
+  document.getElementById("tourBtn").onclick = startTour;
+  document.addEventListener("keydown", e => { if (e.key === "Escape" && document.getElementById("tourOverlay").style.display === "block") endTour(); });
 })();
 
 function toast(msg){
