@@ -5,13 +5,13 @@
   xmlns:ovr="http://schemas.microsoft.com/office/mailappversionoverrides"
   xsi:type="MailApp">
   <Id>cbfa1f46-148d-4780-8a04-a52ce1cd8eaf</Id>
-  <Version>1.0.3.0</Version>
+  <Version>1.0.4.0</Version>
   <ProviderName>WeCalendar</ProviderName>
   <DefaultLocale>en-US</DefaultLocale>
   <DisplayName DefaultValue="WeCalendar"/>
   <Description DefaultValue="Insert your WeCalendar booking link into an email you're composing."/>
-  <IconUrl DefaultValue="https://wecalendar.github.io/wecal-64.png"/>
-  <HighResolutionIconUrl DefaultValue="https://wecalendar.github.io/wecal-128.png"/>
+  <IconUrl DefaultValue="https://wecalendar.github.io/wecal-64.png?v=2"/>
+  <HighResolutionIconUrl DefaultValue="https://wecalendar.github.io/wecal-128.png?v=2"/>
   <SupportUrl DefaultValue="https://wecalendar.github.io/"/>
   <AppDomains>
     <AppDomain>https://wecalendar.github.io</AppDomain>
@@ -73,9 +73,9 @@
     </Hosts>
     <Resources>
       <bt:Images>
-        <bt:Image id="icon16" DefaultValue="https://wecalendar.github.io/wecal-16.png"/>
-        <bt:Image id="icon32" DefaultValue="https://wecalendar.github.io/wecal-32.png"/>
-        <bt:Image id="icon80" DefaultValue="https://wecalendar.github.io/wecal-80.png"/>
+        <bt:Image id="icon16" DefaultValue="https://wecalendar.github.io/wecal-16.png?v=2"/>
+        <bt:Image id="icon32" DefaultValue="https://wecalendar.github.io/wecal-32.png?v=2"/>
+        <bt:Image id="icon80" DefaultValue="https://wecalendar.github.io/wecal-80.png?v=2"/>
       </bt:Images>
       <bt:Urls>
         <bt:Url id="taskpaneUrl" DefaultValue="https://wecalendar.github.io/outlook.html?v=4"/>
