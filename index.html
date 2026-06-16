@@ -184,6 +184,8 @@
   .busy .bn { display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden; font-weight:600; word-break:break-word; }
   .busy.short .bn { -webkit-line-clamp:1; }
   .busy .bt { color:#E8559F; font-size:10.5px; }
+  .evt.allday{ background:rgba(120,124,140,.13); border:1px solid #C7CCD6; color:#5b6270; }
+  .evt.allday .bn{ font-weight:600; font-size:11px; }
   .busy .joinbtn{ position:absolute; top:3px; right:4px; background:#7C6FF7; color:#fff; font-size:9.5px; font-weight:700; padding:1px 6px; border-radius:6px; text-decoration:none; line-height:1.5; z-index:2; }
   .busy .joinbtn:hover{ background:#6B5FE0; }
   .busy.dim { opacity:.18; }
@@ -283,6 +285,7 @@
         <button class="navarr" id="nextW">&#8250;</button>
         <button class="todaybtn" id="viewTog" title="Switch between day and week view">Day</button>
       </div>
+      <button class="todaybtn" id="blockBtn" title="Block time on your calendar (out of office)" style="margin-left:8px">🚫 Block</button>
       <div class="grow"></div>
       <span class="avatar" id="avatar" title="Your profile — see Settings"></span>
       <span class="who" id="whoName" style="color:var(--ink);font-weight:600;"></span>
@@ -419,6 +422,25 @@
     <div id="loadModalBody"></div>
   </div>
 </div>
+<div id="blockModal" style="display:none; position:fixed; inset:0; background:rgba(20,16,40,.45); z-index:1200; align-items:center; justify-content:center; padding:20px;">
+  <div style="background:#fff; border-radius:18px; padding:22px; width:min(380px,94vw); box-shadow:0 24px 70px rgba(20,16,40,.3);">
+    <h3 style="font-size:16px; font-weight:600; color:var(--ink); margin:0 0 14px;">🚫 Block time</h3>
+    <div style="font-size:12px;color:var(--muted2);margin:0 0 4px;font-weight:500">Title</div>
+    <input type="text" id="blkTitle" value="Out of office" style="width:100%;border:1px solid var(--line);border-radius:10px;padding:9px 11px;font-size:13px;font-family:inherit;color:var(--ink);outline:none">
+    <div style="display:flex;gap:10px;margin-top:10px">
+      <div style="flex:1"><div style="font-size:12px;color:var(--muted2);margin-bottom:4px;font-weight:500">From</div><input type="date" id="blkFrom" style="width:100%;border:1px solid var(--line);border-radius:10px;padding:9px 11px;font-size:13px;font-family:inherit;color:var(--ink);outline:none"></div>
+      <div style="flex:1"><div style="font-size:12px;color:var(--muted2);margin-bottom:4px;font-weight:500">To</div><input type="date" id="blkTo" style="width:100%;border:1px solid var(--line);border-radius:10px;padding:9px 11px;font-size:13px;font-family:inherit;color:var(--ink);outline:none"></div>
+    </div>
+    <label style="display:flex;align-items:center;gap:8px;margin-top:12px;font-size:13px;color:var(--ink);cursor:pointer"><input type="checkbox" id="blkAllDay" checked style="width:15px;height:15px;accent-color:var(--blue)"> All day (out of office)</label>
+    <div id="blkTimes" style="display:none;gap:10px;margin-top:10px">
+      <div style="flex:1"><div style="font-size:12px;color:var(--muted2);margin-bottom:4px;font-weight:500">Start</div><input type="time" id="blkStart" value="09:00" style="width:100%;border:1px solid var(--line);border-radius:10px;padding:9px 11px;font-size:13px;font-family:inherit;color:var(--ink);outline:none"></div>
+      <div style="flex:1"><div style="font-size:12px;color:var(--muted2);margin-bottom:4px;font-weight:500">End</div><input type="time" id="blkEnd" value="17:00" style="width:100%;border:1px solid var(--line);border-radius:10px;padding:9px 11px;font-size:13px;font-family:inherit;color:var(--ink);outline:none"></div>
+    </div>
+    <div id="blkMsg" style="font-size:12px;color:#b91c1c;margin-top:8px;min-height:14px"></div>
+    <button class="btn primary" id="blkSave" style="width:100%;margin-top:12px">Block this time</button>
+    <button id="blkCancel" style="width:100%;margin-top:8px;background:none;border:none;color:var(--muted2);font:inherit;font-size:13px;cursor:pointer">Cancel</button>
+  </div>
+</div>
 <div class="tzpop" id="tzPop">
   <input type="text" id="tzSearch" placeholder="Search timezone — CET, EST, London…">
   <div class="tzlist" id="tzList"></div>
@@ -479,8 +501,8 @@ async function fetchEvents(weekStart, weekEnd, calIds){
       startDateTime: weekStart.toISOString(), endDateTime: weekEnd.toISOString(),
       $select: "subject,start,end,showAs,isAllDay,isOnlineMeeting,onlineMeeting,webLink", $orderby: "start/dateTime", $top: "150",
     }));
-    (obj.value || []).filter(ev => !ev.isAllDay && ev.showAs !== "free")
-      .forEach(ev => all.push({ subject: ev.subject || "(busy)", start: new Date(ev.start.dateTime + "Z"), end: new Date(ev.end.dateTime + "Z"), join: (ev.onlineMeeting && ev.onlineMeeting.joinUrl) || null, web: ev.webLink || null }));
+    (obj.value || []).filter(ev => ev.showAs !== "free" && (!ev.isAllDay || ev.showAs === "oof"))
+      .forEach(ev => all.push({ subject: ev.subject || "(busy)", start: new Date(ev.start.dateTime + "Z"), end: new Date(ev.end.dateTime + "Z"), allDay: !!ev.isAllDay, oof: ev.showAs === "oof", join: (ev.onlineMeeting && ev.onlineMeeting.joinUrl) || null, web: ev.webLink || null }));
   }));
   return all;
 }
@@ -1265,6 +1287,7 @@ function renderBody(){
     // my busy events (dimmed when search active and not matching)
     S.events.forEach(ev => {
       if (ev.end <= dayStart || ev.start >= dayEnd) return;
+      if (ev.allDay){ const ad = document.createElement("div"); ad.className = "evt allday"; ad.style.top = "0px"; ad.style.height = H + "px"; ad.innerHTML = '<span class="bn"></span>'; ad.querySelector(".bn").textContent = ev.subject; col.appendChild(ad); return; }
       const a = Math.max(top(ev.start), 0), b = Math.min(top(ev.end), H);
       if (b - a < 4) return;
       const el = document.createElement("div");
@@ -1646,6 +1669,7 @@ function dayLoad(d){
   const we = new Date(d.getFullYear(), d.getMonth(), d.getDate(), S.workEnd).getTime();
   let total = 0, work = 0, count = 0; const segs = [];
   (S.events || []).forEach(ev => {
+    if (ev.oof) return;
     const s = ev.start.getTime(), e = ev.end.getTime();
     const t = ovMin(s, e, ds, de); if (t > 0){ total += t; count++; }
     const w = ovMin(s, e, ws, we); if (w > 0){ work += w; segs.push([Math.max(s, ws), Math.min(e, we)]); }
@@ -1762,6 +1786,50 @@ function renderPTOBox(){
   list.innerHTML = total ? html : '<div style="font-size:12.5px; color:var(--muted2);">No one’s off ' + (S.dayView ? "that day" : "this week") + '. 🎉</div>';
   box.style.display = "block";
 }
+
+// ---- block time / out of office ----
+(function(){
+  const modal = document.getElementById("blockModal"), btn = document.getElementById("blockBtn");
+  if (!btn || !modal) return;
+  const iso = x => x.getFullYear() + "-" + String(x.getMonth()+1).padStart(2,"0") + "-" + String(x.getDate()).padStart(2,"0");
+  btn.onclick = () => {
+    const d = S.dayView ? new Date(S.dayView) : new Date();
+    document.getElementById("blkFrom").value = iso(d);
+    document.getElementById("blkTo").value = iso(d);
+    document.getElementById("blkTitle").value = "Out of office";
+    document.getElementById("blkAllDay").checked = true;
+    document.getElementById("blkTimes").style.display = "none";
+    document.getElementById("blkMsg").textContent = "";
+    modal.style.display = "flex";
+  };
+  document.getElementById("blkCancel").onclick = () => { modal.style.display = "none"; };
+  modal.addEventListener("click", e => { if (e.target === modal) modal.style.display = "none"; });
+  document.getElementById("blkAllDay").onchange = function(){ document.getElementById("blkTimes").style.display = this.checked ? "none" : "flex"; };
+  document.getElementById("blkSave").onclick = async () => {
+    const msg = document.getElementById("blkMsg");
+    const title = (document.getElementById("blkTitle").value.trim() || "Out of office");
+    const from = document.getElementById("blkFrom").value, to = document.getElementById("blkTo").value || from;
+    if (!from){ msg.style.color = "#b91c1c"; msg.textContent = "Pick a date."; return; }
+    const allDay = document.getElementById("blkAllDay").checked;
+    let body;
+    if (allDay){
+      const endD = new Date((to || from) + "T00:00:00"); endD.setDate(endD.getDate() + 1);
+      body = { subject: title, isAllDay: true, showAs: "oof", start: { dateTime: from + "T00:00:00", timeZone: S.tz }, end: { dateTime: iso(endD) + "T00:00:00", timeZone: S.tz } };
+    } else {
+      const st = document.getElementById("blkStart").value || "09:00", en = document.getElementById("blkEnd").value || "17:00";
+      body = { subject: title, showAs: "oof", start: { dateTime: from + "T" + st + ":00", timeZone: S.tz }, end: { dateTime: from + "T" + en + ":00", timeZone: S.tz } };
+    }
+    msg.style.color = "var(--muted2)"; msg.textContent = "Blocking…";
+    try {
+      const tk = await token();
+      const r = await fetch("https://graph.microsoft.com/v1.0/me/events", { method: "POST", headers: { Authorization: "Bearer " + tk, "Content-Type": "application/json" }, body: JSON.stringify(body) });
+      if (!r.ok) throw new Error("Graph " + r.status);
+      modal.style.display = "none";
+      toast("🚫 Blocked: " + title);
+      load();
+    } catch(e){ msg.style.color = "#b91c1c"; msg.textContent = "Couldn't block — " + ((e && e.message) || "try again"); }
+  };
+})();
 
 function toast(msg){
   const t = document.getElementById("toast"); t.textContent = msg;
