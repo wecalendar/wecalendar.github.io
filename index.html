@@ -1475,26 +1475,20 @@ function attachPaint(col, dayStart){
     if (!paint || paint.col !== col) return;
     let s = paint.startMin, en = paint.endMin;
     if (!paint.moved || en - s < S.slotLen) en = s + S.slotLen;
-    const dayStart = paint.dayStart;
+    const start = new Date(paint.dayStart.getTime() + s * 60000);
+    const end   = new Date(paint.dayStart.getTime() + en * 60000);
     paint.el.remove(); paint = null;
-    // Split the dragged window into standard-length (slotLen) bookable slots.
-    const now = new Date(), cutoff = new Date(Date.now() + (S.minNotice || 0) * 3600000);
-    let added = 0, skipped = 0, note = null;
-    for (let m = s; m + S.slotLen <= en; m += S.slotLen){
-      const start = new Date(dayStart.getTime() + m * 60000);
-      const end = new Date(dayStart.getTime() + (m + S.slotLen) * 60000);
-      if (start < now){ skipped++; continue; }
-      if (S.minNotice && start < cutoff){ skipped++; continue; }
-      if (S.dayCap && S.sel.filter(x => keyOf(x.start) === keyOf(start)).length >= S.dayCap){ skipped++; continue; }
-      if (hardConflict(start, end)){ skipped++; continue; }
-      S.sel.push({ start, end }); added++;
-      if (!note){ const c = findConflict(start, end); if (c) note = c; }
-    }
-    if (added){ S.sel.sort((a,b) => a.start - b.start); saveSel(); renderAll(); }
-    if (!added) toast(skipped ? "🚫 Those times are busy or in the past" : "Nothing added");
-    else if (skipped) toast("Added " + added + " × " + S.slotLen + "-min slot" + (added > 1 ? "s" : "") + " · " + skipped + " skipped");
-    else if (note) toast("⚠ Heads up — overlaps " + note);
-    else toast("Added " + added + " × " + S.slotLen + "-min slot" + (added > 1 ? "s" : ""));
+    if (start < new Date()){ toast("⏰ You can't select a slot in the past"); return; }
+    if (S.minNotice && start < new Date(Date.now() + S.minNotice * 3600000)){ toast("⏰ Needs at least " + S.minNotice + " h notice"); return; }
+    if (S.dayCap && S.sel.filter(x => keyOf(x.start) === keyOf(start)).length >= S.dayCap){ toast("🚫 Daily limit reached (" + S.dayCap + " slots/day)"); return; }
+    const hard = hardConflict(start, end);
+    if (hard){ toast("🚫 That time overlaps " + hard); return; }
+    S.sel.push({ start, end });
+    S.sel.sort((a,b) => a.start - b.start);
+    saveSel();
+    const c = findConflict(start, end);
+    if (c) toast("⚠ Heads up — this overlaps " + c);
+    renderAll();
   };
 }
 function drawPaint(){
@@ -1525,10 +1519,21 @@ function bookingLink(start, end){
   return "https://outlook.office.com/calendar/deeplink/compose?" + p.toString();
 }
 function dayKeyTz(d){ return new Intl.DateTimeFormat("en-CA", {timeZone:S.tz, year:"numeric", month:"2-digit", day:"2-digit"}).format(d); }
-function buildHTML(url){
-  if (!S.sel.length || !url) return "";
+function splitForClient(){
+  const out = [], len = (S.slotLen || 30) * 60000;
+  S.sel.slice().sort((a,b)=>a.start-b.start).forEach(w => {
+    const ws = w.start.getTime(), we = w.end.getTime();
+    let any = false;
+    for (let t = ws; t + len <= we; t += len){ out.push({ start: new Date(t), end: new Date(t + len) }); any = true; }
+    if (!any) out.push({ start: new Date(ws), end: new Date(we) });
+  });
+  return out;
+}
+function buildHTML(url, slots){
+  slots = slots || S.sel;
+  if (!slots.length || !url) return "";
   const byDay = {};
-  S.sel.slice().sort((a,b)=>a.start-b.start).forEach(x => { const k = dayKeyTz(x.start); (byDay[k] = byDay[k] || []).push(x); });
+  slots.slice().sort((a,b)=>a.start-b.start).forEach(x => { const k = dayKeyTz(x.start); (byDay[k] = byDay[k] || []).push(x); });
   const names = attendeeNames();
   const intro = S.people.length
     ? "Here are times when " + names.join(" and ") + " are all available — click one to book instantly"
@@ -1556,7 +1561,7 @@ function renderPreview(){
       h += '<div style="font-weight:600;margin:7px 0 2px;font-size:12px">' + fmt(byDay[k][0].start, {weekday:"long", month:"short", day:"numeric"}) + '</div>';
       byDay[k].forEach(x => { h += '<div style="color:var(--muted2);padding:1px 0">•&nbsp; ' + fmtTime(x.start) + ' – ' + fmtTime(x.end) + '</div>'; });
     });
-    h += '<div style="color:var(--muted2);font-size:11.5px;margin-top:9px">Hit <b>Copy slots</b> below — it copies a booking link anyone can use to grab one of these times.</div></div>';
+    h += '<div style="color:var(--muted2);font-size:11.5px;margin-top:9px">Shared with clients as <b>' + (S.slotLen || 30) + '-min slots</b>. Hit <b>Copy slots</b> below for a booking page.</div></div>';
     el.innerHTML = h;
   }
   const note = document.getElementById("jointNote");
@@ -1579,6 +1584,7 @@ const AUTHDLG = (() => { try { return sessionStorage.getItem("dlgAuth") === "1";
 async function createBookingLink(){
   if (!WECAL_ON){ toast("Booking backend not set up yet — see wecalendar-backend/README.md"); return; }
   if (!S.sel.length){ toast("Paint some slots first"); return; }
+  const clientSlots = splitForClient();
   status('<span class="spin"></span>Creating booking link…');
   try {
     const tk = await token();
@@ -1588,7 +1594,7 @@ async function createBookingLink(){
       body: JSON.stringify({
         title: document.getElementById("subj").value || ("Meeting with " + pname()),
         tz: S.tz,
-        slots: S.sel.map(x => ({ start: x.start.toISOString(), end: x.end.toISOString() })),
+        slots: clientSlots.map(x => ({ start: x.start.toISOString(), end: x.end.toISOString() })),
         attendees: S.people.map(p => p.email),
         videoLink: S.linkVid || "",
         settings: { workStart:S.workStart, workEnd:S.workEnd, buffer:S.buffer, minNotice:S.minNotice, dayCap:S.dayCap },
@@ -1609,7 +1615,7 @@ async function createBookingLink(){
     }
     if (!r.ok || !j.url){ status(""); toast("Couldn't create link" + (j.detail ? ": " + j.detail : "")); return; }
     status("");
-    const snip = buildHTML(j.url);
+    const snip = buildHTML(j.url, clientSlots);
     if (DLG && window.Office && Office.context && Office.context.ui){
       try { Office.context.ui.messageParent(JSON.stringify({ url: j.url, html: snip })); document.getElementById("preview").innerHTML = '<div style="font-size:13px;color:#0B7A4B;padding:6px 0">✓ Added to your email — you can close this window.</div>'; return; } catch(e){}
     }
