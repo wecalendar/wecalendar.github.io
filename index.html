@@ -445,6 +445,16 @@
     <button id="blkCancel" style="width:100%;margin-top:8px;background:none;border:none;color:var(--muted2);font:inherit;font-size:13px;cursor:pointer">Cancel</button>
   </div>
 </div>
+<div id="confirmModal" style="display:none; position:fixed; inset:0; background:rgba(20,16,40,.45); z-index:1300; align-items:center; justify-content:center; padding:20px;">
+  <div style="background:#fff; border-radius:18px; padding:22px; width:min(360px,94vw); box-shadow:0 24px 70px rgba(44,28,108,.3);">
+    <div style="width:42px;height:42px;border-radius:12px;background:#F0ECFF;display:flex;align-items:center;justify-content:center;font-size:22px;margin-bottom:14px">🚫</div>
+    <div style="font-size:15px;font-weight:600;color:var(--ink);line-height:1.45;margin-bottom:18px">Are you sure you want to remove this OOO block? 🌴</div>
+    <div style="display:flex;gap:10px;justify-content:flex-end">
+      <button id="cfCancel" style="border:none;border-radius:10px;padding:10px 18px;font-size:13.5px;font-weight:600;font-family:inherit;cursor:pointer;background:#F1F0F4;color:var(--ink)">Cancel</button>
+      <button id="cfRemove" style="border:none;border-radius:10px;padding:10px 18px;font-size:13.5px;font-weight:600;font-family:inherit;cursor:pointer;background:#7C6FF7;color:#fff">Remove</button>
+    </div>
+  </div>
+</div>
 <div class="tzpop" id="tzPop">
   <input type="text" id="tzSearch" placeholder="Search timezone — CET, EST, London…">
   <div class="tzlist" id="tzList"></div>
@@ -1409,9 +1419,16 @@ function showEvTip(el, ev){
   evTip.style.left = left + "px"; evTip.style.top = top + "px";
 }
 function hideEvTip(){ evTip.style.display = "none"; }
-async function removeOOO(ev){
+let pendingOOO = null;
+function removeOOO(ev){
   if (!ev || !ev.id) return;
-  if (!confirm("Remove this out-of-office block from your calendar?")) return;
+  pendingOOO = ev;
+  document.getElementById("confirmModal").style.display = "flex";
+}
+async function doRemoveOOO(){
+  const ev = pendingOOO; pendingOOO = null;
+  document.getElementById("confirmModal").style.display = "none";
+  if (!ev || !ev.id) return;
   try {
     const tk = await token();
     const r = await fetch("https://graph.microsoft.com/v1.0/me/events/" + encodeURIComponent(ev.id), { method: "DELETE", headers: { Authorization: "Bearer " + tk } });
@@ -1420,6 +1437,14 @@ async function removeOOO(ev){
     load();
   } catch(e){ toast("Couldn't remove — " + ((e && e.message) || "try again")); }
 }
+(function(){
+  const m = document.getElementById("confirmModal"); if (!m) return;
+  const close = () => { pendingOOO = null; m.style.display = "none"; };
+  document.getElementById("cfCancel").onclick = close;
+  document.getElementById("cfRemove").onclick = doRemoveOOO;
+  m.addEventListener("click", e => { if (e.target === m) close(); });
+  document.addEventListener("keydown", e => { if (e.key === "Escape" && m.style.display !== "none") close(); });
+})();
 document.getElementById("scroller").addEventListener("scroll", hideEvTip);
 
 // ---- paint interaction ----
