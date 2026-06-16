@@ -8,49 +8,74 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
-  :root{ --accent:#7C6FF7; --ink:#2C1C6C; --muted:#6b7280; --line:#E2DBFF; --green:#00C875; --green-d:#00b368; }
+  :root{ --accent:#7C6FF7; --accent-d:#6B5FE0; --ink:#2C1C6C; --muted:#6b7280; --line:#E2DBFF; --green:#00C875; --green-d:#00b368; }
   *{ box-sizing:border-box; margin:0; padding:0; }
   body{ font-family:'Plus Jakarta Sans',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif; color:var(--ink); padding:16px; background:#fff; }
   .brand{ font-size:15px; font-weight:700; margin-bottom:2px; } .brand .a1{color:var(--accent)} .brand .a2{color:var(--ink)}
-  .sub{ font-size:12px; color:var(--muted); margin-bottom:14px; line-height:1.45; }
-  label{ display:block; font-size:12px; color:var(--muted); margin:12px 0 5px; font-weight:500; }
+  .sub{ font-size:12px; color:var(--muted); margin-bottom:16px; line-height:1.45; }
+  label{ display:block; font-size:12px; color:var(--muted); margin:10px 0 5px; font-weight:500; }
   textarea,input{ width:100%; border:1px solid var(--line); border-radius:10px; padding:10px 12px; font-size:13px; font-family:inherit; color:var(--ink); outline:none; resize:vertical; }
   textarea:focus,input:focus{ border-color:var(--accent); }
-  .tip{ font-size:11px; color:var(--muted); margin-top:6px; line-height:1.4; }
-  .btn{ width:100%; margin-top:14px; border:none; border-radius:10px; padding:11px; font-size:14px; font-weight:600; font-family:inherit; cursor:pointer; background:var(--green); color:#fff; }
-  .btn:hover{ background:var(--green-d); } .btn:disabled{ opacity:.5; cursor:default; }
-  .btn.sec{ background:#fff; color:var(--accent); border:1px solid var(--line); margin-top:8px; }
+  .btn{ width:100%; margin-top:10px; border:none; border-radius:10px; padding:12px; font-size:14px; font-weight:600; font-family:inherit; cursor:pointer; background:var(--accent); color:#fff; }
+  .btn:hover{ background:var(--accent-d); } .btn:disabled{ opacity:.5; cursor:default; }
+  .btn.green{ background:var(--green); } .btn.green:hover{ background:var(--green-d); }
+  .btn.sec{ background:#fff; color:var(--accent); border:1px solid var(--line); }
+  .or{ text-align:center; font-size:11px; color:var(--muted); margin:16px 0 4px; position:relative; }
+  .or:before,.or:after{ content:""; position:absolute; top:50%; width:38%; height:1px; background:var(--line); } .or:before{ left:0; } .or:after{ right:0; }
   .msg{ font-size:12px; margin-top:10px; min-height:16px; }
   .ok{ color:var(--green-d); font-weight:600; } .err{ color:#b91c1c; }
-  .foot{ font-size:11px; color:var(--muted); margin-top:16px; line-height:1.45; border-top:1px solid var(--line); padding-top:10px; }
 </style>
 </head>
 <body>
   <div class="brand"><span class="a1">we</span><span class="a2">calendar</span></div>
-  <div class="sub">Drop your booking link into this email — your recipient picks a time and it books instantly.</div>
+  <div class="sub">Pick your free times right here — WeCalendar drops a booking link into your email and your recipient books instantly.</div>
 
+  <button class="btn" id="pick">✨ Pick my times</button>
+
+  <div class="or">or paste a link</div>
   <label for="lnk">Your booking link</label>
   <textarea id="lnk" rows="2" placeholder="https://wecalendar.github.io/b.html?l=..."></textarea>
-  <div class="tip">Generate one in WeCalendar with <b>Copy slots</b>, paste it here once — it's remembered next time.</div>
-
   <label for="txt">Link text</label>
   <input id="txt" placeholder="Book a time with me">
+  <button class="btn sec" id="insert">Insert link</button>
 
-  <button class="btn" id="insert">Insert into email</button>
-  <button class="btn sec" id="open" type="button">Open WeCalendar to grab a link</button>
   <div class="msg" id="msg"></div>
-
-  <div class="foot">Coming next: sign in here and auto‑pick your free slots without leaving Outlook.</div>
 
 <script>
   var $ = function(id){ return document.getElementById(id); };
-  var ready = false;
+  var ready = false, dlg = null;
   Office.onReady(function(info){
     ready = !!(info && info.host === Office.HostType.Outlook);
     try { $("lnk").value = localStorage.getItem("wecalLink") || ""; } catch(e){}
     try { $("txt").value = localStorage.getItem("wecalText") || "Book a time with me"; } catch(e){}
   });
-  $("open").onclick = function(){ try { window.open("https://wecalendar.github.io/", "_blank"); } catch(e){} };
+
+  function insertHtml(html, msg){
+    if (!ready || !Office.context.mailbox || !Office.context.mailbox.item || !Office.context.mailbox.item.body){
+      msg.className = "msg err"; msg.textContent = "Open this while composing an email, then try again."; return;
+    }
+    Office.context.mailbox.item.body.setSelectedDataAsync(html, { coercionType: Office.CoercionType.Html }, function(r){
+      if (r.status === Office.AsyncResultStatus.Succeeded){ msg.className = "msg ok"; msg.textContent = "✓ Added to your email."; }
+      else { msg.className = "msg err"; msg.textContent = "Couldn't insert: " + ((r.error && r.error.message) || "please try again"); }
+    });
+  }
+
+  $("pick").onclick = function(){
+    var msg = $("msg"); msg.className = "msg"; msg.textContent = "Opening WeCalendar…";
+    Office.context.ui.displayDialogAsync("https://wecalendar.github.io/?dlg=1", { height: 74, width: 48, promptBeforeOpen: false }, function(res){
+      if (res.status !== Office.AsyncResultStatus.Succeeded){ msg.className = "msg err"; msg.textContent = "Couldn't open WeCalendar: " + ((res.error && res.error.message) || ""); return; }
+      msg.textContent = "Pick your times in the WeCalendar window…";
+      dlg = res.value;
+      dlg.addEventHandler(Office.EventType.DialogMessageReceived, function(arg){
+        var data; try { data = JSON.parse(arg.message); } catch(e){ data = { url: arg.message }; }
+        try { dlg.close(); } catch(e){} dlg = null;
+        var html = data.html || ('<a href="' + (data.url || "") + '">Book a time with me</a>');
+        insertHtml(html, msg);
+      });
+      dlg.addEventHandler(Office.EventType.DialogEventReceived, function(){ dlg = null; });
+    });
+  };
+
   $("insert").onclick = function(){
     var url = $("lnk").value.trim();
     var text = $("txt").value.trim() || "Book a time with me";
@@ -58,14 +83,7 @@
     if (!/^https?:\/\/.+/.test(url)){ msg.className = "msg err"; msg.textContent = "Paste a valid booking link first."; return; }
     try { localStorage.setItem("wecalLink", url); localStorage.setItem("wecalText", text); } catch(e){}
     var safe = text.replace(/[<>&]/g, function(c){ return {'<':'&lt;','>':'&gt;','&':'&amp;'}[c]; });
-    var html = '<a href="' + url + '">' + safe + '</a>';
-    if (!ready || !Office.context || !Office.context.mailbox || !Office.context.mailbox.item || !Office.context.mailbox.item.body){
-      msg.className = "msg err"; msg.textContent = "Open this while composing an email, then try again."; return;
-    }
-    Office.context.mailbox.item.body.setSelectedDataAsync(html, { coercionType: Office.CoercionType.Html }, function(res){
-      if (res.status === Office.AsyncResultStatus.Succeeded){ msg.className = "msg ok"; msg.textContent = "✓ Inserted — your link is in the email."; }
-      else { msg.className = "msg err"; msg.textContent = "Couldn't insert: " + ((res.error && res.error.message) || "please try again"); }
-    });
+    insertHtml('<a href="' + url + '">' + safe + '</a>', msg);
   };
 </script>
 </body>
