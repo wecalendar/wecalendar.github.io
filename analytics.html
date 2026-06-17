@@ -9,6 +9,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4"></script>
 <script src="wecal-config.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@azure/msal-browser@3/lib/msal-browser.min.js"></script>
 <style>
   :root{ --accent:#7C6FF7; --ink:#2C1C6C; --muted:#6b7280; --line:#E2DBFF; --green:#00C875; }
   *{ box-sizing:border-box; margin:0; padding:0; }
@@ -52,6 +53,8 @@
 <script>
 const C = window.WECAL || {};
 let chart = null;
+const AUTH = { clientId: "d64e24c4-3c00-4b04-9ab0-e337d5fcc34b", tenantId: "wetransact.io" };
+const pca = new msal.PublicClientApplication({ auth: { clientId: AUTH.clientId, authority: "https://login.microsoftonline.com/" + AUTH.tenantId, redirectUri: window.location.origin + window.location.pathname }, cache: { cacheLocation: "localStorage" } });
 const fmt = (n) => (n ?? 0).toLocaleString();
 
 function card(n, label, hl){ return '<div class="card'+(hl?' hl':'')+'"><div class="n">'+n+'</div><div class="l">'+label+'</div></div>'; }
@@ -106,7 +109,26 @@ function render(s){
   document.getElementById("tableWrap").innerHTML =
     "<table><thead><tr><th>Link</th><th class='num'>Views</th><th class='num'>Bookings</th><th>Created</th></tr></thead><tbody>" + rows + "</tbody></table>";
 }
-load();
+async function gate(){
+  try { await pca.initialize(); const resp = await pca.handleRedirectPromise(); if (resp && resp.account) pca.setActiveAccount(resp.account); } catch(e){}
+  const acct = pca.getActiveAccount() || (pca.getAllAccounts()[0] || null);
+  const email = ((acct && acct.username) || "").toLowerCase();
+  if (acct && email.endsWith("@wetransact.io")){ load(); return; }
+  document.getElementById("content").style.display = "none";
+  document.getElementById("sub").textContent = "Sign-in required";
+  const m = document.getElementById("msg"); m.style.display = "block"; m.textContent = "";
+  const p = document.createElement("p");
+  p.textContent = acct ? "This dashboard is limited to WeTransact (@wetransact.io) accounts." : "Sign in to WeCalendar to view analytics.";
+  m.appendChild(p);
+  if (!acct){
+    const open = document.createElement("button"); open.className = "reload"; open.style.marginTop = "12px"; open.textContent = "Open WeCalendar to sign in";
+    open.onclick = () => window.open(window.location.origin + "/", "_blank");
+    const retry = document.createElement("button"); retry.className = "reload"; retry.style.cssText = "margin-top:12px;margin-left:8px"; retry.textContent = "I've signed in — retry";
+    retry.onclick = () => { m.style.display = "none"; gate(); };
+    m.appendChild(open); m.appendChild(retry);
+  }
+}
+gate();
 </script>
 </body>
 </html>
