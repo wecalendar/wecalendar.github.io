@@ -469,6 +469,16 @@
     </div>
   </div>
 </div>
+<div id="cancelModal" style="display:none; position:fixed; inset:0; background:rgba(20,16,40,.45); z-index:1300; align-items:center; justify-content:center; padding:20px;">
+  <div style="background:#fff; border-radius:18px; padding:22px; width:min(380px,94vw); box-shadow:0 24px 70px rgba(44,28,108,.3);">
+    <div style="width:42px;height:42px;border-radius:12px;background:#FDECEC;display:flex;align-items:center;justify-content:center;font-size:22px;margin-bottom:14px">🗑️</div>
+    <div id="ccMsg" style="font-size:15px;font-weight:600;color:var(--ink);line-height:1.45;margin-bottom:18px">Cancel this booking?</div>
+    <div style="display:flex;gap:10px;justify-content:flex-end">
+      <button id="ccCancel" style="border:none;border-radius:10px;padding:10px 18px;font-size:13.5px;font-weight:600;font-family:inherit;cursor:pointer;background:#F1F0F4;color:var(--ink)">Keep it</button>
+      <button id="ccConfirm" style="border:none;border-radius:10px;padding:10px 18px;font-size:13.5px;font-weight:600;font-family:inherit;cursor:pointer;background:#E5484D;color:#fff">Cancel meeting</button>
+    </div>
+  </div>
+</div>
 <div id="tourOverlay" style="display:none; position:fixed; inset:0; z-index:3999;">
   <div id="tourSpot"></div>
   <div id="tourTip">
@@ -536,7 +546,7 @@ async function fetchEvents(weekStart, weekEnd, calIds){
     const tk = await token();
     let next = "https://graph.microsoft.com/v1.0" + base + "?" + new URLSearchParams({
       startDateTime: weekStart.toISOString(), endDateTime: weekEnd.toISOString(),
-      $select: "subject,start,end,showAs,isAllDay,isOnlineMeeting,onlineMeeting,webLink,responseStatus", $orderby: "start/dateTime", $top: "200",
+      $select: "subject,start,end,showAs,isAllDay,isOnlineMeeting,onlineMeeting,webLink,responseStatus,body", $orderby: "start/dateTime", $top: "200",
     });
     let guard = 0;
     while (next && guard++ < 25){
@@ -544,7 +554,7 @@ async function fetchEvents(weekStart, weekEnd, calIds){
       if (!r.ok) throw new Error("Graph " + r.status);
       const obj = await r.json();
       (obj.value || []).filter(ev => ev.start && ev.start.dateTime && ev.end && ev.end.dateTime && ev.showAs !== "free" && ev.showAs !== "workingElsewhere" && !(ev.responseStatus && ev.responseStatus.response === "declined") && (!ev.isAllDay || ev.showAs === "oof"))
-        .forEach(ev => all.push({ id: ev.id, subject: ev.subject || "(busy)", start: new Date(ev.start.dateTime + "Z"), end: new Date(ev.end.dateTime + "Z"), allDay: !!ev.isAllDay, oof: ev.showAs === "oof", join: (ev.onlineMeeting && ev.onlineMeeting.joinUrl) || null, web: ev.webLink || null }));
+        .forEach(ev => all.push({ id: ev.id, subject: ev.subject || "(busy)", start: new Date(ev.start.dateTime + "Z"), end: new Date(ev.end.dateTime + "Z"), allDay: !!ev.isAllDay, oof: ev.showAs === "oof", join: (ev.onlineMeeting && ev.onlineMeeting.joinUrl) || null, web: ev.webLink || null, cancelId: (ev.body && ev.body.content && (/[?&]cancel=([0-9a-fA-F-]{36})/.exec(ev.body.content) || [])[1]) || null }));
       next = obj["@odata.nextLink"] || null;
     }
   }));
@@ -1348,6 +1358,7 @@ function renderBody(){
       el.innerHTML = '<span class="bn"></span><span class="bt">' + fmtRange(ev.start, ev.end) + "</span>";
       el.querySelector(".bn").textContent = ev.subject;
       if (ev.oof && ev.id){ el.classList.add("rmable"); el.title = "Click to remove this out-of-office block"; el.onclick = () => removeOOO(ev); el.insertAdjacentHTML("beforeend", '<span class="rmx">×</span>'); }
+      else if (ev.cancelId && ev.end > now){ el.classList.add("rmable"); el.title = "Click to cancel this booking"; el.onclick = () => confirmCancel(ev); el.insertAdjacentHTML("beforeend", '<span class="rmx">×</span>'); }
       if (ev.join && ev.end > now){
         const jb = document.createElement("a");
         jb.className = "joinbtn"; jb.href = ev.join; jb.target = "_blank"; jb.rel = "noopener";
@@ -1481,6 +1492,21 @@ async function doRemoveOOO(){
   m.addEventListener("click", e => { if (e.target === m) close(); });
   document.addEventListener("keydown", e => { if (e.key === "Escape" && m.style.display !== "none") close(); });
 })();
+let pendingCancel = null;
+function confirmCancel(ev){ if (!ev || !ev.cancelId) return; pendingCancel = ev; const msg = document.getElementById("ccMsg"); if (msg) msg.textContent = "Cancel “" + (ev.subject || "this meeting") + "”? It’s removed from your calendar and the slot re-opens for others."; document.getElementById("cancelModal").style.display = "flex"; }
+async function doCancelBooking(){
+  const ev = pendingCancel; pendingCancel = null;
+  document.getElementById("cancelModal").style.display = "none";
+  if (!ev || !ev.cancelId) return;
+  const FN = WECAL.FN_BASE || (WECAL.SUPABASE_URL ? WECAL.SUPABASE_URL + "/functions/v1" : "");
+  try {
+    const r = await fetch(FN + "/cancel-booking", { method: "POST", headers: { "Content-Type": "application/json", apikey: WECAL.SUPABASE_ANON_KEY, Authorization: "Bearer " + WECAL.SUPABASE_ANON_KEY }, body: JSON.stringify({ bookingId: ev.cancelId }) });
+    const j = await r.json().catch(() => ({}));
+    if (r.ok && j.ok){ toast("✓ Booking cancelled — slot re-opened"); load(); }
+    else { toast("Couldn’t cancel — " + (j.reason || "try again")); }
+  } catch(e){ toast("Couldn’t cancel — " + ((e && e.message) || "try again")); }
+}
+(function(){ const m = document.getElementById("cancelModal"); if (!m) return; const close = () => { pendingCancel = null; m.style.display = "none"; }; document.getElementById("ccCancel").onclick = close; document.getElementById("ccConfirm").onclick = doCancelBooking; m.addEventListener("click", e => { if (e.target === m) close(); }); document.addEventListener("keydown", e => { if (e.key === "Escape" && m.style.display !== "none") close(); }); })();
 document.getElementById("scroller").addEventListener("scroll", hideEvTip);
 
 // ---- paint interaction ----
