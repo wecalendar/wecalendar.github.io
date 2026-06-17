@@ -172,11 +172,11 @@ async function doBook(slotId){
     if (!r.ok || !j.ok){ $("mErr").textContent = "Something went wrong — please try again."; btn.disabled=false; btn.textContent="Book it"; booking=false; return; }
     const s = SLOTS.find(x=>x.id===slotId); if (s) s.status = "booked";
     const whenStr = s ? "See you " + new Intl.DateTimeFormat("en-US", { timeZone: TZ, weekday: "long" }).format(new Date(s.start_utc)) + " at " + timeLabel(new Date(s.start_utc)) : "";
-    confirmView(j.joinUrl, name, whenStr);
+    confirmView(j.joinUrl, name, whenStr, j.bookingId);
   } catch(e){ $("mErr").textContent = "Network error — please try again."; btn.disabled=false; btn.textContent="Book it"; booking=false; }
 }
 
-function confirmView(joinUrl, name, whenStr){
+function confirmView(joinUrl, name, whenStr, bookingId){
   const safeJoin = (joinUrl && /^https?:\/\/[^\s"'<>]+$/i.test(joinUrl)) ? joinUrl : "";
   const first = ((name || "").trim().split(/\s+/)[0] || "").replace(/[<>&"]/g, "");
   $("modal").innerHTML =
@@ -184,14 +184,43 @@ function confirmView(joinUrl, name, whenStr){
     '<h2 style="text-align:center">You’re booked' + (first ? ", " + first : "") + '! 🎉</h2>'+
     '<p style="text-align:center;color:var(--muted);margin-top:6px;font-size:13.5px">' + (whenStr ? whenStr + ". " : "") + 'A calendar invite is on its way to your inbox.</p>'+
     (safeJoin ? '<div style="text-align:center"><a class="joinbtn" href="'+safeJoin+'" target="_blank" rel="noopener">Join link</a></div>' : '')+
-    '<button class="btn sec" id="done" style="margin-top:18px">Done</button>';
+    '<button class="btn sec" id="done" style="margin-top:18px">Done</button>'+
+    (bookingId ? '<div style="text-align:center;margin-top:10px"><a href="?cancel='+encodeURIComponent(bookingId)+'" style="color:var(--muted);font-size:12.5px">Need to cancel?</a></div>' : '');
   $("done").onclick = () => { closeModal(); render(); };
   if (window.confetti) { try { window.confetti({ particleCount: 130, spread: 78, origin: { y: 0.6 }, colors: ['#7C6FF7','#00C875','#C9BCFF','#FFC400'] }); } catch(e){} }
 }
 
 function greeting(){ const h = new Date().getHours(); return h < 12 ? "Good morning! ☀️" : h < 18 ? "Good afternoon! 👋" : "Good evening! 🌙"; }
 
+function renderCancel(id){
+  $("title").textContent = "Cancel booking";
+  $("sub").textContent = "";
+  const tz = document.querySelector(".tzrow"); if (tz) tz.style.display = "none";
+  if (!FN || !C.SUPABASE_ANON_KEY){ fail("Booking isn’t configured."); return; }
+  $("list").innerHTML = '<div class="msg" style="text-align:center">'
+    + '<p style="font-size:15px;color:var(--ink);font-weight:600;margin-bottom:4px">Cancel this meeting?</p>'
+    + '<p style="font-size:13px;color:var(--muted);margin-bottom:18px">This frees the time slot and notifies everyone on the invite.</p>'
+    + '<button class="btn" id="cxConfirm" style="background:#E5484D;max-width:260px;margin:0 auto">Yes, cancel it</button>'
+    + '<div class="err" id="cxErr" style="margin-top:10px"></div></div>';
+  $("cxConfirm").onclick = async () => {
+    const btn = $("cxConfirm"); btn.disabled = true; btn.textContent = "Cancelling…"; $("cxErr").textContent = "";
+    try {
+      const r = await fetch(FN + "/cancel-booking", { method: "POST", headers: { "Content-Type": "application/json", apikey: C.SUPABASE_ANON_KEY, Authorization: "Bearer " + C.SUPABASE_ANON_KEY }, body: JSON.stringify({ bookingId: id }) });
+      const j = await r.json().catch(() => ({}));
+      if (r.ok && j.ok){
+        $("list").innerHTML = '<div class="msg" style="text-align:center"><div class="ok-ico">✓</div><p style="font-size:16px;color:var(--ink);font-weight:600;margin-top:8px">Your meeting is cancelled.</p><p style="font-size:13px;color:var(--muted);margin-top:4px">The time has been freed up — you can close this page.</p></div>';
+      } else if (j.reason === "not_found"){
+        $("cxErr").textContent = "Couldn’t find that booking — it may already be cancelled."; btn.disabled = false; btn.textContent = "Yes, cancel it";
+      } else {
+        $("cxErr").textContent = "Something went wrong — please try again."; btn.disabled = false; btn.textContent = "Yes, cancel it";
+      }
+    } catch(e){ $("cxErr").textContent = "Network error — please try again."; btn.disabled = false; btn.textContent = "Yes, cancel it"; }
+  };
+}
+
 async function init(){
+  const cancelId = new URLSearchParams(location.search).get("cancel");
+  if (cancelId){ renderCancel(cancelId); return; }
   buildTzSel();
   if (!slug){ fail("This booking link is missing its code."); return; }
   if (!C.SUPABASE_URL || !C.SUPABASE_ANON_KEY){
