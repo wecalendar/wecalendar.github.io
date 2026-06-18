@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>WeCalendar — WeTransact</title>
 <meta name="description" content="WeCalendar — share your Outlook availability with hyperlinked booking slots. WeTransact team tool.">
-<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect x='8' y='14' width='84' height='78' rx='14' fill='%237C6FF7'/%3E%3Crect x='8' y='34' width='84' height='58' rx='10' fill='%23fff'/%3E%3Crect x='22' y='46' width='18' height='14' rx='4' fill='%23e8e5ff'/%3E%3Crect x='46' y='46' width='18' height='14' rx='4' fill='%237C6FF7'/%3E%3Crect x='22' y='68' width='18' height='14' rx='4' fill='%23e8e5ff'/%3E%3Crect x='46' y='68' width='18' height='14' rx='4' fill='%23e8e5ff'/%3E%3Ccircle cx='30' cy='8' r='7' fill='%232C1C6C'/%3E%3Ccircle cx='70' cy='8' r='7' fill='%232C1C6C'/%3E%3C/svg%3E">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect x='8' y='14' width='84' height='78' rx='14' fill='%235E43C8'/%3E%3Crect x='8' y='34' width='84' height='58' rx='10' fill='%23fff'/%3E%3Crect x='22' y='46' width='18' height='14' rx='4' fill='%23e8e5ff'/%3E%3Crect x='46' y='46' width='18' height='14' rx='4' fill='%235E43C8'/%3E%3Crect x='22' y='68' width='18' height='14' rx='4' fill='%23e8e5ff'/%3E%3Crect x='46' y='68' width='18' height='14' rx='4' fill='%23e8e5ff'/%3E%3Ccircle cx='30' cy='8' r='7' fill='%232C1C6C'/%3E%3Ccircle cx='70' cy='8' r='7' fill='%232C1C6C'/%3E%3C/svg%3E">
 <script src="https://cdn.jsdelivr.net/npm/@azure/msal-browser@3/lib/msal-browser.min.js"></script>
 <script src="wecal-config.js"></script>
 <script>if((location.search.indexOf("dlg=")>-1)||(window.sessionStorage&&(sessionStorage.getItem("dlgMode")==="1"||sessionStorage.getItem("dlgAuth")==="1"))){document.write('<script src="https://appsforoffice.microsoft.com/lib/1/hosted/office.js"><\/script>');}</script>
@@ -13,6 +13,9 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <style>
+  @font-face{font-family:'Greycliff CF';src:url('GreycliffCF-Light.ttf') format('truetype');font-weight:300;font-display:swap}
+  @font-face{font-family:'Greycliff CF';src:url('GreycliffCF-Medium.ttf') format('truetype');font-weight:400 500;font-display:swap}
+  @font-face{font-family:'Greycliff CF';src:url('GreycliffCF-Bold.ttf') format('truetype');font-weight:600 700;font-display:swap}
   :root {
     --blue:#3b82f6; --blue-dark:#2563eb; --blue-light:#eff6ff;
     --ink:#1f2937; --muted:#9ca3af; --muted2:#6b7280;
@@ -27,7 +30,7 @@
     color-scheme: dark;
   }
   * { box-sizing:border-box; margin:0; padding:0; }
-  body { font-family:'Plus Jakarta Sans',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif; background:var(--bg); color:var(--ink); font-size:14px; }
+  body { font-family:'Greycliff CF','Plus Jakarta Sans',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif; background:var(--bg); color:var(--ink); font-size:14px; }
   body.dark .busy { background:rgba(240,71,156,.16); color:#F9A8D4; }
   body.dark .busy .bt { color:#F472B6; }
   body.dark .offh { background:rgba(255,255,255,.05); }
@@ -40,7 +43,7 @@
   .brand .logo { height:30px; display:block; }
   .appname { font-size:16px; font-weight:600; white-space:nowrap; }
   .appname.center { position:absolute; left:50%; transform:translateX(-50%); }
-  .appname .a1 { color:#7C6FF7; } .appname .a2 { color:#2C1C6C; }
+  .appname .a1 { color:#5E43C8; } .appname .a2 { color:#2C1C6C; }
   body.dark .appname .a2 { color:#C9BCFF; }
   .month { line-height:1.25; }
   .month .m { font-size:14px; font-weight:600; letter-spacing:-.1px; white-space:nowrap; }
@@ -83,21 +86,21 @@
   .hero-left { padding:46px 42px; }
   .hero-left .wlogo { height:30px; display:block; margin-bottom:6px; }
   .hero-left .appname { font-size:15px; font-weight:600; letter-spacing:.01em; }
-  .hero-left .appname .a1 { color:#7C6FF7; } .hero-left .appname .a2 { color:#2C1C6C; }
+  .hero-left .appname .a1 { color:#5E43C8; } .hero-left .appname .a2 { color:#2C1C6C; }
   .hero-left h2 { font-size:27px; line-height:1.25; font-weight:600; color:#2C1C6C; margin:22px 0 14px; }
   .feat { display:flex; align-items:center; gap:10px; font-size:13.5px; color:var(--muted2); margin:10px 0; }
   .feat svg { flex-shrink:0; }
-  .btn.primary { background:#7C6FF7; border-color:#7C6FF7; color:#fff; font-weight:600; }
+  .btn.primary { background:#5E43C8; border-color:#5E43C8; color:#fff; font-weight:600; }
   .btn.primary:hover { background:#5E43C8; }
   .btn.big { padding:12px 30px; font-size:15px; border-radius:999px; margin-top:20px; }
   .hero-right { background:#FBF9FF; border-left:1px solid #E2DBFF; padding:34px 28px; display:flex; flex-direction:column; justify-content:center; }
   .mini { display:grid; grid-template-columns:repeat(3,1fr); gap:6px; }
   .mini .dh2 { font-size:10.5px; color:#9ca3af; text-align:center; font-weight:600; letter-spacing:.06em; padding-bottom:2px; }
-  .mini .dh2.on { color:#7C6FF7; }
+  .mini .dh2.on { color:#5E43C8; }
   .mini .cell { height:30px; border-radius:7px; }
   .mini .busy2 { background:#FFDFEE; }
   .mini .free2 { background:#fff; border:1.5px dashed #C9BCFF; }
-  .mini .slot2 { background:#00C875; position:relative; }
+  .mini .slot2 { background:#12B76A; position:relative; }
   .mini .slot2::after { content:"✓"; color:#fff; font-size:11px; position:absolute; inset:0; display:flex; align-items:center; justify-content:center; }
   .mini-cap { font-size:11px; color:#9ca3af; text-align:center; margin-top:14px; }
   @media (max-width:800px){ .hero { grid-template-columns:1fr; } .hero-right { border-left:none; border-top:1px solid #E2DBFF; } }
@@ -152,7 +155,7 @@
   .evtip .d { color:#cbd5e1; }
   .daycol { cursor:default; }
   body.paint .daycol { cursor:crosshair; }
-  .paintbadge { position:absolute; right:20px; bottom:76px; z-index:20; background:#00C875; color:#fff; font-size:12px; font-weight:600; border-radius:999px; padding:6px 14px; display:none; }
+  .paintbadge { position:absolute; right:20px; bottom:76px; z-index:20; background:#12B76A; color:#fff; font-size:12px; font-weight:600; border-radius:999px; padding:6px 14px; display:none; }
   body.paint .paintbadge { display:block; }
   .cal { border-top:1px solid var(--line); }
   .cal-head { display:grid; grid-template-columns:58px repeat(7,1fr); }
@@ -200,14 +203,14 @@
   #tourTip .tt-btns button{ border:none; border-radius:8px; padding:7px 13px; font-family:inherit; font-size:13px; font-weight:600; cursor:pointer; }
   #tourSkip{ background:none; color:var(--muted2); }
   #tourBack{ background:#F1F0F4; color:var(--ink); }
-  #tourNext{ background:#7C6FF7; color:#fff; }
-  #tourBtn{ border:1px solid var(--line); background:#fff; color:#7C6FF7; width:30px; height:30px; border-radius:50%; font-size:14px; font-weight:700; cursor:pointer; font-family:inherit; }
+  #tourNext{ background:#5E43C8; color:#fff; }
+  #tourBtn{ border:1px solid var(--line); background:#fff; color:#5E43C8; width:30px; height:30px; border-radius:50%; font-size:14px; font-weight:700; cursor:pointer; font-family:inherit; }
   #tourBtn:hover{ background:#F4F0FF; }
-  .busy .joinbtn{ position:absolute; top:3px; right:4px; background:#7C6FF7; color:#fff; font-size:9.5px; font-weight:700; padding:1px 6px; border-radius:6px; text-decoration:none; line-height:1.5; z-index:2; }
-  .busy .joinbtn:hover{ background:#6B5FE0; }
+  .busy .joinbtn{ position:absolute; top:3px; right:4px; background:#5E43C8; color:#fff; font-size:9.5px; font-weight:700; padding:1px 6px; border-radius:6px; text-decoration:none; line-height:1.5; z-index:2; }
+  .busy .joinbtn:hover{ background:#402C93; }
   .busy.dim { opacity:.18; }
   .ovl { pointer-events:none; z-index:3; opacity:.8; border-radius:6px; font-size:9.5px; color:#fff; padding:2px 4px; font-weight:600; overflow:hidden; white-space:nowrap; left:55% !important; }
-  .sel { background:#00C875; color:#fff; font-size:11px; font-weight:600; padding:3px 6px; line-height:1.3; z-index:4; cursor:pointer; box-shadow:0 2px 6px rgba(0,200,117,.45); display:flex; align-items:center; }
+  .sel { background:#12B76A; color:#fff; font-size:11px; font-weight:600; padding:3px 6px; line-height:1.3; z-index:4; cursor:pointer; box-shadow:0 2px 6px rgba(0,200,117,.45); display:flex; align-items:center; }
   .sel:hover { background:#00B268; }
   .sel .x { position:absolute; top:2px; right:5px; font-weight:700; opacity:.75; }
   .sel.tmp { background:rgba(0,200,117,.5); box-shadow:none; }
@@ -223,7 +226,7 @@
   .panel-btns .primary { flex:1; }
   .lenseg { display:inline-flex; border:1px solid var(--line); border-radius:999px; overflow:hidden; background:var(--surface); }
   .lenseg button { border:none; background:none; padding:5px 12px; cursor:pointer; font-size:12px; color:var(--muted2); font-family:inherit; }
-  .lenseg button.on { background:#00C875; color:#fff; font-weight:600; }
+  .lenseg button.on { background:#12B76A; color:#fff; font-weight:600; }
   .ai-box { display:flex; gap:6px; margin-top:12px; }
   .ai-box input { flex:1; min-width:0; border:1px solid var(--line); border-radius:10px; padding:8px 10px; font-size:12.5px; font-family:inherit; background:var(--surface); color:var(--ink); outline:none; }
   .ai-box input:focus { border-color:var(--side); }
@@ -246,9 +249,9 @@
 <div class="app">
 <svg width="0" height="0" style="position:absolute" aria-hidden="true"><symbol id="wtlogo" viewBox="35 215 640 105">
         
-        <circle fill="#7C6FF7" cx="56.1" cy="231.01" r="9.71"/><circle fill="#7C6FF7" cx="156.1" cy="231.01" r="9.71"/>
-        <path fill="#7C6FF7" d="M270.34,267.48c-.55,0-1,.45-1,1v18.2c0,4.38-1.79,8.49-4.91,11.29-2.58,2.31-4.84,2.78-6.79,2.75,2.03-3.57,3.09-7.6,3.09-11.74l-.05-1.47c-.06-7.36-6.08-13.34-13.44-13.34s-13.29,5.9-13.44,13.18v1.04c0,4.32,1.14,8.56,3.29,12.32-2.99.05-5.85-1.03-8.09-3.08-2.42-2.21-3.8-5.36-3.8-8.63l-.03-20.61c0-.55-.45-1-1-1h-10.05c-.55,0-1,.45-1,1v20.08c0,12.34,8.97,22.73,20.87,24.16,4.61.56,9.23-.21,13.36-2.23,2.97,1.47,6.13,2.28,9.4,2.4.29.01.58.02.87.02,6.2,0,12.04-2.35,16.52-6.68,4.7-4.53,7.29-10.62,7.29-17.13l-.03-20.52c0-.55-.45-1-1-1h-10.05ZM247.22,300.05c-1.83-2.93-2.79-6.56-2.79-9.94l-.08-2.94c0-1.46,1.3-2.65,2.89-2.65s2.88,1.18,2.89,2.63v2.45c0,3.54-1.01,7.35-2.93,10.45Z"/>
-        <path fill="#7C6FF7" d="M309.78,301.01c3.28,0,6.13-1.17,7.94-2.84.32-.3.8-.33,1.18-.11l8.86,5.09c.54.31.69,1.03.31,1.52-4.3,5.37-10.55,8.13-18.46,8.13-15.04,0-24.36-10.11-24.36-23.22s9.5-23.22,23.39-23.22c12.84,0,22.34,9.94,22.34,23.22,0,1.85-.18,3.61-.53,5.28h-31.22c1.67,4.57,5.72,6.16,10.55,6.16ZM317.87,285c-1.41-5.1-5.37-6.95-9.32-6.95-5.01,0-8.36,2.46-9.59,6.95h18.91Z"/>
+        <circle fill="#5E43C8" cx="56.1" cy="231.01" r="9.71"/><circle fill="#5E43C8" cx="156.1" cy="231.01" r="9.71"/>
+        <path fill="#5E43C8" d="M270.34,267.48c-.55,0-1,.45-1,1v18.2c0,4.38-1.79,8.49-4.91,11.29-2.58,2.31-4.84,2.78-6.79,2.75,2.03-3.57,3.09-7.6,3.09-11.74l-.05-1.47c-.06-7.36-6.08-13.34-13.44-13.34s-13.29,5.9-13.44,13.18v1.04c0,4.32,1.14,8.56,3.29,12.32-2.99.05-5.85-1.03-8.09-3.08-2.42-2.21-3.8-5.36-3.8-8.63l-.03-20.61c0-.55-.45-1-1-1h-10.05c-.55,0-1,.45-1,1v20.08c0,12.34,8.97,22.73,20.87,24.16,4.61.56,9.23-.21,13.36-2.23,2.97,1.47,6.13,2.28,9.4,2.4.29.01.58.02.87.02,6.2,0,12.04-2.35,16.52-6.68,4.7-4.53,7.29-10.62,7.29-17.13l-.03-20.52c0-.55-.45-1-1-1h-10.05ZM247.22,300.05c-1.83-2.93-2.79-6.56-2.79-9.94l-.08-2.94c0-1.46,1.3-2.65,2.89-2.65s2.88,1.18,2.89,2.63v2.45c0,3.54-1.01,7.35-2.93,10.45Z"/>
+        <path fill="#5E43C8" d="M309.78,301.01c3.28,0,6.13-1.17,7.94-2.84.32-.3.8-.33,1.18-.11l8.86,5.09c.54.31.69,1.03.31,1.52-4.3,5.37-10.55,8.13-18.46,8.13-15.04,0-24.36-10.11-24.36-23.22s9.5-23.22,23.39-23.22c12.84,0,22.34,9.94,22.34,23.22,0,1.85-.18,3.61-.53,5.28h-31.22c1.67,4.57,5.72,6.16,10.55,6.16ZM317.87,285c-1.41-5.1-5.37-6.95-9.32-6.95-5.01,0-8.36,2.46-9.59,6.95h18.91Z"/>
         <circle fill="#2C1C6C" cx="106.06" cy="243.16" r="9.71"/>
         <path fill="#2C1C6C" d="M163.77,260.78c0-4.21-3.43-7.63-7.64-7.63s-7.64,3.43-7.64,7.64v25.54c0,6.98-2.53,13.61-7.12,18.67-7.25,7.98-13.51,8.67-18.67,8.28l-3.49-.26,1.85-2.97c3.85-6.21,5.89-13.36,5.89-20.66l-.08-2.65c-.09-11.41-9.44-20.69-20.84-20.69s-20.52,9.02-20.84,20.24v2.01c0,7.67,2.16,15.19,6.23,21.73l1.83,2.93-3.44.3c-6.82.6-13.34-1.6-18.37-6.2-4.95-4.53-7.79-10.97-7.79-17.66l-.05-28.68c0-4.21-3.43-7.63-7.64-7.63s-7.64,3.43-7.64,7.64v29.99c0,14.97,8.63,28.42,21.97,34.25,11.77,5.15,24.19,4.99,34.96-.44l.96-.48.96.49c5.02,2.56,10.37,3.96,15.89,4.16,10.73.38,20.97-3.52,28.72-11,7.76-7.49,12.04-17.54,12.04-28.29l-.05-28.6ZM111.15,288.63c0,6.48-1.88,12.66-5.15,17.9-3.11-4.95-4.94-10.77-4.94-17.04l-.08-3.66h0c0-2.81,2.28-5.09,5.09-5.09s5.09,2.28,5.09,5.09h0v2.8Z"/>
         <path fill="#2C1C6C" d="M362.01,268.42v10.61c0,.57-.46,1.03-1.03,1.03h-8.03v15.57c0,3.54,2.85,4.08,7.99,3.84.58-.03,1.07.44,1.07,1.03v9.94c0,.53-.41.98-.94,1.03-16.48,1.47-21.31-3.75-21.31-15.83v-15.57h-6.01c-.57,0-1.03-.46-1.03-1.03v-10.61c0-.57.46-1.03,1.03-1.03h27.23c.57,0,1.03.46,1.03,1.03Z"/>
@@ -267,9 +270,9 @@
         <svg class="wlogo" viewBox="0 0 640 105" xmlns="http://www.w3.org/2000/svg" aria-label="WeTransact"><use href="#wtlogo"/></svg>
         <span class="appname"><span class="a1">we</span><span class="a2">calendar</span></span>
         <h2>Your week, painted into booking links</h2>
-        <div class="feat"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#7C6FF7" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4l7 17 2.5-7.5L21 11z"/></svg>Click or drag to paint 30-min slots</div>
-        <div class="feat"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#7C6FF7" stroke-width="2.2" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c2.5 2.6 4 5.6 4 9s-1.5 6.4-4 9c-2.5-2.6-4-5.6-4-9s1.5-6.4 4-9z"/></svg>Timezone-smart for US &amp; APAC prospects</div>
-        <div class="feat"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#7C6FF7" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="M3 7l9 6 9-6"/></svg>Recipients book with one click</div>
+        <div class="feat"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#5E43C8" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4l7 17 2.5-7.5L21 11z"/></svg>Click or drag to paint 30-min slots</div>
+        <div class="feat"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#5E43C8" stroke-width="2.2" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c2.5 2.6 4 5.6 4 9s-1.5 6.4-4 9c-2.5-2.6-4-5.6-4-9s1.5-6.4 4-9z"/></svg>Timezone-smart for US &amp; APAC prospects</div>
+        <div class="feat"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#5E43C8" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="M3 7l9 6 9-6"/></svg>Recipients book with one click</div>
         <button class="btn primary big" id="signInBtn">Sign in with Microsoft</button>
         <p class="hint" id="signinErr"></p>
       </div>
@@ -373,7 +376,7 @@
         <div class="hint" id="jointNote" style="display:none"></div>
         <div class="panel-btns">
           <button class="btn" id="clearBtn">Clear</button>
-          <button class="btn primary" id="linkBtn" style="flex:2;background:#00C875;border-color:#00C875" title="Copy a booking link for these slots — anyone can use it to book (Google, Apple or Outlook), no account needed">📋 Copy slots</button>
+          <button class="btn primary" id="linkBtn" style="flex:2;background:#12B76A;border-color:#12B76A" title="Copy a booking link for these slots — anyone can use it to book (Google, Apple or Outlook), no account needed">📋 Copy slots</button>
         </div>
         <div class="ai-box">
           <input type="text" id="aiIn" placeholder='✨ e.g. "5 slots in the afternoon next 5 days"'>
@@ -387,7 +390,7 @@
         </div>
         <div id="focusCard" title="Tap for another tip" style="display:none; margin-top:20px; background:#fff; border:1px solid #E2DBFF; border-radius:16px; padding:15px 16px; cursor:pointer;">
           <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:11px;">
-            <span style="font-size:11px; font-weight:600; letter-spacing:.07em; color:#7C6FF7; text-transform:uppercase;">Focus tip</span>
+            <span style="font-size:11px; font-weight:600; letter-spacing:.07em; color:#5E43C8; text-transform:uppercase;">Focus tip</span>
             <span id="focusCtx" style="font-size:11px; font-weight:600; padding:2px 8px; border-radius:20px; background:#F1F0FB; color:#6b7280;"></span>
           </div>
           <div style="display:flex; gap:11px; align-items:flex-start;">
@@ -465,7 +468,7 @@
     <div style="font-size:15px;font-weight:600;color:var(--ink);line-height:1.45;margin-bottom:18px">Are you sure you want to remove this OOO block? ✈️</div>
     <div style="display:flex;gap:10px;justify-content:flex-end">
       <button id="cfCancel" style="border:none;border-radius:10px;padding:10px 18px;font-size:13.5px;font-weight:600;font-family:inherit;cursor:pointer;background:#F1F0F4;color:var(--ink)">Cancel</button>
-      <button id="cfRemove" style="border:none;border-radius:10px;padding:10px 18px;font-size:13.5px;font-weight:600;font-family:inherit;cursor:pointer;background:#7C6FF7;color:#fff">Remove</button>
+      <button id="cfRemove" style="border:none;border-radius:10px;padding:10px 18px;font-size:13.5px;font-weight:600;font-family:inherit;cursor:pointer;background:#5E43C8;color:#fff">Remove</button>
     </div>
   </div>
 </div>
@@ -1669,7 +1672,7 @@ async function createBookingLink(){
       document.getElementById("preview").innerHTML =
         '<div style="background:#FFF4E6;border:1px solid #FACC8E;border-radius:10px;padding:13px;font-size:13px;color:#92400E;line-height:1.5">' +
         '🔌 <b>One quick setup step</b><br>To create booking links, connect your calendar so WeCalendar can place the booked meeting for you. It\'s one-time and takes a few seconds.' +
-        '<button id="connectCal" class="btn primary" style="margin-top:11px;background:#7C6FF7;border-color:#7C6FF7">Connect my calendar</button>' +
+        '<button id="connectCal" class="btn primary" style="margin-top:11px;background:#5E43C8;border-color:#5E43C8">Connect my calendar</button>' +
         '</div>';
       const cc = document.getElementById("connectCal");
       if (cc) cc.onclick = () => { location.href = consentUrl("microsoft"); };
@@ -1801,8 +1804,8 @@ function loadBars(per, todayK, maxV, maxH){
     const h = p.total > 0 ? Math.max(4, Math.round(p.total / maxV * maxH)) : 2;
     const t = keyOf(p.date) === todayK;
     return '<div style="display:flex; flex-direction:column; align-items:center; gap:4px; flex:1;">'
-      + '<div title="' + fmtMin(p.total) + '" style="width:60%; max-width:22px; height:' + h + 'px; border-radius:4px 4px 2px 2px; background:' + (t ? '#7C6FF7' : '#D9D2FB') + ';"></div>'
-      + '<span style="font-size:10px; color:' + (t ? '#7C6FF7' : '#9890C4') + '; font-weight:' + (t ? '600' : '400') + ';">' + dayLetter(p.date) + '</span></div>';
+      + '<div title="' + fmtMin(p.total) + '" style="width:60%; max-width:22px; height:' + h + 'px; border-radius:4px 4px 2px 2px; background:' + (t ? '#5E43C8' : '#D9D2FB') + ';"></div>'
+      + '<span style="font-size:10px; color:' + (t ? '#5E43C8' : '#9890C4') + '; font-weight:' + (t ? '600' : '400') + ';">' + dayLetter(p.date) + '</span></div>';
   }).join("");
 }
 
@@ -1825,7 +1828,7 @@ function renderLoad(){
   // sidebar mini
   card.querySelector("#loadToday").innerHTML = focus
     ? '<div style="font-size:12.5px; color:#2C1C6C;"><b style="font-size:15px;">' + fmtMin(focus.total) + '</b> in meetings ' + (isToday ? 'today' : '· ' + whenLbl) + '</div>'
-      + '<div style="margin:7px 0 1px; height:7px; background:#ECE9FE; border-radius:5px; overflow:hidden;"><div style="width:' + pct + '%; height:100%; background:#7C6FF7;"></div></div>'
+      + '<div style="margin:7px 0 1px; height:7px; background:#ECE9FE; border-radius:5px; overflow:hidden;"><div style="width:' + pct + '%; height:100%; background:#5E43C8;"></div></div>'
     : '<div style="font-size:12px; color:#6b7280;">No meetings ' + (isToday ? 'today' : 'that day') + '.</div>';
   const wm = card.querySelector("#loadWeekMini");
   if (showWeek){
@@ -1842,7 +1845,7 @@ function renderLoad(){
   const todayBig = focus
     ? '<div style="font-size:12px; color:#6b7280; font-weight:500; margin-bottom:4px;">' + headLbl + '</div>'
       + '<div style="display:flex; align-items:baseline; gap:8px;"><span style="font-size:30px; font-weight:700; color:#2C1C6C; line-height:1;">' + fmtMin(focus.total) + '</span><span style="font-size:12.5px; color:#6b7280;">in meetings</span></div>'
-      + '<div style="margin:11px 0 6px; height:9px; background:#ECE9FE; border-radius:6px; overflow:hidden;"><div style="width:' + pct + '%; height:100%; background:#7C6FF7;"></div></div>'
+      + '<div style="margin:11px 0 6px; height:9px; background:#ECE9FE; border-radius:6px; overflow:hidden;"><div style="width:' + pct + '%; height:100%; background:#5E43C8;"></div></div>'
       + '<div style="font-size:11px; color:#9890C4; margin-bottom:14px;">' + pct + '% of a ' + (S.workEnd - S.workStart) + '-hour day</div>'
     : '<div style="font-size:13px; color:#6b7280; margin:4px 0 14px;">No meetings that day.</div>';
   const tiles = focus
@@ -1889,8 +1892,8 @@ function renderPTOBox(){
     const isToday = keyOf(d) === todayK;
     const dlbl = fmt(new Date(d.getFullYear(), d.getMonth(), d.getDate(), 12), { weekday: "short", day: "numeric" });
     html += '<div style="margin-bottom:11px;">'
-      + '<div style="font-size:11px; font-weight:600; color:' + (isToday ? '#7C6FF7' : 'var(--muted2)') + '; margin-bottom:5px; letter-spacing:.02em;">' + dlbl + (isToday ? ' · today' : '') + '</div>'
-      + names.map(n => '<div style="font-size:12.5px; color:var(--ink); padding:2px 0; display:flex; gap:8px; align-items:center;"><span style="width:6px; height:6px; border-radius:50%; background:#00C875; flex:none;"></span>' + n.replace(/</g, "&lt;") + '</div>').join("")
+      + '<div style="font-size:11px; font-weight:600; color:' + (isToday ? '#5E43C8' : 'var(--muted2)') + '; margin-bottom:5px; letter-spacing:.02em;">' + dlbl + (isToday ? ' · today' : '') + '</div>'
+      + names.map(n => '<div style="font-size:12.5px; color:var(--ink); padding:2px 0; display:flex; gap:8px; align-items:center;"><span style="width:6px; height:6px; border-radius:50%; background:#12B76A; flex:none;"></span>' + n.replace(/</g, "&lt;") + '</div>').join("")
       + '</div>';
   });
   list.innerHTML = total ? html : '<div style="font-size:12.5px; color:var(--muted2);">No one’s off ' + (S.dayView ? "that day" : "this week") + '. 🎉</div>';

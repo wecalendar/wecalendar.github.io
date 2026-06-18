@@ -6,8 +6,11 @@
   var now0 = new Date(), MC = { y: now0.getFullYear(), m: now0.getMonth() };
 
   var STYLE = ''
-    + ':root{--accent:#7C6FF7;--accent-d:#6B5FE0;--ink:#2C1C6C;--muted:#6b7280;--line:#E2DBFF;--green:#00C875;--green-d:#00b368}'
-    + '#app *{box-sizing:border-box}'
+    + "@font-face{font-family:'Greycliff CF';src:url(GreycliffCF-Light.ttf) format('truetype');font-weight:300;font-display:swap}"
+    + "@font-face{font-family:'Greycliff CF';src:url(GreycliffCF-Medium.ttf) format('truetype');font-weight:400 500;font-display:swap}"
+    + "@font-face{font-family:'Greycliff CF';src:url(GreycliffCF-Bold.ttf) format('truetype');font-weight:600 700;font-display:swap}"
+    + ":root{--accent:#5E43C8;--accent-d:#402C93;--ink:#2C1C6C;--muted:#656578;--line:#E2DBFF;--green:#12B76A;--green-d:#039855}"
+    + "#app{font-family:'Greycliff CF','Plus Jakarta Sans',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif!important}#app *{box-sizing:border-box}"
     + '.brand{font-size:15px;font-weight:700;margin-bottom:2px}.brand .a1{color:var(--accent)}.brand .a2{color:var(--ink)}'
     + '.sub{font-size:12px;color:var(--muted);margin-bottom:14px;line-height:1.45}'
     + '.btn{width:100%;margin-top:10px;border:none;border-radius:10px;padding:12px;font-size:14px;font-weight:600;font-family:inherit;cursor:pointer;background:var(--accent);color:#fff}'
