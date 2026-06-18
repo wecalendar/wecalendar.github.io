@@ -716,8 +716,9 @@ for (let hh = 5; hh <= 23; hh++){
   whStart.add(new Option(lbl, hh)); whEnd.add(new Option(lbl, hh));
 }
 whStart.value = S.workStart; whEnd.value = S.workEnd;
-whStart.onchange = () => { S.workStart = +whStart.value; if (S.workEnd <= S.workStart){ S.workEnd = Math.min(S.workStart+1,23); whEnd.value = S.workEnd; localStorage.setItem("wh2", S.workEnd); } localStorage.setItem("wh1", whStart.value); renderBody(); };
-whEnd.onchange = () => { S.workEnd = +whEnd.value; if (S.workEnd <= S.workStart){ S.workStart = Math.max(S.workEnd-1,5); whStart.value = S.workStart; localStorage.setItem("wh1", S.workStart); } localStorage.setItem("wh2", whEnd.value); renderBody(); };
+async function saveHostSettings(){ try { if (!account) return; const tk = await token(); await fetch(WECAL.FN_BASE + "/host-settings", { method: "POST", headers: { "Content-Type": "application/json", apikey: WECAL.SUPABASE_ANON_KEY, Authorization: "Bearer " + tk }, body: JSON.stringify({ save: true, workStart: S.workStart, workEnd: S.workEnd, buffer: S.buffer, minNotice: S.minNotice, dayCap: S.dayCap }) }); } catch(e){} }
+whStart.onchange = () => { S.workStart = +whStart.value; if (S.workEnd <= S.workStart){ S.workEnd = Math.min(S.workStart+1,23); whEnd.value = S.workEnd; localStorage.setItem("wh2", S.workEnd); } localStorage.setItem("wh1", whStart.value); renderBody(); saveHostSettings(); };
+whEnd.onchange = () => { S.workEnd = +whEnd.value; if (S.workEnd <= S.workStart){ S.workStart = Math.max(S.workEnd-1,5); whStart.value = S.workStart; localStorage.setItem("wh1", S.workStart); } localStorage.setItem("wh2", whEnd.value); renderBody(); saveHostSettings(); };
 document.getElementById("setBtn").onclick = e => {
   e.stopPropagation();
   const r = e.currentTarget.getBoundingClientRect();
@@ -772,8 +773,8 @@ wkndChk.checked = S.showWknd;
 wkndChk.onchange = () => { S.showWknd = wkndChk.checked; localStorage.setItem("wknd", S.showWknd ? "1" : "0"); renderAll(); };
 const bufSel = document.getElementById("bufSel"), ntcSel = document.getElementById("ntcSel"), capSel = document.getElementById("capSel");
 bufSel.value = S.buffer; ntcSel.value = S.minNotice; capSel.value = S.dayCap;
-bufSel.onchange = () => { S.buffer = +bufSel.value; localStorage.setItem("buf", S.buffer); renderAll(); };
-ntcSel.onchange = () => { S.minNotice = +ntcSel.value; localStorage.setItem("ntc", S.minNotice); renderBody(); };
+bufSel.onchange = () => { S.buffer = +bufSel.value; localStorage.setItem("buf", S.buffer); renderAll(); saveHostSettings(); };
+ntcSel.onchange = () => { S.minNotice = +ntcSel.value; localStorage.setItem("ntc", S.minNotice); renderBody(); saveHostSettings(); };
 capSel.onchange = () => { S.dayCap = +capSel.value; localStorage.setItem("cap", S.dayCap); };
 const lenSeg = document.getElementById("lenSeg");
 function paintLenSeg(){ [...lenSeg.querySelectorAll("button")].forEach(b => b.classList.toggle("on", +b.dataset.l === S.slotLen)); }
