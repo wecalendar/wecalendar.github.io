@@ -150,9 +150,16 @@
   .fab { position:absolute; right:20px; bottom:20px; z-index:20; width:52px; height:52px; border-radius:50%; border:none; background:#3DD9A4; color:#fff; cursor:pointer; box-shadow:0 6px 20px rgba(0,200,117,.4); display:flex; align-items:center; justify-content:center; transition:background .15s; }
   .fab:hover { background:#00B268; }
   .fab.on { background:#0E9F66; box-shadow:0 6px 20px rgba(14,159,102,.5); }
-  .evtip { position:fixed; z-index:99; background:#1f2937; color:#fff; padding:9px 12px; border-radius:10px; font-size:12px; line-height:1.45; max-width:250px; pointer-events:none; display:none; box-shadow:0 8px 24px rgba(0,0,0,.25); }
-  .evtip .t { font-weight:700; display:block; margin-bottom:2px; }
-  .evtip .d { color:#cbd5e1; }
+  .evtip { position:fixed; z-index:99; background:#fff; color:#2C1C6C; padding:12px 14px; border-radius:14px; font-size:12px; line-height:1.45; max-width:290px; pointer-events:none; display:none; border:1px solid #E2DBFF; box-shadow:0 12px 28px rgba(44,28,108,.18); }
+  .evtip .t { font-weight:700; display:block; color:#2C1C6C; font-size:13.5px; margin-bottom:2px; }
+  .evtip .d { color:#656578; }
+  .evtip .att { margin-top:10px; padding-top:10px; border-top:1px solid #EEEAF8; display:flex; flex-direction:column; gap:7px; }
+  .evtip .arow { display:flex; align-items:center; gap:8px; }
+  .evtip .av { width:22px; height:22px; border-radius:50%; color:#fff; display:flex; align-items:center; justify-content:center; font-size:9.5px; font-weight:700; flex:none; }
+  .evtip .anm { color:#343130; font-size:12.5px; flex:1; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+  .evtip .ast { font-size:10.5px; font-weight:700; flex:none; white-space:nowrap; }
+  .evtip .ast.going{ color:#039855; } .evtip .ast.maybe{ color:#B78B00; } .evtip .ast.org{ color:#5E43C8; } .evtip .ast.no{ color:#9191A4; }
+  .evtip .amore { color:#9191A4; font-size:12px; padding-left:30px; }
   .daycol { cursor:default; }
   body.paint .daycol { cursor:crosshair; }
   .paintbadge { position:absolute; right:20px; bottom:76px; z-index:20; background:#12B76A; color:#fff; font-size:12px; font-weight:600; border-radius:999px; padding:6px 14px; display:none; }
@@ -549,7 +556,7 @@ async function fetchEvents(weekStart, weekEnd, calIds){
     const tk = await token();
     let next = "https://graph.microsoft.com/v1.0" + base + "?" + new URLSearchParams({
       startDateTime: weekStart.toISOString(), endDateTime: weekEnd.toISOString(),
-      $select: "subject,start,end,showAs,isAllDay,isOnlineMeeting,onlineMeeting,webLink,responseStatus,body", $orderby: "start/dateTime", $top: "200",
+      $select: "subject,start,end,showAs,isAllDay,isOnlineMeeting,onlineMeeting,webLink,responseStatus,body,attendees,organizer", $orderby: "start/dateTime", $top: "200",
     });
     let guard = 0;
     while (next && guard++ < 25){
@@ -557,7 +564,7 @@ async function fetchEvents(weekStart, weekEnd, calIds){
       if (!r.ok) throw new Error("Graph " + r.status);
       const obj = await r.json();
       (obj.value || []).filter(ev => ev.start && ev.start.dateTime && ev.end && ev.end.dateTime && ev.showAs !== "free" && ev.showAs !== "workingElsewhere" && !(ev.responseStatus && ev.responseStatus.response === "declined") && (!ev.isAllDay || ev.showAs === "oof"))
-        .forEach(ev => all.push({ id: ev.id, subject: ev.subject || "(busy)", start: new Date(ev.start.dateTime + "Z"), end: new Date(ev.end.dateTime + "Z"), allDay: !!ev.isAllDay, oof: ev.showAs === "oof", join: (ev.onlineMeeting && ev.onlineMeeting.joinUrl) || null, web: ev.webLink || null, cancelId: (ev.body && ev.body.content && (/[?&]cancel=([0-9a-fA-F-]{36})/.exec(ev.body.content) || [])[1]) || null }));
+        .forEach(ev => all.push({ id: ev.id, subject: ev.subject || "(busy)", start: new Date(ev.start.dateTime + "Z"), end: new Date(ev.end.dateTime + "Z"), allDay: !!ev.isAllDay, oof: ev.showAs === "oof", join: (ev.onlineMeeting && ev.onlineMeeting.joinUrl) || null, web: ev.webLink || null, cancelId: (ev.body && ev.body.content && (/[?&]cancel=([0-9a-fA-F-]{36})/.exec(ev.body.content) || [])[1]) || null, org: (ev.organizer && ev.organizer.emailAddress && ev.organizer.emailAddress.name) || null, att: (ev.attendees || []).map(function(a){ return { name: (a.emailAddress && (a.emailAddress.name || a.emailAddress.address)) || "", resp: (a.status && a.status.response) || "none" }; }) }));
       next = obj["@odata.nextLink"] || null;
     }
   }));
@@ -1459,7 +1466,21 @@ const evTip = document.createElement("div");
 evTip.className = "evtip";
 document.body.appendChild(evTip);
 function showEvTip(el, ev){
-  evTip.innerHTML = '<span class="t"></span><span class="d"></span>';
+  const _esc = s => (s||"").replace(/[<>&"]/g, c => ({'<':'&lt;','>':'&gt;','&':'&amp;','"':'&quot;'}[c]));
+  const _ini = n => { n=(n||"").trim(); if(!n) return "?"; const p=n.split(/\s+/); return ((p[0][0]||"")+(p.length>1?(p[p.length-1][0]||""):"")).toUpperCase(); };
+  const _pal = ["#5E43C8","#8266F4","#402C93"];
+  const _lbl = { organizer:["org","organizer"], accepted:["going","● going"], tentativelyAccepted:["maybe","◐ maybe"], notResponded:["no","invited"], none:["no","invited"] };
+  let _people = [];
+  if (ev.org) _people.push({ name: ev.org, resp: "organizer" });
+  (ev.att || []).forEach(a => { if (a.resp === "declined") return; if (ev.org && a.name === ev.org) return; _people.push(a); });
+  let _att = "";
+  if (_people.length){
+    _att = '<div class="att">';
+    _people.slice(0,4).forEach((p,i) => { const m=_lbl[p.resp]||_lbl.none; _att += '<div class="arow"><span class="av" style="background:'+_pal[i%_pal.length]+'">'+_esc(_ini(p.name))+'</span><span class="anm">'+_esc(p.name)+'</span>'+(m[1]?'<span class="ast '+m[0]+'">'+m[1]+'</span>':'')+'</div>'; });
+    if (_people.length>4) _att += '<div class="amore">+'+(_people.length-4)+' more</div>';
+    _att += '</div>';
+  }
+  evTip.innerHTML = '<span class="t"></span><span class="d"></span>' + _att;
   evTip.querySelector(".t").textContent = ev.subject;
   evTip.querySelector(".d").textContent = fmt(ev.start, {weekday:"long", month:"short", day:"numeric"}) + " · " + fmtRange(ev.start, ev.end);
   evTip.style.display = "block";
