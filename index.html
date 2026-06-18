@@ -564,7 +564,7 @@ async function fetchEvents(weekStart, weekEnd, calIds){
       if (!r.ok) throw new Error("Graph " + r.status);
       const obj = await r.json();
       (obj.value || []).filter(ev => ev.start && ev.start.dateTime && ev.end && ev.end.dateTime && ev.showAs !== "free" && ev.showAs !== "workingElsewhere" && !(ev.responseStatus && ev.responseStatus.response === "declined") && (!ev.isAllDay || ev.showAs === "oof"))
-        .forEach(ev => all.push({ id: ev.id, subject: ev.subject || "(busy)", start: new Date(ev.start.dateTime + "Z"), end: new Date(ev.end.dateTime + "Z"), allDay: !!ev.isAllDay, oof: ev.showAs === "oof", join: (ev.onlineMeeting && ev.onlineMeeting.joinUrl) || null, web: ev.webLink || null, cancelId: (ev.body && ev.body.content && (/[?&]cancel=([0-9a-fA-F-]{36})/.exec(ev.body.content) || [])[1]) || null, org: (ev.organizer && ev.organizer.emailAddress && ev.organizer.emailAddress.name) || null, att: (ev.attendees || []).map(function(a){ return { name: (a.emailAddress && (a.emailAddress.name || a.emailAddress.address)) || "", resp: (a.status && a.status.response) || "none" }; }) }));
+        .forEach(ev => all.push({ id: ev.id, subject: ev.subject || "(busy)", start: new Date(ev.start.dateTime + "Z"), end: new Date(ev.end.dateTime + "Z"), allDay: !!ev.isAllDay, oof: ev.showAs === "oof", join: (ev.onlineMeeting && ev.onlineMeeting.joinUrl) || null, web: ev.webLink || null, cancelId: (ev.body && ev.body.content && (/[?&]cancel=([0-9a-fA-F-]{36})/.exec(ev.body.content) || [])[1]) || null, org: (ev.organizer && ev.organizer.emailAddress && ev.organizer.emailAddress.name) || null, orgEmail: (ev.organizer && ev.organizer.emailAddress && ev.organizer.emailAddress.address) || null, att: (ev.attendees || []).map(function(a){ return { name: (a.emailAddress && (a.emailAddress.name || a.emailAddress.address)) || "", email: (a.emailAddress && a.emailAddress.address) || "", resp: (a.status && a.status.response) || "none" }; }) }));
       next = obj["@odata.nextLink"] || null;
     }
   }));
@@ -1470,9 +1470,12 @@ function showEvTip(el, ev){
   const _ini = n => { n=(n||"").trim(); if(!n) return "?"; const p=n.split(/\s+/); return ((p[0][0]||"")+(p.length>1?(p[p.length-1][0]||""):"")).toUpperCase(); };
   const _pal = ["#5E43C8","#8266F4","#402C93"];
   const _lbl = { organizer:["org","organizer"], accepted:["going","● going"], tentativelyAccepted:["maybe","◐ maybe"], notResponded:["no","invited"], none:["no","invited"] };
+  const _me = (ME.email || "").toLowerCase();
+  const _meName = ((S.profileName || ME.name || "")).toLowerCase();
+  const _isMe = (email, name) => (email && email.toLowerCase() === _me) || (_meName && (name || "").toLowerCase() === _meName);
   let _people = [];
-  if (ev.org) _people.push({ name: ev.org, resp: "organizer" });
-  (ev.att || []).forEach(a => { if (a.resp === "declined") return; if (ev.org && a.name === ev.org) return; _people.push(a); });
+  if (ev.org && !_isMe(ev.orgEmail, ev.org)) _people.push({ name: ev.org, resp: "organizer" });
+  (ev.att || []).forEach(a => { if (a.resp === "declined") return; if (_isMe(a.email, a.name)) return; if (ev.org && a.name === ev.org) return; _people.push(a); });
   let _att = "";
   if (_people.length){
     _att = '<div class="att">';
