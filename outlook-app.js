@@ -1,6 +1,6 @@
 (function(){
   var WC = window.WECAL || {};
-  var ready = false, TOKEN = null, EMAIL = "", SLOTS = [], SLOTLEN = 30, WS = 9, WE = 18, BUF = 0, MINNOTICE = 0, SELDAY = null, LAST = null, BUSY = [], OFFV = {}, VIEWDAYS = [];
+  var ready = false, TOKEN = null, EMAIL = "", SLOTS = [], SLOTLEN = 30, WS = 9, WE = 18, BUF = 0, MINNOTICE = 0, SELDAY = null, LAST = null, BUSY = [], OFFV = {}, VIEWDAYS = [], WEEKMON = null;
   var TZ = (function(){ try { return Intl.DateTimeFormat().resolvedOptions().timeZone; } catch(e){ return "UTC"; } })();
   var TZLIST = [["America/Los_Angeles","Los Angeles · PT"],["America/Denver","Denver · MT"],["America/Chicago","Chicago · CT"],["America/New_York","New York · ET"],["America/Sao_Paulo","São Paulo"],["Europe/London","London"],["Europe/Lisbon","Lisbon"],["Europe/Paris","Paris · CET"],["Europe/Berlin","Berlin"],["Europe/Madrid","Madrid"],["Africa/Johannesburg","Johannesburg"],["Asia/Dubai","Dubai"],["Asia/Kolkata","India"],["Asia/Singapore","Singapore"],["Asia/Tokyo","Tokyo"],["Australia/Sydney","Sydney"],["Pacific/Auckland","Auckland"],["UTC","UTC"]];
   var now0 = new Date(), MC = { y: now0.getFullYear(), m: now0.getMonth() };
@@ -58,6 +58,10 @@
     + '.grow .tmcol{white-space:nowrap;font-variant-numeric:tabular-nums}'
     + '.grow .ttl{font-weight:500;flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}'
     + '.grow.off{background:#F1EFE8;color:#5F5E5A}'
+    + '.weeknav{display:flex;align-items:center;justify-content:space-between;background:#F0ECFF;border-radius:9px;padding:6px 8px;margin:10px 0 4px}'
+    + '.weeknav button{border:none;background:none;color:var(--accent);font-size:18px;font-weight:600;cursor:pointer;padding:2px 12px;font-family:inherit;line-height:1;border-radius:7px}'
+    + '.weeknav button:hover{background:#E4DCFF}'
+    + '.weeknav #wkLabel{font-size:12.5px;font-weight:600;color:var(--accent-d)}'
     + '.hide{display:none}';
 
   var HTML = ''
@@ -77,6 +81,7 @@
     +   '<div class="mcal" id="mcal"></div>'
     +   '<button class="btn sec" id="pickDay">✨ Select slots for day</button>'
     +   '<button class="btn sec" id="pickWeek">✨ Select slots for week</button>'
+    +   '<div id="weekNav" class="weeknav hide"><button id="wkPrev" type="button">&#8249;</button><span id="wkLabel"></span><button id="wkNext" type="button">&#8250;</button></div>'
     +   '<div class="slots" id="slots"></div>'
     +   '<div id="actions" style="display:none"><button class="btn green" id="insertLink" style="margin-top:0">📋 Copy slots</button><button class="btn sec" id="clearBtn">Clear selection</button></div>'
     +   '<div class="msg" id="msg"></div>'
@@ -176,11 +181,14 @@
 
   function daysFor(scope, date){
     if (scope === "day") return [new Date(date.getFullYear(), date.getMonth(), date.getDate())];
-    var p = {}; new Intl.DateTimeFormat("en-CA", { timeZone: TZ, year: "numeric", month: "2-digit", day: "2-digit", weekday: "short" }).formatToParts(new Date()).forEach(function(x){ p[x.type] = x.value; });
-    var wd = { Mon: 0, Tue: 1, Wed: 2, Thu: 3, Fri: 4, Sat: 5, Sun: 6 }[p.weekday];
-    var base = Date.UTC(+p.year, +p.month - 1, +p.day, 12) - wd * 86400000;
+    var y, mo, da, wd;
+    if (date){ y = date.getFullYear(); mo = date.getMonth(); da = date.getDate(); wd = (date.getDay() + 6) % 7; }
+    else { var p = {}; new Intl.DateTimeFormat("en-CA", { timeZone: TZ, year: "numeric", month: "2-digit", day: "2-digit", weekday: "short" }).formatToParts(new Date()).forEach(function(x){ p[x.type] = x.value; }); y = +p.year; mo = +p.month - 1; da = +p.day; wd = { Mon: 0, Tue: 1, Wed: 2, Thu: 3, Fri: 4, Sat: 5, Sun: 6 }[p.weekday]; }
+    var base = Date.UTC(y, mo, da, 12) - wd * 86400000;
     var out = []; for (var i = 0; i < 5; i++){ var d = new Date(base + i * 86400000); out.push(new Date(d.getUTCFullYear(), d.getUTCMonth(), d.getUTCDate())); } return out;
   }
+  function focusDate(){ if (SELDAY){ var p = SELDAY.split("-"); return new Date(+p[0], +p[1], +p[2]); } var q = {}; new Intl.DateTimeFormat("en-CA", { timeZone: TZ, year: "numeric", month: "2-digit", day: "2-digit" }).formatToParts(new Date()).forEach(function(x){ q[x.type] = x.value; }); return new Date(+q.year, +q.month - 1, +q.day); }
+  function weekLabel(a, b){ var mo = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"]; var ma = mo[a.getMonth()], mb = mo[b.getMonth()]; return "Week of " + ma + " " + a.getDate() + " – " + (ma === mb ? b.getDate() : (mb + " " + b.getDate())); }
 
   function loadSettings(){ if (!TOKEN) return; fetch(WC.FN_BASE + "/host-settings", { method: "POST", headers: { "Content-Type": "application/json", apikey: WC.SUPABASE_ANON_KEY, Authorization: "Bearer " + TOKEN } }).then(function(r){ return r.json(); }).then(function(s){ if (s && typeof s.workStart === "number"){ WS = s.workStart; WE = s.workEnd; BUF = s.buffer || 0; MINNOTICE = s.minNotice || 0; if (LAST && SLOTS.length) pick(LAST.scope, LAST.date); } }).catch(function(){}); }
   function graphAll(url, acc){ return fetch(url, { headers: { Authorization: "Bearer " + TOKEN, Prefer: 'outlook.timezone="UTC"' } }).then(function(r){ if (r.status === 401) throw { expired: true }; return r.json(); }).then(function(j){ acc = acc.concat(j.value || []); var nx = j["@odata.nextLink"]; if (nx && acc.length < 2000) return graphAll(nx, acc); return acc; }); }
@@ -188,6 +196,9 @@
     var msg = $("msg"); msg.className = "msg"; msg.textContent = "Reading your calendar…"; SLOTS = []; BUSY = []; OFFV = {}; VIEWDAYS = []; renderSlots();
     LAST = { scope: scope, date: date };
     var days = daysFor(scope, date);
+    WEEKMON = (scope === "week") ? days[0] : null;
+    if (scope === "week"){ $("wkLabel").textContent = weekLabel(days[0], days[days.length - 1]); $("weekNav").classList.remove("hide"); }
+    else { $("weekNav").classList.add("hide"); }
     var PAD = 48 * 3600000;
     var ws = new Date(new Date(days[0].getFullYear(), days[0].getMonth(), days[0].getDate()).getTime() - PAD);
     var last = days[days.length - 1], we = new Date(new Date(last.getFullYear(), last.getMonth(), last.getDate() + 1).getTime() + PAD);
@@ -225,8 +236,11 @@
         else { msg.className = "msg err"; msg.textContent = "Couldn't read calendar: " + ((err && err.message) || "try again"); }
       });
   }
-  $("pickDay").onclick = function(){ var d; if (SELDAY){ var p = SELDAY.split("-"); d = new Date(+p[0], +p[1], +p[2]); } else { var q = {}; new Intl.DateTimeFormat("en-CA", { timeZone: TZ, year: "numeric", month: "2-digit", day: "2-digit" }).formatToParts(new Date()).forEach(function(x){ q[x.type] = x.value; }); d = new Date(+q.year, +q.month - 1, +q.day); SELDAY = keyOf(d); drawMiniCal(); } pick("day", d); };
-  $("pickWeek").onclick = function(){ SELDAY = null; drawMiniCal(); pick("week"); };
+  $("pickDay").onclick = function(){ var d = focusDate(); if (!SELDAY){ SELDAY = keyOf(d); drawMiniCal(); } pick("day", d); };
+  $("pickWeek").onclick = function(){ pick("week", focusDate()); };
+  $("wkPrev").onclick = function(){ stepWeek(-7); };
+  $("wkNext").onclick = function(){ stepWeek(7); };
+  function stepWeek(delta){ var base = WEEKMON ? WEEKMON : focusDate(); var nm = new Date(base.getFullYear(), base.getMonth(), base.getDate() + delta); SELDAY = keyOf(nm); MC.y = nm.getFullYear(); MC.m = nm.getMonth(); drawMiniCal(); pick("week", nm); }
   $("clearBtn").onclick = function(){ SLOTS.forEach(function(s){ s.sel = false; }); renderSlots(); var m = $("msg"); m.className = "msg"; m.textContent = "Cleared selection — tick free blocks to offer."; };
 
   function esc(s){ return (s || "").replace(/[<>&]/g, function(c){ return { "<": "&lt;", ">": "&gt;", "&": "&amp;" }[c]; }); }
