@@ -62,8 +62,6 @@
     + '.weeknav button{border:none;background:none;color:var(--accent);font-size:18px;font-weight:600;cursor:pointer;padding:2px 12px;font-family:inherit;line-height:1;border-radius:7px}'
     + '.weeknav button:hover{background:#E4DCFF}'
     + '.weeknav #wkLabel{font-size:12.5px;font-weight:600;color:var(--accent-d)}'
-    + '.holdrow{display:flex;align-items:center;gap:8px;font-size:12px;color:var(--ink);margin:2px 0 8px;cursor:pointer}'
-    + '.holdrow input{width:15px;height:15px;accent-color:var(--accent);flex:none}'
     + '.hide{display:none}';
 
   var HTML = ''
@@ -85,7 +83,7 @@
     +   '<button class="btn sec" id="pickWeek">✨ Select slots for week</button>'
     +   '<div id="weekNav" class="weeknav hide"><button id="wkPrev" type="button">&#8249;</button><span id="wkLabel"></span><button id="wkNext" type="button">&#8250;</button></div>'
     +   '<div class="slots" id="slots"></div>'
-    +   '<div id="actions" style="display:none"><label class="holdrow"><input type="checkbox" id="holdChk"> Hold these times on my calendar</label><button class="btn green" id="insertLink" style="margin-top:0">📋 Copy slots</button><button class="btn sec" id="clearBtn">Clear selection</button></div>'
+    +   '<div id="actions" style="display:none"><button class="btn green" id="insertLink" style="margin-top:0">📋 Copy slots</button><button class="btn sec" id="clearBtn">Clear selection</button></div>'
     +   '<div class="msg" id="msg"></div>'
     + '</div>';
 
@@ -271,17 +269,17 @@
     [].forEach.call($("slots").querySelectorAll("input[type=checkbox]"), function(cb){ cb.onchange = function(){ var x = SLOTS[+cb.dataset.i]; x.sel = cb.checked; var row = cb.closest(".grow"); if (row) row.classList.toggle("on", cb.checked); }; });
   }
 
-  function createLink(slots, hold, holdWins){
+  function createLink(slots){
     var tz = TZ;
-    return fetch(WC.FN_BASE + "/publish-link", { method: "POST", headers: { "Content-Type": "application/json", apikey: WC.SUPABASE_ANON_KEY, Authorization: "Bearer " + TOKEN }, body: JSON.stringify({ title: "Meeting with " + (EMAIL || "me"), tz: tz, slots: slots.map(function(x){ return { start: x.start.toISOString(), end: x.end.toISOString() }; }), attendees: MATES.map(function(m){ return m.email; }), videoLink: "", hold: !!hold, holdWindows: (holdWins || []).map(function(w){ return { start: w.start.toISOString(), end: w.end.toISOString() }; }), settings: { workStart: WS, workEnd: WE, buffer: BUF, minNotice: MINNOTICE, dayCap: 0 } }) })
+    return fetch(WC.FN_BASE + "/publish-link", { method: "POST", headers: { "Content-Type": "application/json", apikey: WC.SUPABASE_ANON_KEY, Authorization: "Bearer " + TOKEN }, body: JSON.stringify({ title: "Meeting with " + (EMAIL || "me"), tz: tz, slots: slots.map(function(x){ return { start: x.start.toISOString(), end: x.end.toISOString() }; }), attendees: MATES.map(function(m){ return m.email; }), videoLink: "", settings: { workStart: WS, workEnd: WE, buffer: BUF, minNotice: MINNOTICE, dayCap: 0 } }) })
       .then(function(r){ return r.json().then(function(j){ return { status: r.status, j: j }; }); })
-      .then(function(o){ if (o.status === 412 || (o.j && o.j.error === "not_connected")) throw { notConnected: true }; if (!o.j || !o.j.url) throw new Error((o.j && o.j.detail) || "Couldn't create link"); return o.j; });
+      .then(function(o){ if (o.status === 412 || (o.j && o.j.error === "not_connected")) throw { notConnected: true }; if (!o.j || !o.j.url) throw new Error((o.j && o.j.detail) || "Couldn't create link"); return o.j.url; });
   }
   function linkErr(msg){ return function(e){ if (e && e.notConnected){ msg.className = "msg err"; msg.textContent = "Open WeCalendar in your browser and sign in once to connect for booking, then retry."; } else { msg.className = "msg err"; msg.textContent = "Error: " + ((e && e.message) || "try again"); } }; }
   function selected(){ return SLOTS.filter(function(s){ return s.sel; }); }
   function splitWindows(wins){ var out = [], len = SLOTLEN * 60000; wins.slice().sort(function(a, b){ return a.start - b.start; }).forEach(function(w){ var ws = w.start.getTime(), we = w.end.getTime(), any = false; for (var t = ws; t + len <= we; t += len){ out.push({ start: new Date(t), end: new Date(t + len) }); any = true; } if (!any) out.push({ start: new Date(ws), end: new Date(we) }); }); return out; }
 
-  $("insertLink").onclick = function(){ var msg = $("msg"), sel = selected(); if (!sel.length){ msg.className = "msg err"; msg.textContent = "Tick at least one block first."; return; } var hold = $("holdChk") && $("holdChk").checked; msg.className = "msg"; msg.textContent = hold ? "Creating link and holding times…" : "Creating link…"; createLink(splitWindows(sel), hold, sel).then(function(j){ var ok = !hold ? "✓ Times added to your email." : (j.held ? ("✓ Times added — " + j.held + " time" + (j.held > 1 ? "s" : "") + " held on your calendar.") : "✓ Times added. (Calendar hold not applied yet.)"); insertHtml(snippet(j.url, sel), msg, ok); }).catch(linkErr(msg)); };
+  $("insertLink").onclick = function(){ var msg = $("msg"), sel = selected(); if (!sel.length){ msg.className = "msg err"; msg.textContent = "Tick at least one block first."; return; } msg.className = "msg"; msg.textContent = "Creating link…"; createLink(splitWindows(sel)).then(function(url){ insertHtml(snippet(url, sel), msg, "✓ Times added to your email."); }).catch(linkErr(msg)); };
 
   function insertHtml(html, msg, okText){
     if (!ready || !Office.context.mailbox || !Office.context.mailbox.item || !Office.context.mailbox.item.body){ msg.className = "msg err"; msg.textContent = "Open this while composing an email."; return; }

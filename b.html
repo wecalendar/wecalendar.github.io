@@ -75,7 +75,7 @@ const FN = C.FN_BASE || (C.SUPABASE_URL ? C.SUPABASE_URL + "/functions/v1" : "")
 const slug = new URLSearchParams(location.search).get("l");
 const $ = (id) => document.getElementById(id);
 
-let sb = null, LINK = null, SLOTS = [], TZ = Intl.DateTimeFormat().resolvedOptions().timeZone;
+let sb = null, LINK = null, SLOTS = [], GONE = new Set(), TZ = Intl.DateTimeFormat().resolvedOptions().timeZone;
 
 const TZS = [
   ["America/Los_Angeles","Los Angeles (PT)"],["America/Denver","Denver (MT)"],
@@ -101,7 +101,7 @@ function dayLabel(d){ return new Intl.DateTimeFormat("en-US",{timeZone:TZ,weekda
 function timeLabel(d){ return new Intl.DateTimeFormat("en-US",{timeZone:TZ,hour:"numeric",minute:"2-digit"}).format(d); }
 
 function render(){
-  const open = SLOTS.filter(s => s.status === "open" && new Date(s.start_utc) > new Date())
+  const open = SLOTS.filter(s => s.status === "open" && !GONE.has(s.id) && new Date(s.start_utc) > new Date())
                     .sort((a,b)=> new Date(a.start_utc) - new Date(b.start_utc));
   if (!open.length){ fail("🎉 All booked! Thank you."); return; }
   const byDay = {};
@@ -116,6 +116,26 @@ function render(){
   });
   $("list").innerHTML = html;
   document.querySelectorAll(".slot").forEach(b => b.onclick = () => openModal(b.dataset.id));
+}
+
+// Live availability: ask the host's real calendar which offered times are still free,
+// so a time taken on another link (or by any meeting) disappears here too. Best-effort:
+// if the check-availability function isn't deployed or errors, we just keep showing open slots.
+async function recheck(){
+  if (!FN || !slug || !SLOTS.length) return;
+  try {
+    const r = await fetch(FN + "/check-availability", {
+      method: "POST",
+      headers: { "Content-Type":"application/json", apikey: C.SUPABASE_ANON_KEY, Authorization: "Bearer " + C.SUPABASE_ANON_KEY },
+      body: JSON.stringify({ slug }),
+    });
+    const j = await r.json().catch(() => ({}));
+    if (j && Array.isArray(j.freeIds)){
+      const free = new Set(j.freeIds);
+      GONE = new Set(SLOTS.filter(s => s.status === "open" && !free.has(s.id)).map(s => s.id));
+      if (!$("ov").classList.contains("on")) render();
+    }
+  } catch(e){}
 }
 
 function openModal(id){
@@ -167,8 +187,8 @@ async function doBook(slotId){
       body: JSON.stringify({ slug, slotId, name, email, guests }),
     });
     const j = await r.json().catch(()=>({}));
-    if (r.status === 409 || j.reason === "taken"){
-      $("mErr").textContent = "Sorry — someone just grabbed that one. Pick another.";
+    if (r.status === 409 || j.reason === "taken" || j.reason === "no_longer_available"){
+      $("mErr").textContent = "Sorry — that time was just taken. Pick another.";
       const s = SLOTS.find(x=>x.id===slotId); if (s) s.status = "booked";
       setTimeout(() => { closeModal(); render(); }, 1400); return;
     }
@@ -241,6 +261,9 @@ async function init(){
   SLOTS = slots || [];
   sb.from("analytics_events").insert({ link_id: link.id, type: "view" });
   render();
+  recheck();
+  document.addEventListener("visibilitychange", () => { if (!document.hidden) recheck(); });
+  setInterval(recheck, 60000);
 
   // live slot-locking: when any slot flips status, reflect it immediately
   sb.channel("slots-" + link.id)
