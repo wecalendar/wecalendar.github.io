@@ -193,23 +193,24 @@
     var last = days[days.length - 1], we = new Date(new Date(last.getFullYear(), last.getMonth(), last.getDate() + 1).getTime() + PAD);
     var url = "https://graph.microsoft.com/v1.0/me/calendarView?" + new URLSearchParams({ startDateTime: ws.toISOString(), endDateTime: we.toISOString(), "$select": "start,end,showAs,isAllDay,responseStatus,subject", "$top": "200" });
     graphAll(url, []).then(function(items){
-        var busy = [], offDays = {};
+        var busy = [], offDays = {}, seenB = {};
         items.forEach(function(ev){
           if (!ev.start || !ev.start.dateTime || !ev.end || !ev.end.dateTime || ev.showAs === "free" || ev.showAs === "workingElsewhere") return;
           if (ev.responseStatus && ev.responseStatus.response === "declined") return;
           var s = new Date(ev.start.dateTime + "Z"), e = new Date(ev.end.dateTime + "Z");
           if (isNaN(s.getTime()) || isNaN(e.getTime())) return;
           if (ev.isAllDay){ for (var t = s.getTime(); t < e.getTime(); t += 86400000){ var od = new Date(t); offDays[od.getUTCFullYear() + "-" + od.getUTCMonth() + "-" + od.getUTCDate()] = true; } }
-          else { busy.push({ start: s, end: e, subject: ev.subject || "" }); }
+          else { var bk = s.getTime() + "_" + e.getTime() + "_" + (ev.subject || ""); if (!seenB[bk]){ seenB[bk] = 1; busy.push({ start: s, end: e, subject: ev.subject || "" }); } }
         });
-        var nw = Date.now() + MINNOTICE * 3600000, minLen = SLOTLEN * 60000, bufMs = BUF * 60000;
+        var nowMs = Date.now(), nw = nowMs + MINNOTICE * 3600000, minLen = SLOTLEN * 60000, bufMs = BUF * 60000;
         days.forEach(function(d){
           var ws2 = zInstant(d.getFullYear(), d.getMonth(), d.getDate(), WS);
           var we2 = zInstant(d.getFullYear(), d.getMonth(), d.getDate(), WE);
+          if (scope === "week" && we2 <= nowMs) return;
           var mid = new Date(Math.floor((ws2 + we2) / 2)), key = dayKey(mid);
           VIEWDAYS.push({ key: key, label: fmtDay(mid) });
           if (offDays[d.getFullYear() + "-" + d.getMonth() + "-" + d.getDate()]){ OFFV[key] = true; return; }
-          busy.forEach(function(b){ if (b.end.getTime() > ws2 && b.start.getTime() < we2) BUSY.push({ start: b.start, end: b.end, subject: b.subject, key: key }); });
+          busy.forEach(function(b){ if (b.end.getTime() > Math.max(ws2, nowMs) && b.start.getTime() < we2) BUSY.push({ start: b.start, end: b.end, subject: b.subject, key: key }); });
           var segs = busy.filter(function(b){ return b.end.getTime() > ws2 && b.start.getTime() < we2; }).map(function(b){ return [b.start.getTime() - bufMs, b.end.getTime() + bufMs]; }).sort(function(a, b){ return a[0] - b[0]; });
           var cur = Math.max(ws2, nw);
           segs.forEach(function(sg){ if (sg[0] > cur && Math.min(sg[0], we2) - cur >= minLen) SLOTS.push({ start: new Date(cur), end: new Date(Math.min(sg[0], we2)), sel: true, key: key }); if (sg[1] > cur) cur = sg[1]; });
