@@ -113,12 +113,12 @@ async function gate(){
   try { await pca.initialize(); const resp = await pca.handleRedirectPromise(); if (resp && resp.account) pca.setActiveAccount(resp.account); } catch(e){}
   const acct = pca.getActiveAccount() || (pca.getAllAccounts()[0] || null);
   const email = ((acct && acct.username) || "").toLowerCase();
-  if (acct && email.endsWith("@wetransact.io")){ load(); return; }
+  if (acct && ["wetransact.io", "awssome.io"].some(d => email.endsWith("@" + d))){ load(); return; }
   document.getElementById("content").style.display = "none";
   document.getElementById("sub").textContent = "Sign-in required";
   const m = document.getElementById("msg"); m.style.display = "block"; m.textContent = "";
   const p = document.createElement("p");
-  p.textContent = acct ? "This dashboard is limited to WeTransact (@wetransact.io) accounts." : "Sign in to WeCalendar to view analytics.";
+  p.textContent = acct ? "This dashboard is limited to company accounts (wetransact.io / awssome.io)." : "Sign in to WeCalendar to view analytics.";
   m.appendChild(p);
   if (!acct){
     const open = document.createElement("button"); open.className = "reload"; open.style.marginTop = "12px"; open.textContent = "Open WeCalendar to sign in";
