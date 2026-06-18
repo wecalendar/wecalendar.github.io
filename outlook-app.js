@@ -44,6 +44,10 @@
     + '.chips{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}'
     + '.chip{display:inline-flex;align-items:center;gap:6px;background:#F0ECFF;color:var(--accent-d);border-radius:20px;padding:4px 10px;font-size:12px;font-weight:600}'
     + '.chip .cx{cursor:pointer;font-weight:700;opacity:.7}.chip .cx:hover{opacity:1;color:#b91c1c}'
+    + '.tzwrap{position:relative}'
+    + '.tzres{position:absolute;left:0;right:0;top:100%;margin-top:4px;z-index:30;background:#fff;max-height:240px;overflow:auto;box-shadow:0 10px 24px rgba(44,28,108,.18)}'
+    + '.tzres>div{display:flex;justify-content:space-between;align-items:center;gap:10px}'
+    + '.tzres .off{color:var(--muted);font-size:11px;font-weight:600;white-space:nowrap}'
     + '.hide{display:none}';
 
   var HTML = ''
@@ -54,7 +58,7 @@
     +   '<label>Slot length</label>'
     +   '<div class="seg" id="seg"><button data-l="15">15m</button><button data-l="30" class="on">30m</button><button data-l="60">60m</button></div>'
     +   '<label>Show times in</label>'
-    +   '<select id="tzSel"></select>'
+    +   '<div class="tzwrap"><input type="text" id="tzIn" autocomplete="off" placeholder="Type a city or zone — London, CET, EST…"><div id="tzRes" class="mres tzres hide"></div></div>'
     +   '<label>Meet with (optional)</label>'
     +   '<input type="text" id="mateIn" autocomplete="off" placeholder="Search a teammate by name">'
     +   '<div id="mateRes"></div>'
@@ -93,7 +97,40 @@
   Office.onReady(function(info){ ready = !!(info && info.host === Office.HostType.Outlook); });
 
   $("seg").addEventListener("click", function(e){ var b = e.target.closest("button"); if (!b) return; SLOTLEN = +b.dataset.l; [].forEach.call($("seg").querySelectorAll("button"), function(x){ x.classList.toggle("on", x === b); }); if (LAST && SLOTS.length){ pick(LAST.scope, LAST.date); } });
-  (function(){ var sel = $("tzSel"); if (!sel) return; var opts = '<option value="' + TZ + '">My timezone</option>'; TZLIST.forEach(function(z){ if (z[0] !== TZ) opts += '<option value="' + z[0] + '">' + z[1] + '</option>'; }); sel.innerHTML = opts; sel.value = TZ; sel.onchange = function(){ TZ = sel.value; if (LAST && SLOTS.length){ pick(LAST.scope, LAST.date); } else { renderSlots(); } }; })();
+  var TZNAME = {}; TZLIST.forEach(function(z){ TZNAME[z[0]] = z[1]; });
+  var TZKW = {
+    "America/Los_Angeles":"los angeles la pst pdt pt pacific california san francisco seattle vancouver",
+    "America/Denver":"denver mst mdt mt mountain colorado phoenix arizona",
+    "America/Chicago":"chicago cst cdt ct central texas dallas houston mexico city",
+    "America/New_York":"new york nyc est edt et eastern boston washington dc miami toronto atlanta",
+    "America/Sao_Paulo":"sao paulo brazil brt brasilia rio de janeiro",
+    "Europe/London":"london gmt bst utc uk england edinburgh britain",
+    "Europe/Lisbon":"lisbon portugal wet west porto",
+    "Europe/Paris":"paris cet cest central european france",
+    "Europe/Berlin":"berlin cet cest germany frankfurt munich hamburg",
+    "Europe/Madrid":"madrid spain cet cest barcelona",
+    "Africa/Johannesburg":"johannesburg south africa sast cat cape town",
+    "Asia/Dubai":"dubai uae gst gulf abu dhabi",
+    "Asia/Kolkata":"india ist kolkata mumbai delhi bangalore chennai hyderabad",
+    "Asia/Singapore":"singapore sgt",
+    "Asia/Tokyo":"tokyo japan jst osaka",
+    "Australia/Sydney":"sydney australia aest aedt nsw",
+    "Pacific/Auckland":"auckland new zealand nzst nzdt wellington",
+    "UTC":"utc gmt zulu universal coordinated"
+  };
+  var TZSEARCH = (function(){ var out = [], seen = {}; TZLIST.forEach(function(z){ seen[z[0]] = 1; out.push({ v: z[0], label: z[1], kw: (z[1] + " " + (TZKW[z[0]] || "") + " " + z[0].replace(/[\/_]/g, " ")).toLowerCase() }); }); var all = []; try { all = Intl.supportedValuesOf("timeZone") || []; } catch(e){ all = []; } all.forEach(function(v){ if (seen[v]) return; seen[v] = 1; var city = v.split("/").pop().replace(/_/g, " "); out.push({ v: v, label: city, kw: v.replace(/[\/_]/g, " ").toLowerCase() }); }); return out; })();
+  function zoneOff(zone, ms){ try { var dtf = new Intl.DateTimeFormat("en-US", { timeZone: zone, hourCycle: "h23", year: "numeric", month: "2-digit", day: "2-digit", hour: "2-digit", minute: "2-digit", second: "2-digit" }); var p = {}; dtf.formatToParts(new Date(ms)).forEach(function(x){ p[x.type] = x.value; }); return (Date.UTC(+p.year, +p.month - 1, +p.day, +p.hour, +p.minute, +p.second) - ms) / 60000; } catch(e){ return 0; } }
+  function offLabel(zone){ var o = Math.round(zoneOff(zone, Date.now())); var s = o < 0 ? "-" : "+"; o = Math.abs(o); var h = Math.floor(o / 60), m = o % 60; return "GMT" + s + h + (m ? (":" + (m < 10 ? "0" : "") + m) : ""); }
+  function tzLabelFor(v){ return TZNAME[v] || v.split("/").pop().replace(/_/g, " "); }
+  (function(){
+    var inp = $("tzIn"), box = $("tzRes"); if (!inp) return;
+    function choose(v){ TZ = v; inp.value = tzLabelFor(v) + " · " + offLabel(v); box.classList.add("hide"); box.innerHTML = ""; if (LAST && SLOTS.length){ pick(LAST.scope, LAST.date); } else { renderSlots(); } }
+    function render(term){ term = (term || "").trim().toLowerCase(); var res = [], i, j; if (!term){ res = TZSEARCH.slice(0, 8); } else { var scored = []; for (i = 0; i < TZSEARCH.length; i++){ var toks = TZSEARCH[i].kw.split(" "), sc = 0; for (j = 0; j < toks.length; j++){ if (toks[j] === term){ if (sc < 3) sc = 3; } else if (toks[j].indexOf(term) === 0){ if (sc < 2) sc = 2; } } if (!sc && TZSEARCH[i].kw.indexOf(term) !== -1) sc = 1; if (term.length <= 3 && sc < 2) sc = 0; if (sc) scored.push({ z: TZSEARCH[i], sc: sc, i: i }); } scored.sort(function(a, b){ return b.sc - a.sc || a.i - b.i; }); for (i = 0; i < scored.length && res.length < 12; i++) res.push(scored[i].z); } box.innerHTML = ""; if (!res.length){ box.classList.add("hide"); return; } res.forEach(function(z){ var row = document.createElement("div"); var nm = document.createElement("span"); nm.textContent = z.label; var of = document.createElement("span"); of.className = "off"; of.textContent = offLabel(z.v); if (z.v === TZ) row.style.background = "#F0ECFF"; row.appendChild(nm); row.appendChild(of); row.onmousedown = function(e){ e.preventDefault(); choose(z.v); }; box.appendChild(row); }); box.classList.remove("hide"); }
+    inp.addEventListener("focus", function(){ inp.select(); render(""); });
+    inp.addEventListener("input", function(){ render(inp.value); });
+    inp.addEventListener("blur", function(){ setTimeout(function(){ box.classList.add("hide"); }, 160); });
+    inp.value = tzLabelFor(TZ) + " · " + offLabel(TZ);
+  })();
 
   var MATES = [];
   function renderMates(){ var c = $("mateChips"); c.innerHTML = ""; MATES.forEach(function(m, i){ var s = document.createElement("span"); s.className = "chip"; var t = document.createElement("span"); t.textContent = m.name; var x = document.createElement("span"); x.className = "cx"; x.innerHTML = "&times;"; x.onclick = function(){ MATES.splice(i, 1); renderMates(); }; s.appendChild(t); s.appendChild(x); c.appendChild(s); }); }
