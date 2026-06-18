@@ -1,6 +1,6 @@
 (function(){
   var WC = window.WECAL || {};
-  var ready = false, TOKEN = null, EMAIL = "", SLOTS = [], SLOTLEN = 30, WS = 9, WE = 18, BUF = 0, MINNOTICE = 0, SELDAY = null, LAST = null;
+  var ready = false, TOKEN = null, EMAIL = "", SLOTS = [], SLOTLEN = 30, WS = 9, WE = 18, BUF = 0, MINNOTICE = 0, SELDAY = null, LAST = null, BUSY = [], OFFV = {}, VIEWDAYS = [];
   var TZ = (function(){ try { return Intl.DateTimeFormat().resolvedOptions().timeZone; } catch(e){ return "UTC"; } })();
   var TZLIST = [["America/Los_Angeles","Los Angeles · PT"],["America/Denver","Denver · MT"],["America/Chicago","Chicago · CT"],["America/New_York","New York · ET"],["America/Sao_Paulo","São Paulo"],["Europe/London","London"],["Europe/Lisbon","Lisbon"],["Europe/Paris","Paris · CET"],["Europe/Berlin","Berlin"],["Europe/Madrid","Madrid"],["Africa/Johannesburg","Johannesburg"],["Asia/Dubai","Dubai"],["Asia/Kolkata","India"],["Asia/Singapore","Singapore"],["Asia/Tokyo","Tokyo"],["Australia/Sydney","Sydney"],["Pacific/Auckland","Auckland"],["UTC","UTC"]];
   var now0 = new Date(), MC = { y: now0.getFullYear(), m: now0.getMonth() };
@@ -48,6 +48,16 @@
     + '.tzres{position:absolute;left:0;right:0;top:100%;margin-top:4px;z-index:30;background:#fff;max-height:240px;overflow:auto;box-shadow:0 10px 24px rgba(44,28,108,.18)}'
     + '.tzres>div{display:flex;justify-content:space-between;align-items:center;gap:10px}'
     + '.tzres .off{color:var(--muted);font-size:11px;font-weight:600;white-space:nowrap}'
+    + '.gday{font-weight:600;margin:12px 0 6px;font-size:12px;color:var(--ink)}'
+    + '.grow{display:flex;align-items:center;gap:8px;padding:8px 10px;border-radius:9px;margin-bottom:5px;font-size:11.5px;line-height:1.25}'
+    + '.grow.busy{background:#FBEAF0;color:#72243E}'
+    + '.grow.busy .dot{width:7px;height:7px;border-radius:50%;background:#D4537E;flex:none}'
+    + '.grow.free{background:#E7F7EF;border:1px dashed #7FD3B0;color:#0F6E56;cursor:pointer}'
+    + '.grow.free.on{background:#D9F3E7;border-color:#12B76A}'
+    + '.grow.free input{width:15px;height:15px;accent-color:#12B76A;flex:none;margin:0}'
+    + '.grow .tmcol{white-space:nowrap;font-variant-numeric:tabular-nums}'
+    + '.grow .ttl{font-weight:500;flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}'
+    + '.grow.off{background:#F1EFE8;color:#5F5E5A}'
     + '.hide{display:none}';
 
   var HTML = ''
@@ -70,11 +80,7 @@
     +   '<div class="slots" id="slots"></div>'
     +   '<div id="actions" style="display:none"><button class="btn green" id="insertLink" style="margin-top:0">📋 Copy slots</button><button class="btn sec" id="clearBtn">Clear selection</button></div>'
     +   '<div class="msg" id="msg"></div>'
-    + '</div>'
-    + '<div class="or">or paste a link</div>'
-    + '<textarea id="lnk" rows="2" placeholder="https://wecalendar.github.io/b.html?l=..."></textarea>'
-    + '<button class="btn sec" id="insertPaste">Insert pasted link</button>'
-    + '<div class="msg" id="pMsg"></div>';
+    + '</div>';
 
   var st = document.createElement("style"); st.textContent = STYLE; document.head.appendChild(st);
   document.getElementById("app").innerHTML = HTML;
@@ -179,13 +185,13 @@
   function loadSettings(){ if (!TOKEN) return; fetch(WC.FN_BASE + "/host-settings", { method: "POST", headers: { "Content-Type": "application/json", apikey: WC.SUPABASE_ANON_KEY, Authorization: "Bearer " + TOKEN } }).then(function(r){ return r.json(); }).then(function(s){ if (s && typeof s.workStart === "number"){ WS = s.workStart; WE = s.workEnd; BUF = s.buffer || 0; MINNOTICE = s.minNotice || 0; if (LAST && SLOTS.length) pick(LAST.scope, LAST.date); } }).catch(function(){}); }
   function graphAll(url, acc){ return fetch(url, { headers: { Authorization: "Bearer " + TOKEN, Prefer: 'outlook.timezone="UTC"' } }).then(function(r){ if (r.status === 401) throw { expired: true }; return r.json(); }).then(function(j){ acc = acc.concat(j.value || []); var nx = j["@odata.nextLink"]; if (nx && acc.length < 2000) return graphAll(nx, acc); return acc; }); }
   function pick(scope, date){
-    var msg = $("msg"); msg.className = "msg"; msg.textContent = "Reading your calendar…"; SLOTS = []; renderSlots();
+    var msg = $("msg"); msg.className = "msg"; msg.textContent = "Reading your calendar…"; SLOTS = []; BUSY = []; OFFV = {}; VIEWDAYS = []; renderSlots();
     LAST = { scope: scope, date: date };
     var days = daysFor(scope, date);
     var PAD = 48 * 3600000;
     var ws = new Date(new Date(days[0].getFullYear(), days[0].getMonth(), days[0].getDate()).getTime() - PAD);
     var last = days[days.length - 1], we = new Date(new Date(last.getFullYear(), last.getMonth(), last.getDate() + 1).getTime() + PAD);
-    var url = "https://graph.microsoft.com/v1.0/me/calendarView?" + new URLSearchParams({ startDateTime: ws.toISOString(), endDateTime: we.toISOString(), "$select": "start,end,showAs,isAllDay,responseStatus", "$top": "200" });
+    var url = "https://graph.microsoft.com/v1.0/me/calendarView?" + new URLSearchParams({ startDateTime: ws.toISOString(), endDateTime: we.toISOString(), "$select": "start,end,showAs,isAllDay,responseStatus,subject", "$top": "200" });
     graphAll(url, []).then(function(items){
         var busy = [], offDays = {};
         items.forEach(function(ev){
@@ -194,21 +200,24 @@
           var s = new Date(ev.start.dateTime + "Z"), e = new Date(ev.end.dateTime + "Z");
           if (isNaN(s.getTime()) || isNaN(e.getTime())) return;
           if (ev.isAllDay){ for (var t = s.getTime(); t < e.getTime(); t += 86400000){ var od = new Date(t); offDays[od.getUTCFullYear() + "-" + od.getUTCMonth() + "-" + od.getUTCDate()] = true; } }
-          else { busy.push({ start: s, end: e }); }
+          else { busy.push({ start: s, end: e, subject: ev.subject || "" }); }
         });
         var nw = Date.now() + MINNOTICE * 3600000, minLen = SLOTLEN * 60000, bufMs = BUF * 60000;
         days.forEach(function(d){
-          if (offDays[d.getFullYear() + "-" + d.getMonth() + "-" + d.getDate()]) return;
           var ws2 = zInstant(d.getFullYear(), d.getMonth(), d.getDate(), WS);
           var we2 = zInstant(d.getFullYear(), d.getMonth(), d.getDate(), WE);
+          var mid = new Date(Math.floor((ws2 + we2) / 2)), key = dayKey(mid);
+          VIEWDAYS.push({ key: key, label: fmtDay(mid) });
+          if (offDays[d.getFullYear() + "-" + d.getMonth() + "-" + d.getDate()]){ OFFV[key] = true; return; }
+          busy.forEach(function(b){ if (b.end.getTime() > ws2 && b.start.getTime() < we2) BUSY.push({ start: b.start, end: b.end, subject: b.subject, key: key }); });
           var segs = busy.filter(function(b){ return b.end.getTime() > ws2 && b.start.getTime() < we2; }).map(function(b){ return [b.start.getTime() - bufMs, b.end.getTime() + bufMs]; }).sort(function(a, b){ return a[0] - b[0]; });
           var cur = Math.max(ws2, nw);
-          segs.forEach(function(sg){ if (sg[0] > cur && Math.min(sg[0], we2) - cur >= minLen) SLOTS.push({ start: new Date(cur), end: new Date(Math.min(sg[0], we2)), sel: true }); if (sg[1] > cur) cur = sg[1]; });
-          if (we2 - cur >= minLen) SLOTS.push({ start: new Date(cur), end: new Date(we2), sel: true });
+          segs.forEach(function(sg){ if (sg[0] > cur && Math.min(sg[0], we2) - cur >= minLen) SLOTS.push({ start: new Date(cur), end: new Date(Math.min(sg[0], we2)), sel: true, key: key }); if (sg[1] > cur) cur = sg[1]; });
+          if (we2 - cur >= minLen) SLOTS.push({ start: new Date(cur), end: new Date(we2), sel: true, key: key });
         });
         renderSlots();
-        msg.textContent = SLOTS.length ? (SLOTS.length + " free block" + (SLOTS.length > 1 ? "s" : "") + " — untick any. Copy splits them into client slots.") : "";
-        if (!SLOTS.length){ msg.className = "msg err"; msg.textContent = "No open time in 9am–6pm " + (scope === "day" ? "that day" : "this week") + "."; }
+        if (SLOTS.length){ msg.className = "msg"; msg.textContent = SLOTS.length + " free block" + (SLOTS.length > 1 ? "s" : "") + " — tick the ones to offer, then Copy slots."; }
+        else { msg.className = "msg err"; msg.textContent = "No open time in your working hours " + (scope === "day" ? "that day" : "this week") + "."; }
       })
       .catch(function(err){
         if (err && err.expired){ msg.className = "msg err"; msg.textContent = "Session expired — sign in again."; TOKEN = null; clearAuth(); $("picker").classList.add("hide"); $("signedout").classList.remove("hide"); }
@@ -217,17 +226,32 @@
   }
   $("pickDay").onclick = function(){ var d; if (SELDAY){ var p = SELDAY.split("-"); d = new Date(+p[0], +p[1], +p[2]); } else { var q = {}; new Intl.DateTimeFormat("en-CA", { timeZone: TZ, year: "numeric", month: "2-digit", day: "2-digit" }).formatToParts(new Date()).forEach(function(x){ q[x.type] = x.value; }); d = new Date(+q.year, +q.month - 1, +q.day); SELDAY = keyOf(d); drawMiniCal(); } pick("day", d); };
   $("pickWeek").onclick = function(){ SELDAY = null; drawMiniCal(); pick("week"); };
-  $("clearBtn").onclick = function(){ SLOTS = []; renderSlots(); var m = $("msg"); m.className = "msg"; m.textContent = "Cleared."; };
+  $("clearBtn").onclick = function(){ SLOTS.forEach(function(s){ s.sel = false; }); renderSlots(); var m = $("msg"); m.className = "msg"; m.textContent = "Cleared selection — tick free blocks to offer."; };
 
+  function esc(s){ return (s || "").replace(/[<>&]/g, function(c){ return { "<": "&lt;", ">": "&gt;", "&": "&amp;" }[c]; }); }
+  function durLabel(ms){ var m = Math.round(ms / 60000), h = Math.floor(m / 60); m = m % 60; return (h ? h + "h" : "") + (h && m ? " " : "") + (m ? m + "m" : (h ? "" : "0m")); }
   function renderSlots(){
     $("actions").style.display = SLOTS.length ? "block" : "none";
-    if (!SLOTS.length){ $("slots").innerHTML = ""; return; }
-    var byDay = {}, order = [];
-    SLOTS.forEach(function(x, i){ var k = dayKey(x.start); if (!byDay[k]){ byDay[k] = []; order.push(k); } byDay[k].push(i); });
+    if (!VIEWDAYS.length){ $("slots").innerHTML = ""; return; }
+    var freeByKey = {}, busyByKey = {};
+    SLOTS.forEach(function(x, i){ (freeByKey[x.key] = freeByKey[x.key] || []).push(i); });
+    BUSY.forEach(function(b){ (busyByKey[b.key] = busyByKey[b.key] || []).push(b); });
     var h = "";
-    order.forEach(function(k){ h += '<div class="day">' + fmtDay(SLOTS[byDay[k][0]].start) + '</div>'; byDay[k].forEach(function(i){ var x = SLOTS[i]; h += '<label class="srow"><input type="checkbox" data-i="' + i + '"' + (x.sel ? " checked" : "") + '> ' + fmtTime(x.start) + ' &ndash; ' + fmtTime(x.end) + '</label>'; }); });
+    VIEWDAYS.forEach(function(vd){
+      h += '<div class="gday">' + vd.label + '</div>';
+      if (OFFV[vd.key]){ h += '<div class="grow off"><span class="tmcol">All day</span><span class="ttl">Out of office</span></div>'; return; }
+      var rows = [];
+      (busyByKey[vd.key] || []).forEach(function(b){ rows.push({ t: b.start.getTime(), busy: b }); });
+      (freeByKey[vd.key] || []).forEach(function(i){ rows.push({ t: SLOTS[i].start.getTime(), free: i }); });
+      rows.sort(function(a, b){ return a.t - b.t; });
+      if (!rows.length){ h += '<div class="grow off"><span class="ttl">No open time in your working hours</span></div>'; return; }
+      rows.forEach(function(r){
+        if (r.busy){ h += '<div class="grow busy"><span class="dot"></span><span class="tmcol">' + fmtTime(r.busy.start) + ' &ndash; ' + fmtTime(r.busy.end) + '</span><span class="ttl">' + esc(r.busy.subject || "Busy") + '</span></div>'; }
+        else { var x = SLOTS[r.free]; h += '<label class="grow free' + (x.sel ? " on" : "") + '"><input type="checkbox" data-i="' + r.free + '"' + (x.sel ? " checked" : "") + '><span class="tmcol">' + fmtTime(x.start) + ' &ndash; ' + fmtTime(x.end) + '</span><span class="ttl">Free · ' + durLabel(x.end - x.start) + '</span></label>'; }
+      });
+    });
     $("slots").innerHTML = h;
-    [].forEach.call($("slots").querySelectorAll("input[type=checkbox]"), function(cb){ cb.onchange = function(){ SLOTS[+cb.dataset.i].sel = cb.checked; }; });
+    [].forEach.call($("slots").querySelectorAll("input[type=checkbox]"), function(cb){ cb.onchange = function(){ var x = SLOTS[+cb.dataset.i]; x.sel = cb.checked; var row = cb.closest(".grow"); if (row) row.classList.toggle("on", cb.checked); }; });
   }
 
   function createLink(slots){
@@ -241,8 +265,6 @@
   function splitWindows(wins){ var out = [], len = SLOTLEN * 60000; wins.slice().sort(function(a, b){ return a.start - b.start; }).forEach(function(w){ var ws = w.start.getTime(), we = w.end.getTime(), any = false; for (var t = ws; t + len <= we; t += len){ out.push({ start: new Date(t), end: new Date(t + len) }); any = true; } if (!any) out.push({ start: new Date(ws), end: new Date(we) }); }); return out; }
 
   $("insertLink").onclick = function(){ var msg = $("msg"), sel = selected(); if (!sel.length){ msg.className = "msg err"; msg.textContent = "Tick at least one block first."; return; } msg.className = "msg"; msg.textContent = "Creating link…"; createLink(splitWindows(sel)).then(function(url){ insertHtml(snippet(url, sel), msg, "✓ Times added to your email."); }).catch(linkErr(msg)); };
-
-  $("insertPaste").onclick = function(){ var url = $("lnk").value.trim(), msg = $("pMsg"); if (!/^https?:\/\/.+/.test(url)){ msg.className = "msg err"; msg.textContent = "Paste a valid link first."; return; } insertHtml('<a href="' + url + '">Book a time with me</a>', msg, "✓ Link added to your email."); };
 
   function insertHtml(html, msg, okText){
     if (!ready || !Office.context.mailbox || !Office.context.mailbox.item || !Office.context.mailbox.item.body){ msg.className = "msg err"; msg.textContent = "Open this while composing an email."; return; }
