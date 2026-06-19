@@ -215,6 +215,8 @@
   #tourNext{ background:#5E43C8; color:#fff; }
   #tourBtn{ border:1px solid var(--line); background:#fff; color:#5E43C8; width:30px; height:30px; border-radius:50%; font-size:14px; font-weight:700; cursor:pointer; font-family:inherit; }
   #tourBtn:hover{ background:#F4F0FF; }
+  #fbBtn{ border:1px solid var(--line); background:#fff; color:#5E43C8; width:30px; height:30px; border-radius:50%; cursor:pointer; font-family:inherit; display:inline-flex; align-items:center; justify-content:center; margin-right:8px; }
+  #fbBtn:hover{ background:#F4F0FF; }
   .busy .joinbtn{ position:absolute; top:3px; right:4px; background:#5E43C8; color:#fff; font-size:9.5px; font-weight:700; padding:1px 6px; border-radius:6px; text-decoration:none; line-height:1.5; z-index:2; }
   .busy .joinbtn:hover{ background:#402C93; }
   .busy.dim { opacity:.18; }
@@ -317,6 +319,7 @@
       <div class="grow"></div>
       <span class="avatar" id="avatar" title="Your profile — see Settings"></span>
       <span class="who" id="whoName" style="color:var(--ink);font-weight:600;"></span>
+      <button id="fbBtn" title="Send a suggestion"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 11.5a8.38 8.38 0 0 1-8.5 8.5 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8A8.5 8.5 0 0 1 12.5 3 8.5 8.5 0 0 1 21 11.5z"/></svg></button>
       <button id="tourBtn" title="Take a quick tour" style="margin-right:10px">?</button>
       <button class="gearbtn" id="setBtn" title="Settings" aria-label="Settings">
         <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 1 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 1 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 1 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 1 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
@@ -497,6 +500,18 @@
     <div class="tt-title" id="tourTitle"></div>
     <div class="tt-text" id="tourText"></div>
     <div class="tt-foot"><span class="tt-count" id="tourCount"></span><span class="tt-btns"><button id="tourSkip">Skip</button><button id="tourBack">Back</button><button id="tourNext">Next</button></span></div>
+  </div>
+</div>
+<div id="fbOverlay" style="display:none; position:fixed; inset:0; z-index:4100; background:rgba(20,16,40,.45); align-items:center; justify-content:center;">
+  <div style="background:#fff; border-radius:16px; padding:20px; width:340px; max-width:92vw; box-shadow:0 18px 50px rgba(20,16,40,.32);">
+    <div style="font-size:15px; font-weight:700; color:var(--ink); margin-bottom:6px;">Suggest something 💡</div>
+    <div style="font-size:12.5px; color:var(--muted2); margin-bottom:10px;">Ideas, bugs, anything — it goes straight to the WeCalendar team.</div>
+    <textarea id="fbText" rows="4" placeholder="What would make WeCalendar better?" style="width:100%; box-sizing:border-box; border:1px solid var(--line); border-radius:10px; padding:10px 12px; font-family:inherit; font-size:13px; color:var(--ink); resize:vertical; outline:none;"></textarea>
+    <div id="fbStatus" style="font-size:12px; color:#b91c1c; min-height:14px; margin-top:6px;"></div>
+    <div style="display:flex; justify-content:flex-end; gap:8px; margin-top:6px;">
+      <button id="fbCancel" style="border:none; background:#F1F0F4; color:var(--ink); border-radius:8px; padding:8px 14px; font-family:inherit; font-size:13px; font-weight:600; cursor:pointer;">Cancel</button>
+      <button id="fbSend" style="border:none; background:#5E43C8; color:#fff; border-radius:8px; padding:8px 14px; font-family:inherit; font-size:13px; font-weight:600; cursor:pointer;">Send</button>
+    </div>
   </div>
 </div>
 <div class="tzpop" id="tzPop">
@@ -2043,6 +2058,26 @@ function maybeStartTour(){ try { if (localStorage.getItem("tourSeen")) return; }
   document.getElementById("tourSkip").onclick = endTour;
   document.getElementById("tourBtn").onclick = startTour;
   document.addEventListener("keydown", e => { if (e.key === "Escape" && document.getElementById("tourOverlay").style.display === "block") endTour(); });
+})();
+// ---- feedback / suggestion box (emails the owner) ----
+function closeFb(){ var o = document.getElementById("fbOverlay"); if (o) o.style.display = "none"; }
+function sendFeedback(){
+  var ta = document.getElementById("fbText"), st = document.getElementById("fbStatus");
+  var t = (ta.value || "").trim();
+  if (!t){ if (st) st.textContent = "Type a quick note first."; ta.focus(); return; }
+  var who = (typeof S !== "undefined" && S.profileName) || (typeof ME !== "undefined" && ME.name) || "";
+  var em = (typeof ME !== "undefined" && ME.email) || "";
+  var body = t + "\n\n— " + (who || "WeCalendar user") + (em ? (" <" + em + ">") : "") + "\n(sent from WeCalendar)";
+  window.location.href = "mailto:ruby.sran@wetransact.io?subject=" + encodeURIComponent("WeCalendar suggestion") + "&body=" + encodeURIComponent(body);
+  closeFb();
+}
+(function(){
+  var b = document.getElementById("fbBtn"); if (!b) return;
+  b.onclick = function(){ document.getElementById("fbText").value = ""; var s = document.getElementById("fbStatus"); if (s) s.textContent = ""; document.getElementById("fbOverlay").style.display = "flex"; setTimeout(function(){ document.getElementById("fbText").focus(); }, 60); };
+  document.getElementById("fbCancel").onclick = closeFb;
+  document.getElementById("fbSend").onclick = sendFeedback;
+  document.getElementById("fbOverlay").addEventListener("click", function(e){ if (e.target.id === "fbOverlay") closeFb(); });
+  document.addEventListener("keydown", function(e){ if (e.key === "Escape" && document.getElementById("fbOverlay").style.display === "flex") closeFb(); });
 })();
 
 function toast(msg){
