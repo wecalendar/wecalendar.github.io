@@ -812,8 +812,18 @@ lenSeg.onclick = e => { const b = e.target.closest("button"); if (!b) return; S.
 paintLenSeg();
 
 // ---- painted-slot persistence ----
+let _warmTs = 0;
+function warmLink(){
+  if (!WECAL_ON) return;
+  const base = WECAL.FN_BASE || (WECAL.SUPABASE_URL ? WECAL.SUPABASE_URL + "/functions/v1" : "");
+  if (!base || Date.now() - _warmTs < 120000) return;
+  _warmTs = Date.now();
+  try { fetch(base + "/publish-link", { method: "OPTIONS" }); } catch(e){}
+  try { token(); } catch(e){}
+}
 function saveSel(){
   try { localStorage.setItem("paintedSlots", JSON.stringify(S.sel.map(x => [x.start.toISOString(), x.end.toISOString()]))); } catch(e){}
+  if (S.sel && S.sel.length) warmLink();
 }
 function loadSel(){
   try {

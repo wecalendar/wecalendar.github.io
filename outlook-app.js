@@ -247,8 +247,11 @@
 
   function esc(s){ return (s || "").replace(/[<>&]/g, function(c){ return { "<": "&lt;", ">": "&gt;", "&": "&amp;" }[c]; }); }
   function durLabel(ms){ var m = Math.round(ms / 60000), h = Math.floor(m / 60); m = m % 60; return (h ? h + "h" : "") + (h && m ? " " : "") + (m ? m + "m" : (h ? "" : "0m")); }
+  var _warmTs = 0;
+  function warmLink(){ if (!WC.FN_BASE || Date.now() - _warmTs < 120000) return; _warmTs = Date.now(); try { fetch(WC.FN_BASE + "/publish-link", { method: "OPTIONS" }); } catch(e){} }
   function renderSlots(){
     $("actions").style.display = SLOTS.length ? "block" : "none";
+    if (SLOTS.length) warmLink();
     if (!VIEWDAYS.length){ $("slots").innerHTML = ""; return; }
     var freeByKey = {}, busyByKey = {};
     SLOTS.forEach(function(x, i){ (freeByKey[x.key] = freeByKey[x.key] || []).push(i); });
