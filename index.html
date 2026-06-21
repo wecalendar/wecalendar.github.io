@@ -2065,14 +2065,22 @@ function maybeStartTour(){ try { if (localStorage.getItem("tourSeen")) return; }
 // ---- feedback / suggestion box (emails the owner) ----
 function closeFb(){ var o = document.getElementById("fbOverlay"); if (o) o.style.display = "none"; }
 function sendFeedback(){
-  var ta = document.getElementById("fbText"), st = document.getElementById("fbStatus");
+  var ta = document.getElementById("fbText"), st = document.getElementById("fbStatus"), btn = document.getElementById("fbSend");
   var t = (ta.value || "").trim();
-  if (!t){ if (st) st.textContent = "Type a quick note first."; ta.focus(); return; }
+  if (!t){ if (st){ st.style.color = "#b91c1c"; st.textContent = "Type a quick note first."; } ta.focus(); return; }
   var who = (typeof S !== "undefined" && S.profileName) || (typeof ME !== "undefined" && ME.name) || "";
   var em = (typeof ME !== "undefined" && ME.email) || "";
-  var body = t + "\n\n— " + (who || "WeCalendar user") + (em ? (" <" + em + ">") : "") + "\n(sent from WeCalendar)";
-  window.location.href = "mailto:ruby.sran@wetransact.io?subject=" + encodeURIComponent("WeCalendar suggestion") + "&body=" + encodeURIComponent(body);
-  closeFb();
+  var base = (typeof WECAL !== "undefined" && (WECAL.FN_BASE || (WECAL.SUPABASE_URL ? WECAL.SUPABASE_URL + "/functions/v1" : ""))) || "";
+  var key = (typeof WECAL !== "undefined" && WECAL.SUPABASE_ANON_KEY) || "";
+  if (!base || !key){ if (st){ st.style.color = "#b91c1c"; st.textContent = "Feedback isn't set up yet."; } return; }
+  btn.disabled = true; btn.textContent = "Sending…"; if (st){ st.style.color = "var(--muted2)"; st.textContent = ""; }
+  fetch(base + "/send-feedback", { method: "POST", headers: { "Content-Type": "application/json", apikey: key, Authorization: "Bearer " + key }, body: JSON.stringify({ message: t, name: who, email: em }) })
+    .then(function(r){ return r.json().catch(function(){ return {}; }); })
+    .then(function(j){
+      if (j && j.ok){ if (st){ st.style.color = "#039855"; st.textContent = "Thanks — your suggestion was sent! 🎉"; } ta.value = ""; setTimeout(function(){ closeFb(); btn.disabled = false; btn.textContent = "Send"; }, 1300); }
+      else { if (st){ st.style.color = "#b91c1c"; st.textContent = (j && j.error === "not_configured") ? "Feedback isn't set up on the server yet." : "Couldn't send — please try again."; } btn.disabled = false; btn.textContent = "Send"; }
+    })
+    .catch(function(){ if (st){ st.style.color = "#b91c1c"; st.textContent = "Network error — please try again."; } btn.disabled = false; btn.textContent = "Send"; });
 }
 (function(){
   var b = document.getElementById("fbBtn"); if (!b) return;
