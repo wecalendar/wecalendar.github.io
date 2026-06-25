@@ -62,6 +62,19 @@
     + '.weeknav button{border:none;background:none;color:var(--accent);font-size:18px;font-weight:600;cursor:pointer;padding:2px 12px;font-family:inherit;line-height:1;border-radius:7px}'
     + '.weeknav button:hover{background:#E4DCFF}'
     + '.weeknav #wkLabel{font-size:12.5px;font-weight:600;color:var(--accent-d)}'
+    + '.tpl{margin:0 0 6px}'
+    + '.tplbtn{width:100%;border:none;border-radius:10px;padding:12px;font-size:14px;font-weight:600;font-family:inherit;cursor:pointer;background:var(--accent);color:#fff;display:flex;align-items:center;gap:8px}'
+    + '.tplbtn:hover{background:var(--accent-d)}'
+    + '.tplbtn .chev{margin-left:auto;font-size:12px;transition:transform .15s}'
+    + '.tpl.open .tplbtn{border-radius:10px 10px 0 0;background:var(--accent-d)}'
+    + '.tpl.open .tplbtn .chev{transform:rotate(180deg)}'
+    + '.tplmenu{border:1px solid var(--line);border-top:none;border-radius:0 0 10px 10px;overflow:hidden}'
+    + '.tplopt{display:flex;gap:10px;align-items:flex-start;padding:11px 12px;border-bottom:1px solid #F0ECFF;cursor:pointer;background:#fff}'
+    + '.tplopt:last-child{border-bottom:none}.tplopt:hover{background:#F0ECFF}'
+    + '.tplopt .ic{font-size:16px;line-height:1.3;flex:none}'
+    + '.tplopt .tt{font-size:13px;font-weight:600;color:var(--ink)}'
+    + '.tplopt .td{font-size:11px;color:var(--muted);margin-top:1px}'
+    + '.tplhint{font-size:11px;color:var(--muted);text-align:center;margin-top:8px;line-height:1.4}'
     + '.hide{display:none}';
 
   var HTML = ''
@@ -69,6 +82,16 @@
     + '<div class="sub">Pick your free times here — it drops a booking link into your email and your recipient books instantly.</div>'
     + '<div id="signedout"><button class="btn" id="signin">Sign in to WeCalendar</button><div class="msg" id="soMsg"></div></div>'
     + '<div id="picker" class="hide">'
+    +   '<div class="tpl hide" id="tpl">'
+    +     '<button class="tplbtn" id="tplBtn" type="button">&#128231; CSM email templates<span class="chev">&#9662;</span></button>'
+    +     '<div class="tplmenu hide" id="tplMenu">'
+    +       '<div class="tplopt" data-tpl="0"><span class="ic">&#128075;</span><div><div class="tt">First onboarding email</div><div class="td">Welcome &amp; book the kickoff calls</div></div></div>'
+    +       '<div class="tplopt" data-tpl="1"><span class="ic">&#9989;</span><div><div class="tt">After onboarding call</div><div class="td">Recap, tasks &amp; next step</div></div></div>'
+    +       '<div class="tplopt" data-tpl="2"><span class="ic">&#128640;</span><div><div class="tt">Listing is live</div><div class="td">Go-live confirmation</div></div></div>'
+    +     '</div>'
+    +     '<div class="tplhint hide" id="tplHint">Pick one — it fills the subject &amp; body. Edit the highlighted blanks before sending.</div>'
+    +   '</div>'
+    +   '<div class="or hide" id="tplOr" style="margin:8px 0 2px">or share your free times</div>'
     +   '<label>Slot length</label>'
     +   '<div class="seg" id="seg"><button data-l="15">15m</button><button data-l="30" class="on">30m</button><button data-l="60">60m</button></div>'
     +   '<label>Show times in</label>'
@@ -105,7 +128,7 @@
   function zInstant(y, mo, day, hour){ var guess = Date.UTC(y, mo, day, hour, 0, 0); var ms = guess - tzOff(guess) * 60000; return guess - tzOff(ms) * 60000; }
   function snippet(url, slots){ var sel = slots || selected(), byDay = {}, order = []; sel.forEach(function(x){ var k = dayKey(x.start); if (!byDay[k]){ byDay[k] = []; order.push(k); } byDay[k].push(x); }); var h = "<div>Would any of these times work for you? Click one to book instantly <i>(times in " + tzLong() + ")</i>:<br><br>"; order.forEach(function(k){ h += "<b>" + fmtDayLong(byDay[k][0].start) + "</b><br>"; byDay[k].forEach(function(x){ h += '&nbsp;&nbsp;&#8226;&nbsp;<a href="' + url + '">' + fmtTime(x.start) + " &ndash; " + fmtTime(x.end) + "</a><br>"; }); h += "<br>"; }); return h + "</div>"; }
 
-  Office.onReady(function(info){ ready = !!(info && info.host === Office.HostType.Outlook); });
+  Office.onReady(function(info){ ready = !!(info && info.host === Office.HostType.Outlook); try { applyCSMGate(); } catch(e){} });
 
   $("seg").addEventListener("click", function(e){ var b = e.target.closest("button"); if (!b) return; SLOTLEN = +b.dataset.l; [].forEach.call($("seg").querySelectorAll("button"), function(x){ x.classList.toggle("on", x === b); }); if (LAST && SLOTS.length){ pick(LAST.scope, LAST.date); } });
   var TZNAME = {}; TZLIST.forEach(function(z){ TZNAME[z[0]] = z[1]; });
@@ -158,7 +181,7 @@
       dlg.addEventHandler(Office.EventType.DialogMessageReceived, function(arg){
         var d; try { d = JSON.parse(arg.message); } catch(e){ d = {}; }
         try { dlg.close(); } catch(e){}
-        if (d.token){ TOKEN = d.token; EMAIL = d.email || ""; saveAuth(); loadSettings(); loadProfile(); $("signedout").classList.add("hide"); $("picker").classList.remove("hide"); drawMiniCal(); }
+        if (d.token){ TOKEN = d.token; EMAIL = d.email || ""; saveAuth(); loadSettings(); loadProfile(); $("signedout").classList.add("hide"); $("picker").classList.remove("hide"); drawMiniCal(); try { applyCSMGate(); } catch(e){} }
         else { m.className = "msg err"; m.textContent = "Sign in didn't complete" + (d.error ? (": " + d.error) : "") + ". Try again."; }
       });
       dlg.addEventHandler(Office.EventType.DialogEventReceived, function(){});
@@ -291,5 +314,61 @@
     Office.context.mailbox.item.body.setSelectedDataAsync(html, { coercionType: Office.CoercionType.Html }, function(r){ if (r.status === Office.AsyncResultStatus.Succeeded){ msg.className = "msg ok"; msg.textContent = okText; } else { msg.className = "msg err"; msg.textContent = "Couldn't insert: " + ((r.error && r.error.message) || "try again"); } });
   }
 
-  (function restoreAuth(){ var a = loadAuth(); if (a){ TOKEN = a.token; EMAIL = a.email || ""; loadSettings(); loadProfile(); $("signedout").classList.add("hide"); $("picker").classList.remove("hide"); drawMiniCal(); } })();
+  var CSMTPL = [
+    {
+      subject: "Welcome to WeTransact — let's kick off your onboarding",
+      body: ""
+        + "<p>Hi {First name},</p>"
+        + "<p>Nice to meet you! We're thrilled to have you onboard. My name is {Your name} — I'll be your CSM and help you through onboarding.</p>"
+        + "<p>For an overview of what to expect during onboarding, see below.</p>"
+        + "<p>Onboarding checklist 👉: <a href='https://bestpractices.wetransact.io/onboarding'>bestpractices.wetransact.io/onboarding</a></p>"
+        + "<p><b>Onboarding (Partner Center related) — meeting (30 min)</b></p>"
+        + "<ul><li>Granting WeTransact access to your Partner Center (click <a href='https://docs.wetransact.io/how-to-give-access-to-wetransact-partner-center'>here</a> for a how-to guide)</li><li>Completing your Tax and Payout profile (see the onboarding checklist for the finance doc)</li></ul>"
+        + "<p><b>Onboarding (WeTransact Portal related) — meeting (30 min)</b></p>"
+        + "<ul><li>Navigation of the WeTransact Publisher Portal</li><li>Build listing and publish (see the onboarding checklist for the Marketing doc)</li></ul>"
+        + "<p><b>Post onboarding</b></p>"
+        + "<p>Go-to-Market strategy meetings (once your listing has gone live).</p>"
+        + "<p>Moving forward, I suggest we book two 30-minute meetings this week to get these tasks completed. It'll be important to have the information ready, as mentioned in the forms, before each meeting so we can respect the one-week onboarding timeline we promise.</p>"
+        + "<p>Do you think you'll have the details on the finance form ready for this week's meeting? Let me know what works best — you can book a call {booking link} or just send me your availability.</p>"
+        + "<p>Thanks,<br>{Your name}<br>WeTransact</p>"
+    },
+    {
+      subject: "Your onboarding recap & next steps",
+      body: ""
+        + "<p>Hi {First name},</p>"
+        + "<p>Thank you for your time today — we're thrilled to have you on board. As a follow-up, I wanted to outline the remaining tasks and share a few updates.</p>"
+        + "<p style='color:#039855;font-weight:700;margin:0 0 4px'>Completed tasks</p>"
+        + "<ul style='color:#039855;font-weight:700;margin:0 0 10px'><li>Granting WeTransact access to your Partner Center</li><li>Access to the WeTransact Portal: {insert portal link}</li><li>Verifying the Legal info tab</li><li>Completing the Tax and Payout profile</li></ul>"
+        + "<p style='color:#C2261B;font-weight:700;margin:0 0 4px'>Remaining tasks</p>"
+        + "<ul style='color:#C2261B;margin:0 0 10px'><li>Build listing and publish (see the Marketing doc attached for required info)</li><li>Navigation of the WeTransact Publisher Portal</li></ul>"
+        + "<p style='color:#1A66C9;font-weight:700;margin:0 0 4px'>Next step</p>"
+        + "<p style='color:#1A66C9;margin:0 0 10px'>I'll wait for your confirmation on the marketing collateral. Once you have this ready, we can schedule a call for next week.</p>"
+        + "<p>If you have any questions, please reach out to me directly.</p>"
+        + "<p>Best,<br>{Your name}<br>WeTransact</p>"
+    },
+    {
+      subject: "Your {Product} listing is live 🎉",
+      body: ""
+        + "<p>Hi {First name},</p>"
+        + "<p>Congratulations! Your {Product} listing is now live and transactable!</p>"
+        + "<p>Just a heads-up: we'll make a test purchase and then cancel the order. This is part of our standard post-go-live validation to confirm everything is working smoothly. You don't need to do anything on your end — we'll cancel the order and remove it from the Orders tab.</p>"
+        + "<p>If you have any questions, please reach out to me directly.</p>"
+        + "<p>Best,<br>{Your name}<br>WeTransact</p>"
+    }
+  ];
+  function tplHL(s){ return String(s).replace(/\{([^}]+)\}/g, function(_, t){ return '<span style="background-color:#FFEC99;color:#1a1a1a;">[' + t + ']</span>'; }); }
+  function tplPlain(s){ return String(s).replace(/\{([^}]+)\}/g, function(_, t){ return "[" + t + "]"; }); }
+  function setSubject(text){ try { var it = Office.context.mailbox && Office.context.mailbox.item; if (it && it.subject && it.subject.setAsync){ it.subject.setAsync(text); } } catch(e){} }
+  var CSM_ALLOW = (function(){ var m = {}, list = ["ruby.sran@wetransact.io", "divyashree.g@wetransact.io", "em.labrador@wetransact.io", "javier.albala@wetransact.io", "leya.zheng@wetransact.io", "paula.jimenez@wetransact.io", "thaddeus.uzornne@wetransact.io", "thomas.roche@wetransact.io"]; list.forEach(function(e){ m[e] = 1; }); return m; })();
+  function currentUserEmail(){ var e = ""; try { e = (Office.context && Office.context.mailbox && Office.context.mailbox.userProfile && Office.context.mailbox.userProfile.emailAddress) || ""; } catch(_){} if (!e) e = EMAIL || ""; return String(e).trim().toLowerCase(); }
+  function isCSM(){ var e = currentUserEmail(); return /@wetransact\.io$/.test(e) && !!CSM_ALLOW[e]; }
+  function applyCSMGate(){ var t = $("tpl"), o = $("tplOr"), show = isCSM(); if (t) t.classList.toggle("hide", !show); if (o) o.classList.toggle("hide", !show); }
+  (function(){
+    var wrap = $("tpl"), btn = $("tplBtn"), menu = $("tplMenu"), hint = $("tplHint"); if (!btn) return;
+    function setOpen(o){ wrap.classList.toggle("open", o); menu.classList.toggle("hide", !o); hint.classList.toggle("hide", !o); }
+    btn.onclick = function(){ setOpen(menu.classList.contains("hide")); };
+    [].forEach.call(menu.querySelectorAll(".tplopt"), function(el){ el.onclick = function(){ var t = CSMTPL[+el.dataset.tpl]; if (!t) return; var msg = $("msg"); setSubject(tplPlain(t.subject)); insertHtml(tplHL(t.body), msg, "✓ Template added — fill in the highlighted blanks before sending."); setOpen(false); }; });
+  })();
+
+  (function restoreAuth(){ var a = loadAuth(); if (a){ TOKEN = a.token; EMAIL = a.email || ""; loadSettings(); loadProfile(); $("signedout").classList.add("hide"); $("picker").classList.remove("hide"); drawMiniCal(); } try { applyCSMGate(); } catch(e){} })();
 })();
