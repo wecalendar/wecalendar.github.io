@@ -338,12 +338,12 @@
         + "<p>Hi {First name},</p>"
         + "<p>&nbsp;</p>"
         + "<p>Thank you for your time today — we're thrilled to have you on board. As a follow-up, I wanted to outline the remaining tasks and share a few updates.</p>"
-        + "<p style='color:#039855;font-weight:700;margin:0 0 4px'>Completed tasks</p>"
-        + "<ul style='color:#039855;font-weight:700;margin:0 0 10px'><li>Granting WeTransact access to your Partner Center</li><li>Access to the WeTransact Portal: {insert portal link}</li><li>Verifying the Legal info tab</li><li>Completing the Tax and Payout profile</li></ul>"
-        + "<p style='color:#C2261B;font-weight:700;margin:0 0 4px'>Remaining tasks</p>"
-        + "<ul style='color:#C2261B;margin:0 0 10px'><li>Build listing and publish (see the Marketing doc attached for required info)</li><li>Navigation of the WeTransact Publisher Portal</li></ul>"
-        + "<p style='color:#1A66C9;font-weight:700;margin:0 0 4px'>Next step</p>"
-        + "<p style='color:#1A66C9;margin:0 0 10px'>I'll wait for your confirmation on the marketing collateral. Once you have this ready, we can schedule a call for next week.</p>"
+        + "<p style='color:#039855;font-weight:700;text-decoration:underline;margin:0 0 4px'>Completed tasks:</p>"
+        + "<ul style='margin:0 0 10px'><li>Granting WeTransact access to your Partner Center</li><li>Access to the WeTransact Portal: {insert portal link}</li><li>Verifying the Legal info tab</li><li>Completing the Tax and Payout profile</li></ul>"
+        + "<p style='color:#C2261B;font-weight:700;text-decoration:underline;margin:0 0 4px'>Remaining tasks:</p>"
+        + "<ul style='margin:0 0 10px'><li>Build listing and publish (see the Marketing doc attached for required info)</li><li>Navigation of the WeTransact Publisher Portal</li></ul>"
+        + "<p style='color:#1A66C9;font-weight:700;text-decoration:underline;margin:0 0 4px'>Next Step:</p>"
+        + "<p style='margin:0 0 10px'>I'll wait for your confirmation on the marketing collateral. Once you have this ready, we can schedule a call for next week.</p>"
         + "<p>If you have any questions, please reach out to me directly.</p>"
     },
     {
