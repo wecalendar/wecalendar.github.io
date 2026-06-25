@@ -319,6 +319,7 @@
       subject: "Welcome to WeTransact — let's kick off your onboarding",
       body: ""
         + "<p>Hi {First name},</p>"
+        + "<p>&nbsp;</p>"
         + "<p>Nice to meet you! We're thrilled to have you onboard. My name is {Your name} — I'll be your CSM and help you through onboarding.</p>"
         + "<p>For an overview of what to expect during onboarding, see below.</p>"
         + "<p>Onboarding checklist 👉: <a href='https://bestpractices.wetransact.io/onboarding'>bestpractices.wetransact.io/onboarding</a></p>"
@@ -330,12 +331,12 @@
         + "<p>Go-to-Market strategy meetings (once your listing has gone live).</p>"
         + "<p>Moving forward, I suggest we book two 30-minute meetings this week to get these tasks completed. It'll be important to have the information ready, as mentioned in the forms, before each meeting so we can respect the one-week onboarding timeline we promise.</p>"
         + "<p>Do you think you'll have the details on the finance form ready for this week's meeting? Let me know what works best — you can book a call {booking link} or just send me your availability.</p>"
-        + "<p>Thanks,<br>{Your name}<br>WeTransact</p>"
     },
     {
       subject: "Your onboarding recap & next steps",
       body: ""
         + "<p>Hi {First name},</p>"
+        + "<p>&nbsp;</p>"
         + "<p>Thank you for your time today — we're thrilled to have you on board. As a follow-up, I wanted to outline the remaining tasks and share a few updates.</p>"
         + "<p style='color:#039855;font-weight:700;margin:0 0 4px'>Completed tasks</p>"
         + "<ul style='color:#039855;font-weight:700;margin:0 0 10px'><li>Granting WeTransact access to your Partner Center</li><li>Access to the WeTransact Portal: {insert portal link}</li><li>Verifying the Legal info tab</li><li>Completing the Tax and Payout profile</li></ul>"
@@ -344,16 +345,15 @@
         + "<p style='color:#1A66C9;font-weight:700;margin:0 0 4px'>Next step</p>"
         + "<p style='color:#1A66C9;margin:0 0 10px'>I'll wait for your confirmation on the marketing collateral. Once you have this ready, we can schedule a call for next week.</p>"
         + "<p>If you have any questions, please reach out to me directly.</p>"
-        + "<p>Best,<br>{Your name}<br>WeTransact</p>"
     },
     {
       subject: "Your {Product} listing is live 🎉",
       body: ""
         + "<p>Hi {First name},</p>"
+        + "<p>&nbsp;</p>"
         + "<p>Congratulations! Your {Product} listing is now live and transactable!</p>"
         + "<p>Just a heads-up: we'll make a test purchase and then cancel the order. This is part of our standard post-go-live validation to confirm everything is working smoothly. You don't need to do anything on your end — we'll cancel the order and remove it from the Orders tab.</p>"
         + "<p>If you have any questions, please reach out to me directly.</p>"
-        + "<p>Best,<br>{Your name}<br>WeTransact</p>"
     }
   ];
   function tplHL(s){ return String(s).replace(/\{([^}]+)\}/g, function(_, t){ return '<span style="background-color:#FFEC99;color:#1a1a1a;">[' + t + ']</span>'; }); }
