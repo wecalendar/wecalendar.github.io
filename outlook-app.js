@@ -88,6 +88,7 @@
     +       '<div class="tplopt" data-tpl="0"><span class="ic">&#128075;</span><div><div class="tt">First onboarding email</div><div class="td">Welcome &amp; book the kickoff calls</div></div></div>'
     +       '<div class="tplopt" data-tpl="1"><span class="ic">&#9989;</span><div><div class="tt">After onboarding call</div><div class="td">Recap, tasks &amp; next step</div></div></div>'
     +       '<div class="tplopt" data-tpl="2"><span class="ic">&#128640;</span><div><div class="tt">Listing is live</div><div class="td">Go-live confirmation</div></div></div>'
+    +       '<div class="tplopt" data-tpl="3"><span class="ic">&#129309;</span><div><div class="tt">Intro to your Account Manager</div><div class="td">Handoff from onboarding to your AM</div></div></div>'
     +     '</div>'
     +     '<div class="tplhint hide" id="tplHint">Pick one — it fills the subject &amp; body. Edit the highlighted blanks before sending.</div>'
     +   '</div>'
@@ -354,6 +355,16 @@
         + "<p>Congratulations! Your {Product} listing is now live and transactable!</p>"
         + "<p>Just a heads-up: we'll make a test purchase and then cancel the order. This is part of our standard post-go-live validation to confirm everything is working smoothly. You don't need to do anything on your end — we'll cancel the order and remove it from the Orders tab.</p>"
         + "<p>If you have any questions, please reach out to me directly.</p>"
+    },
+    {
+      subject: "Introduction to your WeTransact Account Manager",
+      body: ""
+        + "<p>Hi {First name},</p>"
+        + "<p>&nbsp;</p>"
+        + "<p>I hope you've had a smooth onboarding experience so far. Now that you're all set up, I'd like to introduce you to your WeTransact Account Manager, {AM name}.</p>"
+        + "<p>{AM name} will be your main point of contact moving forward. Their role is to help you get the most out of WeTransact — whether that's aligning on your goals, sharing best practices, supporting your GTM initiatives, or connecting you with relevant resources and partners.</p>"
+        + "<p>{AM name}, meet {First name}.</p>"
+        + "<p>Looking forward to seeing the great things we'll achieve together.</p>"
     }
   ];
   function tplHL(s){ return String(s).replace(/\{([^}]+)\}/g, function(_, t){ return '<span style="background-color:#FFEC99;color:#1a1a1a;">[' + t + ']</span>'; }); }
