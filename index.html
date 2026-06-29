@@ -664,10 +664,28 @@ async function loadPhoto(){
   setAvatar(null);
 }
 async function returnTokenToPane(){
+  const sendToPane = (obj) => { try { if (window.Office && Office.context && Office.context.ui) Office.context.ui.messageParent(JSON.stringify(obj)); } catch(e){} };
+  let tk;
   try {
-    const tk = await token();
-    if (window.Office && Office.context && Office.context.ui) Office.context.ui.messageParent(JSON.stringify({ token: tk, email: ME.email }));
-  } catch(e){ try { if (window.Office && Office.context && Office.context.ui) Office.context.ui.messageParent(JSON.stringify({ error: String((e && e.message) || e) })); } catch(e2){} }
+    tk = (await pca.acquireTokenSilent({ scopes: SCOPES, account })).accessToken;
+  } catch(e){
+    // Silent token acquisition failed inside the Office dialog — typically
+    // AADSTS160021 ("user session which does not exist"): the dialog's isolated
+    // webview has a cached account but no live Microsoft session/cookies, so the
+    // hidden-iframe renew can't run. Do NOT message the pane here (that closes the
+    // dialog via dlg.close()). Instead run an INTERACTIVE redirect right inside the
+    // dialog; after Microsoft returns, the dialog reloads → handleRedirectPromise()
+    // → onSignedIn() → returnTokenToPane() again, where silent now succeeds.
+    let tries = 0; try { tries = +(sessionStorage.getItem("dlgAuthTries") || 0); } catch(_){}
+    if (tries >= 2){ try { sessionStorage.removeItem("dlgAuthTries"); } catch(_){}; sendToPane({ error: String((e && e.message) || e) }); return; }
+    try {
+      try { sessionStorage.setItem("dlgAuth", "1"); sessionStorage.setItem("dlgAuthTries", String(tries + 1)); } catch(_){}
+      await pca.acquireTokenRedirect({ scopes: SCOPES, account: account || undefined });
+      return; // navigating to Microsoft sign-in; do not message the pane
+    } catch(e2){ sendToPane({ error: String((e2 && e2.message) || e2) }); return; }
+  }
+  try { sessionStorage.removeItem("dlgAuthTries"); } catch(_){}
+  sendToPane({ token: tk, email: ME.email });
 }
 function onSignedIn(){
   if (AUTHDLG){ returnTokenToPane(); return; }

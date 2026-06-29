@@ -176,7 +176,7 @@
 
   $("signin").onclick = function(){
     var m = $("soMsg"); m.className = "msg"; m.textContent = "Opening sign in…";
-    Office.context.ui.displayDialogAsync("https://wecalendar.github.io/?dlg=auth", { height: 60, width: 40, promptBeforeOpen: false }, function(res){
+    Office.context.ui.displayDialogAsync("https://wecalendar.github.io/?dlg=auth&t=" + Date.now(), { height: 60, width: 40, promptBeforeOpen: false }, function(res){
       if (res.status !== Office.AsyncResultStatus.Succeeded){ m.className = "msg err"; m.textContent = "Couldn't open sign in: " + ((res.error && res.error.message) || ""); return; }
       var dlg = res.value;
       dlg.addEventHandler(Office.EventType.DialogMessageReceived, function(arg){
