@@ -628,10 +628,10 @@ async function searchPeople(q){
     "$select": "displayName,mail,userPrincipalName",
     "$top": "8",
   }));
-  const OKDOM = ["wetransact.io", "awssome.io"];
+  const OKRE = /^[a-z-]+\.[a-z-]+@(wetransact|awssome)\.io$/;
   return (obj.value || [])
     .map(u => ({ name: u.displayName, email: (u.mail || u.userPrincipalName || "").toLowerCase() }))
-    .filter(u => u.email && !u.email.startsWith("emeabookingpage") && OKDOM.includes(u.email.split("@")[1]));
+    .filter(u => u.email && OKRE.test(u.email));
 }
 async function fetchSchedules(emails, weekStart, weekEnd){
   if (!emails.length) return {};
