@@ -325,7 +325,7 @@
         + "<p>For an overview of what to expect during onboarding, see below.</p>"
         + "<p>Onboarding checklist 👉: <a href='https://bestpractices.wetransact.io/onboarding'>bestpractices.wetransact.io/onboarding</a></p>"
         + "<p><b>Onboarding (Partner Center related) — meeting (30 min)</b></p>"
-        + "<ul><li>Granting WeTransact access to your Partner Center (click <a href='https://docs.wetransact.io/how-to-give-access-to-wetransact-partner-center'>here</a> for a how-to guide)</li><li>Completing your Tax and Payout profile (see the onboarding checklist for the finance doc)</li></ul>"
+        + "<ul><li>Granting WeTransact access to your Partner Center (click <a href='https://docs.wetransact.io/step-6-grant-wetransact-access-to-partner-center'>here</a> for a how-to guide)</li><li>Completing your Tax and Payout profile (see the onboarding checklist for the finance doc)</li></ul>"
         + "<p><b>Onboarding (WeTransact Portal related) — meeting (30 min)</b></p>"
         + "<ul><li>Navigation of the WeTransact Publisher Portal</li><li>Build listing and publish (see the onboarding checklist for the Marketing doc)</li></ul>"
         + "<p><b>Post onboarding</b></p>"
