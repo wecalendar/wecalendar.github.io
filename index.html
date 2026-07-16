@@ -1968,7 +1968,7 @@ function renderPTOBox(){
   const box = document.getElementById("ptoBox"), list = document.getElementById("ptoList"), scope = document.getElementById("ptoScope");
   if (!box || !list) return;
   if (!account){ box.style.display = "none"; return; }
-  const days = S.dayView ? [new Date(S.dayView)] : weekDaysFull();
+  const days = S.dayView ? [new Date(S.dayView)] : weekDaysFull().filter(d => d.getDay() >= 1 && d.getDay() <= 5);
   if (scope) scope.textContent = S.dayView ? "· this day" : "· this week";
   const todayK = keyOf(new Date());
   let html = "", total = 0;
