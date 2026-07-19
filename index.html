@@ -333,6 +333,8 @@
   #panelShowBtn:hover { width:34px; }
   body.panelhide #panelShowBtn { display:flex; }
   .panel-toggle.side { left:auto; right:-13px; }
+  .sidebar { border-right:1px solid var(--line); padding-right:16px; width:248px; }
+  @media (max-width:1020px){ .sidebar { border-right:none; } }
   body.sidehide .sidebar { display:none; }
   #sideShowBtn { position:fixed; left:0; top:50%; transform:translateY(-50%); z-index:60; border:1px solid #E2DBFF; border-left:none; background:var(--surface); color:#5E43C8; border-radius:0 12px 12px 0; width:28px; height:54px; cursor:pointer; display:none; align-items:center; justify-content:center; box-shadow:0 4px 14px rgba(44,28,108,.18); transition:width .15s ease; }
   #sideShowBtn:hover { width:34px; }
