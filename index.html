@@ -1928,12 +1928,15 @@ function renderPreview(){
 // ---- backend booking loop (optional; activates only when wecal-config.js is filled) ----
 const WECAL = window.WECAL || {};
 const WECAL_ON = !!(WECAL.SUPABASE_URL && WECAL.SUPABASE_ANON_KEY);
+// pre-warm the booking backend on hover so Copy feels instant (uses existing warmLink)
+{ ["linkBtn","myLinkBtn"].forEach(id => { const b = document.getElementById(id); if (b) b.addEventListener("mouseenter", () => { try { warmLink(); } catch(e){} }); }); }
 if (new URLSearchParams(location.search).get("dlg") === "1") { try { sessionStorage.setItem("dlgMode", "1"); } catch(e){} }
 const DLG = (() => { try { return sessionStorage.getItem("dlgMode") === "1"; } catch(e){ return false; } })();
 if (new URLSearchParams(location.search).get("dlg") === "auth") { try { sessionStorage.setItem("dlgAuth", "1"); } catch(e){} }
 const AUTHDLG = (() => { try { return sessionStorage.getItem("dlgAuth") === "1"; } catch(e){ return false; } })();
 async function createBookingLink(){
   if (!WECAL_ON){ toast("Booking backend not set up yet — see wecalendar-backend/README.md"); return; }
+  warmLink();
   if (!S.sel.length){ toast("Paint some slots first"); return; }
   const clientSlots = splitForClient();
   status('<span class="spin"></span>Creating booking link…');
@@ -1984,6 +1987,7 @@ async function createBookingLink(){
 // then publishes and copies a booking link — same mechanics as Copy slots, zero painting
 async function quickCalendarLink(){
   if (!WECAL_ON){ toast("Booking backend not set up yet — see wecalendar-backend/README.md"); return; }
+  warmLink();
   const btn = document.getElementById("myLinkBtn");
   if (btn) btn.disabled = true;
   status('<span class="spin"></span>Creating your calendar link from the next 2 weeks…');
