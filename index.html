@@ -1336,6 +1336,13 @@ function renderChips(){
     c.querySelector(".x").onclick = () => { S.people.splice(i,1); delete S.schedules[p.email]; renderChips(); renderBody(); };
     box.appendChild(c);
   });
+  if (S.people.length >= 2){
+    const ca = document.createElement("button");
+    ca.className = "linklike"; ca.style.fontSize = "12px"; ca.style.margin = "3px 0 0 2px";
+    ca.textContent = "Clear all";
+    ca.onclick = () => { S.people = []; S.schedules = {}; renderChips(); renderBody(); toast("Teammates cleared"); };
+    box.appendChild(ca);
+  }
 }
 async function loadSchedules(){
   if (!CAPS.meetWith || !S.people.length) { S.schedules = {}; renderBody(); return; }
@@ -1967,6 +1974,7 @@ async function createBookingLink(){
     } catch(e){ try { await navigator.clipboard.writeText(j.url); } catch(e2){} }
     document.getElementById("preview").innerHTML = snip;
     toast("📋 Slots copied — paste to share");
+    if (S.people.length){ S.people = []; S.schedules = {}; renderChips(); renderBody(); toast("📋 Slots copied — teammates cleared"); }
   } catch(e){ status(""); toast("Error creating link"); }
 }
 function consentUrl(provider){
