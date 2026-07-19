@@ -1657,36 +1657,6 @@ function renderBody(){
   document.addEventListener("visibilitychange", () => { if (!document.hidden) checkVersion(); });
 })();
 
-// ---- "My calendar link": save your Outlook Book-with-me (or any) link once, copy in one click ----
-(function(){
-  const btn = document.getElementById("myLinkBtn"), edit = document.getElementById("myLinkEdit"),
-        row = document.getElementById("myLinkRow"), inp = document.getElementById("myLinkIn"),
-        save = document.getElementById("myLinkSave"), cancel = document.getElementById("myLinkCancel");
-  if (!btn) return;
-  const KEY = "myCalLink";
-  const getLink = () => { try { return localStorage.getItem(KEY) || ""; } catch(e){ return ""; } };
-  function refresh(){ edit.style.display = getLink() ? "block" : "none"; }
-  function openEditor(){ inp.value = getLink(); row.style.display = "block"; inp.focus(); }
-  function closeEditor(){ row.style.display = "none"; }
-  btn.onclick = async () => {
-    const url = getLink();
-    if (!url){ openEditor(); return; }
-    try { await navigator.clipboard.writeText(url); toast("🔗 Calendar link copied"); }
-    catch(e){ openEditor(); }
-  };
-  edit.onclick = openEditor;
-  cancel.onclick = closeEditor;
-  save.onclick = () => {
-    const v = inp.value.trim();
-    if (v && !/^https?:\/\/\S+$/i.test(v)){ toast("That doesn't look like a link — paste the full URL"); return; }
-    try { v ? localStorage.setItem(KEY, v) : localStorage.removeItem(KEY); } catch(e){}
-    closeEditor(); refresh();
-    toast(v ? "✓ Saved — one click copies it from now on" : "Link removed");
-  };
-  inp.addEventListener("keydown", e => { if (e.key === "Enter") save.click(); if (e.key === "Escape") closeEditor(); });
-  refresh();
-})();
-
 // ---- collapsible share panel ----
 (function(){
   const hideBtn = document.getElementById("panelHideBtn");
