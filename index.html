@@ -332,7 +332,12 @@
   #panelShowBtn { position:fixed; right:0; top:50%; transform:translateY(-50%); z-index:60; border:1px solid #E2DBFF; border-right:none; background:var(--surface); color:#5E43C8; border-radius:12px 0 0 12px; width:28px; height:54px; cursor:pointer; display:none; align-items:center; justify-content:center; box-shadow:0 4px 14px rgba(44,28,108,.18); transition:width .15s ease; }
   #panelShowBtn:hover { width:34px; }
   body.panelhide #panelShowBtn { display:flex; }
-  body.dark .panel-toggle, body.dark #panelShowBtn { border-color:#2A2F3A; color:#8B93F8; }
+  .panel-toggle.side { left:auto; right:-13px; }
+  body.sidehide .sidebar { display:none; }
+  #sideShowBtn { position:fixed; left:0; top:50%; transform:translateY(-50%); z-index:60; border:1px solid #E2DBFF; border-left:none; background:var(--surface); color:#5E43C8; border-radius:0 12px 12px 0; width:28px; height:54px; cursor:pointer; display:none; align-items:center; justify-content:center; box-shadow:0 4px 14px rgba(44,28,108,.18); transition:width .15s ease; }
+  #sideShowBtn:hover { width:34px; }
+  body.sidehide #sideShowBtn { display:flex; }
+  body.dark .panel-toggle, body.dark #panelShowBtn, body.dark #sideShowBtn { border-color:#2A2F3A; color:#8B93F8; }
   .allfree { position:absolute; left:0; right:0; z-index:1; pointer-events:auto; cursor:crosshair; background:rgba(18,183,106,.13); border-left:3px solid #12B76A; }
   .allfree:hover { background:rgba(18,183,106,.20); }
   .allfree .af { position:absolute; right:4px; top:3px; font-size:9.5px; font-weight:600; color:#0F6E56; white-space:nowrap; }
@@ -415,6 +420,9 @@
 
     <div class="layout">
       <aside class="sidebar">
+        <button id="sideHideBtn" class="panel-toggle side" title="Hide sidebar" aria-label="Hide the sidebar">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M15 6l-6 6 6 6"/></svg>
+        </button>
         <div class="mcal" id="mcal"></div>
         <div class="sb-search">
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#9ca3af" stroke-width="2.4"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
@@ -1669,6 +1677,20 @@ function renderBody(){
   hideBtn.onclick = () => setPanelHidden(true);
   showBtn.onclick = () => setPanelHidden(false);
   try { if (localStorage.getItem("panelHidden") === "1") setPanelHidden(true); } catch(e){}
+})();
+
+// ---- collapsible left sidebar (mirror of the share panel) ----
+(function(){
+  const hideBtn = document.getElementById("sideHideBtn");
+  if (!hideBtn) return;
+  const showBtn = document.createElement("button");
+  showBtn.id = "sideShowBtn"; showBtn.title = "Show sidebar"; showBtn.setAttribute("aria-label", "Show the sidebar");
+  showBtn.innerHTML = '<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6"/></svg>';
+  document.body.appendChild(showBtn);
+  function setSideHidden(h){ document.body.classList.toggle("sidehide", h); try { localStorage.setItem("sidebarHidden", h ? "1" : "0"); } catch(e){} }
+  hideBtn.onclick = () => setSideHidden(true);
+  showBtn.onclick = () => setSideHidden(false);
+  try { if (localStorage.getItem("sidebarHidden") === "1") setSideHidden(true); } catch(e){}
 })();
 
 // ---- paint mode toggle ----
