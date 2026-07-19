@@ -318,6 +318,13 @@
   body.dark .busy.solo .bt { color:#F09595; }
 
   /* ==== teammate overlays (distinct colors) + mutual-free bands (2026-07-19) ==== */
+  /* new-version notice */
+  .updatebar { position:fixed; left:50%; transform:translateX(-50%); bottom:18px; z-index:3000; background:#2C1C6C; color:#fff; border-radius:999px; padding:10px 10px 10px 18px; display:flex; align-items:center; gap:12px; font-size:13px; box-shadow:0 10px 30px rgba(20,16,40,.35); animation:popin .2s ease; }
+  .updatebar button { border:none; border-radius:999px; padding:7px 16px; font-family:inherit; font-size:12.5px; font-weight:600; cursor:pointer; background:#5E43C8; color:#fff; }
+  .updatebar button:hover { background:#8266F4; }
+  .updatebar .ub-x { background:none; padding:2px 6px; font-size:16px; opacity:.7; }
+  .updatebar .ub-x:hover { opacity:1; background:none; }
+
   /* collapsible share panel */
   .panel-toggle { position:absolute; left:-13px; top:14px; width:26px; height:26px; border-radius:50%; border:1px solid #E2DBFF; background:var(--surface); color:#5E43C8; cursor:pointer; display:flex; align-items:center; justify-content:center; box-shadow:0 2px 8px rgba(44,28,108,.14); z-index:5; transition:transform .15s ease, box-shadow .15s ease; }
   .panel-toggle:hover { transform:scale(1.1); box-shadow:0 4px 12px rgba(44,28,108,.2); }
@@ -1611,6 +1618,34 @@ function renderBody(){
   const sc = document.getElementById("scroller");
   if (!sc.dataset.scrolled){ sc.scrollTop = 8 * hourpx - 10; sc.dataset.scrolled = "1"; }
 }
+
+// ---- new-version notice: compares the server's file fingerprint, no manual version bumps ----
+(function(){
+  let mark0 = null, notified = false;
+  async function checkVersion(){
+    if (notified || location.protocol === "file:") return;
+    try {
+      const r = await fetch(location.pathname + "?vchk=" + Date.now(), { method: "HEAD", cache: "no-store" });
+      if (!r.ok) return;
+      const m = r.headers.get("ETag") || r.headers.get("Last-Modified");
+      if (!m) return;
+      if (mark0 === null){ mark0 = m; return; }
+      if (m !== mark0){ notified = true; showUpdateBar(); }
+    } catch(e){}
+  }
+  function showUpdateBar(){
+    const bar = document.createElement("div");
+    bar.className = "updatebar";
+    const s = document.createElement("span"); s.textContent = "✨ A new version of WeCalendar is available";
+    const b = document.createElement("button"); b.textContent = "Refresh"; b.onclick = () => location.reload();
+    const x = document.createElement("button"); x.className = "ub-x"; x.textContent = "×"; x.title = "Dismiss"; x.onclick = () => bar.remove();
+    bar.appendChild(s); bar.appendChild(b); bar.appendChild(x);
+    document.body.appendChild(bar);
+  }
+  checkVersion();
+  setInterval(checkVersion, 5 * 60000);
+  document.addEventListener("visibilitychange", () => { if (!document.hidden) checkVersion(); });
+})();
 
 // ---- collapsible share panel ----
 (function(){
