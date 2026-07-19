@@ -75,7 +75,21 @@
     + '.tplopt .tt{font-size:13px;font-weight:600;color:var(--ink)}'
     + '.tplopt .td{font-size:11px;color:var(--muted);margin-top:1px}'
     + '.tplhint{font-size:11px;color:var(--muted);text-align:center;margin-top:8px;line-height:1.4}'
-    + '.hide{display:none}';
+    + '.hide{display:none}'
+    /* beauty pass 2026-07-19 — matches web app polish */
+    + '.btn,.seg button,.mc-day,.tplbtn,.weeknav button,.tplopt{transition:background .15s ease,color .15s ease,border-color .15s ease,box-shadow .15s ease,transform .12s ease}'
+    + '.btn{box-shadow:0 2px 8px rgba(94,67,200,.22)}.btn:hover{box-shadow:0 4px 12px rgba(94,67,200,.3)}.btn:active{transform:scale(.98)}'
+    + '.btn.sec{box-shadow:none}.btn.sec:hover{background:#F6F3FE;border-color:#C9BCFF}'
+    + '.btn.green{box-shadow:0 2px 8px rgba(18,183,106,.25)}.btn.green:hover{box-shadow:0 4px 12px rgba(18,183,106,.32)}'
+    + '.grow{transition:transform .12s ease,box-shadow .12s ease}'
+    + '.grow.free:hover{transform:translateY(-1px);box-shadow:0 3px 10px rgba(18,183,106,.18)}'
+    + '.grow.busy{background:linear-gradient(135deg,#FBEAF0,#F8DCE7)}'
+    + '.mcal{box-shadow:0 1px 3px rgba(44,28,108,.05)}'
+    + '.mc-day.sel{box-shadow:0 2px 8px rgba(94,67,200,.3)}'
+    + 'textarea,input[type=text],select{transition:border-color .15s ease,box-shadow .15s ease}'
+    + 'textarea:focus,input[type=text]:focus,select:focus{border-color:#C9BCFF;box-shadow:0 0 0 3px rgba(94,67,200,.10)}'
+    + '.tzres{border:1px solid var(--line);border-radius:12px}'
+    + '.slots::-webkit-scrollbar{width:8px}.slots::-webkit-scrollbar-thumb{background:rgba(94,67,200,.18);border-radius:99px}';
 
   var HTML = ''
     + '<div class="brand"><span class="a1">we</span><span class="a2">calendar</span></div>'

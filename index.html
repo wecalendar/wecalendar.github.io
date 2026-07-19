@@ -255,6 +255,55 @@
   .spin { display:inline-block; width:12px; height:12px; border:2px solid var(--line); border-top-color:var(--blue); border-radius:50%; animation:sp .8s linear infinite; vertical-align:-2px; margin-right:6px; }
   @keyframes sp { to { transform:rotate(360deg); } }
   .err { color:#b91c1c; }
+
+  /* ==== beauty pass (2026-07-19): depth, brand accents, micro-interactions ==== */
+  :root { --blue:#5E43C8; --blue-dark:#402C93; --blue-light:#F4F0FF; --side:#5E43C8;
+    --line:#E9E4F6; --line2:#F3F0FB; --hover:#F6F3FE; --bg:#FDFCFF; }
+  body.dark { --blue:#8B93F8; --blue-dark:#A9AFFA; --blue-light:#272144; --side:#8B93F8;
+    --line:#2A2F3A; --line2:#232733; --hover:#232733; --bg:#0F1218; }
+  .btn, .navgroup .navarr, .navgroup .todaybtn, .gearbtn, .tzchip, .lenseg button,
+  .mcal .mc-day, .tzitem, .ppl-item, #tourBtn, #fbBtn, .linklike, .addtz
+    { transition:background .15s ease, border-color .15s ease, color .15s ease, box-shadow .15s ease, transform .12s ease; }
+  .btn:hover, .tzchip:hover { border-color:#C9BCFF; }
+  .btn:active, .gearbtn:active, .navgroup .navarr:active, .navgroup .todaybtn:active { transform:scale(.97); }
+  .btn.primary { box-shadow:0 2px 8px rgba(94,67,200,.25); }
+  .btn.primary:hover { background:#402C93; border-color:#402C93; box-shadow:0 4px 14px rgba(94,67,200,.35); }
+  body.dark .btn.primary { box-shadow:0 2px 10px rgba(139,147,248,.22); }
+  @keyframes popin { from { opacity:0; transform:translateY(-4px); } to { opacity:1; transform:none; } }
+  .setpop, .tzpop, .ppl-pop, .evtip { border-radius:14px; border-color:#E2DBFF;
+    box-shadow:0 2px 6px rgba(44,28,108,.06), 0 16px 40px rgba(44,28,108,.14); animation:popin .16s ease; }
+  body.dark .setpop, body.dark .tzpop, body.dark .ppl-pop, body.dark .evtip { border-color:#2A2F3A;
+    box-shadow:0 2px 6px rgba(0,0,0,.35), 0 16px 40px rgba(0,0,0,.5); }
+  .panel { border-color:#E2DBFF; border-radius:16px;
+    background:linear-gradient(180deg, var(--card) 0%, var(--bg) 100%);
+    box-shadow:0 1px 2px rgba(44,28,108,.05), 0 10px 30px rgba(44,28,108,.07); }
+  body.dark .panel { border-color:#2A2F3A; box-shadow:0 1px 2px rgba(0,0,0,.3), 0 10px 30px rgba(0,0,0,.35); }
+  .evt { transition:transform .13s ease, box-shadow .13s ease; }
+  .busy { border-radius:8px; background:linear-gradient(135deg,#FFE7F2,#FFD6E9); }
+  .busy:hover { transform:translateY(-1px); box-shadow:0 4px 12px rgba(240,71,156,.25); z-index:5; }
+  body.dark .busy { background:linear-gradient(135deg,rgba(240,71,156,.20),rgba(240,71,156,.12)); }
+  body.dark .busy:hover { box-shadow:0 4px 12px rgba(0,0,0,.4); }
+  .sel { border-radius:8px; background:linear-gradient(135deg,#14C87B,#0FA968); transition:transform .13s ease, box-shadow .13s ease; }
+  .sel:hover { background:linear-gradient(135deg,#0FBF72,#0A9C5F); transform:translateY(-1px); box-shadow:0 4px 14px rgba(18,183,106,.4); }
+  .evt.allday { border-radius:8px; }
+  .daycol.todaycol { background:linear-gradient(180deg, rgba(94,67,200,.055), rgba(94,67,200,.015)); }
+  body.dark .daycol.todaycol { background:linear-gradient(180deg, rgba(139,147,248,.07), rgba(139,147,248,.02)); }
+  .dh.today .dn { border-radius:12px; box-shadow:0 4px 12px rgba(94,67,200,.32); }
+  .nowline { background:#5E43C8; box-shadow:0 0 6px rgba(94,67,200,.45); }
+  .nowline::before { background:#5E43C8; }
+  body.dark .nowline { background:#8B93F8; box-shadow:0 0 6px rgba(139,147,248,.5); }
+  body.dark .nowline::before { background:#8B93F8; }
+  .fab { transition:background .15s ease, transform .15s ease, box-shadow .15s ease; }
+  .fab:hover { transform:scale(1.06); }
+  .scroller::-webkit-scrollbar { width:9px; }
+  .scroller::-webkit-scrollbar-thumb { background:rgba(94,67,200,.18); border-radius:99px; border:2px solid var(--bg); }
+  .scroller::-webkit-scrollbar-thumb:hover { background:rgba(94,67,200,.32); }
+  body.dark .scroller::-webkit-scrollbar-thumb { background:rgba(139,147,248,.22); border-color:var(--bg); }
+  .toast { box-shadow:0 8px 24px rgba(20,16,40,.3); }
+  .mcal .mc-today { border-radius:9px; box-shadow:0 2px 8px rgba(94,67,200,.3); }
+  .sb-search:focus-within, .sb-people-in:focus, .ai-box input:focus { border-color:#C9BCFF; box-shadow:0 0 0 3px rgba(94,67,200,.10); }
+  body.dark .sb-search:focus-within, body.dark .sb-people-in:focus, body.dark .ai-box input:focus { border-color:#8B93F8; box-shadow:0 0 0 3px rgba(139,147,248,.15); }
+  .sb-search, .sb-people-in, .ai-box input { transition:border-color .15s ease, box-shadow .15s ease; }
 </style>
 </head>
 <body>
@@ -1381,7 +1430,7 @@ function renderBody(){
   days.forEach(d => {
     const dayStart = new Date(d.getFullYear(), d.getMonth(), d.getDate(), 0, 0, 0, 0);
     const dayEnd = new Date(dayStart.getTime() + 86400000);
-    const col = document.createElement("div"); col.className = "daycol";
+    const col = document.createElement("div"); col.className = "daycol" + (keyOf(d) === keyOf(now) ? " todaycol" : "");
     col.style.setProperty("--hourpx", hourpx + "px");
     col.insertAdjacentHTML("beforeend", '<div class="lines"></div>');
     col.insertAdjacentHTML("beforeend", '<div class="offh" style="top:0;height:' + (S.workStart * hourpx) + 'px"></div>');
