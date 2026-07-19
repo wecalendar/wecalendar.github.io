@@ -489,6 +489,9 @@
         <div class="panel-btns">
           <button class="btn" id="fillWeekBtn" style="flex:1" title="Auto-select your open slots across the whole week you're viewing — skips meetings, buffers and past times">✨ Select slots for week</button>
         </div>
+        <div class="panel-btns">
+          <button class="btn" id="myLinkBtn" style="flex:1" title="Instantly create and copy a booking link from your free time over the next 2 weeks — no painting needed">🔗 Copy my calendar link</button>
+        </div>
         <div id="focusCard" title="Tap for another tip" style="display:none; margin-top:20px; background:#fff; border:1px solid #E2DBFF; border-radius:16px; padding:15px 16px; cursor:pointer;">
           <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:11px;">
             <span style="font-size:11px; font-weight:600; letter-spacing:.07em; color:#5E43C8; text-transform:uppercase;">Focus tip</span>
@@ -1654,6 +1657,36 @@ function renderBody(){
   document.addEventListener("visibilitychange", () => { if (!document.hidden) checkVersion(); });
 })();
 
+// ---- "My calendar link": save your Outlook Book-with-me (or any) link once, copy in one click ----
+(function(){
+  const btn = document.getElementById("myLinkBtn"), edit = document.getElementById("myLinkEdit"),
+        row = document.getElementById("myLinkRow"), inp = document.getElementById("myLinkIn"),
+        save = document.getElementById("myLinkSave"), cancel = document.getElementById("myLinkCancel");
+  if (!btn) return;
+  const KEY = "myCalLink";
+  const getLink = () => { try { return localStorage.getItem(KEY) || ""; } catch(e){ return ""; } };
+  function refresh(){ edit.style.display = getLink() ? "block" : "none"; }
+  function openEditor(){ inp.value = getLink(); row.style.display = "block"; inp.focus(); }
+  function closeEditor(){ row.style.display = "none"; }
+  btn.onclick = async () => {
+    const url = getLink();
+    if (!url){ openEditor(); return; }
+    try { await navigator.clipboard.writeText(url); toast("🔗 Calendar link copied"); }
+    catch(e){ openEditor(); }
+  };
+  edit.onclick = openEditor;
+  cancel.onclick = closeEditor;
+  save.onclick = () => {
+    const v = inp.value.trim();
+    if (v && !/^https?:\/\/\S+$/i.test(v)){ toast("That doesn't look like a link — paste the full URL"); return; }
+    try { v ? localStorage.setItem(KEY, v) : localStorage.removeItem(KEY); } catch(e){}
+    closeEditor(); refresh();
+    toast(v ? "✓ Saved — one click copies it from now on" : "Link removed");
+  };
+  inp.addEventListener("keydown", e => { if (e.key === "Enter") save.click(); if (e.key === "Escape") closeEditor(); });
+  refresh();
+})();
+
 // ---- collapsible share panel ----
 (function(){
   const hideBtn = document.getElementById("panelHideBtn");
@@ -1977,6 +2010,72 @@ async function createBookingLink(){
     if (S.people.length){ S.people = []; S.schedules = {}; renderChips(); renderBody(); toast("📋 Slots copied — teammates cleared"); }
   } catch(e){ status(""); toast("Error creating link"); }
 }
+// one-click calendar link: auto-builds slots from your free time over the next 2 weeks,
+// then publishes and copies a booking link — same mechanics as Copy slots, zero painting
+async function quickCalendarLink(){
+  if (!WECAL_ON){ toast("Booking backend not set up yet — see wecalendar-backend/README.md"); return; }
+  const btn = document.getElementById("myLinkBtn");
+  if (btn) btn.disabled = true;
+  status('<span class="spin"></span>Creating your calendar link from the next 2 weeks…');
+  try {
+    const now = new Date();
+    const rangeStart = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+    const rangeEnd = new Date(rangeStart.getTime() + 14 * 86400000);
+    const ids = S.cals.filter(c => c.checked).map(c => c.id);
+    const evs = await fetchEvents(rangeStart, rangeEnd, ids);
+    const minLen = (S.slotLen || 30) * 60000, BUF = (S.buffer || 0) * 60000;
+    const slots = [];
+    for (let i = 0; i < 14; i++){
+      const d = new Date(rangeStart.getFullYear(), rangeStart.getMonth(), rangeStart.getDate() + i);
+      if (d.getDay() === 0 || d.getDay() === 6) continue;
+      const wsD = new Date(d.getFullYear(), d.getMonth(), d.getDate(), S.workStart).getTime();
+      const weD = new Date(d.getFullYear(), d.getMonth(), d.getDate(), S.workEnd).getTime();
+      const dayBusy = [];
+      evs.forEach(ev => {
+        if (ev.allDay && !ev.oof) return;
+        const bs = ev.start.getTime() - BUF, be = ev.end.getTime() + BUF;
+        if (be > wsD && bs < weD) dayBusy.push([bs, be]);
+      });
+      dayBusy.sort((a, b) => a[0] - b[0]);
+      let cur = Math.max(wsD, now.getTime() + (S.minNotice || 0) * 3600000);
+      const wins = [];
+      dayBusy.forEach(sg => { if (sg[0] > cur && Math.min(sg[0], weD) - cur >= minLen) wins.push([cur, Math.min(sg[0], weD)]); if (sg[1] > cur) cur = sg[1]; });
+      if (weD - cur >= minLen) wins.push([cur, weD]);
+      let perDay = 0;
+      for (const w of wins){
+        for (let t = w[0]; t + minLen <= w[1]; t += minLen){
+          if (S.dayCap && perDay >= S.dayCap) break;
+          slots.push({ start: new Date(t), end: new Date(t + minLen) });
+          perDay++;
+        }
+      }
+    }
+    if (!slots.length){ status(""); toast("No free time found in the next 2 weeks — check your working hours"); if (btn) btn.disabled = false; return; }
+    const tk = await token();
+    const r = await fetch(WECAL.FN_BASE + "/publish-link", {
+      method: "POST",
+      headers: { "Content-Type":"application/json", apikey: WECAL.SUPABASE_ANON_KEY, Authorization: "Bearer " + tk },
+      body: JSON.stringify({
+        title: document.getElementById("subj").value || ("Meeting with " + pname()),
+        tz: S.tz,
+        slots: slots.slice(0, 400).map(x => ({ start: x.start.toISOString(), end: x.end.toISOString() })),
+        attendees: [],
+        videoLink: S.linkVid || "",
+        settings: { workStart:S.workStart, workEnd:S.workEnd, buffer:S.buffer, minNotice:S.minNotice, dayCap:S.dayCap },
+      }),
+    });
+    const j = await r.json().catch(() => ({}));
+    if (r.status === 412 || j.error === "not_connected"){ status(""); toast("Connect your calendar first — hit Copy slots once to set it up"); if (btn) btn.disabled = false; return; }
+    if (!r.ok || !j.url){ status(""); toast("Couldn't create link" + (j.detail ? ": " + j.detail : "")); if (btn) btn.disabled = false; return; }
+    status("");
+    try { await navigator.clipboard.writeText(j.url); } catch(e){}
+    document.getElementById("preview").innerHTML = '🔗 Your calendar link (next 2 weeks, ' + slots.length + ' slots): <a href="' + j.url + '" target="_blank" rel="noopener">' + j.url + '</a>';
+    toast("🔗 Calendar link copied — share it anywhere");
+  } catch(e){ status(""); toast("Error creating calendar link"); }
+  if (btn) btn.disabled = false;
+}
+{ const b = document.getElementById("myLinkBtn"); if (b){ b.onclick = quickCalendarLink; if (!WECAL_ON) b.style.display = "none"; } }
+
 function consentUrl(provider){
   const redirect = encodeURIComponent(WECAL.FN_BASE + "/oauth-callback");
   if (provider === "google"){
