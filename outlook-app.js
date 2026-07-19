@@ -90,9 +90,9 @@
     + 'textarea:focus,input[type=text]:focus,select:focus{border-color:#C9BCFF;box-shadow:0 0 0 3px rgba(94,67,200,.10)}'
     + '.tzres{border:1px solid var(--line);border-radius:12px}'
     + '.slots::-webkit-scrollbar{width:8px}.slots::-webkit-scrollbar-thumb{background:rgba(94,67,200,.18);border-radius:99px}'
-    /* event colors by type: blue = meeting with others, red = solo block */
-    + '.grow.busy.mtg{background:linear-gradient(135deg,#E6F1FB,#D7E7F8);color:#0C447C}'
-    + '.grow.busy.mtg .dot{background:#378ADD}'
+    /* event colors by type: purple = meeting with others, red = solo block */
+    + '.grow.busy.mtg{background:linear-gradient(135deg,#EEEDFE,#E2DBFF);color:#3C3489}'
+    + '.grow.busy.mtg .dot{background:#5E43C8}'
     + '.grow.busy.solo{background:linear-gradient(135deg,#FCEBEB,#F8D6D6);color:#A32D2D}'
     + '.grow.busy.solo .dot{background:#E24B4A}';
 
