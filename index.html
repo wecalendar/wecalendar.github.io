@@ -318,7 +318,8 @@
   body.dark .busy.solo .bt { color:#F09595; }
 
   /* ==== teammate overlays (distinct colors) + mutual-free bands (2026-07-19) ==== */
-  .allfree { position:absolute; left:0; right:0; z-index:1; pointer-events:none; background:rgba(18,183,106,.13); border-left:3px solid #12B76A; }
+  .allfree { position:absolute; left:0; right:0; z-index:1; pointer-events:auto; cursor:crosshair; background:rgba(18,183,106,.13); border-left:3px solid #12B76A; }
+  .allfree:hover { background:rgba(18,183,106,.20); }
   .allfree .af { position:absolute; right:4px; top:3px; font-size:9.5px; font-weight:600; color:#0F6E56; white-space:nowrap; }
   body.dark .allfree { background:rgba(18,183,106,.16); }
   body.dark .allfree .af { color:#6EE7B7; }
@@ -411,7 +412,7 @@
           <div class="ppl-pop" id="pplPop"></div>
         </div>
         <div id="meetChips"></div>
-        <div class="sb-note" id="meetNote">Each teammate shows in their own color — green bands show when everyone is free (within their working hours).</div>
+        <div class="sb-note" id="meetNote">Each teammate shows in their own color — green bands show when everyone is free. Click or drag a green band to add a slot right away.</div>
 
         <div class="sb-h" id="calsH">Calendars</div>
         <div id="calList"><div class="sb-note">Loading…</div></div>
@@ -1565,6 +1566,7 @@ function renderBody(){
           const el = document.createElement("div"); el.className = "allfree";
           el.style.top = a2 + "px"; el.style.height = (b2 - a2) + "px";
           if (b2 - a2 > 24) el.innerHTML = '<span class="af">all free ✓</span>';
+          el.title = "Everyone is free — click or drag to add a slot";
           col.appendChild(el);
         });
       }
@@ -1729,7 +1731,9 @@ let paint = null;
 function snap(min){ return Math.round(min / SNAP) * SNAP; }
 function attachPaint(col, dayStart){
   col.onpointerdown = e => {
-    if (e.button !== 0 || !S.paintMode) return;
+    // green "all free" bands are always paintable — no need to toggle selection mode first
+    const viaBand = !S.paintMode && !!(e.target.closest && e.target.closest(".allfree"));
+    if (e.button !== 0 || (!S.paintMode && !viaBand)) return;
     const rect = col.getBoundingClientRect();
     const min = Math.max(0, Math.min(1410, Math.floor((e.clientY - rect.top) / PPM / SNAP) * SNAP));
     const el = document.createElement("div"); el.className = "evt sel tmp";
