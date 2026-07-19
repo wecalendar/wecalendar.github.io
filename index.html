@@ -221,7 +221,7 @@
   .busy .joinbtn{ position:absolute; top:3px; right:4px; background:#5E43C8; color:#fff; font-size:9.5px; font-weight:700; padding:1px 6px; border-radius:6px; text-decoration:none; line-height:1.5; z-index:2; }
   .busy .joinbtn:hover{ background:#402C93; }
   .busy.dim { opacity:.18; }
-  .ovl { pointer-events:none; z-index:3; opacity:.85; border-radius:4px; overflow:hidden; }
+  .ovl { pointer-events:none; z-index:3; opacity:.85; border-radius:6px; font-size:9.5px; color:#fff; padding:2px 4px; font-weight:600; overflow:hidden; white-space:nowrap; left:55% !important; }
   .sel { background:#12B76A; color:#fff; font-size:11px; font-weight:600; padding:3px 6px; line-height:1.3; z-index:4; cursor:pointer; box-shadow:0 2px 6px rgba(0,200,117,.45); display:flex; align-items:center; }
   .sel:hover { background:#00B268; }
   .sel .x { position:absolute; top:2px; right:5px; font-weight:700; opacity:.75; }
@@ -317,10 +317,7 @@
   body.dark .busy.solo { background:linear-gradient(135deg,rgba(226,75,74,.20),rgba(226,75,74,.12)); color:#F7C1C1; }
   body.dark .busy.solo .bt { color:#F09595; }
 
-  /* ==== teammate mini-lanes + mutual-free bands (2026-07-19) ==== */
-  .daycol.lanes .evt { right:calc(42% + 4px); }
-  .plane { position:absolute; top:0; bottom:0; z-index:2; pointer-events:none; border-left:1px dashed var(--line2); }
-  .plane .pl { position:absolute; top:1px; left:0; right:0; text-align:center; font-size:8.5px; font-weight:700; opacity:.9; }
+  /* ==== teammate overlays (distinct colors) + mutual-free bands (2026-07-19) ==== */
   .allfree { position:absolute; left:0; right:0; z-index:1; pointer-events:none; background:rgba(18,183,106,.13); border-left:3px solid #12B76A; }
   .allfree .af { position:absolute; right:4px; top:3px; font-size:9.5px; font-weight:600; color:#0F6E56; white-space:nowrap; }
   body.dark .allfree { background:rgba(18,183,106,.16); }
@@ -414,7 +411,7 @@
           <div class="ppl-pop" id="pplPop"></div>
         </div>
         <div id="meetChips"></div>
-        <div class="sb-note" id="meetNote">Each teammate gets a colored lane on the right of the day — green bands show when everyone is free.</div>
+        <div class="sb-note" id="meetNote">Each teammate shows in their own color — green bands show when everyone is free (within their working hours).</div>
 
         <div class="sb-h" id="calsH">Calendars</div>
         <div id="calList"><div class="sb-note">Loading…</div></div>
@@ -720,11 +717,32 @@ async function fetchSchedules(emails, weekStart, weekEnd){
   const obj = await r.json();
   const out = {};
   (obj.value || []).forEach(s => {
-    out[s.scheduleId] = (s.scheduleItems || [])
+    const arr = (s.scheduleItems || [])
       .filter(it => it.status !== "free")
       .map(it => ({ start: new Date(it.start.dateTime + "Z"), end: new Date(it.end.dateTime + "Z") }));
+    arr.wh = s.workingHours || null; // their work days + hours, used to bound "all free" bands
+    out[s.scheduleId] = arr;
   });
   return out;
+}
+// convert a teammate's working-hours time ("09:00:00" in their timezone) to a UTC instant on day d
+function whTzOffset(ms, tz){
+  const dtf = new Intl.DateTimeFormat("en-US", { timeZone: tz, hourCycle: "h23", year: "numeric", month: "2-digit", day: "2-digit", hour: "2-digit", minute: "2-digit" });
+  const p = {}; dtf.formatToParts(new Date(ms)).forEach(x => p[x.type] = x.value);
+  return (Date.UTC(+p.year, +p.month - 1, +p.day, +p.hour, +p.minute) - ms) / 60000;
+}
+function whInstant(t, tzObj, d){
+  if (!t) return null;
+  const hh = +t.slice(0,2), mm = +t.slice(3,5);
+  if (isNaN(hh) || isNaN(mm)) return null;
+  const tz = tzObj && tzObj.name;
+  if (tz){
+    try {
+      const guess = Date.UTC(d.getFullYear(), d.getMonth(), d.getDate(), hh, mm);
+      return guess - whTzOffset(guess - whTzOffset(guess, tz) * 60000, tz) * 60000;
+    } catch(e){} // Windows-style tz name Intl can't parse — fall back to local
+  }
+  return new Date(d.getFullYear(), d.getMonth(), d.getDate(), hh, mm).getTime();
 }
 async function loadPhoto(){
   try {
@@ -1504,50 +1522,52 @@ function renderBody(){
       col.appendChild(el);
     });
 
-    // colleagues' busy overlays — one thin lane per person on the right of the day
-    if (S.people.length){
-      col.classList.add("lanes");
-      const laneZone = 42, laneW = laneZone / S.people.length;
-      S.people.forEach((p, pi) => {
-        const laneLeft = (100 - laneZone) + pi * laneW;
-        const lane = document.createElement("div"); lane.className = "plane";
-        lane.style.left = laneLeft + "%"; lane.style.width = laneW + "%";
-        lane.style.background = p.color + "12";
-        lane.innerHTML = '<span class="pl"></span>';
-        const pl = lane.querySelector(".pl");
-        pl.style.color = p.color;
-        pl.textContent = ((p.name || p.email)[0] || "").toUpperCase();
-        col.appendChild(lane);
-        (S.schedules[p.email] || []).forEach(it => {
-          if (it.end <= dayStart || it.start >= dayEnd) return;
-          const a = Math.max(top(it.start), 0), b = Math.min(top(it.end), H);
-          if (b - a < 4) return;
-          const el = document.createElement("div"); el.className = "evt ovl";
-          el.style.top = a + "px"; el.style.height = Math.max(b - a - 1, 8) + "px";
-          el.style.left = (laneLeft + 0.6) + "%"; el.style.width = (laneW - 1.2) + "%";
-          el.style.background = p.color;
-          col.appendChild(el);
-        });
-      });
-
-      // mutual-free bands: you + every selected teammate are free (working hours)
-      const wsB = new Date(d.getFullYear(), d.getMonth(), d.getDate(), S.workStart).getTime();
-      const weB = new Date(d.getFullYear(), d.getMonth(), d.getDate(), S.workEnd).getTime();
-      const busyAll = [];
-      S.events.forEach(ev => { if (ev.allDay && !ev.oof) return; const bs = ev.start.getTime(), be = ev.end.getTime(); if (be > wsB && bs < weB) busyAll.push([bs, be]); });
-      S.people.forEach(p => (S.schedules[p.email] || []).forEach(it => { const bs = it.start.getTime(), be = it.end.getTime(); if (be > wsB && bs < weB) busyAll.push([bs, be]); }));
-      busyAll.sort((x, y) => x[0] - y[0]);
-      let curB = wsB; const bands = [];
-      busyAll.forEach(sg => { if (sg[0] > curB && sg[0] - curB >= 15 * 60000) bands.push([curB, Math.min(sg[0], weB)]); if (sg[1] > curB) curB = sg[1]; });
-      if (weB - curB >= 15 * 60000) bands.push([curB, weB]);
-      bands.forEach(bd => {
-        const a2 = Math.max(top(new Date(bd[0])), 0), b2 = Math.min(top(new Date(bd[1])), H);
-        if (b2 - a2 < 6) return;
-        const el = document.createElement("div"); el.className = "allfree";
-        el.style.top = a2 + "px"; el.style.height = (b2 - a2) + "px";
-        if (b2 - a2 > 24) el.innerHTML = '<span class="af">all free ✓</span>';
+    // colleagues' busy overlays (one distinct color per person)
+    S.people.forEach(p => {
+      (S.schedules[p.email] || []).forEach(it => {
+        if (it.end <= dayStart || it.start >= dayEnd) return;
+        const a = Math.max(top(it.start), 0), b = Math.min(top(it.end), H);
+        if (b - a < 4) return;
+        const el = document.createElement("div"); el.className = "evt ovl";
+        el.style.top = a + "px"; el.style.height = Math.max(b - a - 1, 8) + "px";
+        el.style.background = p.color;
+        el.textContent = (p.name || p.email.split("@")[0]).split(" ")[0];
         col.appendChild(el);
       });
+    });
+
+    // mutual-free bands: you + every selected teammate free, bounded by their working hours
+    if (S.people.length){
+      let bandS = new Date(d.getFullYear(), d.getMonth(), d.getDate(), S.workStart).getTime();
+      let bandE = new Date(d.getFullYear(), d.getMonth(), d.getDate(), S.workEnd).getTime();
+      let dayOK = true;
+      const DOW = ["sunday","monday","tuesday","wednesday","thursday","friday","saturday"];
+      S.people.forEach(p => {
+        const wh = (S.schedules[p.email] || {}).wh;
+        if (!wh) return;
+        if (wh.daysOfWeek && wh.daysOfWeek.length && wh.daysOfWeek.map(x => String(x).toLowerCase()).indexOf(DOW[d.getDay()]) === -1){ dayOK = false; return; }
+        const ps = whInstant(wh.startTime, wh.timeZone, d), pe = whInstant(wh.endTime, wh.timeZone, d);
+        if (ps != null) bandS = Math.max(bandS, ps);
+        if (pe != null) bandE = Math.min(bandE, pe);
+      });
+      if (keyOf(d) === keyOf(now)) bandS = Math.max(bandS, now.getTime());
+      if (dayOK && bandE - bandS >= 15 * 60000){
+        const busyAll = [];
+        S.events.forEach(ev => { if (ev.allDay && !ev.oof) return; const bs = ev.start.getTime(), be = ev.end.getTime(); if (be > bandS && bs < bandE) busyAll.push([bs, be]); });
+        S.people.forEach(p => (S.schedules[p.email] || []).forEach(it => { const bs = it.start.getTime(), be = it.end.getTime(); if (be > bandS && bs < bandE) busyAll.push([bs, be]); }));
+        busyAll.sort((x, y) => x[0] - y[0]);
+        let curB = bandS; const bands = [];
+        busyAll.forEach(sg => { if (sg[0] > curB && sg[0] - curB >= 15 * 60000) bands.push([curB, Math.min(sg[0], bandE)]); if (sg[1] > curB) curB = sg[1]; });
+        if (bandE - curB >= 15 * 60000) bands.push([curB, bandE]);
+        bands.forEach(bd => {
+          const a2 = Math.max(top(new Date(bd[0])), 0), b2 = Math.min(top(new Date(bd[1])), H);
+          if (b2 - a2 < 6) return;
+          const el = document.createElement("div"); el.className = "allfree";
+          el.style.top = a2 + "px"; el.style.height = (b2 - a2) + "px";
+          if (b2 - a2 > 24) el.innerHTML = '<span class="af">all free ✓</span>';
+          col.appendChild(el);
+        });
+      }
     }
 
     // painted selections
