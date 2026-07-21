@@ -346,7 +346,7 @@
         + "<p><b>Onboarding (Partner Center related) — meeting (30 min)</b></p>"
         + "<ul><li>Granting WeTransact access to your Partner Center (click <a href='https://docs.wetransact.io/step-6-grant-wetransact-access-to-partner-center'>here</a> for a how-to guide)</li><li>Completing your Tax and Payout profile (see the onboarding checklist for the finance doc)</li></ul>"
         + "<p><b>Onboarding (WeTransact Portal related) — meeting (30 min)</b></p>"
-        + "<ul><li>Navigation of the WeTransact Publisher Portal</li><li>Build listing and publish</li></ul>"
+        + "<ul><li>Navigation of the WeTransact Publisher Portal</li><li>Build listing and publish (see the Marketing doc in onboarding checklist for the required info)</li></ul>"
         + "<p><b>Post onboarding</b></p>"
         + "<p>Go-to-Market strategy meetings (once your listing has gone live).</p>"
         + "<p>Moving forward, I suggest we book two 30-minute meetings this week to get these tasks completed. It'll be important to have the information ready, as mentioned in the forms, before each meeting so we can respect the one-week onboarding timeline we promise.</p>"
