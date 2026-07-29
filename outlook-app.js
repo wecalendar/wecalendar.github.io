@@ -344,7 +344,7 @@
         + "<p><b>Start here: Self-onboarding 👉 <a href='https://setup.wetransact.io/'>setup.wetransact.io</a></b></p>"
         + "<p>The fastest way to get going is our self-onboarding flow. It walks you through the setup steps at your own pace — complete as much as you can, and anything left pending we'll finish together on our calls. The more you complete upfront, the faster your listing goes live.</p>"
         + "<p>For a full overview of what to expect, see the onboarding checklist 👉</p>"
-        + "<p>Onboarding checklist 👉: <a href='https://bestpractices.wetransact.io/onboarding'>bestpractices.wetransact.io/onboarding</a></p>"
+        + "<p><b>Onboarding checklist 👉:</b> <a href='https://bestpractices.wetransact.io/onboarding'>bestpractices.wetransact.io/onboarding</a></p>"
         + "<p><b>Onboarding (Partner Center related) — meeting (30 min)</b></p>"
         + "<ul><li>Granting WeTransact access to your Partner Center (click <a href='https://docs.wetransact.io/step-6-grant-wetransact-access-to-partner-center'>here</a> for a how-to guide)</li><li>Completing your Tax and Payout profile (see the onboarding checklist for the finance doc)</li></ul>"
         + "<p><b>Onboarding (WeTransact Portal related) — meeting (30 min)</b></p>"
