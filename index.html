@@ -1676,6 +1676,7 @@ function renderBody(){
   showBtn.innerHTML = '<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M15 6l-6 6 6 6"/></svg>';
   document.body.appendChild(showBtn);
   function setPanelHidden(h){ document.body.classList.toggle("panelhide", h); try { localStorage.setItem("panelHidden", h ? "1" : "0"); } catch(e){} }
+  window.showSharePanel = () => setPanelHidden(false); // auto-open when a slot is painted while hidden
   hideBtn.onclick = () => setPanelHidden(true);
   showBtn.onclick = () => setPanelHidden(false);
   try { if (localStorage.getItem("panelHidden") === "1") setPanelHidden(true); } catch(e){}
@@ -1861,6 +1862,7 @@ function attachPaint(col, dayStart){
     S.sel.push({ start, end });
     S.sel.sort((a,b) => a.start - b.start);
     saveSel();
+    if (document.body.classList.contains("panelhide") && window.showSharePanel) window.showSharePanel(); // auto-open share panel so Copy slots is right there
     const c = findConflict(start, end);
     if (c) toast("⚠ Heads up — this overlaps " + c);
     renderAll();
