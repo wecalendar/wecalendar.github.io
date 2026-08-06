@@ -667,6 +667,15 @@ async function fetchCalendars(){
   const obj = await gget("/me/calendars?$select=id,name,hexColor,isDefaultCalendar&$top=50");
   return (obj.value || []).map(c => ({ id: c.id, name: c.name, isDefault: !!c.isDefaultCalendar }));
 }
+function foreignOOO(ev){
+  // Someone ELSE's out-of-office invite that landed on my calendar (e.g. a teammate
+  // sending "I'm OOO" to the team). It's informational — it must NOT block my
+  // availability or show ME as out of office. My own OOO (organizer = me) still blocks.
+  if (ev.showAs !== "oof") return false;
+  if (ev.isOrganizer === false) return true;
+  const org = ev.organizer && ev.organizer.emailAddress && ev.organizer.emailAddress.address;
+  return !!(org && ME.email && org.toLowerCase() !== ME.email.toLowerCase());
+}
 async function fetchEvents(weekStart, weekEnd, calIds){
   const ids = (calIds && calIds.length) ? calIds : [null];
   const all = [];
@@ -675,14 +684,14 @@ async function fetchEvents(weekStart, weekEnd, calIds){
     const tk = await token();
     let next = "https://graph.microsoft.com/v1.0" + base + "?" + new URLSearchParams({
       startDateTime: weekStart.toISOString(), endDateTime: weekEnd.toISOString(),
-      $select: "subject,start,end,showAs,isAllDay,isOnlineMeeting,onlineMeeting,webLink,responseStatus,body,attendees,organizer", $orderby: "start/dateTime", $top: "200",
+      $select: "subject,start,end,showAs,isAllDay,isOnlineMeeting,onlineMeeting,webLink,responseStatus,body,attendees,organizer,isOrganizer", $orderby: "start/dateTime", $top: "200",
     });
     let guard = 0;
     while (next && guard++ < 25){
       const r = await fetch(next, { headers: { Authorization: "Bearer " + tk, Prefer: 'outlook.timezone="UTC"' } });
       if (!r.ok) throw new Error("Graph " + r.status);
       const obj = await r.json();
-      (obj.value || []).filter(ev => ev.start && ev.start.dateTime && ev.end && ev.end.dateTime && ev.showAs !== "free" && ev.showAs !== "workingElsewhere" && !(ev.responseStatus && ev.responseStatus.response === "declined") && (!ev.isAllDay || ev.showAs === "oof"))
+      (obj.value || []).filter(ev => ev.start && ev.start.dateTime && ev.end && ev.end.dateTime && ev.showAs !== "free" && ev.showAs !== "workingElsewhere" && !(ev.responseStatus && ev.responseStatus.response === "declined") && (!ev.isAllDay || ev.showAs === "oof") && !foreignOOO(ev))
         .forEach(ev => all.push({ id: ev.id, subject: ev.subject || "(busy)", start: new Date(ev.start.dateTime + "Z"), end: new Date(ev.end.dateTime + "Z"), allDay: !!ev.isAllDay, oof: ev.showAs === "oof", join: (ev.onlineMeeting && ev.onlineMeeting.joinUrl) || null, web: ev.webLink || null, cancelId: (ev.body && ev.body.content && (/[?&]cancel=([0-9a-fA-F-]{36})/.exec(ev.body.content) || [])[1]) || null, org: (ev.organizer && ev.organizer.emailAddress && ev.organizer.emailAddress.name) || null, orgEmail: (ev.organizer && ev.organizer.emailAddress && ev.organizer.emailAddress.address) || null, att: (ev.attendees || []).map(function(a){ return { name: (a.emailAddress && (a.emailAddress.name || a.emailAddress.address)) || "", email: (a.emailAddress && a.emailAddress.address) || "", resp: (a.status && a.status.response) || "none" }; }) }));
       next = obj["@odata.nextLink"] || null;
     }
@@ -699,10 +708,13 @@ async function fetchPTO(weekStart, weekEnd, calIds){
     const base = id ? "/me/calendars/" + encodeURIComponent(id) + "/calendarView" : "/me/calendarView";
     const obj = await gget(base + "?" + new URLSearchParams({
       startDateTime: weekStart.toISOString(), endDateTime: weekEnd.toISOString(),
-      $select: "subject,start,end,isAllDay", $orderby: "start/dateTime", $top: "200",
+      $select: "subject,start,end,isAllDay,showAs,organizer,isOrganizer", $orderby: "start/dateTime", $top: "200",
     }));
-    (obj.value || []).filter(ev => ev.isAllDay && DET.test(ev.subject || "")).forEach(ev => {
-      const name = ((ev.subject || "").replace(STRIP, "").trim()) || (ev.subject || "").trim();
+    (obj.value || []).filter(ev => ev.isAllDay && (DET.test(ev.subject || "") || ev.showAs === "oof")).forEach(ev => {
+      const org = ev.organizer && ev.organizer.emailAddress;
+      const orgEm = ((org && org.address) || "").toLowerCase();
+      const foreign = ev.isOrganizer === false || !!(orgEm && ME.email && orgEm !== ME.email.toLowerCase());
+      const name = (foreign && org.name) ? org.name : (((ev.subject || "").replace(STRIP, "").trim()) || (ev.subject || "").trim());
       const sd = (ev.start.dateTime || "").slice(0, 10), ed = (ev.end.dateTime || "").slice(0, 10);
       const dates = []; let d = new Date(sd + "T00:00:00"); const endD = new Date(ed + "T00:00:00"); let g = 0;
       while (d < endD && g++ < 60){ dates.push(d.getFullYear() + "-" + pad(d.getMonth()+1) + "-" + pad(d.getDate())); d.setDate(d.getDate()+1); }

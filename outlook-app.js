@@ -247,12 +247,15 @@
     var PAD = 48 * 3600000;
     var ws = new Date(new Date(days[0].getFullYear(), days[0].getMonth(), days[0].getDate()).getTime() - PAD);
     var last = days[days.length - 1], we = new Date(new Date(last.getFullYear(), last.getMonth(), last.getDate() + 1).getTime() + PAD);
-    var url = "https://graph.microsoft.com/v1.0/me/calendarView?" + new URLSearchParams({ startDateTime: ws.toISOString(), endDateTime: we.toISOString(), "$select": "start,end,showAs,isAllDay,responseStatus,subject,attendees,organizer", "$top": "200" });
+    var url = "https://graph.microsoft.com/v1.0/me/calendarView?" + new URLSearchParams({ startDateTime: ws.toISOString(), endDateTime: we.toISOString(), "$select": "start,end,showAs,isAllDay,responseStatus,subject,attendees,organizer,isOrganizer", "$top": "200" });
     graphAll(url, []).then(function(items){
         var busy = [], offDays = {}, seenB = {};
         items.forEach(function(ev){
           if (!ev.start || !ev.start.dateTime || !ev.end || !ev.end.dateTime || ev.showAs === "free" || ev.showAs === "workingElsewhere") return;
           if (ev.responseStatus && ev.responseStatus.response === "declined") return;
+          // Someone ELSE's OOO invite on my calendar (teammate sent "I'm OOO" to the team)
+          // is informational — it must not block my day or show me as out of office.
+          if (ev.showAs === "oof"){ var oorg = (ev.organizer && ev.organizer.emailAddress && ev.organizer.emailAddress.address || "").toLowerCase(); if (ev.isOrganizer === false || (oorg && EMAIL && oorg !== EMAIL.toLowerCase())) return; }
           var s = new Date(ev.start.dateTime + "Z"), e = new Date(ev.end.dateTime + "Z");
           if (isNaN(s.getTime()) || isNaN(e.getTime())) return;
           if (ev.isAllDay){ for (var t = s.getTime(); t < e.getTime(); t += 86400000){ var od = new Date(t); offDays[od.getUTCFullYear() + "-" + od.getUTCMonth() + "-" + od.getUTCDate()] = true; } }
