@@ -869,7 +869,7 @@ const S = {
   week: 0,
   dayView: null,
   pto: [],
-  tz: localStorage.getItem("tz2") || LOCAL_TZ,
+  tz: LOCAL_TZ,   // main timezone ALWAYS starts at the browser's local zone; changing it lasts only for the current visit
   tzs: (() => { try { const a = JSON.parse(localStorage.getItem("tzRulers") || "[]"); const old = localStorage.getItem("tzSecond"); if (old && !a.includes(old)) a.push(old); return a.slice(0,3); } catch(e){ return []; } })(),   // up to 3 extra rulers
   workStart: +(localStorage.getItem("wh1") || 9),
   workEnd:   +(localStorage.getItem("wh2") || 18),
@@ -972,18 +972,35 @@ function warmLink(){
   try { fetch(base + "/publish-link", { method: "OPTIONS" }); } catch(e){}
   try { token(); } catch(e){}
 }
+const SEL_TTL = 5 * 60 * 1000;   // painted-but-not-shared slots expire after 5 min without touching the selection
+let SEL_TS = Date.now();
 function saveSel(){
-  try { localStorage.setItem("paintedSlots", JSON.stringify(S.sel.map(x => [x.start.toISOString(), x.end.toISOString()]))); } catch(e){}
+  SEL_TS = Date.now();
+  try {
+    localStorage.setItem("paintedSlots", JSON.stringify(S.sel.map(x => [x.start.toISOString(), x.end.toISOString()])));
+    localStorage.setItem("paintedTs", String(SEL_TS));
+  } catch(e){}
   if (S.sel && S.sel.length) warmLink();
 }
 function loadSel(){
   try {
+    const ts = +(localStorage.getItem("paintedTs") || 0);
+    if (ts && Date.now() - ts > SEL_TTL){ S.sel = []; localStorage.removeItem("paintedSlots"); return; }   // stale from a previous visit
     const raw = JSON.parse(localStorage.getItem("paintedSlots") || "[]");
     const now = new Date();
     S.sel = raw.map(([a,b]) => ({ start: new Date(a), end: new Date(b) })).filter(x => x.end > now);
+    if (ts) SEL_TS = ts;   // keep counting idle time from the last real selection change
   } catch(e){ S.sel = []; }
 }
 loadSel();
+try { localStorage.removeItem("tz2"); } catch(e){}   // legacy persisted-timezone key — main TZ is always local now
+// live idle sweep: clear unshared painted slots after 5 quiet minutes
+setInterval(() => {
+  if (S.sel.length && Date.now() - SEL_TS > SEL_TTL){
+    S.sel = []; saveSel(); renderAll();
+    toast("🧹 Cleared unshared slots — idle for 5 min");
+  }
+}, 20000);
 
 // ---- conflict detection ----
 function overlaps(aS, aE, bS, bE){ return bS < aE && aS < bE; }
@@ -1074,7 +1091,7 @@ function renderTzList(q){
     d.onclick = () => {
       if (tzTarget === "add"){ if (z.name !== S.tz && !S.tzs.includes(z.name) && S.tzs.length < 3) S.tzs.push(z.name); saveTzs(); }
       else if (typeof tzTarget === "number"){ S.tzs[tzTarget] = z.name; saveTzs(); }
-      else { S.tz = z.name; localStorage.setItem("tz2", z.name); }
+      else { S.tz = z.name; }   // session-only: next load snaps back to LOCAL_TZ
       tzPop.style.display = "none"; renderAll();
     };
     tzList.appendChild(d);
@@ -2009,7 +2026,7 @@ async function createBookingLink(){
     status("");
     const snip = buildHTML(j.url, S.sel);
     if (DLG && window.Office && Office.context && Office.context.ui){
-      try { Office.context.ui.messageParent(JSON.stringify({ url: j.url, html: snip })); document.getElementById("preview").innerHTML = '<div style="font-size:13px;color:#0B7A4B;padding:6px 0">✓ Added to your email — you can close this window.</div>'; return; } catch(e){}
+      try { Office.context.ui.messageParent(JSON.stringify({ url: j.url, html: snip })); document.getElementById("preview").innerHTML = '<div style="font-size:13px;color:#0B7A4B;padding:6px 0">✓ Added to your email — you can close this window.</div>'; S.sel = []; saveSel(); return; } catch(e){}
     }
     try {
       const tmp = document.createElement("div"); tmp.innerHTML = snip;
@@ -2019,6 +2036,7 @@ async function createBookingLink(){
     document.getElementById("preview").innerHTML = snip;
     toast("📋 Slots copied — paste to share");
     if (S.people.length){ S.people = []; S.schedules = {}; renderChips(); renderBody(); toast("📋 Slots copied — teammates cleared"); }
+    S.sel = []; saveSel(); renderAll();   // link is made — start the next one clean
   } catch(e){ status(""); toast("Error creating link"); }
 }
 // one-click calendar link: auto-builds slots from your free time over the next 2 weeks,
