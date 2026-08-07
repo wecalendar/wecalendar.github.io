@@ -1,4 +1,4 @@
-<!doctype html><!-- build 2026-08-07 -->
+<!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="UTF-8">
@@ -701,7 +701,7 @@ async function fetchEvents(weekStart, weekEnd, calIds){
 async function fetchPTO(weekStart, weekEnd, calIds){
   const ids = (calIds && calIds.length) ? calIds : [null];
   const out = [];
-  const DET = /(\bpto\b|oo+o\b|out of office|annual leave|\bvacation\b|on leave|\bleave\b|day off)/i;
+  const DET = /(\bpto\b|oo+o\b|out of office|annual leave|\bvacation\b|on leave|\bleave\b|day off|\bholiday\b)/i;
   const STRIP = /\s*[-–—:]?\s*(pto|oo+o|out of office|annual leave|vacation|on leave|leave|holiday|day off)\b.*/i;
   const pad = n => String(n).padStart(2, "0");
   await Promise.all(ids.map(async id => {
@@ -714,7 +714,13 @@ async function fetchPTO(weekStart, weekEnd, calIds){
       const org = ev.organizer && ev.organizer.emailAddress;
       const orgEm = ((org && org.address) || "").toLowerCase();
       const foreign = ev.isOrganizer === false || !!(orgEm && ME.email && orgEm !== ME.email.toLowerCase());
-      const name = (foreign && org.name) ? org.name : (((ev.subject || "").replace(STRIP, "").trim()) || (ev.subject || "").trim());
+      // Prefer the person named in the SUBJECT ("Ignacio Javier Albaladejo PTO") — HR/shared
+      // mailboxes organize other people's PTO invites, so the organizer ("HR Team") is often
+      // not the person who's off. Fall back to the organizer only when the subject carries
+      // no usable name (e.g. Barbara's own "OOO" invite).
+      const stripped = ((ev.subject || "").replace(STRIP, "").trim());
+      const subjName = (stripped && /\s/.test(stripped) && !/^i(['’]m|\s+am)\b/i.test(stripped)) ? stripped : "";
+      const name = subjName || ((foreign && org && org.name) ? org.name : (stripped || (ev.subject || "").trim()));
       const sd = (ev.start.dateTime || "").slice(0, 10), ed = (ev.end.dateTime || "").slice(0, 10);
       const dates = []; let d = new Date(sd + "T00:00:00"); const endD = new Date(ed + "T00:00:00"); let g = 0;
       while (d < endD && g++ < 60){ dates.push(d.getFullYear() + "-" + pad(d.getMonth()+1) + "-" + pad(d.getDate())); d.setDate(d.getDate()+1); }
