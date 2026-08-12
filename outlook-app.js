@@ -127,6 +127,15 @@
     +       '<div class="tplopt" data-tpl="14"><span class="ic">&#9200;</span><div><div class="tt">GTM sessions follow-up</div><div class="td">Unused sessions in their plan</div></div></div>'
     +     '</div>'
     +     '<div class="tplhint hide" id="tplHint">Pick one — it fills the subject &amp; body. Edit the highlighted blanks before sending.</div>'
+    +     '<button class="btn sec" id="pbBtn" type="button" style="margin-top:8px">&#128216; Attach onboarding playbook</button>'
+    +     '<div id="pbForm" class="hide">'
+    +       '<label>Client company name</label>'
+    +       '<input type="text" id="pbCompany" autocomplete="off" placeholder="e.g. SmartFense">'
+    +       '<label>Booking link (optional)</label>'
+    +       '<input type="text" id="pbLink" autocomplete="off" placeholder="https://…">'
+    +       '<button class="btn" id="pbGo" type="button" style="margin-top:10px">Personalize &amp; attach PDF</button>'
+    +       '<div class="msg" id="pbMsg"></div>'
+    +     '</div>'
     +   '</div>'
     +   '<div class="or hide" id="tplOr" style="margin:8px 0 2px">or share your free times</div>'
     +   '<label>Slot length</label>'
@@ -574,6 +583,62 @@
     function setOpen(o){ wrap.classList.toggle("open", o); menu.classList.toggle("hide", !o); hint.classList.toggle("hide", !o); }
     btn.onclick = function(){ setOpen(menu.classList.contains("hide")); };
     [].forEach.call(menu.querySelectorAll(".tplopt"), function(el){ el.onclick = function(){ var t = CSMTPL[+el.dataset.tpl]; if (!t) return; var msg = $("msg"); setSubject(tplPlain(t.subject)); insertHtml(tplHL(t.body), msg, "✓ Template added — fill in the highlighted blanks before sending."); setOpen(false); }; });
+  })();
+
+  /* ---- Personalized onboarding playbook attach (CSM-gated via #tpl) ---- */
+  var PB_TPL_URL = "https://wecalendar.github.io/playbook-template.pdf";
+  var PB_FONT_BOLD = "https://wecalendar.github.io/GreycliffCF-Bold.ttf";
+  var PB_FONT_MED = "https://wecalendar.github.io/GreycliffCF-Medium.ttf";
+  var PB_FALLBACK_URL = "https://wecalendar.github.io/WeTransact-Onboarding-Playbook.pdf";
+  var _pbLibs = null, _pbAssets = null;
+  function pbScript(src){ return new Promise(function(res, rej){ var sc = document.createElement("script"); sc.src = src; sc.onload = res; sc.onerror = function(){ rej(new Error("couldn't load PDF library")); }; document.head.appendChild(sc); }); }
+  function pbLoadLibs(){ if (!_pbLibs){ _pbLibs = Promise.resolve().then(function(){ if (!window.PDFLib) return pbScript("https://cdnjs.cloudflare.com/ajax/libs/pdf-lib/1.17.1/pdf-lib.min.js"); }).then(function(){ if (!window.fontkit) return pbScript("https://cdn.jsdelivr.net/npm/@pdf-lib/fontkit@1.1.1/dist/fontkit.umd.min.js"); }); } return _pbLibs; }
+  function pbFetch(url){ return fetch(url).then(function(r){ if (!r.ok) throw new Error("download failed (" + r.status + ")"); return r.arrayBuffer(); }); }
+  function pbLoadAssets(){ if (!_pbAssets){ _pbAssets = Promise.all([pbFetch(PB_TPL_URL), pbFetch(PB_FONT_BOLD), pbFetch(PB_FONT_MED)]); } return _pbAssets; }
+  function pbBuild(company, link){
+    return pbLoadLibs().then(pbLoadAssets).then(function(assets){
+      var PL = window.PDFLib;
+      return PL.PDFDocument.load(assets[0]).then(function(doc){
+        doc.registerFontkit(window.fontkit);
+        return Promise.all([doc.embedFont(assets[1], { subset: true }), doc.embedFont(assets[2], { subset: true })]).then(function(fonts){
+          var bold = fonts[0], med = fonts[1], p1 = doc.getPage(0);
+          var purple = PL.rgb(0.369, 0.263, 0.784), muted = PL.rgb(0.396, 0.396, 0.471);
+          var t = "Prepared for " + company, size = 13;
+          while (bold.widthOfTextAtSize(t, size) > 380 && size > 8) size -= 0.5;
+          p1.drawText(t, { x: 40, y: 692, size: size, font: bold, color: purple });
+          var me = NAME || niceName(EMAIL) || "";
+          var foot = me ? (" · Your CSM: " + me) : "";
+          if (link) foot += " · Book time: " + link;
+          if (foot){ var fsz = 8; while (med.widthOfTextAtSize(foot, fsz) > 392 && fsz > 5.5) fsz -= 0.25; p1.drawText(foot, { x: 87, y: 23.5, size: fsz, font: med, color: muted }); }
+          return doc.saveAsBase64();
+        });
+      });
+    });
+  }
+  function pbSafeName(c){ var n = String(c || "").replace(/[^A-Za-z0-9 _-]/g, "").trim().replace(/\s+/g, "-"); return n ? ("WeTransact-Onboarding-Playbook-" + n + ".pdf") : "WeTransact-Onboarding-Playbook.pdf"; }
+  function pbAttachFallback(it, msg, note){
+    it.addFileAttachmentAsync(PB_FALLBACK_URL, "WeTransact-Onboarding-Playbook.pdf", function(r){
+      if (r.status === Office.AsyncResultStatus.Succeeded){ msg.className = "msg ok"; msg.textContent = "✓ Standard playbook attached" + (note ? (" — " + note) : "") + "."; }
+      else { msg.className = "msg err"; msg.textContent = "Couldn't attach: " + ((r.error && r.error.message) || "try again"); }
+    });
+  }
+  (function(){
+    var btn = $("pbBtn"), form = $("pbForm"); if (!btn) return;
+    btn.onclick = function(){ form.classList.toggle("hide"); if (!form.classList.contains("hide")){ try { $("pbCompany").focus(); } catch(e){} pbLoadLibs(); pbLoadAssets(); } };
+    $("pbGo").onclick = function(){
+      var msg = $("pbMsg"), company = $("pbCompany").value.trim(), link = $("pbLink").value.trim();
+      var it = Office.context.mailbox && Office.context.mailbox.item;
+      if (!company){ msg.className = "msg err"; msg.textContent = "Type the client company name first."; return; }
+      if (!ready || !it || !it.addFileAttachmentAsync){ msg.className = "msg err"; msg.textContent = "Open this while composing an email."; return; }
+      msg.className = "msg"; msg.textContent = "Personalizing playbook…";
+      if (typeof it.addFileAttachmentFromBase64Async !== "function"){ pbAttachFallback(it, msg, "this Outlook version can't personalize"); return; }
+      pbBuild(company, link).then(function(b64){
+        it.addFileAttachmentFromBase64Async(b64, pbSafeName(company), function(r){
+          if (r.status === Office.AsyncResultStatus.Succeeded){ msg.className = "msg ok"; msg.textContent = "✓ Playbook for " + company + " attached."; }
+          else { msg.className = "msg err"; msg.textContent = "Couldn't attach: " + ((r.error && r.error.message) || "try again"); }
+        });
+      }).catch(function(e){ pbAttachFallback(it, msg, "personalization failed: " + ((e && e.message) || "error")); });
+    };
   })();
 
   (function restoreAuth(){ var a = loadAuth(); if (a){ TOKEN = a.token; EMAIL = a.email || ""; loadSettings(); loadProfile(); $("signedout").classList.add("hide"); $("picker").classList.remove("hide"); drawMiniCal(); } try { applyCSMGate(); } catch(e){} })();
