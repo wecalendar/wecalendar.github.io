@@ -131,6 +131,8 @@
     +     '<div id="pbForm" class="hide">'
     +       '<label>Client company name</label>'
     +       '<input type="text" id="pbCompany" autocomplete="off" placeholder="e.g. SmartFense">'
+    +       '<label>Client portal link (optional — also attaches the Global Admin PDF)</label>'
+    +       '<input type="text" id="pbPortal" autocomplete="off" placeholder="https://client.wetransact.io/">'
     +       '<label>Booking link (optional)</label>'
     +       '<input type="text" id="pbLink" autocomplete="off" placeholder="https://…">'
     +       '<button class="btn" id="pbGo" type="button" style="margin-top:10px">Personalize &amp; attach PDF</button>'
@@ -587,14 +589,16 @@
 
   /* ---- Personalized onboarding playbook attach (CSM-gated via #tpl) ---- */
   var PB_TPL_URL = "https://wecalendar.github.io/playbook-template.pdf";
+  var PB_GA_TPL_URL = "https://wecalendar.github.io/ga-template.pdf";
   var PB_FONT_BOLD = "https://wecalendar.github.io/GreycliffCF-Bold.ttf";
   var PB_FONT_MED = "https://wecalendar.github.io/GreycliffCF-Medium.ttf";
   var PB_FALLBACK_URL = "https://wecalendar.github.io/WeTransact-Onboarding-Playbook.pdf";
+  var PB_GA_FALLBACK_URL = "https://wecalendar.github.io/Forward-to-Global-Admin.pdf";
   var _pbLibs = null, _pbAssets = null;
   function pbScript(src){ return new Promise(function(res, rej){ var sc = document.createElement("script"); sc.src = src; sc.onload = res; sc.onerror = function(){ rej(new Error("couldn't load PDF library")); }; document.head.appendChild(sc); }); }
   function pbLoadLibs(){ if (!_pbLibs){ _pbLibs = Promise.resolve().then(function(){ if (!window.PDFLib) return pbScript("https://cdnjs.cloudflare.com/ajax/libs/pdf-lib/1.17.1/pdf-lib.min.js"); }).then(function(){ if (!window.fontkit) return pbScript("https://cdn.jsdelivr.net/npm/@pdf-lib/fontkit@1.1.1/dist/fontkit.umd.min.js"); }); } return _pbLibs; }
   function pbFetch(url){ return fetch(url).then(function(r){ if (!r.ok) throw new Error("download failed (" + r.status + ")"); return r.arrayBuffer(); }); }
-  function pbLoadAssets(){ if (!_pbAssets){ _pbAssets = Promise.all([pbFetch(PB_TPL_URL), pbFetch(PB_FONT_BOLD), pbFetch(PB_FONT_MED)]); } return _pbAssets; }
+  function pbLoadAssets(){ if (!_pbAssets){ _pbAssets = Promise.all([pbFetch(PB_TPL_URL), pbFetch(PB_FONT_BOLD), pbFetch(PB_FONT_MED), pbFetch(PB_GA_TPL_URL)]); } return _pbAssets; }
   function pbBuild(company, link){
     return pbLoadLibs().then(pbLoadAssets).then(function(assets){
       var PL = window.PDFLib;
@@ -615,29 +619,74 @@
       });
     });
   }
-  function pbSafeName(c){ var n = String(c || "").replace(/[^A-Za-z0-9 _-]/g, "").trim().replace(/\s+/g, "-"); return n ? ("WeTransact-Onboarding-Playbook-" + n + ".pdf") : "WeTransact-Onboarding-Playbook.pdf"; }
-  function pbAttachFallback(it, msg, note){
-    it.addFileAttachmentAsync(PB_FALLBACK_URL, "WeTransact-Onboarding-Playbook.pdf", function(r){
-      if (r.status === Office.AsyncResultStatus.Succeeded){ msg.className = "msg ok"; msg.textContent = "✓ Standard playbook attached" + (note ? (" — " + note) : "") + "."; }
-      else { msg.className = "msg err"; msg.textContent = "Couldn't attach: " + ((r.error && r.error.message) || "try again"); }
+  function pbBuildGA(portal){
+    return pbLoadLibs().then(pbLoadAssets).then(function(assets){
+      var PL = window.PDFLib;
+      return PL.PDFDocument.load(assets[3]).then(function(doc){
+        doc.registerFontkit(window.fontkit);
+        return doc.embedFont(assets[2], { subset: true }).then(function(med){
+          var p1 = doc.getPage(0);
+          var size = 10.5;
+          while (med.widthOfTextAtSize(portal, size) > 380 && size > 7) size -= 0.25;
+          p1.drawText(portal, { x: 142, y: 387, size: size, font: med, color: PL.rgb(0.369, 0.263, 0.784) });
+          return doc.saveAsBase64();
+        });
+      });
+    });
+  }
+  function pbToken(c){ return String(c || "").replace(/[^A-Za-z0-9 _-]/g, "").trim().replace(/\s+/g, "-"); }
+  function pbAttach64(it, b64, name){
+    return new Promise(function(res, rej){
+      it.addFileAttachmentFromBase64Async(b64, name, function(r){
+        if (r.status === Office.AsyncResultStatus.Succeeded) res();
+        else rej(new Error((r.error && r.error.message) || "couldn't attach"));
+      });
+    });
+  }
+  function pbAttachUrl(it, url, name){
+    return new Promise(function(res, rej){
+      it.addFileAttachmentAsync(url, name, function(r){
+        if (r.status === Office.AsyncResultStatus.Succeeded) res();
+        else rej(new Error((r.error && r.error.message) || "couldn't attach"));
+      });
     });
   }
   (function(){
     var btn = $("pbBtn"), form = $("pbForm"); if (!btn) return;
     btn.onclick = function(){ form.classList.toggle("hide"); if (!form.classList.contains("hide")){ try { $("pbCompany").focus(); } catch(e){} pbLoadLibs(); pbLoadAssets(); } };
     $("pbGo").onclick = function(){
-      var msg = $("pbMsg"), company = $("pbCompany").value.trim(), link = $("pbLink").value.trim();
+      var msg = $("pbMsg"), company = $("pbCompany").value.trim(), portal = $("pbPortal").value.trim(), link = $("pbLink").value.trim();
       var it = Office.context.mailbox && Office.context.mailbox.item;
       if (!company){ msg.className = "msg err"; msg.textContent = "Type the client company name first."; return; }
       if (!ready || !it || !it.addFileAttachmentAsync){ msg.className = "msg err"; msg.textContent = "Open this while composing an email."; return; }
+      var tok = pbToken(company);
       msg.className = "msg"; msg.textContent = "Personalizing playbook…";
-      if (typeof it.addFileAttachmentFromBase64Async !== "function"){ pbAttachFallback(it, msg, "this Outlook version can't personalize"); return; }
-      pbBuild(company, link).then(function(b64){
-        it.addFileAttachmentFromBase64Async(b64, pbSafeName(company), function(r){
-          if (r.status === Office.AsyncResultStatus.Succeeded){ msg.className = "msg ok"; msg.textContent = "✓ Playbook for " + company + " attached."; }
-          else { msg.className = "msg err"; msg.textContent = "Couldn't attach: " + ((r.error && r.error.message) || "try again"); }
+      if (typeof it.addFileAttachmentFromBase64Async !== "function"){
+        pbAttachUrl(it, PB_FALLBACK_URL, "WeTransact-Onboarding-Playbook.pdf")
+          .then(function(){ if (portal) return pbAttachUrl(it, PB_GA_FALLBACK_URL, "WeTransact-Playbook-GlobalAdmin.pdf"); })
+          .then(function(){ msg.className = "msg ok"; msg.textContent = "✓ Standard playbook attached — this Outlook version can't personalize."; })
+          .catch(function(e){ msg.className = "msg err"; msg.textContent = "Couldn't attach: " + ((e && e.message) || "try again"); });
+        return;
+      }
+      pbBuild(company, link)
+        .then(function(b64){ return pbAttach64(it, b64, "WeTransact-Onboarding-Playbook" + (tok ? "-" + tok : "") + ".pdf"); })
+        .then(function(){
+          if (!portal){ msg.className = "msg ok"; msg.textContent = "✓ Playbook for " + company + " attached."; return; }
+          msg.textContent = "Adding the Global Admin PDF…";
+          return pbBuildGA(portal)
+            .then(function(b64ga){ return pbAttach64(it, b64ga, "WeTransact-Playbook-GlobalAdmin" + (tok ? "-" + tok : "") + ".pdf"); })
+            .then(function(){ msg.className = "msg ok"; msg.textContent = "✓ Playbook + Global Admin PDF for " + company + " attached."; })
+            .catch(function(e){
+              return pbAttachUrl(it, PB_GA_FALLBACK_URL, "WeTransact-Playbook-GlobalAdmin.pdf")
+                .then(function(){ msg.className = "msg ok"; msg.textContent = "✓ Playbook attached; standard Global Admin PDF added (personalization failed: " + ((e && e.message) || "error") + ")."; })
+                .catch(function(){ msg.className = "msg err"; msg.textContent = "Playbook attached, but the Global Admin PDF failed — attach it manually."; });
+            });
+        })
+        .catch(function(e){
+          pbAttachUrl(it, PB_FALLBACK_URL, "WeTransact-Onboarding-Playbook.pdf")
+            .then(function(){ msg.className = "msg ok"; msg.textContent = "✓ Standard playbook attached (personalization failed: " + ((e && e.message) || "error") + ")."; })
+            .catch(function(){ msg.className = "msg err"; msg.textContent = "Couldn't attach: " + ((e && e.message) || "try again"); });
         });
-      }).catch(function(e){ pbAttachFallback(it, msg, "personalization failed: " + ((e && e.message) || "error")); });
     };
   })();
 
