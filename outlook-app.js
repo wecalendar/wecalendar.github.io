@@ -1,6 +1,6 @@
 (function(){
   var WC = window.WECAL || {};
-  var ready = false, TOKEN = null, EMAIL = "", SLOTS = [], SLOTLEN = 30, WS = 9, WE = 18, BUF = 0, MINNOTICE = 0, SELDAY = null, LAST = null, BUSY = [], OFFV = {}, VIEWDAYS = [], WEEKMON = null, NAME = "";
+  var ready = false, TOKEN = null, EMAIL = "", SLOTS = [], SLOTLEN = 30, WS = 9, WE = 18, BUF = 0, MINNOTICE = 0, SELDAY = null, LAST = null, BUSY = [], OFFV = {}, VIEWDAYS = [], WEEKMON = null, NAME = "", DAYCAP = 0;
   var TZ = (function(){ try { return Intl.DateTimeFormat().resolvedOptions().timeZone; } catch(e){ return "UTC"; } })();
   var TZLIST = [["America/Los_Angeles","Los Angeles · PT"],["America/Denver","Denver · MT"],["America/Chicago","Chicago · CT"],["America/New_York","New York · ET"],["America/Sao_Paulo","São Paulo"],["Europe/London","London"],["Europe/Lisbon","Lisbon"],["Europe/Paris","Paris · CET"],["Europe/Berlin","Berlin"],["Europe/Madrid","Madrid"],["Africa/Johannesburg","Johannesburg"],["Asia/Dubai","Dubai"],["Asia/Kolkata","India"],["Asia/Singapore","Singapore"],["Asia/Tokyo","Tokyo"],["Australia/Sydney","Sydney"],["Pacific/Auckland","Auckland"],["UTC","UTC"]];
   var now0 = new Date(), MC = { y: now0.getFullYear(), m: now0.getMonth() };
@@ -140,6 +140,9 @@
     +     '</div>'
     +   '</div>'
     +   '<div class="or hide" id="tplOr" style="margin:8px 0 2px">or share your free times</div>'
+    +   '<button class="btn sec" id="mcBtn" type="button" style="margin-top:8px" title="Instantly create and copy a booking link from your free time over the next 2 weeks — no painting needed">&#128279; Copy my calendar link</button>'
+    +   '<div class="msg" id="mcMsg"></div>'
+    +   '<div class="or" style="margin:12px 0 2px">or pick specific times</div>'
     +   '<label>Slot length</label>'
     +   '<div class="seg" id="seg"><button data-l="15">15m</button><button data-l="30" class="on">30m</button><button data-l="60">60m</button></div>'
     +   '<label>Show times in</label>'
@@ -261,7 +264,7 @@
   function focusDate(){ if (SELDAY){ var p = SELDAY.split("-"); return new Date(+p[0], +p[1], +p[2]); } var q = {}; new Intl.DateTimeFormat("en-CA", { timeZone: TZ, year: "numeric", month: "2-digit", day: "2-digit" }).formatToParts(new Date()).forEach(function(x){ q[x.type] = x.value; }); return new Date(+q.year, +q.month - 1, +q.day); }
   function weekLabel(a, b){ var mo = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"]; var ma = mo[a.getMonth()], mb = mo[b.getMonth()]; return "Week of " + ma + " " + a.getDate() + " – " + (ma === mb ? b.getDate() : (mb + " " + b.getDate())); }
 
-  function loadSettings(){ if (!TOKEN) return; fetch(WC.FN_BASE + "/host-settings", { method: "POST", headers: { "Content-Type": "application/json", apikey: WC.SUPABASE_ANON_KEY, Authorization: "Bearer " + TOKEN } }).then(function(r){ return r.json(); }).then(function(s){ if (s && typeof s.workStart === "number"){ WS = s.workStart; WE = s.workEnd; BUF = s.buffer || 0; MINNOTICE = s.minNotice || 0; if (LAST && SLOTS.length) pick(LAST.scope, LAST.date); } }).catch(function(){}); }
+  function loadSettings(){ if (!TOKEN) return; fetch(WC.FN_BASE + "/host-settings", { method: "POST", headers: { "Content-Type": "application/json", apikey: WC.SUPABASE_ANON_KEY, Authorization: "Bearer " + TOKEN } }).then(function(r){ return r.json(); }).then(function(s){ if (s && typeof s.workStart === "number"){ WS = s.workStart; WE = s.workEnd; BUF = s.buffer || 0; MINNOTICE = s.minNotice || 0; DAYCAP = s.dayCap || 0; if (LAST && SLOTS.length) pick(LAST.scope, LAST.date); } }).catch(function(){}); }
   function niceName(email){ var lp = String(email || "").split("@")[0]; if (!lp) return ""; return lp.replace(/[._\-]+/g, " ").replace(/\d+/g, "").replace(/\s+/g, " ").trim().replace(/\b\w/g, function(c){ return c.toUpperCase(); }); }
   function loadProfile(){ if (!TOKEN) return; fetch("https://graph.microsoft.com/v1.0/me?$select=displayName", { headers: { Authorization: "Bearer " + TOKEN } }).then(function(r){ return r.json(); }).then(function(j){ if (j && j.displayName) NAME = j.displayName; }).catch(function(){}); }
   function graphAll(url, acc){ return fetch(url, { headers: { Authorization: "Bearer " + TOKEN, Prefer: 'outlook.timezone="UTC"' } }).then(function(r){ if (r.status === 401) throw { expired: true }; return r.json(); }).then(function(j){ acc = acc.concat(j.value || []); var nx = j["@odata.nextLink"]; if (nx && acc.length < 2000) return graphAll(nx, acc); return acc; }); }
@@ -687,6 +690,100 @@
             .then(function(){ msg.className = "msg ok"; msg.textContent = "✓ Standard playbook attached (personalization failed: " + ((e && e.message) || "error") + ")."; })
             .catch(function(){ msg.className = "msg err"; msg.textContent = "Couldn't attach: " + ((e && e.message) || "try again"); });
         });
+    };
+  })();
+
+  /* ---- One-click "Copy my calendar link" — mirrors the web app's quickCalendarLink ---- */
+  function mcCopy(text){
+    return Promise.resolve().then(function(){
+      if (navigator.clipboard && navigator.clipboard.writeText) return navigator.clipboard.writeText(text);
+      throw new Error("no clipboard api");
+    }).catch(function(){
+      try {
+        var ta = document.createElement("textarea");
+        ta.value = text; ta.style.position = "fixed"; ta.style.opacity = "0";
+        document.body.appendChild(ta); ta.focus(); ta.select();
+        var ok = document.execCommand("copy");
+        document.body.removeChild(ta);
+        if (!ok) throw new Error("copy blocked");
+      } catch(e){ throw e; }
+    });
+  }
+  function mcPublish(slots){
+    return fetch(WC.FN_BASE + "/publish-link", { method: "POST", headers: { "Content-Type": "application/json", apikey: WC.SUPABASE_ANON_KEY, Authorization: "Bearer " + TOKEN }, body: JSON.stringify({ title: "Meeting with " + (NAME || niceName(EMAIL) || "me"), tz: TZ, slots: slots.map(function(x){ return { start: x.start.toISOString(), end: x.end.toISOString() }; }), attendees: [], videoLink: "", settings: { workStart: WS, workEnd: WE, buffer: BUF, minNotice: MINNOTICE, dayCap: DAYCAP } }) })
+      .then(function(r){ return r.json().then(function(j){ return { status: r.status, j: j }; }); })
+      .then(function(o){ if (o.status === 412 || (o.j && o.j.error === "not_connected")) throw { notConnected: true }; if (!o.j || !o.j.url) throw new Error((o.j && o.j.detail) || "couldn't create link"); return o.j.url; });
+  }
+  function mcBuildSlots(){
+    var now = new Date();
+    var start = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+    var end = new Date(start.getTime() + 14 * 86400000);
+    var PAD = 48 * 3600000;
+    var url = "https://graph.microsoft.com/v1.0/me/calendarView?" + new URLSearchParams({ startDateTime: new Date(start.getTime() - PAD).toISOString(), endDateTime: new Date(end.getTime() + PAD).toISOString(), "$select": "start,end,showAs,isAllDay,responseStatus,subject,organizer,isOrganizer", "$top": "200" });
+    return graphAll(url, []).then(function(items){
+      var busy = [], offDays = {};
+      items.forEach(function(ev){
+        if (!ev.start || !ev.start.dateTime || !ev.end || !ev.end.dateTime || ev.showAs === "free" || ev.showAs === "workingElsewhere") return;
+        if (ev.responseStatus && ev.responseStatus.response === "declined") return;
+        if (ev.showAs === "oof"){ var oorg = (ev.organizer && ev.organizer.emailAddress && ev.organizer.emailAddress.address || "").toLowerCase(); if (ev.isOrganizer === false || (oorg && EMAIL && oorg !== EMAIL.toLowerCase())) return; }
+        var s2 = new Date(ev.start.dateTime + "Z"), e2 = new Date(ev.end.dateTime + "Z");
+        if (isNaN(s2.getTime()) || isNaN(e2.getTime())) return;
+        if (ev.isAllDay){ for (var t = s2.getTime(); t < e2.getTime(); t += 86400000){ var od = new Date(t); offDays[od.getUTCFullYear() + "-" + od.getUTCMonth() + "-" + od.getUTCDate()] = true; } }
+        else busy.push([s2.getTime() - BUF * 60000, e2.getTime() + BUF * 60000]);
+      });
+      busy.sort(function(a, b){ return a[0] - b[0]; });
+      var minLen = SLOTLEN * 60000, nowMs = Date.now(), nw = nowMs + MINNOTICE * 3600000, out = [];
+      for (var i = 0; i < 14; i++){
+        var d = new Date(start.getFullYear(), start.getMonth(), start.getDate() + i);
+        if (d.getDay() === 0 || d.getDay() === 6) continue;
+        if (offDays[d.getFullYear() + "-" + d.getMonth() + "-" + d.getDate()]) continue;
+        var ws2 = zInstant(d.getFullYear(), d.getMonth(), d.getDate(), WS), we2 = zInstant(d.getFullYear(), d.getMonth(), d.getDate(), WE);
+        if (we2 <= nowMs) continue;
+        var cur = Math.max(ws2, nw), wins = [];
+        busy.forEach(function(b){ if (b[1] > ws2 && b[0] < we2){ if (b[0] > cur && Math.min(b[0], we2) - cur >= minLen) wins.push([cur, Math.min(b[0], we2)]); if (b[1] > cur) cur = b[1]; } });
+        if (we2 - cur >= minLen) wins.push([cur, we2]);
+        var perDay = 0;
+        for (var w = 0; w < wins.length; w++){
+          for (var t2 = wins[w][0]; t2 + minLen <= wins[w][1]; t2 += minLen){
+            if (DAYCAP && perDay >= DAYCAP) break;
+            out.push({ start: new Date(t2), end: new Date(t2 + minLen) });
+            perDay++;
+          }
+        }
+      }
+      return out.slice(0, 400);
+    });
+  }
+  (function(){
+    var btn = $("mcBtn"); if (!btn) return;
+    btn.onmouseenter = function(){ warmLink(); };
+    btn.onclick = function(){
+      var msg = $("mcMsg");
+      if (!TOKEN){ msg.className = "msg err"; msg.textContent = "Sign in first."; return; }
+      btn.disabled = true; msg.className = "msg"; msg.textContent = "Building your link from the next 2 weeks…";
+      mcBuildSlots().then(function(slots){
+        if (!slots.length) throw new Error("No free time found in the next 2 weeks — check your working hours");
+        msg.textContent = "Creating link (" + slots.length + " slots)…";
+        return mcPublish(slots).then(function(url){
+          return mcCopy(url).then(function(){ return { url: url, copied: true, n: slots.length }; })
+                            .catch(function(){ return { url: url, copied: false, n: slots.length }; });
+        });
+      }).then(function(res){
+        msg.className = "msg ok";
+        msg.innerHTML = (res.copied ? "&#10003; Calendar link copied" : "&#10003; Link ready — copy it below")
+          + " (next 2 weeks, " + res.n + " slots) &middot; <a href='#' id='mcIns'>insert in email</a>"
+          + "<div style='margin-top:4px;font-weight:400;word-break:break-all'><a href='" + res.url + "' target='_blank' rel='noopener'>" + res.url + "</a></div>";
+        var ins = $("mcIns");
+        if (ins) ins.onclick = function(e){
+          e.preventDefault();
+          insertHtml("<div>Book a time with me here: <a href=\"" + res.url + "\">" + res.url + "</a></div>", msg, "\u2713 Link added to your email.");
+        };
+      }).catch(function(e){
+        msg.className = "msg err";
+        if (e && e.notConnected) msg.textContent = "Open WeCalendar in your browser and sign in once to connect for booking, then retry.";
+        else if (e && e.expired){ msg.textContent = "Session expired — sign in again."; TOKEN = null; clearAuth(); $("picker").classList.add("hide"); $("signedout").classList.remove("hide"); }
+        else msg.textContent = (e && e.message) || "Couldn't create your calendar link.";
+      }).then(function(){ btn.disabled = false; });
     };
   })();
 
