@@ -131,8 +131,6 @@
     +     '<div id="pbForm" class="hide">'
     +       '<label>Client company name</label>'
     +       '<input type="text" id="pbCompany" autocomplete="off" placeholder="e.g. SmartFense">'
-    +       '<label>Client portal link (optional — shown in the Global Admin section)</label>'
-    +       '<input type="text" id="pbPortal" autocomplete="off" placeholder="https://client.wetransact.io/">'
     +       '<label>Booking link (optional)</label>'
     +       '<input type="text" id="pbLink" autocomplete="off" placeholder="https://…">'
     +       '<button class="btn" id="pbGo" type="button" style="margin-top:10px">Personalize &amp; attach PDF</button>'
@@ -600,7 +598,7 @@
   function pbLoadLibs(){ if (!_pbLibs){ _pbLibs = Promise.resolve().then(function(){ if (!window.PDFLib) return pbScript("https://cdnjs.cloudflare.com/ajax/libs/pdf-lib/1.17.1/pdf-lib.min.js"); }).then(function(){ if (!window.fontkit) return pbScript("https://cdn.jsdelivr.net/npm/@pdf-lib/fontkit@1.1.1/dist/fontkit.umd.min.js"); }); } return _pbLibs; }
   function pbFetch(url){ return fetch(url).then(function(r){ if (!r.ok) throw new Error("download failed (" + r.status + ")"); return r.arrayBuffer(); }); }
   function pbLoadAssets(){ if (!_pbAssets){ _pbAssets = Promise.all([pbFetch(PB_TPL_URL), pbFetch(PB_FONT_BOLD), pbFetch(PB_FONT_MED)]); } return _pbAssets; }
-  function pbBuild(company, portal, link){
+  function pbBuild(company, link){
     return pbLoadLibs().then(pbLoadAssets).then(function(assets){
       var PL = window.PDFLib;
       return PL.PDFDocument.load(assets[0]).then(function(doc){
@@ -612,13 +610,6 @@
           var t = "Prepared for " + company, size = 13;
           while (bold.widthOfTextAtSize(t, size) > 380 && size > 8) size -= 0.5;
           p1.drawText(t, { x: 40, y: 692, size: size, font: bold, color: purple });
-          /* Global Admin card: the client's portal link */
-          if (portal){
-            var lbl = "Portal: ", psz = 9.5;
-            while (bold.widthOfTextAtSize(lbl, psz) + med.widthOfTextAtSize(portal, psz) > 300 && psz > 6.5) psz -= 0.25;
-            p1.drawText(lbl, { x: 191, y: 366, size: psz, font: bold, color: purple });
-            p1.drawText(portal, { x: 191 + bold.widthOfTextAtSize(lbl, psz), y: 366, size: psz, font: med, color: purple });
-          }
           /* footer: CSM + booking link */
           var me = NAME || niceName(EMAIL) || "";
           var foot = me ? (" · Your CSM: " + me) : "";
@@ -650,7 +641,7 @@
     var btn = $("pbBtn"), form = $("pbForm"); if (!btn) return;
     btn.onclick = function(){ form.classList.toggle("hide"); if (!form.classList.contains("hide")){ try { $("pbCompany").focus(); } catch(e){} pbLoadLibs(); pbLoadAssets(); } };
     $("pbGo").onclick = function(){
-      var msg = $("pbMsg"), company = $("pbCompany").value.trim(), portal = $("pbPortal").value.trim(), link = $("pbLink").value.trim();
+      var msg = $("pbMsg"), company = $("pbCompany").value.trim(), link = $("pbLink").value.trim();
       var it = Office.context.mailbox && Office.context.mailbox.item;
       if (!company){ msg.className = "msg err"; msg.textContent = "Type the client company name first."; return; }
       if (!ready || !it || !it.addFileAttachmentAsync){ msg.className = "msg err"; msg.textContent = "Open this while composing an email."; return; }
@@ -662,9 +653,9 @@
           .catch(function(e){ msg.className = "msg err"; msg.textContent = "Couldn't attach: " + ((e && e.message) || "try again"); });
         return;
       }
-      pbBuild(company, portal, link)
+      pbBuild(company, link)
         .then(function(b64){ return pbAttach64(it, b64, "WeTransact-Onboarding-Playbook" + (tok ? "-" + tok : "") + ".pdf"); })
-        .then(function(){ msg.className = "msg ok"; msg.textContent = "✓ Playbook for " + company + " attached" + (portal ? " (portal link included)" : "") + "."; })
+        .then(function(){ msg.className = "msg ok"; msg.textContent = "✓ Playbook for " + company + " attached."; })
         .catch(function(e){
           pbAttachUrl(it, PB_FALLBACK_URL, "WeTransact-Onboarding-Playbook.pdf")
             .then(function(){ msg.className = "msg ok"; msg.textContent = "✓ Standard playbook attached (personalization failed: " + ((e && e.message) || "error") + ")."; })
