@@ -75,6 +75,8 @@
     + '.tplopt .tt{font-size:13px;font-weight:600;color:var(--ink)}'
     + '.tplopt .td{font-size:11px;color:var(--muted);margin-top:1px}'
     + '.tplhint{font-size:11px;color:var(--muted);text-align:center;margin-top:8px;line-height:1.4}'
+    + '.tplmenu{max-height:330px;overflow-y:auto}'
+    + '.tplgrp{font-size:10px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:#7A6FB8;padding:9px 12px 5px;background:#FAF9FF;border-bottom:1px solid #F0ECFF}'
     + '.hide{display:none}'
     /* beauty pass 2026-07-19 — matches web app polish */
     + '.btn,.seg button,.mc-day,.tplbtn,.weeknav button,.tplopt{transition:background .15s ease,color .15s ease,border-color .15s ease,box-shadow .15s ease,transform .12s ease}'
@@ -104,10 +106,25 @@
     +   '<div class="tpl hide" id="tpl">'
     +     '<button class="tplbtn" id="tplBtn" type="button">&#128231; CSM email templates<span class="chev">&#9662;</span></button>'
     +     '<div class="tplmenu hide" id="tplMenu">'
-    +       '<div class="tplopt" data-tpl="0"><span class="ic">&#128075;</span><div><div class="tt">First onboarding email</div><div class="td">Welcome &amp; book the kickoff calls</div></div></div>'
-    +       '<div class="tplopt" data-tpl="1"><span class="ic">&#9989;</span><div><div class="tt">After onboarding call</div><div class="td">Recap, tasks &amp; next step</div></div></div>'
-    +       '<div class="tplopt" data-tpl="2"><span class="ic">&#128640;</span><div><div class="tt">Listing is live</div><div class="td">Go-live confirmation</div></div></div>'
-    +       '<div class="tplopt" data-tpl="3"><span class="ic">&#129309;</span><div><div class="tt">Intro to your Account Manager</div><div class="td">Handoff from onboarding to your AM</div></div></div>'
+    +       '<div class="tplgrp">Pre-onboarding</div>'
+    +       '<div class="tplopt" data-tpl="0"><span class="ic">&#128179;</span><div><div class="tt">Purchase your WeTransact plan</div><div class="td">How to buy on Microsoft Marketplace</div></div></div>'
+    +       '<div class="tplopt" data-tpl="1"><span class="ic">&#128233;</span><div><div class="tt">Action your private offer</div><div class="td">Offer is live &mdash; action by a date</div></div></div>'
+    +       '<div class="tplgrp">Onboarding</div>'
+    +       '<div class="tplopt" data-tpl="2"><span class="ic">&#128075;</span><div><div class="tt">Onboarding kickoff</div><div class="td">Welcome &mdash; self-service or assisted</div></div></div>'
+    +       '<div class="tplopt" data-tpl="3"><span class="ic">&#9989;</span><div><div class="tt">Session recap</div><div class="td">Status, completed &amp; next steps</div></div></div>'
+    +       '<div class="tplopt" data-tpl="4"><span class="ic">&#9203;</span><div><div class="tt">Blocked milestone &mdash; nudge</div><div class="td">Unblock the pending item</div></div></div>'
+    +       '<div class="tplopt" data-tpl="5"><span class="ic">&#9208;&#65039;</span><div><div class="tt">Onboarding on hold</div><div class="td">Value they can already use while paused</div></div></div>'
+    +       '<div class="tplopt" data-tpl="6"><span class="ic">&#9888;&#65039;</span><div><div class="tt">Go-live at risk</div><div class="td">Escalation &mdash; confirm date or replan</div></div></div>'
+    +       '<div class="tplgrp">Go-live</div>'
+    +       '<div class="tplopt" data-tpl="7"><span class="ic">&#128640;</span><div><div class="tt">Live and transactable</div><div class="td">Go-live actions + payout brief for Finance</div></div></div>'
+    +       '<div class="tplopt" data-tpl="8"><span class="ic">&#129309;</span><div><div class="tt">Meet your Account Manager</div><div class="td">Handoff from onboarding to your AM</div></div></div>'
+    +       '<div class="tplgrp">Activation</div>'
+    +       '<div class="tplopt" data-tpl="9"><span class="ic">&#128200;</span><div><div class="tt">GTM plan &mdash; Co-sell</div><div class="td">Marketplace GTM plan in 4 weeks</div></div></div>'
+    +       '<div class="tplopt" data-tpl="10"><span class="ic">&#128257;</span><div><div class="tt">GTM plan &mdash; P2P</div><div class="td">Reseller GTM plan in 4 weeks</div></div></div>'
+    +       '<div class="tplopt" data-tpl="11"><span class="ic">&#128197;</span><div><div class="tt">Book your first GTM session</div><div class="td">Turn your listing into a sales channel</div></div></div>'
+    +       '<div class="tplopt" data-tpl="12"><span class="ic">&#127891;</span><div><div class="tt">Certification &mdash; Transact Tribe</div><div class="td">Enroll the team before the deadline</div></div></div>'
+    +       '<div class="tplopt" data-tpl="13"><span class="ic">&#129520;</span><div><div class="tt">GTM tools demo</div><div class="td">30 min mapped to their goal</div></div></div>'
+    +       '<div class="tplopt" data-tpl="14"><span class="ic">&#9200;</span><div><div class="tt">GTM sessions follow-up</div><div class="td">Unused sessions in their plan</div></div></div>'
     +     '</div>'
     +     '<div class="tplhint hide" id="tplHint">Pick one — it fills the subject &amp; body. Edit the highlighted blanks before sending.</div>'
     +   '</div>'
@@ -338,62 +355,208 @@
   }
 
   var CSMTPL = [
+    /* 0 — P1 · Purchase your WeTransact plan (Pre-onboarding) */
     {
-      subject: "Welcome to WeTransact — let's kick off your onboarding",
+      subject: "{Company} | How to purchase your WeTransact plan on Microsoft Marketplace",
       body: ""
         + "<p>Hi {First name},</p>"
         + "<p>&nbsp;</p>"
-        + "<p>Nice to meet you! We're thrilled to have you onboard. My name is {Your name}. I'll be your CSM and guide you through onboarding.</p>"
-        + "<p>For a full overview of what to expect, see the onboarding checklist 👉 <a href='https://bestpractices.wetransact.io/onboarding'>bestpractices.wetransact.io/onboarding</a></p>"
-        + "<p><b>Self-Service Onboarding:</b></p>"
-        + "<p>Good news: your WeTransact portal is already live 🎉. We have provided you access to it. You can start right away with our self-service onboarding:</p>"
-        + "<ol><li>Go to {Portal link} and log in with Microsoft SSO by clicking the Microsoft icon.</li><li>After signing in, select <b>Set up Partner Center</b> and follow the steps.</li></ol>"
-        + "<p>The flow walks you through the setup at your own pace — complete as much as you can, and anything left pending we'll finish together on our calls. The more you complete upfront, the faster your listing goes live.</p>"
-        + "<p>⚠️ <b>Important:</b> only the Global Admin can perform the onboarding process.</p>"
-        + "<p><b>Onboarding Meetings:</b></p>"
-        + "<p>Alongside the self-service flow, we'll have two short meetings to complete anything pending and get your listing ready:</p>"
-        + "<p><b>Onboarding (Partner Center related) — meeting (30 min)</b></p>"
-        + "<ul><li>Granting WeTransact access to your Partner Center (click <a href='https://docs.wetransact.io/step-6-grant-wetransact-access-to-partner-center'>here</a> for a how-to guide)</li><li>Completing your Tax and Payout profile (see the onboarding checklist for the finance doc)</li></ul>"
-        + "<p><b>Onboarding (WeTransact Portal related) — meeting (30 min)</b></p>"
-        + "<ul><li>Navigation of the WeTransact Publisher Portal</li><li>Build listing and publish (see the Marketing doc in the onboarding checklist for the required info)</li></ul>"
-        + "<p><b>Post Onboarding</b></p>"
-        + "<p>Go-to-Market strategy meetings (once your listing has gone live).</p>"
-        + "<p>Moving forward, I suggest we book two 30-minute meetings this week to get these tasks completed. It'll be important to have the information ready, as mentioned in the forms, before each meeting so we can respect the one-week onboarding timeline we promise.</p>"
-        + "<p>Do you think you'll have the details on the finance form ready for this week's meeting? Let me know what works best — you can book a call here: {booking link} or just send me your availability.</p>"
-        + "<p>Looking forward to working with you!</p>"
+        + "<p>Great meeting you and the team. The next step is purchasing your WeTransact plan through Microsoft Marketplace.</p>"
+        + "<p><b>What you need to know:</b></p>"
+        + "<ul><li><b>Plan:</b> {Plan name}</li><li><b>Who buys:</b> your Microsoft <b>Global Admin</b> — Microsoft requires this role to complete the transaction.</li><li><b>How:</b> first Marketplace purchase? No worries — the attached step-by-step guide covers every click.</li></ul>"
+        + "<p><b>Action required:</b></p>"
+        + "<ul><li>Forward this email to your Global Admin, {Admin name}.</li><li>Complete the purchase by {date} so your onboarding starts on schedule.</li></ul>"
+        + "<p>Any questions, just reply — or grab a slot: {Booking link}</p>"
+        + "<p>&nbsp;</p>"
+        + "<p style='color:#8A8A8A;font-size:12px'><i>Optional — private plan variant (delete this note before sending): replace the “Plan” bullet with → <b>Plan:</b> we&rsquo;ve issued your private offer, {Plan name}, and it&rsquo;s ready for purchase. A private offer has a few extra acceptance steps — they&rsquo;re all in the guide.</i></p>"
     },
+    /* 1 — P2 · Action your private offer (Pre-onboarding) */
     {
-      subject: "Your onboarding recap & next steps",
+      subject: "Your private offer is live — action required by {date}",
       body: ""
         + "<p>Hi {First name},</p>"
         + "<p>&nbsp;</p>"
-        + "<p>Thank you for your time today — we're thrilled to have you on board. As a follow-up, I wanted to outline the remaining tasks and share a few updates.</p>"
-        + "<p style='color:#039855;font-weight:700;text-decoration:underline;margin:0 0 4px'>Completed tasks:</p>"
-        + "<ul style='margin:0 0 10px'><li>Granting WeTransact access to your Partner Center</li><li>Access to the WeTransact Portal: {insert portal link}</li><li>Verifying the Legal info tab</li><li>Completing the Tax and Payout profile</li></ul>"
-        + "<p style='color:#C2261B;font-weight:700;text-decoration:underline;margin:0 0 4px'>Remaining tasks:</p>"
-        + "<ul style='margin:0 0 10px'><li>Build listing and publish</li><li>Navigation of the WeTransact Publisher Portal</li></ul>"
-        + "<p style='color:#1A66C9;font-weight:700;text-decoration:underline;margin:0 0 4px'>Next Step:</p>"
-        + "<p style='margin:0 0 10px'>I'll wait for your confirmation on the marketing collateral. Once you have this ready, we can schedule a call for next week.</p>"
-        + "<p>If you have any questions, please reach out to me directly.</p>"
+        + "<p>Your private offer is now live and ready to be actioned.</p>"
+        + "<p><b>What you need to know:</b></p>"
+        + "<ul><li>Microsoft has emailed you a direct link to the offer — here it is again just in case: {Offer link}</li><li>The attached guide walks you through the full flow: accepting the offer, purchasing, and completing the landing page.</li><li>Your <b>Global Admin</b> should complete the transaction, per Microsoft's guidelines.</li></ul>"
+        + "<p><b>Action required:</b></p>"
+        + "<ul><li>Accept and purchase the offer by {date}, following the guide step by step.</li></ul>"
+        + "<p>If anything is unclear at any step, reply here and I'll jump on a call with you.</p>"
     },
+    /* 2 — A1 · Onboarding kickoff (Onboarding) */
     {
-      subject: "Your {Product} listing is live 🎉",
+      subject: "Welcome to WeTransact — let's get {Company} live in one week",
       body: ""
         + "<p>Hi {First name},</p>"
         + "<p>&nbsp;</p>"
-        + "<p>Congratulations! Your {Product} listing is now live and transactable!</p>"
-        + "<p>Just a heads-up: we'll make a test purchase and then cancel the order. This is part of our standard post-go-live validation to confirm everything is working smoothly. You don't need to do anything on your end — we'll cancel the order and remove it from the Orders tab.</p>"
-        + "<p>If you have any questions, please reach out to me directly.</p>"
+        + "<p>Welcome to WeTransact! I'm {CSM name}, your Customer Success Manager, and I'll get you live on Microsoft Marketplace. Your portal is already live 🎉: {Portal link} — log in with Microsoft SSO.</p>"
+        + "<p><b>Prerequisites before onboarding can start:</b></p>"
+        + "<ul><li><b>Partner Center Global Admin</b> — only this role can complete the setup. Identify who owns those rights here: {guide link}</li><li><b>Tax, payout and marketing materials</b> — collect from your finance and marketing teams (forms attached).</li></ul>"
+        + "<p><b>Option A — Self-service, start today</b></p>"
+        + "<ul><li>Log in at {Portal link} and follow the onboarding checklist at your own pace.</li><li>The more you complete upfront, the faster your listing goes live. I'm reachable throughout: {Booking link}</li></ul>"
+        + "<p><b>Option B — Assisted, two short sessions with me</b></p>"
+        + "<ul><li><b>Partner Center setup</b> (30–45 min) — with your Global Admin: access, tax and payout profile.</li><li><b>Platform walkthrough</b> (30–45 min) — with your Product Marketing Manager: build and publish your first listing.</li></ul>"
+        + "<p>Slots held for you: {Day/Month} {Hour} {Timezone} | {Day/Month} {Hour} {Timezone} — or pick another: {Booking link}</p>"
+        + "<p><b>Action required:</b></p>"
+        + "<ul><li>Loop in your Finance controller, Product Marketing Manager and Partner Center Global Admin.</li><li>Choose self-service or assisted, and have the forms ready before each session so we keep the one-week timeline.</li></ul>"
+        + "<p>+ Attached: roles &amp; responsibilities Microsoft / WeTransact / Publisher<br><a href='https://docs.wetransact.io'>WeTransact Docs | Help Center</a></p>"
     },
+    /* 3 — A2 · Session recap (Onboarding) */
     {
-      subject: "Introduction to your WeTransact Account Manager",
+      subject: "{Company} | WeTransact: status, {status in a few words}, next session {date}",
       body: ""
         + "<p>Hi {First name},</p>"
         + "<p>&nbsp;</p>"
-        + "<p>I hope you've had a smooth onboarding experience so far. Now that you're all set up, I'd like to introduce you to your WeTransact Account Manager, {AM name}.</p>"
-        + "<p>{AM name} will be your main point of contact moving forward. Their role is to help you get the most out of WeTransact — whether that's aligning on your goals, sharing best practices, supporting your GTM initiatives, or connecting you with relevant resources and partners.</p>"
-        + "<p>{AM name}, meet {First name}.</p>"
-        + "<p>Looking forward to seeing the great things we'll achieve together.</p>"
+        + "<p>Thanks for your time today — here's the summary of our {Session type} session.</p>"
+        + "<p style='color:#1A66C9;font-weight:700;text-decoration:underline;margin:0 0 4px'>Current status:</p>"
+        + "<p style='margin:0 0 10px'>{One line — e.g. Partner Center is set up and the payout profile is submitted; Microsoft validation takes up to 48 hours}</p>"
+        + "<p style='color:#039855;font-weight:700;text-decoration:underline;margin:0 0 4px'>What we completed today:</p>"
+        + "<ul style='margin:0 0 10px'><li>{Thing one}</li><li>{Thing two}</li></ul>"
+        + "<p style='color:#C2261B;font-weight:700;text-decoration:underline;margin:0 0 4px'>Next steps:</p>"
+        + "<ul style='margin:0 0 10px'><li>{Action} — owner {name}, by {date}</li><li>{Action} — owner {name}, by {date}</li><li>{Action} — Microsoft, expected {date}</li></ul>"
+        + "<p>Next session: {Date and time}, {topic}. Please have {prerequisite} ready before then.</p>"
+        + "<p>Reply to this email if anything above isn't accurate.</p>"
+    },
+    /* 4 — A3 · Blocked milestone — first nudge (Onboarding) */
+    {
+      subject: "Blocked: {milestone}",
+      body: ""
+        + "<p>Hi {First name},</p>"
+        + "<p>&nbsp;</p>"
+        + "<p>{pending item} is the only thing between {Company} and {milestone} — we aligned on the timeline in our last meeting.</p>"
+        + "<p><b>Action required:</b></p>"
+        + "<ul><li>Reply with what's blocking {pending item}.</li><li>Share your realistic timeline to resolution, so I can plan the next steps around it.</li></ul>"
+        + "<p>&nbsp;</p>"
+        + "<p style='color:#8A8A8A;font-size:12px'><i>Optional add-on — keep momentum by swapping sessions (keep the text below and delete this note, or delete both):</i></p>"
+        + "<p>Given the delay on {blocked item, e.g. Partner Center setup}, I propose we keep our {next session, e.g. platform demo} on {date} as planned:</p>"
+        + "<ul><li>We'll build your product listing in that session, so we're ready to publish the moment {blocked item} is complete.</li><li>Please have your marketing prerequisites on hand for the meeting.</li></ul>"
+    },
+    /* 5 — A3 · Onboarding on hold — keep the tools (Onboarding) */
+    {
+      subject: "Onboarding paused — what {Company} can still use today",
+      body: ""
+        + "<p>Hi {First name},</p>"
+        + "<p>&nbsp;</p>"
+        + "<p>Understood that internal priorities come first right now. Even with your listing not live yet, your team can already get value from the platform:</p>"
+        + "<ul><li><b>Target Customers</b> and the <b>Partner Directory</b> — data sets to identify strong leads and potential partnerships now.</li><li><b>Microsoft Marketplace Masterclass</b> — available via the Help tab in your portal.</li><li>Key documentation and walkthrough videos: {docs / Loom links}</li></ul>"
+        + "<p><b>Action required:</b></p>"
+        + "<ul><li>We resume onboarding on {agreed date} — I'll hold that slot.</li></ul>"
+        + "<p>Any questions before then, just reach out. Looking forward to reconnecting.</p>"
+    },
+    /* 6 — A3 · Go-live at risk — escalation (Onboarding) */
+    {
+      subject: "{target date} go-live is at risk",
+      body: ""
+        + "<p>Hi {First name},</p>"
+        + "<p>&nbsp;</p>"
+        + "<p>Without {pending item} by {date}, we will miss the {target date} live date we aligned on. Our onboarding is designed as a one-week process, and this is the last open item.</p>"
+        + "<p><b>To move forward, please either:</b></p>"
+        + "<ol><li>Confirm {pending item} lands by {date} and we stay on track, or</li><li>Give me a realistic timeline so I replan around it.</li></ol>"
+        + "<p>Once it's in, I'll review the same day and monitor the publication process until you're live.</p>"
+    },
+    /* 7 — A4 · Live and transactable (Go-live) */
+    {
+      subject: "🎉 {Company} is live and transactable on Microsoft Marketplace",
+      body: ""
+        + "<p>Hi {First name},</p>"
+        + "<p>&nbsp;</p>"
+        + "<p>Congratulations — {Company} is live and transactable: {listing URL}</p>"
+        + "<p><b>Action required:</b></p>"
+        + "<ul><li>Notify your Finance team about Marketplace payout (summary below).</li><li>Set up a GTM session for your business sponsor with {AM name}, your Account Manager: {booking link}</li><li>Announce the milestone externally — best practices here: <a href='https://docs.wetransact.io'>Marketing · Marketplace playbook · WeTransact</a></li></ul>"
+        + "<p><b>Test purchase — nothing to do on your end:</b></p>"
+        + "<ul><li>We'll run a real test purchase and cancel it right after, to confirm the buying flow works end to end.</li><li>We cancel the order and remove it from your Orders tab.</li></ul>"
+        + "<p><b>Marketplace payout, in brief for Finance:</b></p>"
+        + "<ul><li><b>Microsoft margin:</b> 3% on new deals, 1.5% on renewals, based on TCV.</li><li><b>Payout:</b> Microsoft invoices your customer and pays you on the 15th of the month after collection. Timing depends on the customer's Microsoft contract:<ul><li>Next-day on MCA (standard)</li><li>Within 45 days on Enterprise Agreement or pay-as-you-go</li><li>Within 75 days through a reseller</li></ul></li><li><b>Taxes:</b> Microsoft manages taxes end to end in most geos, based on your end customer's location.</li></ul>"
+        + "<p>Everything Finance will ask is here: <a href='https://docs.wetransact.io/finance-how-marketplace-finance-works'>How Marketplace finance works</a> · <a href='https://docs.wetransact.io'>WeTransact Docs | Help Center</a></p>"
+    },
+    /* 8 — A5 · Meet your Account Manager (Go-live) */
+    {
+      subject: "Introducing your WeTransact Account Manager",
+      body: ""
+        + "<p>Hi {First name},</p>"
+        + "<p>&nbsp;</p>"
+        + "<p>Now that onboarding is complete, I'd like to introduce {AM name}, your WeTransact Account Manager and main point of contact moving forward.</p>"
+        + "<p><b>What {AM name} helps you with:</b></p>"
+        + "<ul><li>Aligning on your Marketplace goals and tracking progress against them.</li><li>Sharing best practices and supporting your GTM initiatives.</li><li>Connecting you with relevant resources and partners.</li></ul>"
+        + "<p><b>Action required:</b></p>"
+        + "<ul><li>{AM name}, meet {First name} — please pick a slot for your intro call: {booking link}</li></ul>"
+        + "<p>Looking forward to the great things ahead.</p>"
+    },
+    /* 9 — B1 · GTM plan in 4 weeks — Co-sell track (Activation) */
+    {
+      subject: "{Company} Microsoft Marketplace GTM plan in 4 weeks",
+      body: ""
+        + "<p>Hi {First name},</p>"
+        + "<p>&nbsp;</p>"
+        + "<p>Now that your listing is live, let's build your Microsoft Marketplace GTM plan. Two instrumental ways to get this done right:</p>"
+        + "<p><b>1. Value proposition to first campaign</b></p>"
+        + "<ul><li>Register for our fundamentals training: {registration link}</li><li>Outcome: your Microsoft Marketplace value proposition defined and your first outreach campaign launched within 4 weeks.</li></ul>"
+        + "<p><b>2. Marketplace marketing best practices</b></p>"
+        + "<ul><li>Curated best practices from Microsoft Marketplace marketers, to streamline adoption across your sales and marketing team.</li></ul>"
+        + "<p><b>Action required:</b></p>"
+        + "<ul><li>Register for the training and share the best practices with your team.</li></ul>"
+    },
+    /* 10 — B2 · GTM plan in 4 weeks — P2P track (Activation) */
+    {
+      subject: "{Company} Microsoft Reseller GTM plan in 4 weeks",
+      body: ""
+        + "<p>Hi {First name},</p>"
+        + "<p>&nbsp;</p>"
+        + "<p>Now that your listing is live, let's build your Microsoft Reseller GTM plan. Two instrumental ways to get this done right:</p>"
+        + "<p><b>1. Value proposition to first campaign</b></p>"
+        + "<ul><li>Register for our fundamentals training: {registration link}</li><li>Outcome: your Microsoft Reseller value proposition defined and your first reseller recruitment campaign launched within 4 weeks.</li></ul>"
+        + "<p><b>2. Marketplace marketing best practices</b></p>"
+        + "<ul><li>Curated marketers' best practices, to streamline Marketplace adoption across your partner and marketing team.</li></ul>"
+        + "<p><b>Action required:</b></p>"
+        + "<ul><li>Register for the training and share the best practices with your team.</li></ul>"
+    },
+    /* 11 — B3 · Book your first GTM session (Activation) */
+    {
+      subject: "Go-to-market with WeTransact — book your first GTM session",
+      body: ""
+        + "<p>Hi {First name},</p>"
+        + "<p>&nbsp;</p>"
+        + "<p>Next phase: turning your live listing into an efficient sales channel. Cloud marketplaces work differently from the channels you're used to — and we'll guide you through it.</p>"
+        + "<p><b>What the session covers:</b></p>"
+        + "<ul><li>A deep understanding of the Marketplace channel and how buyers use it.</li><li>You pick a focus area at the end, and we build a tailor-made plan around it with you.</li></ul>"
+        + "<p><b>Action required:</b></p>"
+        + "<ul><li>Book your session here: {booking link}</li></ul>"
+    },
+    /* 12 — B4 · Certification — Transact Tribe (Activation) */
+    {
+      subject: "WeTransact certification learning path — enroll before {deadline}",
+      body: ""
+        + "<p>Hi {First name},</p>"
+        + "<p>&nbsp;</p>"
+        + "<p>To build your go-to-market strategy on solid ground, we run a certification course for you and your team.</p>"
+        + "<p><b>What you get:</b></p>"
+        + "<ul><li>A structured learning path on selling through cloud marketplaces.</li><li>A cohort format — your whole team can enroll and get certified together.</li></ul>"
+        + "<p><b>Action required:</b></p>"
+        + "<ul><li>Enroll in the next cohort before {deadline}: {enrollment link}</li></ul>"
+    },
+    /* 13 — B5 · GTM tools demo (Activation) */
+    {
+      subject: "30 minutes this week — GTM tools mapped to your {goal} goal",
+      body: ""
+        + "<p>Hi {First name},</p>"
+        + "<p>&nbsp;</p>"
+        + "<p>Your listing is live — time to shift gears to GTM. In our kickoff you mentioned your goal is {goal, e.g. leveraging co-sell with Microsoft}.</p>"
+        + "<p><b>What I'll show you (30 min):</b></p>"
+        + "<ul><li>The platform's GTM tools — Target Customers, Partner Directory and more.</li><li>Specifically, how to use them to reach your {goal} faster.</li></ul>"
+        + "<p><b>Action required:</b></p>"
+        + "<ul><li>Pick a slot this week: {availability or booking link}</li></ul>"
+    },
+    /* 14 — B6 · GTM sessions follow-up (Activation) */
+    {
+      subject: "Your GTM sessions are waiting — included in your {plan name} subscription",
+      body: ""
+        + "<p>Hi {First name},</p>"
+        + "<p>&nbsp;</p>"
+        + "<p>Following up on your WeTransact go-to-market sessions — they're part of your {plan name} subscription and haven't been booked yet.</p>"
+        + "<p><b>What you get:</b></p>"
+        + "<ul><li>1:1 sessions with your GTM Specialist.</li><li>Outcome: identify the low-hanging fruit, then a GTM strategy to truly leverage the Microsoft Marketplace.</li></ul>"
+        + "<p><b>Action required:</b></p>"
+        + "<ul><li>Book your first session: {booking link}</li></ul>"
     }
   ];
   function tplHL(s){ return String(s).replace(/\{([^}]+)\}/g, function(_, t){ return '<span style="background-color:#FFEC99;color:#1a1a1a;">[' + t + ']</span>'; }); }
