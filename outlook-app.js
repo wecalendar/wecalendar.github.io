@@ -111,6 +111,7 @@
     +       '<div class="tplopt" data-tpl="1"><span class="ic">&#128233;</span><div><div class="tt">Action your private offer</div><div class="td">Offer is live &mdash; action by a date</div></div></div>'
     +       '<div class="tplgrp">Onboarding</div>'
     +       '<div class="tplopt" data-tpl="2"><span class="ic">&#128075;</span><div><div class="tt">Onboarding kickoff</div><div class="td">Welcome &mdash; self-service or assisted</div></div></div>'
+    +       '<div class="tplopt" data-tpl="15"><span class="ic">&#128203;</span><div><div class="tt">Call 1 recap</div><div class="td">Completed &amp; remaining after Partner Center setup</div></div></div>'
     +       '<div class="tplopt" data-tpl="3"><span class="ic">&#9989;</span><div><div class="tt">Session recap</div><div class="td">Status, completed &amp; next steps</div></div></div>'
     +       '<div class="tplopt" data-tpl="4"><span class="ic">&#9203;</span><div><div class="tt">Blocked milestone &mdash; nudge</div><div class="td">Unblock the pending item</div></div></div>'
     +       '<div class="tplopt" data-tpl="5"><span class="ic">&#9208;&#65039;</span><div><div class="tt">Onboarding on hold</div><div class="td">Value they can already use while paused</div></div></div>'
@@ -572,6 +573,20 @@
         + "<ul><li>1:1 sessions with your GTM Specialist.</li><li>Outcome: identify the low-hanging fruit, then a GTM strategy to truly leverage the Microsoft Marketplace.</li></ul>"
         + "<p><b>Action required:</b></p>"
         + "<ul><li>Book your first session: {booking link}</li></ul>"
+    },
+    /* 15 — Call 1 recap (Onboarding, shown in menu right after the kickoff) */
+    {
+      subject: "Your onboarding recap & next steps",
+      body: ""
+        + "<p>Hi {First name},</p>"
+        + "<p>&nbsp;</p>"
+        + "<p>Thank you for your time today — we're thrilled to have you on board. As a follow-up, I wanted to outline the remaining tasks and share a few updates.</p>"
+        + "<p style='color:#039855;font-weight:700;text-decoration:underline;margin:0 0 4px'>Completed tasks:</p>"
+        + "<ul style='margin:0 0 10px'><li>Enrolling in Commercial Marketplace</li><li>Granting WeTransact access to your Partner Center</li><li>Access to the WeTransact Portal: {Portal link}</li><li>Completing the Tax and Payout profile</li></ul>"
+        + "<p style='color:#C2261B;font-weight:700;text-decoration:underline;margin:0 0 4px'>Remaining tasks:</p>"
+        + "<ul style='margin:0 0 10px'><li>Verifying the Legal info tab</li><li>Build listing and publish</li><li>Navigation of the WeTransact Publisher Portal</li></ul>"
+        + "<p style='color:#1A66C9;font-weight:700;text-decoration:underline;margin:0 0 4px'>Next Step:</p>"
+        + "<p style='margin:0 0 10px'>I'll keep you posted once it is completed. If you have any questions, please reach out to me directly.</p>"
     }
   ];
   function tplHL(s){ return String(s).replace(/\{([^}]+)\}/g, function(_, t){ return '<span style="background-color:#FFEC99;color:#1a1a1a;">[' + t + ']</span>'; }); }
