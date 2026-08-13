@@ -648,7 +648,8 @@ async function init(){
     if (resp && resp.account) pca.setActiveAccount(resp.account);
   } catch(e){ showSigninErr(e); }
   const accts = pca.getAllAccounts();
-  if (accts.length) { account = accts[0]; pca.setActiveAccount(account); ME = { name: account.name, email: account.username }; onSignedIn(); }
+  const acct = pca.getActiveAccount() || accts[0];
+  if (acct) { account = acct; pca.setActiveAccount(acct); ME = { name: acct.name, email: acct.username }; onSignedIn(); }
 }
 document.getElementById("signInBtn").onclick = () => pca.loginRedirect({ scopes: SCOPES }).catch(showSigninErr);
 document.getElementById("signOut").onclick = () => pca.logoutRedirect({ account });
@@ -819,7 +820,7 @@ async function returnTokenToPane(){
     if (tries >= 2){ try { sessionStorage.removeItem("dlgAuthTries"); } catch(_){}; sendToPane({ error: String((e && e.message) || e) }); return; }
     try {
       try { sessionStorage.setItem("dlgAuth", "1"); sessionStorage.setItem("dlgAuthTries", String(tries + 1)); } catch(_){}
-      await pca.acquireTokenRedirect({ scopes: SCOPES, account: account || undefined });
+      await pca.acquireTokenRedirect({ scopes: SCOPES, account: (tries === 0 && account) || undefined, prompt: "select_account" });
       return; // navigating to Microsoft sign-in; do not message the pane
     } catch(e2){ sendToPane({ error: String((e2 && e2.message) || e2) }); return; }
   }
