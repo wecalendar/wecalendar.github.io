@@ -590,7 +590,43 @@
     }
   ];
   function tplHL(s){ return String(s).replace(/\{([^}]+)\}/g, function(_, t){ return '<span style="background-color:#FFEC99;color:#1a1a1a;">[' + t + ']</span>'; }); }
-  function tplPlain(s){ return String(s).replace(/\{([^}]+)\}/g, function(_, t){ return "[" + t + "]"; }); }
+  function tplPlain(s, vals){ return String(s).replace(/\{([^}]+)\}/g, function(_, t){ var v = vals && vals[t]; return v ? v : "[" + t + "]"; }); }
+  /* ---- Company name from the recipient's email domain (fills {Company} in the subject) ---- */
+  var CO_GENERIC = (function(){ var m = {}, l = ["gmail.com","googlemail.com","outlook.com","outlook.co.uk","hotmail.com","hotmail.co.uk","hotmail.fr","hotmail.es","live.com","live.co.uk","msn.com","yahoo.com","yahoo.co.uk","yahoo.fr","yahoo.es","ymail.com","icloud.com","me.com","mac.com","aol.com","proton.me","protonmail.com","pm.me","gmx.com","gmx.de","gmx.net","web.de","mail.com","mail.ru","yandex.com","yandex.ru","zoho.com","qq.com","163.com","126.com","naver.com","hey.com","fastmail.com","btinternet.com","sky.com","orange.fr","free.fr","wanadoo.fr","sfr.fr","laposte.net","telefonica.net","terra.com","uol.com.br","bol.com.br","comcast.net","verizon.net","att.net","sbcglobal.net","rediffmail.com"]; l.forEach(function(d){ m[d] = 1; }); return m; })();
+  var CO_HOME = /@(wetransact|awssome)\.io$/i;
+  var CO_SLD = { co:1, com:1, net:1, org:1, gov:1, edu:1, ac:1, ltd:1, plc:1, or:1, ne:1, sch:1, gob:1, nom:1, gen:1, biz:1, info:1, mil:1 };
+  var CO_NOISE = { www:1, mail:1, email:1, smtp:1, mx:1, corp:1, group:1, exchange:1, emea:1, us:1, uk:1 };
+  var CO_FIX = { hubspot: "HubSpot", github: "GitHub", linkedin: "LinkedIn", paypal: "PayPal", youtube: "YouTube", powerbi: "Power BI", wetransact: "WeTransact", awssome: "AWSsome", smartfense: "SmartFense", ebay: "eBay", salesforce: "Salesforce", servicenow: "ServiceNow", snowflake: "Snowflake", databricks: "Databricks", mongodb: "MongoDB", postgresql: "PostgreSQL", nvidia: "NVIDIA", ibm: "IBM", sap: "SAP", aws: "AWS", kpmg: "KPMG", pwc: "PwC", ey: "EY", bt: "BT" };
+  function coName(email){
+    var raw = String(email || "").trim(); var ang = /<([^<>]+)>\s*$/.exec(raw); if (ang) raw = ang[1].trim();
+    var m = /@([^@\s<>,;"']+)\s*$/.exec(raw); if (!m) return "";
+    var host = m[1].toLowerCase().replace(/\.$/, "");
+    if (CO_GENERIC[host]) return "";
+    var parts = host.split(".").filter(Boolean); if (parts.length < 2) return "";
+    var i = parts.length - 2;
+    if (i > 0 && CO_SLD[parts[i]]) i--;                              /* foo.co.uk / foo.com.au */
+    while (i > 0 && CO_NOISE[parts[i]]) i--;                          /* mail.foo.com handled above, corp.foo.com */
+    var label = parts[i];
+    if (!label || label.length < 2 || /^\d+$/.test(label)) return "";
+    if (CO_FIX[label]) return CO_FIX[label];
+    return label.split(/[-_]+/).filter(Boolean).map(function(w){ return w.charAt(0).toUpperCase() + w.slice(1); }).join(" ");
+  }
+  function coPick(list){ for (var i = 0; i < (list || []).length; i++){ var em = (list[i] && (list[i].emailAddress || list[i].address)) || ""; if (!em || CO_HOME.test(em)) continue; var c = coName(em); if (c) return c; } return ""; }
+  function recipCompany(cb){
+    var done = false, t = null;
+    function fin(v){ if (done) return; done = true; if (t) clearTimeout(t); cb(v || ""); }
+    t = setTimeout(function(){ fin(""); }, 2500);
+    try {
+      var it = Office.context.mailbox && Office.context.mailbox.item;
+      if (!it || !it.to) return fin("");
+      if (!it.to.getAsync) return fin(coPick(it.to) || coPick(it.cc));   /* read mode */
+      it.to.getAsync(function(r){
+        var c = coPick(r && r.value);
+        if (c || !(it.cc && it.cc.getAsync)) return fin(c);
+        it.cc.getAsync(function(r2){ fin(coPick(r2 && r2.value)); });
+      });
+    } catch(e){ fin(""); }
+  }
   function setSubject(text){ try { var it = Office.context.mailbox && Office.context.mailbox.item; if (it && it.subject && it.subject.setAsync){ it.subject.setAsync(text); } } catch(e){} }
   var CSM_ALLOW = (function(){ var m = {}, list = ["ruby.sran@wetransact.io", "divyashree.g@wetransact.io", "em.labrador@wetransact.io", "javier.albala@wetransact.io", "leya.zheng@wetransact.io", "paula.jimenez@wetransact.io", "thaddeus.uzornne@wetransact.io", "thomas.roche@wetransact.io", "mariana.figueiredo@wetransact.io", "alexandre.pascal@wetransact.io", "nikki.maan@wetransact.io"]; list.forEach(function(e){ m[e] = 1; }); return m; })();
   function currentUserEmail(){ var e = ""; try { e = (Office.context && Office.context.mailbox && Office.context.mailbox.userProfile && Office.context.mailbox.userProfile.emailAddress) || ""; } catch(_){} if (!e) e = EMAIL || ""; return String(e).trim().toLowerCase(); }
@@ -600,7 +636,16 @@
     var wrap = $("tpl"), btn = $("tplBtn"), menu = $("tplMenu"), hint = $("tplHint"); if (!btn) return;
     function setOpen(o){ wrap.classList.toggle("open", o); menu.classList.toggle("hide", !o); hint.classList.toggle("hide", !o); }
     btn.onclick = function(){ setOpen(menu.classList.contains("hide")); };
-    [].forEach.call(menu.querySelectorAll(".tplopt"), function(el){ el.onclick = function(){ var t = CSMTPL[+el.dataset.tpl]; if (!t) return; var msg = $("msg"); setSubject(tplPlain(t.subject)); insertHtml(tplHL(t.body), msg, "✓ Template added — fill in the highlighted blanks before sending."); setOpen(false); }; });
+    [].forEach.call(menu.querySelectorAll(".tplopt"), function(el){ el.onclick = function(){
+      var t = CSMTPL[+el.dataset.tpl]; if (!t) return; var msg = $("msg"); setOpen(false);
+      recipCompany(function(co){
+        setSubject(tplPlain(t.subject, co ? { Company: co } : null));
+        try { var pc = $("pbCompany"); if (pc && !pc.value && co) pc.value = co; } catch(_){}
+        insertHtml(tplHL(t.body), msg, co
+          ? "✓ Template added — subject filled in for “" + co + "” (check the spelling). Fill the highlighted blanks before sending."
+          : "✓ Template added — fill in the highlighted blanks before sending.");
+      });
+    }; });
   })();
 
   /* ---- Personalized onboarding playbook attach (CSM-gated via #tpl) ---- */
