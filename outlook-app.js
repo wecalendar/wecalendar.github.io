@@ -476,7 +476,7 @@
       body: ""
         + "<p>Hi {First name},</p>"
         + "<p>&nbsp;</p>"
-        + "<p>Congratulations — {Company} is live and transactable: {listing URL}</p>"
+        + "<p>Congratulations — {Company} is live and transactable.</p>"
         + "<p><b>Action required:</b></p>"
         + "<ul><li>Notify your Finance team about Marketplace payout (summary below).</li><li>Set up a GTM session for your business sponsor with {AM name}, your Account Manager: {booking link}</li><li>Announce the milestone externally — best practices here: <a href='https://docs.wetransact.io'>Marketing · Marketplace playbook · WeTransact</a></li></ul>"
         + "<p><b>Test purchase — nothing to do on your end:</b></p>"
@@ -589,14 +589,14 @@
         + "<p style='margin:0 0 10px'>I'll keep you posted once it is completed. If you have any questions, please reach out to me directly.</p>"
     }
   ];
-  function tplHL(s){ return String(s).replace(/\{([^}]+)\}/g, function(_, t){ return '<span style="background-color:#FFEC99;color:#1a1a1a;">[' + t + ']</span>'; }); }
+  function tplHL(s, vals){ return String(s).replace(/\{([^}]+)\}/g, function(_, t){ var v = vals && vals[t]; if (v) return esc(v); return '<span style="background-color:#FFEC99;color:#1a1a1a;">[' + t + ']</span>'; }); }
   function tplPlain(s, vals){ return String(s).replace(/\{([^}]+)\}/g, function(_, t){ var v = vals && vals[t]; return v ? v : "[" + t + "]"; }); }
   /* ---- Company name from the recipient's email domain (fills {Company} in the subject) ---- */
   var CO_GENERIC = (function(){ var m = {}, l = ["gmail.com","googlemail.com","outlook.com","outlook.co.uk","hotmail.com","hotmail.co.uk","hotmail.fr","hotmail.es","live.com","live.co.uk","msn.com","yahoo.com","yahoo.co.uk","yahoo.fr","yahoo.es","ymail.com","icloud.com","me.com","mac.com","aol.com","proton.me","protonmail.com","pm.me","gmx.com","gmx.de","gmx.net","web.de","mail.com","mail.ru","yandex.com","yandex.ru","zoho.com","qq.com","163.com","126.com","naver.com","hey.com","fastmail.com","btinternet.com","sky.com","orange.fr","free.fr","wanadoo.fr","sfr.fr","laposte.net","telefonica.net","terra.com","uol.com.br","bol.com.br","comcast.net","verizon.net","att.net","sbcglobal.net","rediffmail.com"]; l.forEach(function(d){ m[d] = 1; }); return m; })();
   var CO_HOME = /@(wetransact|awssome)\.io$/i;
   var CO_SLD = { co:1, com:1, net:1, org:1, gov:1, edu:1, ac:1, ltd:1, plc:1, or:1, ne:1, sch:1, gob:1, nom:1, gen:1, biz:1, info:1, mil:1 };
   var CO_NOISE = { www:1, mail:1, email:1, smtp:1, mx:1, corp:1, group:1, exchange:1, emea:1, us:1, uk:1 };
-  var CO_FIX = { hubspot: "HubSpot", github: "GitHub", linkedin: "LinkedIn", paypal: "PayPal", youtube: "YouTube", powerbi: "Power BI", wetransact: "WeTransact", awssome: "AWSsome", smartfense: "SmartFense", ebay: "eBay", salesforce: "Salesforce", servicenow: "ServiceNow", snowflake: "Snowflake", databricks: "Databricks", mongodb: "MongoDB", postgresql: "PostgreSQL", nvidia: "NVIDIA", ibm: "IBM", sap: "SAP", aws: "AWS", kpmg: "KPMG", pwc: "PwC", ey: "EY", bt: "BT" };
+  var CO_FIX = { hubspot: "HubSpot", github: "GitHub", linkedin: "LinkedIn", paypal: "PayPal", youtube: "YouTube", powerbi: "Power BI", wetransact: "WeTransact", awssome: "AWSsome", smartfense: "SmartFense", ebay: "eBay", openai: "OpenAI", anthropic: "Anthropic", vmware: "VMware", redhat: "Red Hat", gitlab: "GitLab", bigid: "BigID", crowdstrike: "CrowdStrike", oneidentity: "One Identity", netapp: "NetApp", salesforce: "Salesforce", servicenow: "ServiceNow", snowflake: "Snowflake", databricks: "Databricks", mongodb: "MongoDB", postgresql: "PostgreSQL", nvidia: "NVIDIA", ibm: "IBM", sap: "SAP", aws: "AWS", kpmg: "KPMG", pwc: "PwC", ey: "EY", bt: "BT" };
   function coName(email){
     var raw = String(email || "").trim(); var ang = /<([^<>]+)>\s*$/.exec(raw); if (ang) raw = ang[1].trim();
     var m = /@([^@\s<>,;"']+)\s*$/.exec(raw); if (!m) return "";
@@ -611,21 +611,43 @@
     if (CO_FIX[label]) return CO_FIX[label];
     return label.split(/[-_]+/).filter(Boolean).map(function(w){ return w.charAt(0).toUpperCase() + w.slice(1); }).join(" ");
   }
-  function coPick(list){ for (var i = 0; i < (list || []).length; i++){ var em = (list[i] && (list[i].emailAddress || list[i].address)) || ""; if (!em || CO_HOME.test(em)) continue; var c = coName(em); if (c) return c; } return ""; }
-  function recipCompany(cb){
+  var CO_ROLE = /^(info|hello|hi|hey|sales|support|contact|admin|administrator|team|billing|finance|accounts?|accounting|payable|receivable|marketing|noreply|no-reply|donotreply|office|help|helpdesk|legal|it|hr|invoice|invoices|ap|ar|partner|partners|procurement|purchasing|orders?|careers|jobs|press|media|security|privacy|webmaster|postmaster|enquiries|inquiries|general|mail)$/;
+  function coCase(w){ return String(w).split("-").map(function(p){ return p ? p.charAt(0).toUpperCase() + p.slice(1).toLowerCase() : p; }).join("-"); }
+  var CO_NAMEOK = /^[A-Za-zÀ-ɏ][A-Za-zÀ-ɏ'’.-]*$/;
+  function coFirst(name, email){
+    var n = String(name || "").trim();
+    if (/@/.test(n)) n = "";                                                  /* display name is just the address */
+    if (n){
+      if (n.indexOf(",") > -1){ var p = n.split(","); n = (p[1] || "").trim() || (p[0] || "").trim(); }   /* "Smith, John" */
+      n = n.replace(/\([^)]*\)/g, " ").replace(/["'“”]/g, "").replace(/\s+/g, " ").trim();
+      n = n.replace(/^(mr|mrs|ms|miss|dr|prof|sir|eng)\.?\s+/i, "");
+      var f = (n.split(" ")[0] || "").replace(/[.,;:]+$/, "");
+      if (f && f.length > 1 && CO_NAMEOK.test(f) && !CO_ROLE.test(f.toLowerCase())) return (f === f.toUpperCase() ? coCase(f) : f);   /* keep their casing, tidy ALL-CAPS */
+    }
+    var m = /^\s*([^@\s<>]+)@/.exec(String(email || "").replace(/^.*<|>.*$/g, "").trim() || String(email || "").trim());
+    if (!m) return "";
+    var lp = m[1].toLowerCase().replace(/\+.*$/, "");
+    if (CO_ROLE.test(lp)) return "";
+    var first = lp.split(/[._]+/)[0];                                          /* keep hyphenated first names intact */
+    if (!first || first.length < 2 || /\d/.test(first) || CO_ROLE.test(first)) return "";
+    return coCase(first);
+  }
+  function coRec(list){ for (var i = 0; i < (list || []).length; i++){ var r = list[i], em = (r && (r.emailAddress || r.address)) || ""; if (!em || CO_HOME.test(em)) continue; return r; } return null; }
+  function coCtx(rec){ if (!rec) return { company: "", first: "" }; var em = rec.emailAddress || rec.address || ""; return { company: coName(em), first: coFirst(rec.displayName || rec.name || "", em) }; }
+  function recipCtx(cb){
     var done = false, t = null;
-    function fin(v){ if (done) return; done = true; if (t) clearTimeout(t); cb(v || ""); }
-    t = setTimeout(function(){ fin(""); }, 2500);
+    function fin(v){ if (done) return; done = true; if (t) clearTimeout(t); cb(v || { company: "", first: "" }); }
+    t = setTimeout(function(){ fin(null); }, 2500);
     try {
       var it = Office.context.mailbox && Office.context.mailbox.item;
-      if (!it || !it.to) return fin("");
-      if (!it.to.getAsync) return fin(coPick(it.to) || coPick(it.cc));   /* read mode */
+      if (!it || !it.to) return fin(null);
+      if (!it.to.getAsync) return fin(coCtx(coRec(it.to) || coRec(it.cc)));   /* read mode */
       it.to.getAsync(function(r){
-        var c = coPick(r && r.value);
-        if (c || !(it.cc && it.cc.getAsync)) return fin(c);
-        it.cc.getAsync(function(r2){ fin(coPick(r2 && r2.value)); });
+        var rec = coRec(r && r.value);
+        if (rec || !(it.cc && it.cc.getAsync)) return fin(coCtx(rec));
+        it.cc.getAsync(function(r2){ fin(coCtx(coRec(r2 && r2.value))); });
       });
-    } catch(e){ fin(""); }
+    } catch(e){ fin(null); }
   }
   function setSubject(text){ try { var it = Office.context.mailbox && Office.context.mailbox.item; if (it && it.subject && it.subject.setAsync){ it.subject.setAsync(text); } } catch(e){} }
   var CSM_ALLOW = (function(){ var m = {}, list = ["ruby.sran@wetransact.io", "divyashree.g@wetransact.io", "em.labrador@wetransact.io", "javier.albala@wetransact.io", "leya.zheng@wetransact.io", "paula.jimenez@wetransact.io", "thaddeus.uzornne@wetransact.io", "thomas.roche@wetransact.io", "mariana.figueiredo@wetransact.io", "alexandre.pascal@wetransact.io", "nikki.maan@wetransact.io"]; list.forEach(function(e){ m[e] = 1; }); return m; })();
@@ -638,11 +660,13 @@
     btn.onclick = function(){ setOpen(menu.classList.contains("hide")); };
     [].forEach.call(menu.querySelectorAll(".tplopt"), function(el){ el.onclick = function(){
       var t = CSMTPL[+el.dataset.tpl]; if (!t) return; var msg = $("msg"); setOpen(false);
-      recipCompany(function(co){
-        setSubject(tplPlain(t.subject, co ? { Company: co } : null));
-        try { var pc = $("pbCompany"); if (pc && !pc.value && co) pc.value = co; } catch(_){}
-        insertHtml(tplHL(t.body), msg, co
-          ? "✓ Template added — subject filled in for “" + co + "” (check the spelling). Fill the highlighted blanks before sending."
+      recipCtx(function(ctx){
+        var vals = {}; if (ctx.company) vals["Company"] = ctx.company; if (ctx.first) vals["First name"] = ctx.first;
+        setSubject(tplPlain(t.subject, vals));
+        try { var pc = $("pbCompany"); if (pc && !pc.value && ctx.company) pc.value = ctx.company; } catch(_){}
+        var who = [ctx.first, ctx.company].filter(Boolean).join(" · ");
+        insertHtml(tplHL(t.body, vals), msg, who
+          ? "✓ Template added — filled in for " + who + " (check the spelling). Complete the highlighted blanks before sending."
           : "✓ Template added — fill in the highlighted blanks before sending.");
       });
     }; });
