@@ -653,14 +653,6 @@
   var CSM_ALLOW = (function(){ var m = {}, list = ["ruby.sran@wetransact.io", "divyashree.g@wetransact.io", "em.labrador@wetransact.io", "javier.albala@wetransact.io", "leya.zheng@wetransact.io", "paula.jimenez@wetransact.io", "thaddeus.uzornne@wetransact.io", "thomas.roche@wetransact.io", "mariana.figueiredo@wetransact.io", "alexandre.pascal@wetransact.io", "nikki.maan@wetransact.io"]; list.forEach(function(e){ m[e] = 1; }); return m; })();
   function currentUserEmail(){ var e = ""; try { e = (Office.context && Office.context.mailbox && Office.context.mailbox.userProfile && Office.context.mailbox.userProfile.emailAddress) || ""; } catch(_){} if (!e) e = EMAIL || ""; return String(e).trim().toLowerCase(); }
   function isCSM(){ var e = currentUserEmail(); return /@wetransact\.io$/.test(e) && !!CSM_ALLOW[e]; }
-  /* signed-in CSM's own first name — fills {CSM name} */
-  function csmFirstName(){
-    var em = currentUserEmail(), dn = "";
-    try { dn = (Office.context && Office.context.mailbox && Office.context.mailbox.userProfile && Office.context.mailbox.userProfile.displayName) || ""; } catch(_){}
-    if (!dn) dn = NAME || "";                                   /* Graph /me displayName, loaded by loadProfile() */
-    var f = coFirst(dn, em);
-    return f || "";
-  }
   function applyCSMGate(){ var t = $("tpl"), o = $("tplOr"), show = isCSM(); if (t) t.classList.toggle("hide", !show); if (o) o.classList.toggle("hide", !show); }
   (function(){
     var wrap = $("tpl"), btn = $("tplBtn"), menu = $("tplMenu"), hint = $("tplHint"); if (!btn) return;
@@ -670,7 +662,6 @@
       var t = CSMTPL[+el.dataset.tpl]; if (!t) return; var msg = $("msg"); setOpen(false);
       recipCtx(function(ctx){
         var vals = {}; if (ctx.company) vals["Company"] = ctx.company; if (ctx.first) vals["First name"] = ctx.first;
-        var me = csmFirstName(); if (me) vals["CSM name"] = me;
         setSubject(tplPlain(t.subject, vals));
         try { var pc = $("pbCompany"); if (pc && !pc.value && ctx.company) pc.value = ctx.company; } catch(_){}
         var who = [ctx.first, ctx.company].filter(Boolean).join(" · ");
