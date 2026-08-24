@@ -478,12 +478,12 @@
         + "<p>&nbsp;</p>"
         + "<p>Congratulations — {Company} is live and transactable.</p>"
         + "<p><b>Action required:</b></p>"
-        + "<ul><li>Notify your Finance team about Marketplace payout (summary below).</li><li>Set up a GTM session for your business sponsor with {AM name}, your Account Manager: {booking link}</li><li>Announce the milestone externally — best practices here: <a href='https://docs.wetransact.io'>Marketing · Marketplace playbook · WeTransact</a></li></ul>"
+        + "<ul><li>Notify your Finance team about Marketplace payout (summary below).</li><li>Announce the milestone externally — best practices here: <a href='https://bestpractices.wetransact.io/'>https://bestpractices.wetransact.io/</a></li></ul>"
         + "<p><b>Test purchase — nothing to do on your end:</b></p>"
         + "<ul><li>We'll run a real test purchase and cancel it right after, to confirm the buying flow works end to end.</li><li>We cancel the order and remove it from your Orders tab.</li></ul>"
         + "<p><b>Marketplace payout, in brief for Finance:</b></p>"
         + "<ul><li><b>Microsoft margin:</b> 3% on new deals, 1.5% on renewals, based on TCV.</li><li><b>Payout:</b> Microsoft invoices your customer and pays you on the 15th of the month after collection. Timing depends on the customer's Microsoft contract:<ul><li>Next-day on MCA (standard)</li><li>Within 45 days on Enterprise Agreement or pay-as-you-go</li><li>Within 75 days through a reseller</li></ul></li><li><b>Taxes:</b> Microsoft manages taxes end to end in most geos, based on your end customer's location.</li></ul>"
-        + "<p>Everything Finance will ask is here: <a href='https://docs.wetransact.io/finance-how-marketplace-finance-works'>How Marketplace finance works</a> · <a href='https://docs.wetransact.io'>WeTransact Docs | Help Center</a></p>"
+        + "<p>Everything Finance will ask is here: <a href='https://docs.wetransact.io/finance-how-marketplace-finance-works'>How Marketplace finance works</a> — for anything else please visit <a href='https://docs.wetransact.io'>WeTransact Docs | Help Center</a>.</p>"
     },
     /* 8 — A5 · Meet your Account Manager (Go-live) */
     {
@@ -653,6 +653,14 @@
   var CSM_ALLOW = (function(){ var m = {}, list = ["ruby.sran@wetransact.io", "divyashree.g@wetransact.io", "em.labrador@wetransact.io", "javier.albala@wetransact.io", "leya.zheng@wetransact.io", "paula.jimenez@wetransact.io", "thaddeus.uzornne@wetransact.io", "thomas.roche@wetransact.io", "mariana.figueiredo@wetransact.io", "alexandre.pascal@wetransact.io", "nikki.maan@wetransact.io"]; list.forEach(function(e){ m[e] = 1; }); return m; })();
   function currentUserEmail(){ var e = ""; try { e = (Office.context && Office.context.mailbox && Office.context.mailbox.userProfile && Office.context.mailbox.userProfile.emailAddress) || ""; } catch(_){} if (!e) e = EMAIL || ""; return String(e).trim().toLowerCase(); }
   function isCSM(){ var e = currentUserEmail(); return /@wetransact\.io$/.test(e) && !!CSM_ALLOW[e]; }
+  /* signed-in CSM's own first name — fills {CSM name} */
+  function csmFirstName(){
+    var em = currentUserEmail(), dn = "";
+    try { dn = (Office.context && Office.context.mailbox && Office.context.mailbox.userProfile && Office.context.mailbox.userProfile.displayName) || ""; } catch(_){}
+    if (!dn) dn = NAME || "";                                   /* Graph /me displayName, loaded by loadProfile() */
+    var f = coFirst(dn, em);
+    return f || "";
+  }
   function applyCSMGate(){ var t = $("tpl"), o = $("tplOr"), show = isCSM(); if (t) t.classList.toggle("hide", !show); if (o) o.classList.toggle("hide", !show); }
   (function(){
     var wrap = $("tpl"), btn = $("tplBtn"), menu = $("tplMenu"), hint = $("tplHint"); if (!btn) return;
@@ -662,6 +670,7 @@
       var t = CSMTPL[+el.dataset.tpl]; if (!t) return; var msg = $("msg"); setOpen(false);
       recipCtx(function(ctx){
         var vals = {}; if (ctx.company) vals["Company"] = ctx.company; if (ctx.first) vals["First name"] = ctx.first;
+        var me = csmFirstName(); if (me) vals["CSM name"] = me;
         setSubject(tplPlain(t.subject, vals));
         try { var pc = $("pbCompany"); if (pc && !pc.value && ctx.company) pc.value = ctx.company; } catch(_){}
         var who = [ctx.first, ctx.company].filter(Boolean).join(" · ");
