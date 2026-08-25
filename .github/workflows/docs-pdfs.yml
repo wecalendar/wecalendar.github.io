@@ -1,0 +1,71 @@
+name: Render docs PDFs
+
+# Turns every article on docs.wetransact.io into a WeTransact-branded PDF, which
+# the WeCalendar add-in stamps with the client's name and attaches to an email
+# (and the web app offers as a download). Kept separate from the index workflow
+# because this one is slow — it drives headless Chrome over ~170 articles.
+#
+# Runs 20 min after the index refresh, so it always renders from a fresh list.
+# Only articles whose content changed are re-rendered.
+
+on:
+  schedule:
+    - cron: "37 4 * * *"   # nightly, just after the index refresh
+  workflow_dispatch:
+    inputs:
+      limit:
+        description: "Render only the first N articles (blank = all)"
+        required: false
+        default: ""
+      only:
+        description: "Comma-separated slugs to render (overrides limit)"
+        required: false
+        default: ""
+      force:
+        description: "Re-render even if the article hasn't changed"
+        type: boolean
+        default: false
+
+permissions:
+  contents: write
+
+concurrency:
+  group: docs-pdfs
+  cancel-in-progress: false
+
+jobs:
+  render:
+    runs-on: ubuntu-latest
+    timeout-minutes: 120
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      - name: Install renderer deps
+        run: npm install --no-save --no-fund --no-audit puppeteer@23 sharp@0.33
+
+      - name: Render
+        run: |
+          ARGS=""
+          if [ -n "${{ inputs.only }}" ]; then
+            ARGS="--only=${{ inputs.only }}"
+          elif [ -n "${{ inputs.limit }}" ]; then
+            ARGS="--limit=${{ inputs.limit }}"
+          fi
+          if [ "${{ inputs.force }}" = "true" ]; then ARGS="$ARGS --all"; fi
+          node build-docs-pdfs.mjs $ARGS
+
+      - name: Commit what changed
+        run: |
+          git add -A docs-pdf
+          if git diff --cached --quiet; then
+            echo "No PDF changed."
+            exit 0
+          fi
+          git config user.name  "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git commit -m "docs-pdf: render branded PDFs from docs.wetransact.io"
+          git push
