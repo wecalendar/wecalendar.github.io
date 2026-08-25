@@ -117,8 +117,10 @@ function titleFromHtml(html) {
     pick(/<meta[^>]+content=["']([^"']+)["'][^>]+property=["']og:title["']/i) ||
     pick(/<title[^>]*>([\s\S]*?)<\/title>/i);
   if (!t) return "";
-  // Drop the site suffix Archbee appends: "… - WeTransact Docs", "… | Help Center"
-  t = t.replace(/\s*[-|·–—]\s*(WeTransact|Docs|Help Center|Documentation)[^-|·–—]*$/i, "").trim();
+  // Drop the site suffix Archbee appends. It can come in layers —
+  // "How to X? - WeTransact Docs | Help Center" — so strip until it stops changing.
+  const SUFFIX = /\s*[-|·–—]\s*(WeTransact|Docs|Help Center|Documentation)[^-|·–—]*$/i;
+  for (let i = 0; i < 4 && SUFFIX.test(t); i++) t = t.replace(SUFFIX, "").trim();
   t = t.replace(/\s+/g, " ").replace(/\s*[-|·–—]\s*$/, "").trim();
   if (!t || /^(untitled|docs|home|documentation|wetransact|wetransact docs|wetransact documentation|help center)$/i.test(t)) return "";
   return t.length > 140 ? t.slice(0, 137).trimEnd() + "…" : t;

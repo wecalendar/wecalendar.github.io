@@ -155,9 +155,9 @@
     +       '<div class="msg" id="pbMsg"></div>'
     +     '</div>'
     +   '</div>'
-    +   '<button class="btn sec" id="dkBtn" type="button" style="margin-top:8px" title="Search WeTransact Docs and drop the links straight into your email">&#128196; Insert docs links</button>'
+    +   '<button class="btn sec" id="dkBtn" type="button" style="margin-top:8px" title="Search WeTransact Docs, attach the guide as a branded PDF or drop the link into your email">&#128196; Insert a guide</button>'
     +   '<div id="dkPanel" class="dkwrap hide">'
-    +     '<input type="text" id="dkIn" autocomplete="off" placeholder="Search the docs — or paste a docs link">'
+    +     '<input type="text" id="dkIn" autocomplete="off" placeholder="Search a guide — or paste a docs link">'
     +     '<div id="dkRes" class="dkres"></div>'
     +     '<div class="chips" id="dkChips"></div>'
     +     '<button class="btn" id="dkGo" type="button" style="margin-top:10px">&#128216; Attach as PDF</button>'
@@ -906,8 +906,8 @@
       var oct = document.createElement("img"); oct.src = DOCS_OCTAVIA; oct.alt = "";
       var tx = document.createElement("div");
       tx.textContent = (DOCS && DOCS.length)
-        ? "No docs match that. Try fewer words — or paste the article link and it'll be added."
-        : "Couldn't load the docs list. Paste a docs.wetransact.io link and it'll still work.";
+        ? "No guide matches that. Try fewer words — or paste the article link and it'll be added."
+        : "Couldn't load the guide list. Paste a docs.wetransact.io link and it'll still work.";
       e.appendChild(oct); e.appendChild(tx); box.appendChild(e); return;
     }
     if (head){ var h = document.createElement("div"); h.className = "dkgrp"; h.textContent = head; box.appendChild(h); }
@@ -948,9 +948,9 @@
     var ins = $("dkIns");
     if (ins) ins.onclick = function(){
       var msg = $("dkMsg");
-      if (!DKPICK.length){ msg.className = "msg err"; msg.textContent = "Tick at least one doc first."; return; }
+      if (!DKPICK.length){ msg.className = "msg err"; msg.textContent = "Tick at least one guide first."; return; }
       var n = DKPICK.length;
-      insertHtml(dkInsertHtml(), msg, "✓ " + n + (n === 1 ? " docs link added." : " docs links added."));
+      insertHtml(dkInsertHtml(), msg, "✓ " + n + (n === 1 ? " guide link added." : " guide links added."));
       DKPICK = []; dkChips(); dkRender();
     };
   })();
@@ -1008,9 +1008,9 @@
     });
   }
 
-  function dkAttachOne(it, doc, company, st, canStamp){
+  function dkAttachOne(it, doc, company, st, canStamp, manTitle){
     var url = DOCS_PDF_BASE + encodeURIComponent(doc.slug) + ".pdf";
-    var name = dkFileName(doc.title);
+    var name = dkFileName(manTitle || doc.title);
     if (!canStamp) return pbAttachUrl(it, url, name);   // old Outlook: attach as-is
     return pbFetch(url)
       .then(function(buf){ return dkStamp(buf, company, st); })
@@ -1020,7 +1020,7 @@
 
   function dkAttachPdfs(){
     var msg = $("dkMsg");
-    if (!DKPICK.length){ msg.className = "msg err"; msg.textContent = "Tick at least one doc first."; return; }
+    if (!DKPICK.length){ msg.className = "msg err"; msg.textContent = "Tick at least one guide first."; return; }
     var it = Office.context.mailbox && Office.context.mailbox.item;
     if (!ready || !it || !it.addFileAttachmentAsync){ msg.className = "msg err"; msg.textContent = "Open this while composing an email."; return; }
     var canStamp = typeof it.addFileAttachmentFromBase64Async === "function";
@@ -1040,7 +1040,7 @@
           return;
         }
         return ready2.reduce(function(chain, d){
-          return chain.then(function(){ return dkAttachOne(it, d, company, st, canStamp); });
+          return chain.then(function(){ return dkAttachOne(it, d, company, st, canStamp, have[d.slug] && have[d.slug].title); });
         }, Promise.resolve()).then(function(){
           var k = ready2.length;
           msg.className = "msg ok";
