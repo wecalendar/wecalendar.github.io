@@ -61,12 +61,13 @@ export const CSS = `
 html,body{margin:0;padding:0}
 body{width:${CONTENT_W_PX}px;font-family:'Greycliff CF',-apple-system,'Segoe UI',sans-serif;font-weight:500;
   font-size:11.4px;line-height:1.58;color:#343130;-webkit-print-color-adjust:exact;print-color-adjust:exact}
-img.logo{display:block;height:26px;width:auto}
+img.logo{display:block;height:26px;width:auto;margin:0 auto}
 .kicker{height:13px;margin:13px 0 0;font-size:9px;font-weight:700;letter-spacing:.13em;text-transform:uppercase;color:#5E43C8}
 /* stamp band — kept empty on purpose; the add-in writes "Prepared for X" here */
 #preparedFor{height:19px;margin:0 0 3px}
 h1.doc{margin:0;font-size:25px;line-height:1.2;font-weight:700;color:#2C1C6C;letter-spacing:-.01em}
 .src{margin:9px 0 0;font-size:9px;color:#9191A4}
+.src a{color:#9191A4;text-decoration:none}
 .rule{height:1px;background:#E2DBFF;margin:15px 0 19px}
 h2,h3,h4{color:#2C1C6C;font-weight:700;line-height:1.3;margin:20px 0 7px;page-break-after:avoid}
 h2{font-size:16px}h3{font-size:13.5px}h4{font-size:12px}
@@ -191,10 +192,10 @@ export function buildDocHtml({ slug, title, html }) {
     <div class="kicker">WeTransact Docs</div>
     <div id="preparedFor"></div>
     <h1 class="doc">${title.replace(/[<>&]/g, (c) => ({ "<": "&lt;", ">": "&gt;", "&": "&amp;" }[c]))}</h1>
-    <div class="src">docs.wetransact.io/${slug}</div>
+    <div class="src"><a href="https://docs.wetransact.io/${slug}">docs.wetransact.io/${slug}</a></div>
     <div class="rule"></div>
     <div class="content">${html}</div>
-    <div class="end">Always-current version of this guide: docs.wetransact.io/${slug} &nbsp;·&nbsp; Questions? Reply to this email and your CSM will pick it up.</div>
+    <div class="end">Always-current version of this guide: <a href="https://docs.wetransact.io/${slug}">docs.wetransact.io/${slug}</a> &nbsp;·&nbsp; Questions? Reply to this email and your CSM will pick it up.</div>
   </body></html>`;
 }
 
@@ -220,6 +221,38 @@ async function render(page, { slug, title, html }) {
 
   await page.setViewport({ width: CONTENT_W_PX, height: 1000 });
   await page.setContent(doc, { waitUntil: "load", timeout: 60000 });
+
+  // Anchors already print as clickable links; bare addresses typed into the
+  // article don't, so turn those into anchors too before printing.
+  await page.evaluate(() => {
+    const RX = /((?:https?:\/\/|www\.)[^\s<>()\[\]"']+[^\s<>()\[\]"'.,;:!?])/g;
+    const root = document.querySelector(".content");
+    if (!root) return;
+    const walker = document.createTreeWalker(root, NodeFilter.SHOW_TEXT);
+    const targets = [];
+    while (walker.nextNode()) {
+      const n = walker.currentNode;
+      if (n.parentElement && n.parentElement.closest("a")) continue;
+      if (RX.test(n.nodeValue)) targets.push(n);
+      RX.lastIndex = 0;
+    }
+    targets.forEach((n) => {
+      const frag = document.createDocumentFragment();
+      let last = 0, m;
+      RX.lastIndex = 0;
+      while ((m = RX.exec(n.nodeValue))) {
+        if (m.index > last) frag.appendChild(document.createTextNode(n.nodeValue.slice(last, m.index)));
+        const a = document.createElement("a");
+        a.href = m[1].startsWith("www.") ? "https://" + m[1] : m[1];
+        a.textContent = m[1];
+        frag.appendChild(a);
+        last = m.index + m[1].length;
+      }
+      if (last < n.nodeValue.length) frag.appendChild(document.createTextNode(n.nodeValue.slice(last)));
+      n.parentNode.replaceChild(frag, n);
+    });
+  });
+
   await page.evaluateHandle("document.fonts.ready");
 
   // where the empty band sits, in PDF points — the client stamps here
