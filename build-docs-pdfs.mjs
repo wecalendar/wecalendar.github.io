@@ -169,6 +169,61 @@ async function inlineImages(html) {
   return html.replace(/<img data-drop="1"[^>]*>/g, "");
 }
 
+/* ---------- instruction blurbs (shown in the email next to the PDF) ----------
+   Written here, once per article, never at click time. Two sources:
+   - "steps": the article's own h2/h3 headings, joined into one sentence —
+     free, deterministic, always accurate.
+   - "ai": a 2-3 sentence email-ready blurb from the Anthropic API, used only
+     when ANTHROPIC_API_KEY is set (GitHub Actions secret). Validated hard;
+     any failure falls back to the step list, so the text can't be wrong. */
+
+export function stepsBlurb(heads) {
+  const hs = (heads || [])
+    .map((h) => String(h).replace(/\s+/g, " ").replace(/[.:\s]+$/, "").trim())
+    .filter((h) => h.length > 2 && h.length < 90)
+    .slice(0, 5);
+  if (!hs.length) return "The attached guide walks you through it step by step.";
+  return "The attached guide covers: " + hs.join(" → ") + ".";
+}
+
+export function validBlurb(t) {
+  if (typeof t !== "string") return false;
+  const s = t.replace(/\s+/g, " ").trim();
+  return s.length >= 40 && s.length <= 450 && !/https?:\/\//i.test(s) && !/[\[\]{}<>]/.test(s);
+}
+
+async function aiBlurb(title, text) {
+  const key = process.env.ANTHROPIC_API_KEY;
+  if (!key) return null;
+  try {
+    const r = await fetch("https://api.anthropic.com/v1/messages", {
+      method: "POST",
+      signal: AbortSignal.timeout(30000),
+      headers: { "x-api-key": key, "anthropic-version": "2023-06-01", "content-type": "application/json" },
+      body: JSON.stringify({
+        model: process.env.BLURB_MODEL || "claude-haiku-4-5",
+        max_tokens: 250,
+        system: "You write one short blurb for an email a WeTransact CSM sends a client, introducing an attached how-to guide. 2-3 sentences, at most 400 characters, plain text only: no URLs, no markdown, no brackets, no greeting, no sign-off. Warm, concrete, 'you/we'll' tone. Say who must act (e.g. your Global Admin) and what they'll do; mention a rough duration only if the guide implies one. Reply with the blurb alone.",
+        messages: [{ role: "user", content: "Guide title: " + title + "\n\nGuide content:\n" + String(text).slice(0, 6000) }],
+      }),
+    });
+    if (!r.ok) throw new Error("HTTP " + r.status);
+    const j = await r.json();
+    const out = ((j.content || [])[0] || {}).text || "";
+    const clean = out.replace(/\s+/g, " ").trim();
+    return validBlurb(clean) ? clean : null;
+  } catch (e) {
+    console.error("  blurb API failed for " + title + ": " + e.message);
+    return null;
+  }
+}
+
+async function makeBlurb(title, text, heads) {
+  const ai = await aiBlurb(title, text);
+  if (ai) return { blurb: ai, blurbSrc: "ai" };
+  return { blurb: stepsBlurb(heads), blurbSrc: "steps" };
+}
+
 /* ---------- extract one article ---------- */
 async function extract(page, slug) {
   await page.goto(`${ORIGIN}/${slug}`, { waitUntil: "networkidle2", timeout: 60000 });
@@ -194,6 +249,7 @@ async function extract(page, slug) {
       title: h1 ? h1.innerText.trim() : "",
       html: body ? body.innerHTML : "",
       text: body ? body.innerText.replace(/\s+/g, " ").trim() : "",
+      heads: body ? [...body.querySelectorAll("h2,h3")].map((h) => h.innerText.replace(/\s+/g, " ").trim()).filter(Boolean).slice(0, 8) : [],
     };
   });
 }
@@ -307,7 +363,7 @@ async function main() {
   page.setDefaultTimeout(60000);
 
   const out = { generated: new Date().toISOString().slice(0, 10), stamp: prev.stamp || null, docs: { ...(prev.docs || {}) } };
-  let rendered = 0, skipped = 0, failed = 0;
+  let rendered = 0, skipped = 0, failed = 0, blurbed = 0;
 
   for (const d of list) {
     const file = path.join(OUT_DIR, `${d.slug}.pdf`);
@@ -318,7 +374,15 @@ async function main() {
       const hash = createHash("sha1").update(title + "|" + art.text).digest("hex").slice(0, 16);
 
       if (!FORCE && prev.docs?.[d.slug]?.hash === hash && existsSync(file)) {
-        out.docs[d.slug] = prev.docs[d.slug];
+        const entry = { ...prev.docs[d.slug] };
+        // fill a missing blurb, and upgrade a step-list one to AI wording
+        // once a key exists — without re-rendering the PDF
+        if (!entry.blurb || (process.env.ANTHROPIC_API_KEY && entry.blurbSrc !== "ai")) {
+          const b = await makeBlurb(title, art.text, art.heads);
+          entry.blurb = b.blurb; entry.blurbSrc = b.blurbSrc;
+          blurbed++;
+        }
+        out.docs[d.slug] = entry;
         skipped++;
         continue;
       }
@@ -327,8 +391,9 @@ async function main() {
       const { pdf, stamp } = await render(page, { slug: d.slug, title, html });
       writeFileSync(file, pdf);
       out.stamp = stamp;
-      out.docs[d.slug] = { title, hash, bytes: pdf.length, file: `docs-pdf/${d.slug}.pdf` };
-      rendered++;
+      const b = await makeBlurb(title, art.text, art.heads);
+      out.docs[d.slug] = { title, hash, bytes: pdf.length, file: `docs-pdf/${d.slug}.pdf`, blurb: b.blurb, blurbSrc: b.blurbSrc };
+      rendered++; blurbed++;
       console.error(`✓ ${d.slug} — ${(pdf.length / 1024).toFixed(0)} KB`);
     } catch (e) {
       failed++;
@@ -350,7 +415,7 @@ async function main() {
   out.count = Object.keys(out.docs).length;
   writeFileSync(MANIFEST, JSON.stringify(out, null, 1) + "\n");
   const total = Object.values(out.docs).reduce((n, d) => n + (d.bytes || 0), 0);
-  console.error(`rendered ${rendered}, unchanged ${skipped}, failed ${failed} — ${out.count} PDFs, ${(total / 1048576).toFixed(1)} MB total`);
+  console.error(`rendered ${rendered}, unchanged ${skipped}, failed ${failed}, blurbs written ${blurbed} — ${out.count} PDFs, ${(total / 1048576).toFixed(1)} MB total`);
 }
 
 if (import.meta.url === `file://${process.argv[1]}`) await main();
