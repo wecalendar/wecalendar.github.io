@@ -74,7 +74,7 @@ p{margin:0 0 9px}
 a{color:#5E43C8;text-decoration:underline;word-break:break-word}
 ul,ol{margin:0 0 10px;padding-left:19px}
 li{margin:0 0 5px}
-img{max-width:100%;height:auto;display:block;margin:12px 0;border:1px solid #E2DBFF;border-radius:9px;page-break-inside:avoid}
+img{max-width:88%;height:auto;display:block;margin:10px 0;border:1px solid #E2DBFF;border-radius:9px;page-break-inside:avoid}
 figure{margin:12px 0}figcaption{font-size:9.5px;color:#656578;margin-top:4px}
 blockquote{margin:12px 0;padding:9px 13px;border-left:3px solid #C9BCFF;background:#FBF9FF;border-radius:0 9px 9px 0}
 code{font-family:ui-monospace,Menlo,monospace;font-size:10px;background:#F2EEFF;padding:1px 4px;border-radius:4px}
@@ -124,6 +124,8 @@ function sanitize(html) {
   s = s.replace(/<\/(section|article)>/gi, "</div>");
   s = s.replace(/(&nbsp;|\s)+/g, " ");
   s = s.replace(/<div>\s*<\/div>/g, "").replace(/<p>\s*<\/p>/g, "");
+  s = s.replace(/<li>\s*<\/li>/g, "").replace(/<span>\s*<\/span>/g, "");
+  s = s.replace(/<(ul|ol)>\s*<\/\1>/g, "");
   return s.trim();
 }
 
