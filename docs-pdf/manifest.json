@@ -21,55 +21,62 @@
    "bytes": 182627,
    "file": "docs-pdf/finance-how-marketplace-finance-works.pdf",
    "blurb": "The attached guide covers: Summary → The three parties → The end-to-end flow → The transaction fee → Taxes.",
-   "blurbSrc": "steps"
+   "blurbSrc": "steps",
+   "blurbV": 2
   },
   "how-to-find-your-subscription-id": {
    "title": "How to find your subscription ID?",
    "hash": "41531c69c4b787d2",
    "bytes": 235944,
    "file": "docs-pdf/how-to-find-your-subscription-id.pdf",
-   "blurb": "The attached guide covers: 🟣 Sign in to Azure and Type \"subscriptions\" → 🟣 Click on Subscriptions → 🟣 Copy your subscription ID.",
-   "blurbSrc": "steps"
+   "blurb": "The attached guide covers: Sign in to Azure and Type \"subscriptions\" → Click on Subscriptions → Copy your subscription ID.",
+   "blurbSrc": "steps",
+   "blurbV": 2
   },
   "step-6-grant-wetransact-access-to-partner-center": {
    "title": "Step 6 — Grant WeTransact Access to Partner Center",
    "hash": "b44e24c422236a23",
    "bytes": 303306,
    "file": "docs-pdf/step-6-grant-wetransact-access-to-partner-center.pdf",
-   "blurb": "The attached guide covers: 🟣 1. Sign In to partner Center (https://partner.microsoft.com/) → 🟣 2. Click on Settings → 🟣 3. Click on Account settings → 🟣 4. Click on Microsoft Partner Center → 🟣 5. Click on \"Invite outside users\".",
-   "blurbSrc": "steps"
+   "blurb": "The attached guide covers: Sign In to partner Center → Click on Settings → Click on Account settings → Click on Microsoft Partner Center → Click on \"Invite outside users\".",
+   "blurbSrc": "steps",
+   "blurbV": 2
   },
   "account-verification-email-not-received-by-primary-contact": {
    "title": "Account Verification Email Not Received by Primary Contact",
    "hash": "5830884b21f1d7a2",
    "bytes": 199525,
    "file": "docs-pdf/account-verification-email-not-received-by-primary-contact.pdf",
-   "blurb": "The attached guide covers: 🟣 1. Click on outlook settings in web browser on in a app → 🟣 2. Click on junk and in middle of screen you will see, safe senders → 🟣 3. Click on Add Safe sender and add both emails and press ok . Check the emails below → 💬 Need Help?.",
-   "blurbSrc": "steps"
+   "blurb": "The attached guide covers: Click on outlook settings in web browser on in a app → Click on junk and in middle of screen you will see, safe senders → Click on Add Safe sender and add both emails and press ok . Check the emails below → Need Help?.",
+   "blurbSrc": "steps",
+   "blurbV": 2
   },
   "add-more-users-for-free-trial": {
    "title": "Add more users for Free Trial",
    "hash": "4be46d221b61adfd",
    "bytes": 212477,
    "file": "docs-pdf/add-more-users-for-free-trial.pdf",
-   "blurb": "The attached guide covers: 🟣 1. On the dashboard, click on settings → 🟣 2. Click on Team → 🟣 3. Click on Invite → 🟣 4. Add email and choose the seat type → 🟣 5. Click on Invite.",
-   "blurbSrc": "steps"
+   "blurb": "The attached guide covers: On the dashboard, click on settings → Click on Team → Click on Invite → Add email and choose the seat type → Click on Invite.",
+   "blurbSrc": "steps",
+   "blurbV": 2
   },
   "api-set-up-automated-order-management-aom-automated-usage-reporting": {
    "title": "API set up + Automated Order Management (AOM) + Automated Usage Reporting",
    "hash": "ad65f9f7e24afc62",
    "bytes": 408783,
    "file": "docs-pdf/api-set-up-automated-order-management-aom-automated-usage-reporting.pdf",
-   "blurb": "The attached guide covers: 3.1 API Access → 1. Introduction → 2. Order Process → 3 Subscription Activation → 3.2 Activation via API.",
-   "blurbSrc": "steps"
+   "blurb": "The attached guide covers: 1 API Access → Introduction → Order Process → 3 Subscription Activation → 2 Activation via API.",
+   "blurbSrc": "steps",
+   "blurbV": 2
   },
   "assign-global-admin-to-another-user-in-partner-center": {
    "title": "Assign Global Admin to another user in Partner Center",
    "hash": "90fd31c46d84f0b3",
    "bytes": 437776,
    "file": "docs-pdf/assign-global-admin-to-another-user-in-partner-center.pdf",
-   "blurb": "The attached guide covers: 🟣 Click on Settings → 🟣 Click on Account Settings → 🟣 Click on User Management → 🟣 Select the user → 🟣 Check ' Manages your organisation's account as'.",
-   "blurbSrc": "steps"
+   "blurb": "The attached guide covers: Click on Settings → Click on Account Settings → Click on User Management → Select the user → Check ' Manages your organisation's account as'.",
+   "blurbSrc": "steps",
+   "blurbV": 2
   },
   "azure-credits": {
    "title": "Azure Credits",
@@ -77,15 +84,17 @@
    "bytes": 150032,
    "file": "docs-pdf/azure-credits.pdf",
    "blurb": "The attached guide covers: When can Azure credits be activated? → How can Azure credits be activated? → Should all Azure credits be activated at once? → What is the timespan to activate the credits, and then use them once activated? → Where can Azure credits be used (Microsoft services vs. third-party solutions)?.",
-   "blurbSrc": "steps"
+   "blurbSrc": "steps",
+   "blurbV": 2
   },
   "azure-portal-user-rights": {
    "title": "Azure Portal User Rights",
    "hash": "b94e7f6b643052ee",
    "bytes": 121089,
    "file": "docs-pdf/azure-portal-user-rights.pdf",
-   "blurb": "The attached guide covers: How can I verify a user's rights to complete a purchase? → How to Assign Yourself as a Subscription Owner Without Prior Access (As a Global Admin)? → How do you assign the billing administrator role in Microsoft Azure Portal? → How to action admin consent requests? → Find your global admin to add an external user on Partner Center.",
-   "blurbSrc": "steps"
+   "blurb": "The attached guide covers: How can I verify a user's rights to complete a purchase? → How to Assign Yourself as a Subscription Owner Without Prior Access (As a Global Admin)? → How do you assign the billing administrator role in Microsoft Azure Portal? → How to action admin consent requests? → …",
+   "blurbSrc": "steps",
+   "blurbV": 2
   },
   "change-the-amount-of-seats-in-an-already-purchased-subscription-in-the-marketplace": {
    "title": "Change the amount of seats in an already purchased subscription in the Marketplace.",
@@ -93,15 +102,17 @@
    "bytes": 88379,
    "file": "docs-pdf/change-the-amount-of-seats-in-an-already-purchased-subscription-in-the-marketplace.pdf",
    "blurb": "The attached guide walks you through it step by step.",
-   "blurbSrc": "steps"
+   "blurbSrc": "steps",
+   "blurbV": 2
   },
   "configuring-cross-tenant-access-for-wetransact-in-microsoft-entra": {
    "title": "Configuring Cross-Tenant Access for WeTransact in Microsoft Entra",
    "hash": "1548b59d8ad1732d",
    "bytes": 346512,
    "file": "docs-pdf/configuring-cross-tenant-access-for-wetransact-in-microsoft-entra.pdf",
-   "blurb": "The attached guide covers: 🟣 Click on Expand External Identities section → 🟣 Click on Cross-tenant access settings → 🟣 Click on Add organization → 🟣 Type \"wetransact.io\" → 🟣 Click on Add.",
-   "blurbSrc": "steps"
+   "blurb": "The attached guide covers: Click on Expand External Identities section → Click on Cross-tenant access settings → Click on Add organization → Type \"wetransact.io\" → Click on Add.",
+   "blurbSrc": "steps",
+   "blurbV": 2
   },
   "create-an-ip-cosell-support-ticket-acr": {
    "title": "Create an IP-cosell support ticket (ACR)",
@@ -109,7 +120,8 @@
    "bytes": 479042,
    "file": "docs-pdf/create-an-ip-cosell-support-ticket-acr.pdf",
    "blurb": "The attached guide covers: PLAN A: If you have a Microsoft PDM → PLAN B: If you do not have a Microsoft PDM → Prerequisites → Click on the Stars Icon next to the settings icon.",
-   "blurbSrc": "steps"
+   "blurbSrc": "steps",
+   "blurbV": 2
   },
   "create-an-ip-cosell-support-ticket-billed-sales": {
    "title": "Create an IP-cosell support ticket (Billed Sales)",
@@ -117,39 +129,44 @@
    "bytes": 481262,
    "file": "docs-pdf/create-an-ip-cosell-support-ticket-billed-sales.pdf",
    "blurb": "The attached guide covers: Prerequisites → Click on the Stars Icon next to the settings icon.",
-   "blurbSrc": "steps"
+   "blurbSrc": "steps",
+   "blurbV": 2
   },
   "create-azure-support-request-for-invoice-payment": {
    "title": "Create Azure Support Request for Invoice Payment",
    "hash": "3ee7658cc00fbfc7",
    "bytes": 1195545,
    "file": "docs-pdf/create-azure-support-request-for-invoice-payment.pdf",
-   "blurb": "The attached guide covers: 🟣 Go to the question Mark → 🟣 Click on Contact support → 🟣 Click on Create a support request → 🟣 Issue related to: Azure services → 🟣 Type \"We would like to pay our invoice by bank transfer\".",
-   "blurbSrc": "steps"
+   "blurb": "The attached guide covers: Go to the question Mark → Click on Contact support → Click on Create a support request → Issue related to: Azure services → Type \"We would like to pay our invoice by bank transfer\".",
+   "blurbSrc": "steps",
+   "blurbV": 2
   },
   "create-warmify-email-rule-in-gmail": {
    "title": "Create Warmify Email Rule in Gmail",
    "hash": "455a56c46fdf4424",
    "bytes": 317526,
    "file": "docs-pdf/create-warmify-email-rule-in-gmail.pdf",
-   "blurb": "The attached guide covers: 1. Open Gmail → 2. Open Filter Settings → 3. Create a New Filter → 4. Set the Filter Condition → 5. Choose the Filter Action.",
-   "blurbSrc": "steps"
+   "blurb": "The attached guide covers: Open Gmail → Open Filter Settings → Create a New Filter → Set the Filter Condition → Choose the Filter Action.",
+   "blurbSrc": "steps",
+   "blurbV": 2
   },
   "create-warmify-email-rule-in-outlook": {
    "title": "Create Warmify Email Rule in Outlook",
    "hash": "c80e04049454596e",
    "bytes": 413436,
    "file": "docs-pdf/create-warmify-email-rule-in-outlook.pdf",
-   "blurb": "The attached guide covers: 🟣 Click on Rules → 🟣 Click on Manage rules → 🟣 Click on \"Add new rule\" → 🟣 Set the name of the rule to\"Warmify\" → 🟣 Select \"Subject includes\" condition.",
-   "blurbSrc": "steps"
+   "blurb": "The attached guide covers: Click on Rules → Click on Manage rules → Click on \"Add new rule\" → Set the name of the rule to\"Warmify\" → Select \"Subject includes\" condition.",
+   "blurbSrc": "steps",
+   "blurbV": 2
   },
   "creating-co-sell-deals-and-private-offers-in-salesforce": {
    "title": "Creating Co-Sell Deals & Private Offers in Salesforce",
    "hash": "274e45e9aa272ed6",
    "bytes": 130155,
    "file": "docs-pdf/creating-co-sell-deals-and-private-offers-in-salesforce.pdf",
-   "blurb": "The attached guide covers: 🟣 Overview → 🟣 Video.",
-   "blurbSrc": "steps"
+   "blurb": "The attached guide covers: Overview → Video.",
+   "blurbSrc": "steps",
+   "blurbV": 2
   },
   "crm-connectors": {
    "title": "CRM Connectors",
@@ -157,7 +174,8 @@
    "bytes": 82082,
    "file": "docs-pdf/crm-connectors.pdf",
    "blurb": "The attached guide covers: Salesforce Set Up Guide.",
-   "blurbSrc": "steps"
+   "blurbSrc": "steps",
+   "blurbV": 2
   },
   "csp-private-offer": {
    "title": "CSP Private Offer",
@@ -165,31 +183,35 @@
    "bytes": 86789,
    "file": "docs-pdf/csp-private-offer.pdf",
    "blurb": "The attached guide walks you through it step by step.",
-   "blurbSrc": "steps"
+   "blurbSrc": "steps",
+   "blurbV": 2
   },
   "csp-private-offer-vs-resale-enabled-offer": {
    "title": "CSP private offer vs Resale Enabled Offer",
    "hash": "3b450bd5c515942b",
    "bytes": 199421,
    "file": "docs-pdf/csp-private-offer-vs-resale-enabled-offer.pdf",
-   "blurb": "The attached guide covers: 🟣 Model 1 — CSP private offer → Transaction flow → Key facts → 🟣 Model 2 — Resale enabled offer (REO) → Transaction flow.",
-   "blurbSrc": "steps"
+   "blurb": "The attached guide covers: Model 1 — CSP private offer → Transaction flow → Key facts → Model 2 — Resale enabled offer (REO) → Transaction flow.",
+   "blurbSrc": "steps",
+   "blurbV": 2
   },
   "deal-registration-consent-and-troubleshooting-guide": {
    "title": "Deal Registration Consent & Troubleshooting Guide",
    "hash": "b0e2259a1f20e1e5",
    "bytes": 195831,
    "file": "docs-pdf/deal-registration-consent-and-troubleshooting-guide.pdf",
-   "blurb": "The attached guide covers: 🔐 Why Giving Consent Is Required for Deal Registration (Compliance & Security) → What this consent allows → 📘 Why Companies Need This for Compliance → 1. Microsoft requires it for security → 2. Ensures accountability and auditability.",
-   "blurbSrc": "steps"
+   "blurb": "The attached guide covers: Why Giving Consent Is Required for Deal Registration (Compliance & Security) → What this consent allows → Why Companies Need This for Compliance → Microsoft requires it for security → Ensures accountability and auditability.",
+   "blurbSrc": "steps",
+   "blurbV": 2
   },
   "deal-registration-create-a-new-co-sell-deal": {
    "title": "Deal Registration: Create a New Co-sell Deal",
    "hash": "9c9ec733243abb56",
    "bytes": 799131,
    "file": "docs-pdf/deal-registration-create-a-new-co-sell-deal.pdf",
-   "blurb": "The attached guide covers: 🟣 Click on Go-To-Market → 🟣 Click on Deal Registration → 🟣 Click on Create New Co-Sell Deal → 🟣 Type in or select the country of the Customer → 🟣 Type the customer's \"Company Name\".",
-   "blurbSrc": "steps"
+   "blurb": "The attached guide covers: Click on Go-To-Market → Click on Deal Registration → Click on Create New Co-Sell Deal → Type in or select the country of the Customer → Type the customer's \"Company Name\".",
+   "blurbSrc": "steps",
+   "blurbV": 2
   },
   "direct-private-offer": {
    "title": "Direct Private Offer",
@@ -197,7 +219,8 @@
    "bytes": 90828,
    "file": "docs-pdf/direct-private-offer.pdf",
    "blurb": "The attached guide walks you through it step by step.",
-   "blurbSrc": "steps"
+   "blurbSrc": "steps",
+   "blurbV": 2
   },
   "ecosystem-watchers-explore-partners-and-vendors-across-microsoft-marketplace": {
    "title": "Ecosystem Watchers - Explore Partners and Vendors Across Microsoft Marketplace",
@@ -205,7 +228,8 @@
    "bytes": 108210,
    "file": "docs-pdf/ecosystem-watchers-explore-partners-and-vendors-across-microsoft-marketplace.pdf",
    "blurb": "The attached guide walks you through it step by step.",
-   "blurbSrc": "steps"
+   "blurbSrc": "steps",
+   "blurbV": 2
   },
   "error-system-error": {
    "title": "Error : System Error",
@@ -213,23 +237,26 @@
    "bytes": 104032,
    "file": "docs-pdf/error-system-error.pdf",
    "blurb": "The attached guide walks you through it step by step.",
-   "blurbSrc": "steps"
+   "blurbSrc": "steps",
+   "blurbV": 2
   },
   "error-looping-to-same-page": {
    "title": "Error: looping to same page",
    "hash": "360914d63399b4f4",
    "bytes": 153098,
    "file": "docs-pdf/error-looping-to-same-page.pdf",
-   "blurb": "The attached guide covers: 🟣 User Rights in Partner Center → 💬 Need Help?.",
-   "blurbSrc": "steps"
+   "blurb": "The attached guide covers: User Rights in Partner Center → Need Help?.",
+   "blurbSrc": "steps",
+   "blurbV": 2
   },
   "error-please-contact-support": {
    "title": "Error: Please contact Support",
    "hash": "a7a9eb6528b5cd27",
    "bytes": 299642,
    "file": "docs-pdf/error-please-contact-support.pdf",
-   "blurb": "The attached guide covers: 🟣 User Rights in Partner Center → 🟣 User Rights in Azure portal → 🔹 Step 1: Please check below → 🔹 Step 2: Follow the instructions mentioned in the loom or written below → 🚀 Incident 2: If the above steps doesn't work please follow the three steps below.",
-   "blurbSrc": "steps"
+   "blurb": "The attached guide covers: User Rights in Partner Center → User Rights in Azure portal → Please check below → Follow the instructions mentioned in the loom or written below → Incident 2: If the above steps doesn't work please follow the three steps below.",
+   "blurbSrc": "steps",
+   "blurbV": 2
   },
   "faqs": {
    "title": "FAQs",
@@ -237,7 +264,8 @@
    "bytes": 90646,
    "file": "docs-pdf/faqs.pdf",
    "blurb": "The attached guide covers: Microsoft Partner Center → WeTransact Portal → IP Co-Sell → Incentive → Azure Credits.",
-   "blurbSrc": "steps"
+   "blurbSrc": "steps",
+   "blurbV": 2
   },
   "finance-and-order": {
    "title": "Finance & Order",
@@ -245,39 +273,44 @@
    "bytes": 117308,
    "file": "docs-pdf/finance-and-order.pdf",
    "blurb": "The attached guide covers: How to activate/accept orders? → How to update payment methods in Microsoft Azure Portal? → How to find order details in Partner Center? → How to view marketplace listing status? → How to verify the level of user rights?.",
-   "blurbSrc": "steps"
+   "blurbSrc": "steps",
+   "blurbV": 2
   },
   "find-out-who-the-azure-global-admin-is": {
    "title": "Find out who the Azure Global Admin is.",
    "hash": "b1a133efb1e9d276",
    "bytes": 412329,
    "file": "docs-pdf/find-out-who-the-azure-global-admin-is.pdf",
-   "blurb": "The attached guide covers: 🟣 Search for Microsoft Entra ID → 🟣 Click on Microsoft Entra ID → 🟣 Click on Roles and administrators → 🟣 Type \"Global Administrator\" → 🟣 Click on Global Administrator.",
-   "blurbSrc": "steps"
+   "blurb": "The attached guide covers: Search for Microsoft Entra ID → Click on Microsoft Entra ID → Click on Roles and administrators → Type \"Global Administrator\" → Click on Global Administrator.",
+   "blurbSrc": "steps",
+   "blurbV": 2
   },
   "find-your-global-admin-to-add-an-external-user-on-partner-center": {
    "title": "Find your global admin to add an external user on Partner Center.",
    "hash": "c243f44f2ac95876",
    "bytes": 352527,
    "file": "docs-pdf/find-your-global-admin-to-add-an-external-user-on-partner-center.pdf",
-   "blurb": "The attached guide covers: 🟣 Type \"Microsoft Entra ID \" → 🟣 Click on Roles and administrators → 🟣 Type \"Global Administrator\" → 🟣 Click on Global Administrator.",
-   "blurbSrc": "steps"
+   "blurb": "The attached guide covers: Type \"Microsoft Entra ID \" → Click on Roles and administrators → Type \"Global Administrator\" → Click on Global Administrator.",
+   "blurbSrc": "steps",
+   "blurbV": 2
   },
   "fixing-legal-profile-issues": {
    "title": "Fixing Legal Profile Issues",
    "hash": "1024670e9c9fb163",
    "bytes": 451074,
    "file": "docs-pdf/fixing-legal-profile-issues.pdf",
-   "blurb": "The attached guide covers: 🟣 Click on Settings → 🟣 Click on Account settings → 🟣 Click on Legal info → 🟣 You can click on Select an option to see the documentation that needs to be uploaded → 🟣 Select the documentation you can upload.",
-   "blurbSrc": "steps"
+   "blurb": "The attached guide covers: Click on Settings → Click on Account settings → Click on Legal info → You can click on Select an option to see the documentation that needs to be uploaded → Select the documentation you can upload.",
+   "blurbSrc": "steps",
+   "blurbV": 2
   },
   "go-live-in-5-days-with-your-csm": {
    "title": "Go Live in 5 Days with your CSM",
    "hash": "efb1b7a0ad203f4f",
    "bytes": 120773,
    "file": "docs-pdf/go-live-in-5-days-with-your-csm.pdf",
-   "blurb": "The attached guide covers: Step 1 — Create Your Microsoft Work Account → Step 2 — Become a Microsoft Partner & Access Partner Center → Step 3 — Enroll in the Required Partner Center Programs → Step 4 — Submit Your Legal Profile (24-hour Microsoft validation) → Step 5 — Complete Your Payout & Tax Profile (48-hour Microsoft validation).",
-   "blurbSrc": "steps"
+   "blurb": "The attached guide covers: Step 1 — Create Your Microsoft Work Account → Step 2 — Become a Microsoft Partner & Access Partner Center → Step 3 — Enroll in the Required Partner Center Programs → Step 4 — Submit Your Legal Profile (24-hour Microsoft validation) → …",
+   "blurbSrc": "steps",
+   "blurbV": 2
   },
   "gtm-go-to-market": {
    "title": "GTM - Go To Market",
@@ -285,7 +318,8 @@
    "bytes": 105726,
    "file": "docs-pdf/gtm-go-to-market.pdf",
    "blurb": "The attached guide covers: Video Masterclasses → How to leverage the WeTransact Collaborative Customer Tab for enhanced sales strategies? → How to connect Email Account? → Create Warmify Email Rule in Outlook.",
-   "blurbSrc": "steps"
+   "blurbSrc": "steps",
+   "blurbV": 2
   },
   "guide-your-customer-when-they-have-not-completed-the-order": {
    "title": "Guide your customer when they have not completed the order.",
@@ -293,39 +327,44 @@
    "bytes": 80764,
    "file": "docs-pdf/guide-your-customer-when-they-have-not-completed-the-order.pdf",
    "blurb": "The attached guide walks you through it step by step.",
-   "blurbSrc": "steps"
+   "blurbSrc": "steps",
+   "blurbV": 2
   },
   "have-an-issue-with-marketplace-leads": {
    "title": "Have an issue with Marketplace leads.",
    "hash": "479e88089acb450d",
    "bytes": 342014,
    "file": "docs-pdf/have-an-issue-with-marketplace-leads.pdf",
-   "blurb": "The attached guide covers: 🟣 Click on Settings (the little wheel on the top right) → 🟣 Click on Account settings → 🟣 Click on User management → 🟣 Search and Find \"support@wetransact.io\" user. Click on it → 🟣 For the period of troubleshooting - make WeTransact your referral for investigation.",
-   "blurbSrc": "steps"
+   "blurb": "The attached guide covers: Click on Settings (the little wheel on the top right) → Click on Account settings → Click on User management → Search and Find \"support@wetransact.io\" user. Click on it → For the period of troubleshooting - make WeTransact your referral for investigation.",
+   "blurbSrc": "steps",
+   "blurbV": 2
   },
   "how-can-i-verify-a-users-rights-to-complete-a-purchase": {
    "title": "How can I verify a user's rights to complete a purchase?",
    "hash": "b7b6aa2631feaeca",
    "bytes": 280700,
    "file": "docs-pdf/how-can-i-verify-a-users-rights-to-complete-a-purchase.pdf",
-   "blurb": "The attached guide covers: 🟣 Log in to your Azure portal, search Subscriptions and click on it → 🟣 Click on the subscription you want to use for the purchase → 🟣 Select Acces Contol (IAM) → 🟣 Click on View my access → 🟣 You can see the roles assign to this user.",
-   "blurbSrc": "steps"
+   "blurb": "The attached guide covers: Log in to your Azure portal, search Subscriptions and click on it → Click on the subscription you want to use for the purchase → Select Acces Contol (IAM) → Click on View my access → You can see the roles assign to this user.",
+   "blurbSrc": "steps",
+   "blurbV": 2
   },
   "how-do-i-add-a-subscription-id-to-the-supplemental-tab-in-the-wetransact-portal": {
    "title": "How do I add a subscription ID to the supplemental tab in the WeTransact portal?",
    "hash": "06ee41e15b491ea2",
    "bytes": 313858,
    "file": "docs-pdf/how-do-i-add-a-subscription-id-to-the-supplemental-tab-in-the-wetransact-portal.pdf",
-   "blurb": "The attached guide covers: 🟣 Click on My product listings → 🟣 Click on your product listing → 🟣 Click on Listing and Pricing → 🟣 Scroll down to the Publication details → 🟣 Check I agree, under Subscription ID section.",
-   "blurbSrc": "steps"
+   "blurb": "The attached guide covers: Click on My product listings → Click on your product listing → Click on Listing and Pricing → Scroll down to the Publication details → Check I agree, under Subscription ID section.",
+   "blurbSrc": "steps",
+   "blurbV": 2
   },
   "how-do-i-change-the-billing-region-in-azure-marketplace": {
    "title": "How do I change the billing region in Azure Marketplace?",
    "hash": "49840c1168f03ee7",
    "bytes": 260642,
    "file": "docs-pdf/how-do-i-change-the-billing-region-in-azure-marketplace.pdf",
-   "blurb": "The attached guide covers: 🟣 Go to Azure marketplace and type solution name → 🟣 Click on solution… → 🟣 Scroll down to the bottom of the screen, click on Change billing country/region → 🟣 Click on desired billing region → 🟣 Review pricing of solution in billing region's currency.",
-   "blurbSrc": "steps"
+   "blurb": "The attached guide covers: Go to Azure marketplace and type solution name → Click on solution… → Scroll down to the bottom of the screen, click on Change billing country/region → Click on desired billing region → Review pricing of solution in billing region's currency.",
+   "blurbSrc": "steps",
+   "blurbV": 2
   },
   "how-do-i-check-incentive-transact-and-grow-cashback": {
    "title": "How do I check Incentive (Transact & Grow) Cashback?",
@@ -333,23 +372,26 @@
    "bytes": 106451,
    "file": "docs-pdf/how-do-i-check-incentive-transact-and-grow-cashback.pdf",
    "blurb": "The attached guide walks you through it step by step.",
-   "blurbSrc": "steps"
+   "blurbSrc": "steps",
+   "blurbV": 2
   },
   "how-do-i-check-who-has-owner-status": {
    "title": "How do I check who has 'Owner' status?",
    "hash": "cb33ef93b4e09f81",
    "bytes": 211465,
    "file": "docs-pdf/how-do-i-check-who-has-owner-status.pdf",
-   "blurb": "The attached guide covers: 🟣 Click on Settings → 🟣 Click on Account settings → 🟣 Click on identifier.",
-   "blurbSrc": "steps"
+   "blurb": "The attached guide covers: Click on Settings → Click on Account settings → Click on identifier.",
+   "blurbSrc": "steps",
+   "blurbV": 2
   },
   "how-do-i-determine-who-has-global-admin-and-owner-status-in-partner-center": {
    "title": "How do I determine who has Global Admin & Owner status in Partner Center?",
    "hash": "24fd34fde56a7318",
    "bytes": 397687,
    "file": "docs-pdf/how-do-i-determine-who-has-global-admin-and-owner-status-in-partner-center.pdf",
-   "blurb": "The attached guide covers: 🟣 Select the filter by role option → 🟣 Select Owner role → 🟣 You can read the results of your research → 🟣 Select the filter by role option → 🟣 Select Global admin role.",
-   "blurbSrc": "steps"
+   "blurb": "The attached guide covers: Select the filter by role option → Select Owner role → You can read the results of your research → Select the filter by role option → Select Global admin role.",
+   "blurbSrc": "steps",
+   "blurbV": 2
   },
   "how-do-i-enrol-for-the-incentive-campaign": {
    "title": "How do I enrol for the incentive campaign?",
@@ -357,71 +399,80 @@
    "bytes": 105708,
    "file": "docs-pdf/how-do-i-enrol-for-the-incentive-campaign.pdf",
    "blurb": "The attached guide covers: Part 1 - Enroll into the Microsoft Transact & Grow Incentive → Part 2 - (US Entities) Filling Tax Profile Walkthrough example → Part 2 - Filling Up Tax Details (Non US-Countries) → Part 3 - Adding the Payment Profile → Part 4 - Submitting the Incentive Profile.",
-   "blurbSrc": "steps"
+   "blurbSrc": "steps",
+   "blurbV": 2
   },
   "how-do-i-export-a-technical-diagram-as-a-png": {
    "title": "How do I export a technical diagram as a .png?",
    "hash": "5c64bb9dac299b4d",
    "bytes": 408746,
    "file": "docs-pdf/how-do-i-export-a-technical-diagram-as-a-png.pdf",
-   "blurb": "The attached guide covers: 🟣 Once you're done editing - Maintain click-left and select your technical diagram → 🟣 Once selected \"click-right\" on the selected area → 🟣 Click on Export selection… ⇧⌘E → 🟣 Click on PNG → 🟣 Click on Export.",
-   "blurbSrc": "steps"
+   "blurb": "The attached guide covers: Once you're done editing - Maintain click-left and select your technical diagram → Once selected \"click-right\" on the selected area → Click on Export selection… E → Click on PNG → Click on Export.",
+   "blurbSrc": "steps",
+   "blurbV": 2
   },
   "how-do-i-select-a-publisher-location-for-the-product-listing": {
    "title": "How do I select a publisher location for the product listing?",
    "hash": "b70111dbe84b0438",
    "bytes": 246083,
    "file": "docs-pdf/how-do-i-select-a-publisher-location-for-the-product-listing.pdf",
-   "blurb": "The attached guide covers: 🟣 Click on \" My Product Listings\" → 🟣 Select your listing → 🟣 Go to Listing and pricing and scroll down to Publication Details → 🟣 Click on Publisher Location drop down → 🟣 Click on the applicable location.",
-   "blurbSrc": "steps"
+   "blurb": "The attached guide covers: Click on \" My Product Listings\" → Select your listing → Go to Listing and pricing and scroll down to Publication Details → Click on Publisher Location drop down → Click on the applicable location.",
+   "blurbSrc": "steps",
+   "blurbV": 2
   },
   "how-do-i-set-up-the-deal-registration-tab-on-wetransact-portal": {
    "title": "How do I set up the Deal Registration tab on Wetransact portal?",
    "hash": "3d9c9080bd2dbc41",
    "bytes": 184992,
    "file": "docs-pdf/how-do-i-set-up-the-deal-registration-tab-on-wetransact-portal.pdf",
-   "blurb": "The attached guide covers: 🟣 Referral Admin User Rights → 🟣 Login and Give Consent → 🟣 Sign in with your Microsoft account.",
-   "blurbSrc": "steps"
+   "blurb": "The attached guide covers: Referral Admin User Rights → Login and Give Consent → Sign in with your Microsoft account.",
+   "blurbSrc": "steps",
+   "blurbV": 2
   },
   "how-do-i-turn-off-auto-renew-on-azure-subscriptions": {
    "title": "How do I turn off Auto Renew on Azure Subscriptions?",
    "hash": "1d3015fce9ea684e",
    "bytes": 239328,
    "file": "docs-pdf/how-do-i-turn-off-auto-renew-on-azure-subscriptions.pdf",
-   "blurb": "The attached guide covers: 🟣 Go to the Azure portal → 🟣 The SaaS blade in the Azure portal displays your SaaS subscriptions → 🟣 Under Recurring billing, select the Edit recurring billing link.",
-   "blurbSrc": "steps"
+   "blurb": "The attached guide covers: Go to the Azure portal → The SaaS blade in the Azure portal displays your SaaS subscriptions → Under Recurring billing, select the Edit recurring billing link.",
+   "blurbSrc": "steps",
+   "blurbV": 2
   },
   "how-do-i-update-owner-status-in-partner-centre": {
    "title": "How do I update Owner status in Partner Centre?",
    "hash": "a3ce3f1ed3284755",
    "bytes": 377819,
    "file": "docs-pdf/how-do-i-update-owner-status-in-partner-centre.pdf",
-   "blurb": "The attached guide covers: 🟣 Click on Settings → 🟣 Click on Account settings → 🟣 Click on User management → 🟣 Click on the user you will be grant Owner status to… → 🟣 Select Owner.",
-   "blurbSrc": "steps"
+   "blurb": "The attached guide covers: Click on Settings → Click on Account settings → Click on User management → Click on the user you will be grant Owner status to… → Select Owner.",
+   "blurbSrc": "steps",
+   "blurbV": 2
   },
   "how-do-i-update-user-rights-to-manage-co-sell-solutions-in-partner-center": {
    "title": "How do I update user rights to manage co-sell solutions in Partner Center?",
    "hash": "b430fcba9c24c3d3",
    "bytes": 359703,
    "file": "docs-pdf/how-do-i-update-user-rights-to-manage-co-sell-solutions-in-partner-center.pdf",
-   "blurb": "The attached guide covers: 🟣 Click on Settings → 🟣 Click on Account settings → 🟣 Click on User management → 🟣 Click on your name… → 🟣 Select Co Sell Solution Admin.",
-   "blurbSrc": "steps"
+   "blurb": "The attached guide covers: Click on Settings → Click on Account settings → Click on User management → Click on your name… → Select Co Sell Solution Admin.",
+   "blurbSrc": "steps",
+   "blurbV": 2
   },
   "how-do-i-use-the-customisation-tool-to-expedite-the-co-sell-pitch-deck": {
    "title": "How do I use the customisation tool to expedite the co-sell pitch deck?",
    "hash": "9041608a95a3e4c1",
    "bytes": 482875,
    "file": "docs-pdf/how-do-i-use-the-customisation-tool-to-expedite-the-co-sell-pitch-deck.pdf",
-   "blurb": "The attached guide covers: 🟣 First of all you will need to be at least \"Co-Sell Admin\" to perform these actions → 🟣 Go to partner.microsoft.com → 🟣 Click on Marketplace offers → 🟣 Select the Offer you want to work on → 🟣 Click on Co-Sell with Microsoft.",
-   "blurbSrc": "steps"
+   "blurb": "The attached guide covers: First of all you will need to be at least \"Co-Sell Admin\" to perform these actions → Go to partner.microsoft.com → Click on Marketplace offers → Select the Offer you want to work on → Click on Co-Sell with Microsoft.",
+   "blurbSrc": "steps",
+   "blurbV": 2
   },
   "how-do-i-use-the-report-function-for-custom-dimensions": {
    "title": "How do I use the report function for custom dimensions?",
    "hash": "71371dff5cc65b70",
    "bytes": 526827,
    "file": "docs-pdf/how-do-i-use-the-report-function-for-custom-dimensions.pdf",
-   "blurb": "The attached guide covers: 🟣 Click on Orders → 🟣 Check if the Order is Approved → 🟣 Click on Report → 🟣 Report Usage Slide Modal → 🟣 Set Recurrence.",
-   "blurbSrc": "steps"
+   "blurb": "The attached guide covers: Click on Orders → Check if the Order is Approved → Click on Report → Report Usage Slide Modal → Set Recurrence.",
+   "blurbSrc": "steps",
+   "blurbV": 2
   },
   "how-do-you-assign-referral-admin-user-rights": {
    "title": "How do you assign Referral Admin user rights?",
@@ -429,119 +480,134 @@
    "bytes": 113092,
    "file": "docs-pdf/how-do-you-assign-referral-admin-user-rights.pdf",
    "blurb": "The attached guide walks you through it step by step.",
-   "blurbSrc": "steps"
+   "blurbSrc": "steps",
+   "blurbV": 2
   },
   "how-do-you-assign-the-billing-administrator-role-in-microsoft-azure-portal": {
    "title": "How do you assign the billing administrator role in Microsoft Azure Portal?",
    "hash": "73294101920b6aff",
    "bytes": 420005,
    "file": "docs-pdf/how-do-you-assign-the-billing-administrator-role-in-microsoft-azure-portal.pdf",
-   "blurb": "The attached guide covers: 🟣 Sign in to Azure portal and click on Users → 🟣 Click on search box → 🟣 Type your name or the name of the person you want to assign this role to → 🟣 Click on Kajol Pasha → 🟣 Click on Assigned roles.",
-   "blurbSrc": "steps"
+   "blurb": "The attached guide covers: Sign in to Azure portal and click on Users → Click on search box → Type your name or the name of the person you want to assign this role to → Click on Kajol Pasha → Click on Assigned roles.",
+   "blurbSrc": "steps",
+   "blurbV": 2
   },
   "how-does-a-csp-resell-a-marketplace-solution-direct-csps": {
    "title": "How does a CSP resell a Marketplace Solution ? (Direct CSPs)",
    "hash": "2815663285803874",
    "bytes": 593355,
    "file": "docs-pdf/how-does-a-csp-resell-a-marketplace-solution-direct-csps.pdf",
-   "blurb": "The attached guide covers: 🟣 They click on Customers → 🟣 They select the customer they would like to sell your Marketplace product to → 🟣 On that page they need to click on \"+ New Subscription\" → 🟣 Click on Marketplace → 🟣 Type the name of your solution.",
-   "blurbSrc": "steps"
+   "blurb": "The attached guide covers: They click on Customers → They select the customer they would like to sell your Marketplace product to → On that page they need to click on \"+ New Subscription\" → Click on Marketplace → Type the name of your solution.",
+   "blurbSrc": "steps",
+   "blurbV": 2
   },
   "how-to-accept-a-private-offer-customer-walkthrough": {
    "title": "How to accept a Private Offer? - Customer walkthrough",
    "hash": "9fb3f421df11a6de",
    "bytes": 424171,
    "file": "docs-pdf/how-to-accept-a-private-offer-customer-walkthrough.pdf",
-   "blurb": "The attached guide covers: 🟣 Click on 'Private Offer Management' on the left menu → 🟣 Below is what they see on their screen after click on the link or View offer → 🟣 Click on 'Accept Private Offer' → 🟣 Click on Accepting your Private Offer → 🟣 Click on Purchase.",
-   "blurbSrc": "steps"
+   "blurb": "The attached guide covers: Click on 'Private Offer Management' on the left menu → Below is what they see on their screen after click on the link or View offer → Click on 'Accept Private Offer' → Click on Accepting your Private Offer → Click on Purchase.",
+   "blurbSrc": "steps",
+   "blurbV": 2
   },
   "how-to-action-admin-consent-requests": {
    "title": "How to action admin consent requests?",
    "hash": "c11908b1b8151c3e",
    "bytes": 326879,
    "file": "docs-pdf/how-to-action-admin-consent-requests.pdf",
-   "blurb": "The attached guide covers: 🟣 Click on Expand Applications section → 🟣 Click on Enterprise applications → 🟣 Click on Admin consent requests → 🟣 Click on All (Preview).",
-   "blurbSrc": "steps"
+   "blurb": "The attached guide covers: Click on Expand Applications section → Click on Enterprise applications → Click on Admin consent requests → Click on All (Preview).",
+   "blurbSrc": "steps",
+   "blurbV": 2
   },
   "how-to-activateaccept-order": {
    "title": "How to Activate/Accept Order?",
    "hash": "cce16c45a94f6abe",
    "bytes": 198119,
    "file": "docs-pdf/how-to-activateaccept-order.pdf",
-   "blurb": "The attached guide covers: 🟣 Click on Orders Tab on the left menu → 🟣 You will see the new order, Scroll on the right to see the action button → 🟣 Click on Take action button → 🟣 A window will pop up, Click on 'Approve this order now' option.",
-   "blurbSrc": "steps"
+   "blurb": "The attached guide covers: Click on Orders Tab on the left menu → You will see the new order, Scroll on the right to see the action button → Click on Take action button → A window will pop up, Click on 'Approve this order now' option.",
+   "blurbSrc": "steps",
+   "blurbV": 2
   },
   "how-to-add-a-location-and-publisher-account-in-partner-center": {
    "title": "How to Add a Location and Publisher Account in Partner Center?",
    "hash": "0b41445d61c9517d",
    "bytes": 430172,
    "file": "docs-pdf/how-to-add-a-location-and-publisher-account-in-partner-center.pdf",
-   "blurb": "The attached guide covers: 🟣1. Click on Settings → 🟣 2. Click on Account settings → 🟣 3. Click on Legal info → 🟣 4. Click on Business Locations → 🟣 5. Click on '+ Location'.",
-   "blurbSrc": "steps"
+   "blurb": "The attached guide covers: Click on Settings → Click on Account settings → Click on Legal info → Click on Business Locations → Click on '+ Location'.",
+   "blurbSrc": "steps",
+   "blurbV": 2
   },
   "how-to-add-users-in-the-wetransact-portal": {
    "title": "How to add users in the WeTransact Portal?",
    "hash": "33f240c5efff176d",
    "bytes": 322820,
    "file": "docs-pdf/how-to-add-users-in-the-wetransact-portal.pdf",
-   "blurb": "The attached guide covers: 🟣 Click on settings → 🟣 On the settings page, select 'Users' section → 🟣 Add the email address → 🟣 Click on Role → 🟣 Change Password.",
-   "blurbSrc": "steps"
+   "blurb": "The attached guide covers: Click on settings → On the settings page, select 'Users' section → Add the email address → Click on Role → Change Password.",
+   "blurbSrc": "steps",
+   "blurbV": 2
   },
   "how-to-assign-yourself-as-a-subscription-owner-without-prior-access-as-a-global-admin": {
    "title": "How to Assign Yourself as a Subscription Owner Without Prior Access (As a Global Admin)?",
    "hash": "c4bcfa171928ed57",
    "bytes": 1587452,
    "file": "docs-pdf/how-to-assign-yourself-as-a-subscription-owner-without-prior-access-as-a-global-admin.pdf",
-   "blurb": "The attached guide covers: 🟣 Click on Users → 🟣 Type your name → 🟣 Click on your name → 🟣 Click on Assigned roles → 🟣 You want to ensure the Global Administrator role appears here.",
-   "blurbSrc": "steps"
+   "blurb": "The attached guide covers: Click on Users → Type your name → Click on your name → Click on Assigned roles → You want to ensure the Global Administrator role appears here.",
+   "blurbSrc": "steps",
+   "blurbV": 2
   },
   "how-to-cancel-a-subscription": {
    "title": "How to Cancel a Subscription?",
    "hash": "0cf499f24e34e564",
    "bytes": 468828,
    "file": "docs-pdf/how-to-cancel-a-subscription.pdf",
-   "blurb": "The attached guide covers: 🟣 Cancel within 3 days? Use the Azure Portal → 🟣 Order older than 3 days? Use Microsoft Partner Center → 🟣 Sign in to Azure portal and search Saas → 🟣 Click on the subscription Name from the list that you wish to cancel → 🟣 Click on Cancel subscription.",
-   "blurbSrc": "steps"
+   "blurb": "The attached guide covers: Cancel within 3 days? Use the Azure Portal → Order older than 3 days? Use Microsoft Partner Center → Sign in to Azure portal and search Saas → Click on the subscription Name from the list that you wish to cancel → Click on Cancel subscription.",
+   "blurbSrc": "steps",
+   "blurbV": 2
   },
   "how-to-change-the-publisher-id-name": {
    "title": "How to change the publisher ID name?",
    "hash": "0750bf4fcb1e4ef9",
    "bytes": 389611,
    "file": "docs-pdf/how-to-change-the-publisher-id-name.pdf",
-   "blurb": "The attached guide covers: 🟣 Click on Settings → 🟣 Click on Account settings → 🟣 Click on Legal info → 🟣 Click on Developer tab → 🟣 scroll down to Publisher Name and click Update.",
-   "blurbSrc": "steps"
+   "blurb": "The attached guide covers: Click on Settings → Click on Account settings → Click on Legal info → Click on Developer tab → scroll down to Publisher Name and click Update.",
+   "blurbSrc": "steps",
+   "blurbV": 2
   },
   "how-to-check-azure-consumption-acr-in-the-azure-portal": {
    "title": "How to check Azure Consumption (ACR) in the Azure portal?",
    "hash": "bdd3e832a897bb08",
    "bytes": 250308,
    "file": "docs-pdf/how-to-check-azure-consumption-acr-in-the-azure-portal.pdf",
-   "blurb": "The attached guide covers: Understanding Azure Consumption → 🟣 Sign in to the Azure portal and search 'Cost management.' → 🟣 Go to 'Cost Analysis' under 'Cost management.' → 🟣 If you wish user filter to select the period → 🟣 You will be able to see the Azure consumption (ACR).",
-   "blurbSrc": "steps"
+   "blurb": "The attached guide covers: Understanding Azure Consumption → Sign in to the Azure portal and search 'Cost management.' → Go to 'Cost Analysis' under 'Cost management.' → If you wish user filter to select the period → You will be able to see the Azure consumption (ACR).",
+   "blurbSrc": "steps",
+   "blurbV": 2
   },
   "how-to-check-if-a-legal-profile-is-verified": {
    "title": "How to Check if a Legal Profile is Verified?",
    "hash": "d4b54fde285a99d3",
    "bytes": 269192,
    "file": "docs-pdf/how-to-check-if-a-legal-profile-is-verified.pdf",
-   "blurb": "The attached guide covers: 🟣 Go to partner.microsoft.com → 🟣 Click on Settings → 🟣 Click on Account settings → 🟣 Click on Legal info → 🟣 Verify that the \"Partner\" & \"Developer\" tabs are ticked with the green symbol.",
-   "blurbSrc": "steps"
+   "blurb": "The attached guide covers: Go to partner.microsoft.com → Click on Settings → Click on Account settings → Click on Legal info → Verify that the \"Partner\" & \"Developer\" tabs are ticked with the green symbol.",
+   "blurbSrc": "steps",
+   "blurbV": 2
   },
   "how-to-check-if-auto-renewal-is-on-for-your-azure-subscriptions": {
    "title": "How to check if auto-renewal is on for your Azure subscriptions?",
    "hash": "388bf8571d402c1b",
    "bytes": 221812,
    "file": "docs-pdf/how-to-check-if-auto-renewal-is-on-for-your-azure-subscriptions.pdf",
-   "blurb": "The attached guide covers: 🟣 Go to the Azure portal → 🟣 The SaaS blade in the Azure portal displays your SaaS subscriptions.",
-   "blurbSrc": "steps"
+   "blurb": "The attached guide covers: Go to the Azure portal → The SaaS blade in the Azure portal displays your SaaS subscriptions.",
+   "blurbSrc": "steps",
+   "blurbV": 2
   },
   "how-to-check-microsoft-entra-application-roles": {
    "title": "How to check Microsoft Entra application roles?",
    "hash": "82633048f9e24887",
    "bytes": 370380,
    "file": "docs-pdf/how-to-check-microsoft-entra-application-roles.pdf",
-   "blurb": "The attached guide covers: 🟣 Go to Settings → 🟣 Click on Account Settings → 🟣 Click on User Management → 🟣 Select Microsoft Entraapplications → 🟣 Search for api-wetransact.",
-   "blurbSrc": "steps"
+   "blurb": "The attached guide covers: Go to Settings → Click on Account Settings → Click on User Management → Select Microsoft Entraapplications → Search for api-wetransact.",
+   "blurbSrc": "steps",
+   "blurbV": 2
   },
   "how-to-clone-pricing": {
    "title": "How to clone pricing?",
@@ -549,63 +615,71 @@
    "bytes": 100834,
    "file": "docs-pdf/how-to-clone-pricing.pdf",
    "blurb": "The attached guide walks you through it step by step.",
-   "blurbSrc": "steps"
+   "blurbSrc": "steps",
+   "blurbV": 2
   },
   "how-to-configure-a-saas-account-in-azure-portal": {
    "title": "How to configure a SaaS account in Azure Portal?",
    "hash": "9492976b4b692b0c",
    "bytes": 503797,
    "file": "docs-pdf/how-to-configure-a-saas-account-in-azure-portal.pdf",
-   "blurb": "The attached guide covers: 🟣 Sign in to Azure portal → 🟣 Type \"saas\" → 🟣 Click on SaaS → 🟣 Click on List of SaaS → 🟣Click on the product you purchased (for example, \"E2ETest2\").",
-   "blurbSrc": "steps"
+   "blurb": "The attached guide covers: Sign in to Azure portal → Type \"saas\" → Click on SaaS → Click on List of SaaS → Click on the product you purchased (for example, \"E2ETest2\").",
+   "blurbSrc": "steps",
+   "blurbV": 2
   },
   "how-to-configure-multiple-publisher-ids-in-wetransact-portal": {
    "title": "How to configure multiple Publisher IDs in WeTransact portal?",
    "hash": "e8875fa9890b07f1",
    "bytes": 541754,
    "file": "docs-pdf/how-to-configure-multiple-publisher-ids-in-wetransact-portal.pdf",
-   "blurb": "The attached guide covers: 🟣 Click on Settings → 🟣 Click on Account settings → 🟣 Click on User management → 🟣 Click on Microsoft Entra applications → 🟣 Click on Create Microsoft Entra application, then click continue.",
-   "blurbSrc": "steps"
+   "blurb": "The attached guide covers: Click on Settings → Click on Account settings → Click on User management → Click on Microsoft Entra applications → Click on Create Microsoft Entra application, then click continue.",
+   "blurbSrc": "steps",
+   "blurbV": 2
   },
   "how-to-connect-an-email-account-for-outreach-campaigns": {
    "title": "How to connect an email account for Outreach campaigns?",
    "hash": "2a7c43fa8367f364",
    "bytes": 361904,
    "file": "docs-pdf/how-to-connect-an-email-account-for-outreach-campaigns.pdf",
-   "blurb": "The attached guide covers: 🔷 Microsoft Outlook → 🟣 Log in to Microsoft 365 Admin Center → 🟣 Go to Active Users → 🟣 Locate the Email Account → 🟣 Navigate to Mail Settings.",
-   "blurbSrc": "steps"
+   "blurb": "The attached guide covers: Microsoft Outlook → Log in to Microsoft 365 Admin Center → Go to Active Users → Locate the Email Account → Navigate to Mail Settings.",
+   "blurbSrc": "steps",
+   "blurbV": 2
   },
   "how-to-create-a-billing-support-request-in-microsoft-azure-portal": {
    "title": "How to Create a Billing Support Request in Microsoft Azure Portal?",
    "hash": "1b8f62d5a89f97e5",
    "bytes": 1266831,
    "file": "docs-pdf/how-to-create-a-billing-support-request-in-microsoft-azure-portal.pdf",
-   "blurb": "The attached guide covers: 🟣 Sign in to Azure Portal → 🟣 Click on More portal tools → 🟣 Click on Support + Troubleshooting → 🟣 Type \"billing\" → 🟣 Click on Go.",
-   "blurbSrc": "steps"
+   "blurb": "The attached guide covers: Sign in to Azure Portal → Click on More portal tools → Click on Support + Troubleshooting → Type \"billing\" → Click on Go.",
+   "blurbSrc": "steps",
+   "blurbV": 2
   },
   "how-to-create-a-microsoft-support-ticket-without-a-partner-center-account": {
    "title": "How to Create a Microsoft Support Ticket Without a Partner Center Account",
    "hash": "de2474c2e3babc5b",
    "bytes": 320005,
    "file": "docs-pdf/how-to-create-a-microsoft-support-ticket-without-a-partner-center-account.pdf",
-   "blurb": "The attached guide covers: 🟣 Overview → 🟣 Step 1 – Go to Microsoft Support → 🟣 Step 2 – Enter your Problem Summary → 🟣 Step 3 – Select a Category → 🟣 Step 4 – Select a Problem Type.",
-   "blurbSrc": "steps"
+   "blurb": "The attached guide covers: Overview → Step 1 – Go to Microsoft Support → Step 2 – Enter your Problem Summary → Step 3 – Select a Category → Step 4 – Select a Problem Type.",
+   "blurbSrc": "steps",
+   "blurbV": 2
   },
   "how-to-create-a-new-users-in-partner-center": {
    "title": "How to create a new users in Partner Center?",
    "hash": "50a7f0b7a90cac32",
    "bytes": 266073,
    "file": "docs-pdf/how-to-create-a-new-users-in-partner-center.pdf",
-   "blurb": "The attached guide covers: 🟣 1. Sign in to Partner Center, and go to settings and account settings → 🟣 2. Select User management and Add user → 🟣 3. Select Create Users and continue → 🟣 4. Enter User details and permissions. Click save → 🟣 5. Once you click on save, you will get a username and temporary password to sign in.",
-   "blurbSrc": "steps"
+   "blurb": "The attached guide covers: Sign in to Partner Center, and go to settings and account settings → Select User management and Add user → Select Create Users and continue → Enter User details and permissions. Click save → Once you click on save, you will get a username and temporary password to sign in.",
+   "blurbSrc": "steps",
+   "blurbV": 2
   },
   "how-to-create-a-partner-center-support-ticket": {
    "title": "How to create a Partner Center support ticket?",
    "hash": "f9c57aac780434db",
    "bytes": 474850,
    "file": "docs-pdf/how-to-create-a-partner-center-support-ticket.pdf",
-   "blurb": "The attached guide covers: 🟣 Click on Ai Assistant → 🟣 Click on Contact support… → 🟣 Fill in the required information to the best of your ability, then click next → 🟣 Click on create support request → 🟣 Fill in the required information to the best of your ability.",
-   "blurbSrc": "steps"
+   "blurb": "The attached guide covers: Click on Ai Assistant → Click on Contact support… → Fill in the required information to the best of your ability, then click next → Click on create support request → Fill in the required information to the best of your ability.",
+   "blurbSrc": "steps",
+   "blurbV": 2
   },
   "how-to-create-a-private-offer-to-csp": {
    "title": "How to create a Private Offer to CSP",
@@ -613,15 +687,17 @@
    "bytes": 97053,
    "file": "docs-pdf/how-to-create-a-private-offer-to-csp.pdf",
    "blurb": "The attached guide walks you through it step by step.",
-   "blurbSrc": "steps"
+   "blurbSrc": "steps",
+   "blurbV": 2
   },
   "how-to-create-a-private-offer": {
    "title": "How to create a Private Offer?",
    "hash": "2fb526660149aece",
    "bytes": 307704,
    "file": "docs-pdf/how-to-create-a-private-offer.pdf",
-   "blurb": "The attached guide covers: 🟣 Prerequisites for Private offer → 🟣 Sign in to Wetransact portal and click on Private offer tab → 🟣 Choose 'Direct private Offer' option → 🟣 Fill out the details → 🟣 Pick the public plan this offer is based on.",
-   "blurbSrc": "steps"
+   "blurb": "The attached guide covers: Prerequisites for Private offer → Sign in to Wetransact portal and click on Private offer tab → Choose 'Direct private Offer' option → Fill out the details → Pick the public plan this offer is based on.",
+   "blurbSrc": "steps",
+   "blurbV": 2
   },
   "how-to-create-a-private-plan": {
    "title": "How to create a Private Plan?",
@@ -629,135 +705,152 @@
    "bytes": 100989,
    "file": "docs-pdf/how-to-create-a-private-plan.pdf",
    "blurb": "The attached guide walks you through it step by step.",
-   "blurbSrc": "steps"
+   "blurbSrc": "steps",
+   "blurbV": 2
   },
   "how-to-create-new-pricing-options": {
    "title": "How to Create New Pricing Options?",
    "hash": "5edc986ef7db221e",
    "bytes": 369809,
    "file": "docs-pdf/how-to-create-new-pricing-options.pdf",
-   "blurb": "The attached guide covers: 🟣 Click on Product Listings on the left hand side menu → 🟣 Scroll down to the \"Pricing Plan\" and select Add pricing plan\" → 🟣 Name the pricing plan and add a description, Go next → 🟣 Choose pricing Model, Flat rate or per user → 🟣 Choose subscription length and the 'Billing Interval' drop-down menu.",
-   "blurbSrc": "steps"
+   "blurb": "The attached guide covers: Click on Product Listings on the left hand side menu → Scroll down to the \"Pricing Plan\" and select Add pricing plan\" → Name the pricing plan and add a description, Go next → Choose pricing Model, Flat rate or per user → Choose subscription length and the 'Billing Interval' drop-down menu.",
+   "blurbSrc": "steps",
+   "blurbV": 2
   },
   "how-to-delete-and-re-add-support-and-bot": {
    "title": "How to Delete and Re-add support and bot?",
    "hash": "64f514fb5ceb5025",
    "bytes": 363369,
    "file": "docs-pdf/how-to-delete-and-re-add-support-and-bot.pdf",
-   "blurb": "The attached guide covers: 🟣 Click on Settings → 🟣 Click on Account settings → 🟣 Click on User management → 🟣 Click on users Searchbox and type support2@wetransact.io → 🟣 Click on Select row.",
-   "blurbSrc": "steps"
+   "blurb": "The attached guide covers: Click on Settings → Click on Account settings → Click on User management → Click on users Searchbox and type support2@wetransact.io → Click on Select row.",
+   "blurbSrc": "steps",
+   "blurbV": 2
   },
   "how-to-download-the-incentive-justification": {
    "title": "How to download the incentive justification?",
    "hash": "039e20d8c7e98806",
    "bytes": 182909,
    "file": "docs-pdf/how-to-download-the-incentive-justification.pdf",
-   "blurb": "The attached guide covers: 🟣 Click on Earnings → 2. On that page you just need to scroll down → 🟣 Click on Payment Summary → 🟣 Click and download the payment remitance. This is the justification.",
-   "blurbSrc": "steps"
+   "blurb": "The attached guide covers: Click on Earnings → On that page you just need to scroll down → Click on Payment Summary → Click and download the payment remitance. This is the justification.",
+   "blurbSrc": "steps",
+   "blurbV": 2
   },
   "how-to-enable-microsoft-authenticator-via-azure-portal": {
    "title": "How to Enable Microsoft Authenticator via Azure Portal",
    "hash": "20d3d389d4802ce6",
    "bytes": 250321,
    "file": "docs-pdf/how-to-enable-microsoft-authenticator-via-azure-portal.pdf",
-   "blurb": "The attached guide covers: 🟣 Step 1 – Go to Security → 🟣 Step 2 – Open Authentication Methods → 🟣 Step 3 – Go to Policies → 🟣 Step 4 – Enable Microsoft Authenticator → 💬 Need Help?.",
-   "blurbSrc": "steps"
+   "blurb": "The attached guide covers: Step 1 – Go to Security → Step 2 – Open Authentication Methods → Step 3 – Go to Policies → Step 4 – Enable Microsoft Authenticator → Need Help?.",
+   "blurbSrc": "steps",
+   "blurbV": 2
   },
   "how-to-find-a-billing-id": {
    "title": "How to Find a Billing ID?",
    "hash": "18d68c4ac4b333db",
    "bytes": 212305,
    "file": "docs-pdf/how-to-find-a-billing-id.pdf",
-   "blurb": "The attached guide covers: 🟣 Go to Home - Microsoft Azure → 🟣 Type \"billing\" in the Search bar. Click on \"Cost Management + Billing\" → 🟣 Click on the billing scope in question.",
-   "blurbSrc": "steps"
+   "blurb": "The attached guide covers: Go to Home - Microsoft Azure → Type \"billing\" in the Search bar. Click on \"Cost Management + Billing\" → Click on the billing scope in question.",
+   "blurbSrc": "steps",
+   "blurbV": 2
   },
   "how-to-find-an-object-id-of-a-user": {
    "title": "How to find an object ID of a user?",
    "hash": "f8971bc80700e7a3",
    "bytes": 204925,
    "file": "docs-pdf/how-to-find-an-object-id-of-a-user.pdf",
-   "blurb": "The attached guide covers: 🟣 Sign in to entra.microsoft.com → 🟣 select “Users” → “All users” in the left panel → 🟣 Search for the User name or email in the search box → 🟣 Under the “Overview” tab, you’ll see “Object ID.” → 💬 Need Help?.",
-   "blurbSrc": "steps"
+   "blurb": "The attached guide covers: Sign in to entra.microsoft.com → select “Users” “All users” in the left panel → Search for the User name or email in the search box → Under the “Overview” tab, you’ll see “Object ID.” → Need Help?.",
+   "blurbSrc": "steps",
+   "blurbV": 2
   },
   "how-to-find-and-purchase-a-private-plan": {
    "title": "How to find and purchase a private plan?",
    "hash": "d39ec103d1c1ab6a",
    "bytes": 519399,
    "file": "docs-pdf/how-to-find-and-purchase-a-private-plan.pdf",
-   "blurb": "The attached guide covers: 🔍 Step 1 — Find your Private Plan → 🟣 Sign in to your Azure Portal → 🟣 On the homepage, search 'Marketplace' in the search bar → 🛒 Step 2 — Complete your purchase → 🟣 On the offer, click the \"Plans + Pricing\" tab.",
-   "blurbSrc": "steps"
+   "blurb": "The attached guide covers: Step 1 — Find your Private Plan → Sign in to your Azure Portal → On the homepage, search 'Marketplace' in the search bar → Step 2 — Complete your purchase → On the offer, click the \"Plans + Pricing\" tab.",
+   "blurbSrc": "steps",
+   "blurbV": 2
   },
   "how-to-find-order-details-in-partner-center": {
    "title": "How to find order details in Partner Center?",
    "hash": "288ef26c443d9d01",
    "bytes": 205231,
    "file": "docs-pdf/how-to-find-order-details-in-partner-center.pdf",
-   "blurb": "The attached guide covers: 🟣 Click on Insights → 🟣 Click on Orders → 🟣 Scroll down to Orders details.",
-   "blurbSrc": "steps"
+   "blurb": "The attached guide covers: Click on Insights → Click on Orders → Scroll down to Orders details.",
+   "blurbSrc": "steps",
+   "blurbV": 2
   },
   "how-to-find-partnerglobal-id": {
    "title": "How to find PartnerGlobal ID?",
    "hash": "14a3c7143527b2e4",
    "bytes": 164821,
    "file": "docs-pdf/how-to-find-partnerglobal-id.pdf",
-   "blurb": "The attached guide covers: PartnerGlobal ID → 🟣 1. Sign in to Partner Center, and go to settings and account settings → 🟣 2. Click on identifier and select Microsoft Ai Cloud Partner Program → 💬 Need Help?.",
-   "blurbSrc": "steps"
+   "blurb": "The attached guide covers: PartnerGlobal ID → Sign in to Partner Center, and go to settings and account settings → Click on identifier and select Microsoft Ai Cloud Partner Program → Need Help?.",
+   "blurbSrc": "steps",
+   "blurbV": 2
   },
   "how-to-find-the-invoice-id-for-a-customer-transaction": {
    "title": "How to find the invoice ID for a customer transaction?",
    "hash": "03d131bc485f85fa",
    "bytes": 201564,
    "file": "docs-pdf/how-to-find-the-invoice-id-for-a-customer-transaction.pdf",
-   "blurb": "The attached guide covers: 🟣 Sign in to partner center and go to Insights tile → 🟣 Select Downloads Hub → 🟣 Click on 'Create new report' → 🟣 Select 'Revenue' and in columns 'Select all' → 🟣 The report will have Invoice ID column.",
-   "blurbSrc": "steps"
+   "blurb": "The attached guide covers: Sign in to partner center and go to Insights tile → Select Downloads Hub → Click on 'Create new report' → Select 'Revenue' and in columns 'Select all' → You will the the report is running it will take 1-2 minutes to get ready to be downloaded.",
+   "blurbSrc": "steps",
+   "blurbV": 2
   },
   "how-to-find-the-mpn-id": {
    "title": "How to find the MPN ID?",
    "hash": "0294f25ad6fb057f",
    "bytes": 238679,
    "file": "docs-pdf/how-to-find-the-mpn-id.pdf",
-   "blurb": "The attached guide covers: 🟣 Click on Settings → 🟣 Click on Account settings → 🟣 Click on Legal info → 🟣 Click on Developer Tab → 🟣 Look for MPN ID.",
-   "blurbSrc": "steps"
+   "blurb": "The attached guide covers: Click on Settings → Click on Account settings → Click on Legal info → Click on Developer Tab → Look for MPN ID.",
+   "blurbSrc": "steps",
+   "blurbV": 2
   },
   "how-to-find-your-marketplace-invoice": {
    "title": "How to find your marketplace invoice?",
    "hash": "5a5460627a8fa453",
    "bytes": 263622,
    "file": "docs-pdf/how-to-find-your-marketplace-invoice.pdf",
-   "blurb": "The attached guide covers: 🟣 Sign in to Azure and Type \"invoice\" → 🟣 Click on Invoices → 🟣 Click on Your Billing Account → 🟣 Click on Invoices → 🟣 Click on the relevant invoice.",
-   "blurbSrc": "steps"
+   "blurb": "The attached guide covers: Sign in to Azure and Type \"invoice\" → Click on Invoices → Click on Your Billing Account → Click on Invoices → Click on the relevant invoice.",
+   "blurbSrc": "steps",
+   "blurbV": 2
   },
   "how-to-find-your-tenant-id-in-azure-portal": {
    "title": "How to find your Tenant ID in Azure portal?",
    "hash": "0de4f781411fe4f8",
    "bytes": 138341,
    "file": "docs-pdf/how-to-find-your-tenant-id-in-azure-portal.pdf",
-   "blurb": "The attached guide covers: 🟣 Sign in to Azure Portal (https://portal.azure.com) → 🟣 On the top search bar, search 'Tenant or Tenant Properties' → 🟣 Click on Tenant properties.",
-   "blurbSrc": "steps"
+   "blurb": "The attached guide covers: Sign in to Azure Portal → On the top search bar, search 'Tenant or Tenant Properties' → Click on Tenant properties.",
+   "blurbSrc": "steps",
+   "blurbV": 2
   },
   "how-to-fix-a-suspended-subscription": {
    "title": "How to Fix a Suspended Subscription?",
    "hash": "d97b27443876f4a3",
    "bytes": 189040,
    "file": "docs-pdf/how-to-fix-a-suspended-subscription.pdf",
-   "blurb": "The attached guide covers: 🟣 Log into your Azure Environment → 🟣 Go to Cost Management + Billing / Click in “Pay Now”.",
-   "blurbSrc": "steps"
+   "blurb": "The attached guide covers: Log into your Azure Environment → Go to Cost Management + Billing / Click in “Pay Now”.",
+   "blurbSrc": "steps",
+   "blurbV": 2
   },
   "how-to-generate-activation-links-in-partner-center-csps": {
    "title": "How to generate activation links in Partner Center (CSPs)?",
    "hash": "570b59789e0e735d",
    "bytes": 244110,
    "file": "docs-pdf/how-to-generate-activation-links-in-partner-center-csps.pdf",
-   "blurb": "The attached guide covers: 🟣 Click on Pending → 🟣 Click on highlight → 🟣 Click on highlight → 🟣 Click on Generate activation link → 💬 Need Help?.",
-   "blurbSrc": "steps"
+   "blurb": "The attached guide covers: Click on Pending → Click on highlight → Click on highlight → Click on Generate activation link → Need Help?.",
+   "blurbSrc": "steps",
+   "blurbV": 2
   },
   "how-to-know-which-customers-includes-a-microsoft-payment": {
    "title": "How to know which customers includes a Microsoft Payment",
    "hash": "b297ab3942b5d011",
    "bytes": 185844,
    "file": "docs-pdf/how-to-know-which-customers-includes-a-microsoft-payment.pdf",
-   "blurb": "The attached guide covers: Step 1: Open Partner Center → Step 2: Go to Earnings → Step 3: Open the Payment Summary.",
-   "blurbSrc": "steps"
+   "blurb": "The attached guide covers: Open Partner Center → Go to Earnings → Open the Payment Summary.",
+   "blurbSrc": "steps",
+   "blurbV": 2
   },
   "how-to-leverage-the-wetransact-collaborative-customer-tab-for-enhanced-sales-strategies": {
    "title": "How to leverage the WeTransact Collaborative Customer Tab for enhanced sales strategies?",
@@ -765,63 +858,71 @@
    "bytes": 114677,
    "file": "docs-pdf/how-to-leverage-the-wetransact-collaborative-customer-tab-for-enhanced-sales-strategies.pdf",
    "blurb": "The attached guide walks you through it step by step.",
-   "blurbSrc": "steps"
+   "blurbSrc": "steps",
+   "blurbV": 2
   },
   "how-to-pay-your-marketplace-invoices": {
    "title": "How to pay your marketplace invoices?",
    "hash": "9d7227196340a554",
    "bytes": 405361,
    "file": "docs-pdf/how-to-pay-your-marketplace-invoices.pdf",
-   "blurb": "The attached guide covers: 🟣 Sign in to Azure portal and type Subscriptions → 🟣 Click on Subscriptions → 🟣 Click on the subscription you used for purchasing on the marketplace → 🟣 Click on Invoices → 🟣 Click on Invoices.",
-   "blurbSrc": "steps"
+   "blurb": "The attached guide covers: Sign in to Azure portal and type Subscriptions → Click on Subscriptions → Click on the subscription you used for purchasing on the marketplace → Click on Invoices → Click on Invoices.",
+   "blurbSrc": "steps",
+   "blurbV": 2
   },
   "how-to-provide-or-update-partner-center-user-rights": {
    "title": "How to provide (or update) Partner Center user rights?",
    "hash": "0c60e93bf7ba0d6d",
    "bytes": 395187,
    "file": "docs-pdf/how-to-provide-or-update-partner-center-user-rights.pdf",
-   "blurb": "The attached guide covers: 🟣 Go to partner.microsoft.com → 🟣 Click on Settings → 🟣 Click on Account settings → 🟣 Click on \"User Management\" → 🟣 To update the rights. Click on the name/email.",
-   "blurbSrc": "steps"
+   "blurb": "The attached guide covers: Go to partner.microsoft.com → Click on Settings → Click on Account settings → Click on \"User Management\" → Click on the\"Name\" of the user to update rights or click on \"Add user\" to provide rights.",
+   "blurbSrc": "steps",
+   "blurbV": 2
   },
   "how-to-purchase-a-solution-on-azure-marketplace-generic": {
    "title": "How to purchase a solution on Azure Marketplace (generic)?",
    "hash": "52b0990866ef4e6d",
    "bytes": 524274,
    "file": "docs-pdf/how-to-purchase-a-solution-on-azure-marketplace-generic.pdf",
-   "blurb": "The attached guide covers: 🟣 Create a work account if you don't have one → 🟣 Sign in to Azure portal and search marketplace → 🟣 Search the product name in the search box → 🟣 On the offer, click the \"Plans + Pricing\" tab → 🟣 Verify you have selected the right Plan and then click on \"Subscribe\".",
-   "blurbSrc": "steps"
+   "blurb": "The attached guide covers: Create a work account if you don't have one → Sign in to Azure portal and search marketplace → Search the product name in the search box → On the offer, click the \"Plans + Pricing\" tab → Verify you have selected the right Plan and then click on \"Subscribe\".",
+   "blurbSrc": "steps",
+   "blurbV": 2
   },
   "how-to-purchase-a-wetransact-solution": {
    "title": "How to Purchase a WeTransact Solution?",
    "hash": "b892c5a4a63e79be",
    "bytes": 384354,
    "file": "docs-pdf/how-to-purchase-a-wetransact-solution.pdf",
-   "blurb": "The attached guide covers: 🟣 Choose the WeTransact plan you want to purchase → 🟣 On the offer, click the \"Plans + Pricing\" tab → 🟣 Verify you have selected the right Plan and then click on \"Subscribe\" → 🟣 Select the \"Resource Group\" into which the \"WeTransact\" SaaS resource will be deployed → 🟣 Assign a name to the WeTransact SaaS resource.",
-   "blurbSrc": "steps"
+   "blurb": "The attached guide covers: Choose the WeTransact plan you want to purchase → On the offer, click the \"Plans + Pricing\" tab → Verify you have selected the right Plan and then click on \"Subscribe\" → Select the \"Resource Group\" into which the \"WeTransact\" SaaS resource will be deployed → …",
+   "blurbSrc": "steps",
+   "blurbV": 2
   },
   "how-to-set-up-a-new-subscription-azure": {
    "title": "How to set up a new Subscription (Azure)?",
    "hash": "a1672a237dac6d75",
    "bytes": 445768,
    "file": "docs-pdf/how-to-set-up-a-new-subscription-azure.pdf",
-   "blurb": "The attached guide covers: 🟣 Type \"subscription\" → 🟣 Click on Subscriptions → 🟣 Click on Add → 🟣 Click on Select offer → # Setup your Pay as you go subscription.",
-   "blurbSrc": "steps"
+   "blurb": "The attached guide covers: Type \"subscription\" → Click on Subscriptions → Click on Add → Click on Select offer → # Setup your Pay as you go subscription.",
+   "blurbSrc": "steps",
+   "blurbV": 2
   },
   "how-to-set-up-the-finance-tab-in-the-wetransact-portal": {
    "title": "How to Set Up the Finance Tab in the Wetransact Portal?",
    "hash": "2f97fff193fd20ac",
    "bytes": 438068,
    "file": "docs-pdf/how-to-set-up-the-finance-tab-in-the-wetransact-portal.pdf",
-   "blurb": "The attached guide covers: 🟣 On Partner Center click on the little wheel on the top right → 🟣 Click on Account settings → 🟣 Click on User management → 🟣 Click on Microsoft Entra Applications → 🟣 Click Add Microsoft Entra Application.",
-   "blurbSrc": "steps"
+   "blurb": "The attached guide covers: On Partner Center click on the little wheel on the top right → Click on Account settings → Click on User management → Click on Microsoft Entra Applications → Click Add Microsoft Entra Application.",
+   "blurbSrc": "steps",
+   "blurbV": 2
   },
   "how-to-stop-distribution-of-a-listing": {
    "title": "How to Stop distribution of a Listing?",
    "hash": "ff81f299e107be13",
    "bytes": 197365,
    "file": "docs-pdf/how-to-stop-distribution-of-a-listing.pdf",
-   "blurb": "The attached guide covers: 🟣 Click on Marketplace offers → 🟣 Click on the offer in question → 🟣 Click 'Stop Distribution' beside the pricing option.",
-   "blurbSrc": "steps"
+   "blurb": "The attached guide covers: Click on Marketplace offers → Click on the offer in question → Click 'Stop Distribution' beside the pricing option.",
+   "blurbSrc": "steps",
+   "blurbV": 2
   },
   "how-to-submit-the-ip-co-sell-documentation": {
    "title": "How to submit the IP Co sell documentation?",
@@ -829,79 +930,89 @@
    "bytes": 110638,
    "file": "docs-pdf/how-to-submit-the-ip-co-sell-documentation.pdf",
    "blurb": "The attached guide walks you through it step by step.",
-   "blurbSrc": "steps"
+   "blurbSrc": "steps",
+   "blurbV": 2
   },
   "how-to-test-your-managed-application-package-before-publishing": {
    "title": "How to test your Managed Application package before publishing",
    "hash": "1ddae46589f0676a",
    "bytes": 141980,
    "file": "docs-pdf/how-to-test-your-managed-application-package-before-publishing.pdf",
-   "blurb": "The attached guide covers: 🟣 Step 1 — Preview your deployment UI → 🟣 Step 2 — Validate your ARM template with ARM-TTK → Next step — submit through WeTransact.",
-   "blurbSrc": "steps"
+   "blurb": "The attached guide covers: Step 1 — Preview your deployment UI → Step 2 — Validate your ARM template with ARM-TTK → Next step — submit through WeTransact.",
+   "blurbSrc": "steps",
+   "blurbV": 2
   },
   "how-to-update-credentials-for-finance-tab-in-the-wetransact-portal": {
    "title": "How to update credentials for finance Tab in the Wetransact Portal?",
    "hash": "cd7586d6de05446e",
    "bytes": 426512,
    "file": "docs-pdf/how-to-update-credentials-for-finance-tab-in-the-wetransact-portal.pdf",
-   "blurb": "The attached guide covers: 🟣 On Partner Center click on the little wheel on the top right → 🟣 Click on Account settings → 🟣 Click on User management → 🟣 Click on Microsoft Entra Applications → 🟣 Click Add Microsoft Entra Application.",
-   "blurbSrc": "steps"
+   "blurb": "The attached guide covers: On Partner Center click on the little wheel on the top right → Click on Account settings → Click on User management → Click on Microsoft Entra Applications → Click Add Microsoft Entra Application.",
+   "blurbSrc": "steps",
+   "blurbV": 2
   },
   "how-to-update-global-admin-from-non-actionable-to-actionable": {
    "title": "How to update Global Admin from non-actionable to actionable?",
    "hash": "758ed12d9e4fd52a",
    "bytes": 400886,
    "file": "docs-pdf/how-to-update-global-admin-from-non-actionable-to-actionable.pdf",
-   "blurb": "The attached guide covers: 🟣 Click on Settings → 🟣 Click on Account settings → 🟣 Click on User management → 🟣 Type the name of whom you are updating the user rights for → 🟣 Click on their name….",
-   "blurbSrc": "steps"
+   "blurb": "The attached guide covers: Click on Settings → Click on Account settings → Click on User management → Type the name of whom you are updating the user rights for → Click on their name….",
+   "blurbSrc": "steps",
+   "blurbV": 2
   },
   "how-to-update-payment-methods-in-microsoft-azure-portal": {
    "title": "How to update payment methods in Microsoft Azure Portal?",
    "hash": "400fad17848a1658",
    "bytes": 278030,
    "file": "docs-pdf/how-to-update-payment-methods-in-microsoft-azure-portal.pdf",
-   "blurb": "The attached guide covers: 🟣 Click on Subscriptions → 🟣 Click on the relevant subscription → 🟣 Click on Billing, then Payment Methods → 🟣 Click on Add payment method.",
-   "blurbSrc": "steps"
+   "blurb": "The attached guide covers: Click on Subscriptions → Click on the relevant subscription → Click on Billing, then Payment Methods → Click on Add payment method.",
+   "blurbSrc": "steps",
+   "blurbV": 2
   },
   "how-to-update-the-primary-contact-email-address-in-legal-info": {
    "title": "How to update the primary contact email address in legal info?",
    "hash": "5ac3d04bdb8fa21a",
    "bytes": 334204,
    "file": "docs-pdf/how-to-update-the-primary-contact-email-address-in-legal-info.pdf",
-   "blurb": "The attached guide covers: 🟣1. Click on Settings → 🟣2. Click on Account settings → 🟣3. Click on Legal info → 🟣4. Click on Update → 🟣5. Input updated Primary Contact Email.",
-   "blurbSrc": "steps"
+   "blurb": "The attached guide covers: Click on Settings → Click on Account settings → Click on Legal info → Click on Update → Input updated Primary Contact Email.",
+   "blurbSrc": "steps",
+   "blurbV": 2
   },
   "how-to-upgrade-your-plan-when-youre-ready": {
    "title": "How to upgrade your plan when you're ready",
    "hash": "72f2a0d15bfdf419",
    "bytes": 248270,
    "file": "docs-pdf/how-to-upgrade-your-plan-when-youre-ready.pdf",
-   "blurb": "The attached guide covers: 🟣 1. On the dashboard, click on Settings → 🟣 2. Under the team section, click on Subscribe Plan → 🟣 4. Choose the Plan That's Right for You → 🚀 WeLaunch → 📈 WeScale (Most Popular).",
-   "blurbSrc": "steps"
+   "blurb": "The attached guide covers: On the dashboard, click on Settings → Under the team section, click on Subscribe Plan → Choose the Plan That's Right for You → WeLaunch → WeScale (Most Popular).",
+   "blurbSrc": "steps",
+   "blurbV": 2
   },
   "how-to-use-existing-terms-and-conditions-for-the-product-listing": {
    "title": "How to use existing terms and conditions for the product listing?",
    "hash": "a665adaf580092af",
    "bytes": 225168,
    "file": "docs-pdf/how-to-use-existing-terms-and-conditions-for-the-product-listing.pdf",
-   "blurb": "The attached guide covers: 🟣 Select I want to use my existing terms and conditions.… → 🟣 Click on Next → 🟣 Select Or paste your link to your contract here:… → 🟣 Select Or paste your link to your contract here:… → Click on Terms And Conditions Link.",
-   "blurbSrc": "steps"
+   "blurb": "The attached guide covers: Select I want to use my existing terms and conditions.… → Click on Next → Select Or paste your link to your contract here:… → Select Or paste your link to your contract here:… → Click on Terms And Conditions Link.",
+   "blurbSrc": "steps",
+   "blurbV": 2
   },
   "how-to-use-the-reference-architecture-diagram-builder-for-ip-co-sell-documentation": {
    "title": "How to use the reference architecture diagram builder for IP co-sell documentation?",
    "hash": "dba85ab7801bcf0d",
    "bytes": 537638,
    "file": "docs-pdf/how-to-use-the-reference-architecture-diagram-builder-for-ip-co-sell-documentation.pdf",
-   "blurb": "The attached guide covers: 🟣 You have opened the \"WeTransact | Technical Diagram Builder\" → 🟣 Click on the little arrow on the title and click to duplicate to your drafts → 🟣 Once you're done editing - Maintain click-left and select your technical diagram → 🟣 Once selected \"click-right\" on the selected area → 🟣 Click on Export selection… ⇧⌘E.",
-   "blurbSrc": "steps"
+   "blurb": "The attached guide covers: You have opened the \"WeTransact | Technical Diagram Builder\" → Click on the little arrow on the title and click to duplicate to your drafts → Once you're done editing - Maintain click-left and select your technical diagram → Once selected \"click-right\" on the selected area → …",
+   "blurbSrc": "steps",
+   "blurbV": 2
   },
   "how-to-verify-a-subscription-is-cancelled": {
    "title": "How to verify a subscription is cancelled?",
    "hash": "e9a26a038f5d6150",
    "bytes": 243615,
    "file": "docs-pdf/how-to-verify-a-subscription-is-cancelled.pdf",
-   "blurb": "The attached guide covers: 🟣 Type \"saas\" → 🟣 Click on SaaS.",
-   "blurbSrc": "steps"
+   "blurb": "The attached guide covers: Type \"saas\" → Click on SaaS.",
+   "blurbSrc": "steps",
+   "blurbV": 2
   },
   "how-to-verify-mca-microsoft-customer-agreement-status-customer-guide": {
    "title": "How to Verify MCA (Microsoft Customer Agreement) Status - Customer Guide",
@@ -909,31 +1020,35 @@
    "bytes": 188338,
    "file": "docs-pdf/how-to-verify-mca-microsoft-customer-agreement-status-customer-guide.pdf",
    "blurb": "The attached guide covers: Step 1 — Go to the Azure Portal → Step 2 — Search for \"billing\" → Step 3 — Check the Billing account type column → Step 4 — Confirm MCA status.",
-   "blurbSrc": "steps"
+   "blurbSrc": "steps",
+   "blurbV": 2
   },
   "how-to-verify-the-level-of-user-rights": {
    "title": "How to verify the level of user rights?",
    "hash": "7b2e73e80f01e0bb",
    "bytes": 280027,
    "file": "docs-pdf/how-to-verify-the-level-of-user-rights.pdf",
-   "blurb": "The attached guide covers: 🟣 Log in to Microsoft Partner Centre → 🟣 Click on Account settings → 🟣 Click on My access → 🟣 You see below the workspaces you have access to.",
-   "blurbSrc": "steps"
+   "blurb": "The attached guide covers: Log in to Microsoft Partner Centre → Click on Account settings → Click on My access → You see below the workspaces you have access to.",
+   "blurbSrc": "steps",
+   "blurbV": 2
   },
   "how-to-view-marketplace-listing-status": {
    "title": "How to view marketplace listing status?",
    "hash": "a7cd5228c53d2c9b",
    "bytes": 188597,
    "file": "docs-pdf/how-to-view-marketplace-listing-status.pdf",
-   "blurb": "The attached guide covers: 🟣 Click on Marketplace offers → 🟣 Here you can review current status.",
-   "blurbSrc": "steps"
+   "blurb": "The attached guide covers: Click on Marketplace offers → Here you can review current status.",
+   "blurbSrc": "steps",
+   "blurbV": 2
   },
   "i-have-added-wetransact-but-supportbot-cant-log-in": {
    "title": "I have added WeTransact, but support/bot can't log in.",
    "hash": "be64449620351e5e",
    "bytes": 672541,
    "file": "docs-pdf/i-have-added-wetransact-but-supportbot-cant-log-in.pdf",
-   "blurb": "The attached guide covers: 🟣 Check on the \"bot@wetransact.io\" and repeat the operation for \"support@wetransact.io\" → 🟣 Second Check - External Collaboration Settings - navigate to Microsoft Entra Id → 🟣 Click on External Identities → 🟣 Click on External collaboration settings → 🟣Check that Guest users have.",
-   "blurbSrc": "steps"
+   "blurb": "The attached guide covers: Check on the \"bot@wetransact.io\" and repeat the operation for \"support@wetransact.io\" → Second Check - External Collaboration Settings - navigate to Microsoft Entra Id → Click on External Identities → Click on External collaboration settings → Check that Guest users have.",
+   "blurbSrc": "steps",
+   "blurbV": 2
   },
   "incentive": {
    "title": "Incentive",
@@ -941,7 +1056,8 @@
    "bytes": 90085,
    "file": "docs-pdf/incentive.pdf",
    "blurb": "The attached guide covers: How do I check Incentive (Transact & Grow) Cashback? → Where to find the Azure Sponsorship ? → Where are my marketing benefits in Partner Center? → How do I enrol for the incentive campaign?.",
-   "blurbSrc": "steps"
+   "blurbSrc": "steps",
+   "blurbV": 2
   },
   "incentives": {
    "title": "Incentives",
@@ -949,15 +1065,17 @@
    "bytes": 71680,
    "file": "docs-pdf/incentives.pdf",
    "blurb": "The attached guide covers: What is the Microsoft Transact & Grow Incentive?.",
-   "blurbSrc": "steps"
+   "blurbSrc": "steps",
+   "blurbV": 2
   },
   "invite-external-users-in-azure-portal": {
    "title": "Invite External Users in Azure Portal",
    "hash": "6887582fd4ecda11",
    "bytes": 385938,
    "file": "docs-pdf/invite-external-users-in-azure-portal.pdf",
-   "blurb": "The attached guide covers: 🟣 Sign in to Azure portal (https://azure.microsoft.com) → 🟣 Search Users → 🟣 Click on New user → 🟣 Click on Invite external user… → 🟣 Type 'support@wetransact.io' and click on 'review + invite'.",
-   "blurbSrc": "steps"
+   "blurb": "The attached guide covers: Sign in to Azure portal → Search Users → Click on New user → Click on Invite external user… → Type 'support@wetransact.io' and click on 'review + invite'.",
+   "blurbSrc": "steps",
+   "blurbV": 2
   },
   "ip-co-sell": {
    "title": "IP Co-Sell",
@@ -965,15 +1083,17 @@
    "bytes": 97262,
    "file": "docs-pdf/ip-co-sell.pdf",
    "blurb": "The attached guide covers: How to become Co-Sell ready? → If the IP co-sell validation is denied, what should you do?.",
-   "blurbSrc": "steps"
+   "blurbSrc": "steps",
+   "blurbV": 2
   },
   "ip-co-sellpartnership": {
    "title": "IP Co-Sell/Partnership",
    "hash": "e6df463344e500bb",
    "bytes": 98105,
    "file": "docs-pdf/ip-co-sellpartnership.pdf",
-   "blurb": "The attached guide covers: How to use the reference architecture diagram builder for IP co-sell documentation? → How do I use the customisation tool to expedite the co-sell pitch deck? → How do I update user rights to manage co-sell solutions in Partner Center? → How to submit the IP Co sell documentation? → How do I export a technical diagram as a .png?.",
-   "blurbSrc": "steps"
+   "blurb": "The attached guide covers: How to use the reference architecture diagram builder for IP co-sell documentation? → How do I use the customisation tool to expedite the co-sell pitch deck? → How do I update user rights to manage co-sell solutions in Partner Center? → How to submit the IP Co sell documentation? → …",
+   "blurbSrc": "steps",
+   "blurbV": 2
   },
   "listing-content-guidelines-what-microsoft-does-and-does-not-allow": {
    "title": "Listing Content Guidelines: What Microsoft Does and Does Not Allow",
@@ -981,15 +1101,17 @@
    "bytes": 111604,
    "file": "docs-pdf/listing-content-guidelines-what-microsoft-does-and-does-not-allow.pdf",
    "blurb": "The attached guide covers: Words and content Microsoft does not allow → In your listing description → In your plan names → In your Screenshots → In your documents (attachments, PDFs, supporting materials).",
-   "blurbSrc": "steps"
+   "blurbSrc": "steps",
+   "blurbV": 2
   },
   "metering-limitations-and-faq": {
    "title": "Metering limitations and FAQ",
    "hash": "610cea9030ee679e",
    "bytes": 182745,
    "file": "docs-pdf/metering-limitations-and-faq.pdf",
-   "blurb": "The attached guide covers: What does \"per subscription + per metric + per hour\" actually mean? → ✅ Two reports for different customers — no problem → ✅ Two reports for different metrics — no problem → ✅ Two reports for the same customer, same metric, different hours — fine → ❌ Two reports for the same customer, same metric, same hour — rejected.",
-   "blurbSrc": "steps"
+   "blurb": "The attached guide covers: What does \"per subscription + per metric + per hour\" actually mean? → Two reports for different customers — no problem → Two reports for different metrics — no problem → Two reports for the same customer, same metric, different hours — fine → …",
+   "blurbSrc": "steps",
+   "blurbV": 2
   },
   "microsoft-partner-center": {
    "title": "Microsoft Partner Center",
@@ -997,55 +1119,62 @@
    "bytes": 98567,
    "file": "docs-pdf/microsoft-partner-center.pdf",
    "blurb": "The attached guide covers: How long does it take for the Tax and Payout Profile Assignment to get verified? → How to change the Publisher ID Name? → What is the difference between Appsource and Azure Marketplace? → Why is my old listing still showing up on search engines? → How do I find a seller ID?.",
-   "blurbSrc": "steps"
+   "blurbSrc": "steps",
+   "blurbV": 2
   },
   "orsync-your-product-listings-in-one-click-and-go-live": {
    "title": "Or—Sync your product listings in one click, and Go Live",
    "hash": "8a011bb95dc27f77",
    "bytes": 824268,
    "file": "docs-pdf/orsync-your-product-listings-in-one-click-and-go-live.pdf",
-   "blurb": "The attached guide covers: 🟣 Sign in to Wetransact portal and Go to Settings → 🟣 Click on Credentials → 🟣 Click on Client ID → 🟣 Add Client Secret → 🟣 Click on Validate Credentials.",
-   "blurbSrc": "steps"
+   "blurb": "The attached guide covers: Sign in to Wetransact portal and Go to Settings → Click on Credentials → Click on Client ID → Add Client Secret → Click on Validate Credentials.",
+   "blurbSrc": "steps",
+   "blurbV": 2
   },
   "part-1-enroll-into-the-microsoft-transact-and-grow-incentive": {
    "title": "Part 1 - Enroll into the Microsoft Transact & Grow Incentive",
    "hash": "1a59b37046d1e309",
    "bytes": 267244,
    "file": "docs-pdf/part-1-enroll-into-the-microsoft-transact-and-grow-incentive.pdf",
-   "blurb": "The attached guide covers: 🟣 Click on Incentives → 🟣 Find the Campaigns line and click on \"Enroll\" → 🟣 You will have the Term and Conditions - please go ahead and click on \"Accept\".",
-   "blurbSrc": "steps"
+   "blurb": "The attached guide covers: Click on Incentives → Find the Campaigns line and click on \"Enroll\" → You will have the Term and Conditions - please go ahead and click on \"Accept\".",
+   "blurbSrc": "steps",
+   "blurbV": 2
   },
   "part-2-filling-up-tax-details-non-us-countries": {
    "title": "Part 2 - Filling Up Tax Details (Non US-Countries)",
    "hash": "5211966ff0df6d87",
    "bytes": 1015364,
    "file": "docs-pdf/part-2-filling-up-tax-details-non-us-countries.pdf",
-   "blurb": "The attached guide covers: 🟣 Click on the Button next to Campaigns → 🟣 Click on the Edit pen → 🟣 Click on\"Create a nex tax profile\" → 🟣 Click on Continue → 🟣 Click on Organization.",
-   "blurbSrc": "steps"
+   "blurb": "The attached guide covers: Click on the Button next to Campaigns → Click on the Edit pen → Click on\"Create a nex tax profile\" → Click on Continue → Click on Organization.",
+   "blurbSrc": "steps",
+   "blurbV": 2
   },
   "part-2-us-entities-filling-tax-profile-walktrough-example": {
    "title": "Part 2 - (US Entities) Filling Tax Profile Walktrough example",
    "hash": "28b32aeb0718f8a3",
    "bytes": 738190,
    "file": "docs-pdf/part-2-us-entities-filling-tax-profile-walktrough-example.pdf",
-   "blurb": "The attached guide covers: 🟣 Click on the Button next to Campaigns → 🟣 Click on Edit → 🟣 Click on Create a New Tax Profile → 🟣 Click on Continue → 🟣 Click on Next.",
-   "blurbSrc": "steps"
+   "blurb": "The attached guide covers: Click on the Button next to Campaigns → Click on Edit → Click on Create a New Tax Profile → Click on Continue → Click on Next.",
+   "blurbSrc": "steps",
+   "blurbV": 2
   },
   "part-3-adding-the-payment-profile": {
    "title": "Part 3 - Adding the Payment Profile",
    "hash": "b760430d292602e9",
    "bytes": 489324,
    "file": "docs-pdf/part-3-adding-the-payment-profile.pdf",
-   "blurb": "The attached guide covers: 🟣 Again - click on the Campaign line you just filled the Tax Details of → 🟣 Select the newly created Tax Profile → 🟣 Click on first circle next to Microosft Corporation and click on Edit → 🟣 Click on \"Create a New Payment Profile\" → 🟣 Click on Continue.",
-   "blurbSrc": "steps"
+   "blurb": "The attached guide covers: Again - click on the Campaign line you just filled the Tax Details of → Select the newly created Tax Profile → Click on first circle next to Microosft Corporation and click on Edit → Click on \"Create a New Payment Profile\" → Click on Continue.",
+   "blurbSrc": "steps",
+   "blurbV": 2
   },
   "part-4-submitting-the-incentive-profile": {
    "title": "Part 4 - Submitting the Incentive Profile",
    "hash": "77c62d6e4a991ac8",
    "bytes": 460044,
    "file": "docs-pdf/part-4-submitting-the-incentive-profile.pdf",
-   "blurb": "The attached guide covers: 🟣 Again, select the new tax profile → 🟣 Add your Payment Currency and click Save → 🟣 Repeat exactly the same process for line 2 → 🟣 Repeat exactly the same process for line 3 → 🟣 Once done click on Submit - you're done !.",
-   "blurbSrc": "steps"
+   "blurb": "The attached guide covers: Reselect the Campaign program we filled the Tax & Payment Profile of. And click on edit → Again, select the new tax profile → Add your Payment Currency and click Save → Repeat exactly the same process for line 2 → Repeat exactly the same process for line 3.",
+   "blurbSrc": "steps",
+   "blurbV": 2
   },
   "partner-center-user-rights": {
    "title": "Partner Center User Rights",
@@ -1053,7 +1182,8 @@
    "bytes": 111878,
    "file": "docs-pdf/partner-center-user-rights.pdf",
    "blurb": "The attached guide covers: How to verify the level of user rights? → How to update Global Admin from non-actionable to actionable? → How do I check who has 'Owner' status? → How to provide (or update) Partner Center user rights? → How do I update Owner status in Partner Centre?.",
-   "blurbSrc": "steps"
+   "blurbSrc": "steps",
+   "blurbV": 2
   },
   "partner-center-day-to-day": {
    "title": "Partner Center, day-to-day",
@@ -1061,7 +1191,8 @@
    "bytes": 130240,
    "file": "docs-pdf/partner-center-day-to-day.pdf",
    "blurb": "The attached guide covers: I have added WeTransact, but support/bot can't log in → How to Delete and Re-add support and bot? → Invite External Users in Azure Portal → How to update the primary contact email address in legal info? → Account Verification Email Not Received by Primary Contact.",
-   "blurbSrc": "steps"
+   "blurbSrc": "steps",
+   "blurbV": 2
   },
   "partner-centerazure-user-rights": {
    "title": "Partner center/Azure User Rights",
@@ -1069,7 +1200,8 @@
    "bytes": 88741,
    "file": "docs-pdf/partner-centerazure-user-rights.pdf",
    "blurb": "The attached guide covers: Partner Center User Rights → Azure Portal User Rights.",
-   "blurbSrc": "steps"
+   "blurbSrc": "steps",
+   "blurbV": 2
   },
   "private-plan": {
    "title": "Private Plan",
@@ -1077,31 +1209,35 @@
    "bytes": 85118,
    "file": "docs-pdf/private-plan.pdf",
    "blurb": "The attached guide walks you through it step by step.",
-   "blurbSrc": "steps"
+   "blurbSrc": "steps",
+   "blurbV": 2
   },
   "raising-a-support-ticket-because-my-legal-profile-was-not-validated": {
    "title": "Raising a support ticket because my legal profile was not validated.",
    "hash": "4df7d76d5cbb518a",
    "bytes": 755621,
    "file": "docs-pdf/raising-a-support-ticket-because-my-legal-profile-was-not-validated.pdf",
-   "blurb": "The attached guide covers: Click on Settings → 🟣 Click on AI assistant and Support → 🟣 Select \"Account Settings Workspace\">\"Verification Status\" → 🟣 Send the Prompt → 🟣 Now click on Contact Support.",
-   "blurbSrc": "steps"
+   "blurb": "The attached guide covers: Click on Settings → Click on AI assistant and Support → Select \"Account Settings Workspace\">\"Verification Status\" → Send the Prompt → Now click on Contact Support.",
+   "blurbSrc": "steps",
+   "blurbV": 2
   },
   "retrieving-the-id-managed-application": {
    "title": "Retrieving the ID – Managed Application",
    "hash": "96f8aa29e3e011cd",
    "bytes": 241339,
    "file": "docs-pdf/retrieving-the-id-managed-application.pdf",
-   "blurb": "The attached guide covers: 🟣 Click on Managed applications → 🟣 Click on the Managed app we created yesterday (below is just for illustration) → 🟣 Click on JSON View → 🟣 Copy the Resource ID + JSON Content and send them over by email.",
-   "blurbSrc": "steps"
+   "blurb": "The attached guide covers: Click on Managed applications → Click on the Managed app we created yesterday (below is just for illustration) → Click on JSON View → Copy the Resource ID + JSON Content and send them over by email.",
+   "blurbSrc": "steps",
+   "blurbV": 2
   },
   "salesforce-installation-guide": {
    "title": "SalesForce Installation Guide",
    "hash": "b3e89569d3bc7f12",
    "bytes": 814569,
    "file": "docs-pdf/salesforce-installation-guide.pdf",
-   "blurb": "The attached guide covers: 🟣 Overview → 🟣 Requirements → 🟣 Install the Package → 🟣 Video : Salesforce WeTransact Installation Demo → 🟣 Step-by-Step.",
-   "blurbSrc": "steps"
+   "blurb": "The attached guide covers: Overview → Requirements → Install the Package → Video : Salesforce WeTransact Installation Demo → Step-by-Step.",
+   "blurbSrc": "steps",
+   "blurbV": 2
   },
   "selling-and-offer-management": {
    "title": "Selling & Offer Management",
@@ -1109,71 +1245,80 @@
    "bytes": 148958,
    "file": "docs-pdf/selling-and-offer-management.pdf",
    "blurb": "The attached guide covers: How to create a Private Offer? → How to Find the Billing ID? → How to creating a private Plan? → How to find your Tenant ID in Azure portal? → How to find a private plan?.",
-   "blurbSrc": "steps"
+   "blurbSrc": "steps",
+   "blurbV": 2
   },
   "step-1-create-your-microsoft-work-account": {
    "title": "Step 1 — Create Your Microsoft Work Account",
    "hash": "897980c1ee3285f0",
    "bytes": 483263,
    "file": "docs-pdf/step-1-create-your-microsoft-work-account.pdf",
-   "blurb": "The attached guide covers: 🟣Step 1: Start the Process → 🟣Step 2: Enter Your Details → 🟣Step 3: Complete Payment → 🟣 Step 4: Set Up Multi-Factor Authentication (MFA) → 🟣 Step 5: Continue to Partner Center Registration.",
-   "blurbSrc": "steps"
+   "blurb": "The attached guide covers: Start the Process → Enter Your Details → Complete Payment → Set Up Multi-Factor Authentication (MFA) → Continue to Partner Center Registration.",
+   "blurbSrc": "steps",
+   "blurbV": 2
   },
   "step-2-become-a-microsoft-partner-and-access-partner-center": {
    "title": "Step 2 — Become a Microsoft Partner & Access Partner Center",
    "hash": "ffd47a60d24d0fb8",
    "bytes": 440764,
    "file": "docs-pdf/step-2-become-a-microsoft-partner-and-access-partner-center.pdf",
-   "blurb": "The attached guide covers: 🟣1. Go to partner.microsoft.com → 🟣 2. Click on 'Become a partner' → 🟣4. Click on Next → 🟣5. Type your email address → 🟣6. Click on Continue.",
-   "blurbSrc": "steps"
+   "blurb": "The attached guide covers: Go to partner.microsoft.com → Click on 'Become a partner' → Click on Next → Type your email address → Click on Continue.",
+   "blurbSrc": "steps",
+   "blurbV": 2
   },
   "step-3-enroll-in-the-required-partner-center-programs": {
    "title": "Step 3 — Enroll in the Required Partner Center Programs",
    "hash": "0345979e01fd3c46",
    "bytes": 266770,
    "file": "docs-pdf/step-3-enroll-in-the-required-partner-center-programs.pdf",
-   "blurb": "The attached guide covers: 🟣1. Log in to Partner Centre → 🟣2. Click on Settings and Account Settings → 🟣3. Click on Programs & Other Programs → 🟣4. Click on Commercial Marketplace → 🟣5. Enter the company address, and if you have DUNS, search by DUNS or by the address.",
-   "blurbSrc": "steps"
+   "blurb": "The attached guide covers: Log in to Partner Centre → Click on Settings and Account Settings → Click on Programs & Other Programs → Click on Commercial Marketplace → Enter the company address, and if you have DUNS, search by DUNS or by the address.",
+   "blurbSrc": "steps",
+   "blurbV": 2
   },
   "step-4-submit-your-legal-profile-24-hour-microsoft-validation": {
    "title": "Step 4 — Submit Your Legal Profile (24-hour Microsoft validation)",
    "hash": "d97ccc2f50058b3a",
    "bytes": 285024,
    "file": "docs-pdf/step-4-submit-your-legal-profile-24-hour-microsoft-validation.pdf",
-   "blurb": "The attached guide covers: 🟣1. Go to partner.microsoft.com → 🟣2. Click on Settings → 🟣3. Click on Account settings → 🟣4. Click on Legal info → 🟣5. Verify that the \"Partner\" & \"Developer\" tabs are ticked with the green symbol.",
-   "blurbSrc": "steps"
+   "blurb": "The attached guide covers: Go to partner.microsoft.com → Click on Settings → Click on Account settings → Click on Legal info → Verify that the \"Partner\" & \"Developer\" tabs are ticked with the green symbol.",
+   "blurbSrc": "steps",
+   "blurbV": 2
   },
   "step-5-complete-your-payout-and-tax-profile-48-hour-microsoft-validation": {
    "title": "Step 5 — Complete Your Payout & Tax Profile (48-hour Microsoft validation)",
    "hash": "07102b0cbce05ef6",
    "bytes": 131316,
    "file": "docs-pdf/step-5-complete-your-payout-and-tax-profile-48-hour-microsoft-validation.pdf",
-   "blurb": "The attached guide covers: 🟣 US Companies → 🟣 Non-US Companies → 💬 Need Help?.",
-   "blurbSrc": "steps"
+   "blurb": "The attached guide covers: US Companies → Non-US Companies → Need Help?.",
+   "blurbSrc": "steps",
+   "blurbV": 2
   },
   "step-7-creating-your-first-microsoft-marketplace-listing-as-easy-as-1-2-3-and-go-live": {
    "title": "Step 7 — Creating your first Microsoft Marketplace Listing, As Easy as 1-2-3 and Go Live.",
    "hash": "dbbc730f4341e592",
    "bytes": 769658,
    "file": "docs-pdf/step-7-creating-your-first-microsoft-marketplace-listing-as-easy-as-1-2-3-and-go-live.pdf",
-   "blurb": "The attached guide covers: 🟣 Click on Create and 'Create Product Listing' → 🟣 Click on Octavia AI, Do Your Magic ✨ → 🟣 Type \"your website name\" and select type of listing SaaS or Managed Application → 🟣 Click on Generate with Octavia AI → 🟣 Octavia will start creating the listing and fetching the data from your website.",
-   "blurbSrc": "steps"
+   "blurb": "The attached guide covers: Click on Create and 'Create Product Listing' → Click on Octavia AI, Do Your Magic → Type \"your website name\" and select type of listing SaaS or Managed Application → Click on Generate with Octavia AI → Octavia will start creating the listing and fetching the data from your website.",
+   "blurbSrc": "steps",
+   "blurbV": 2
   },
   "subscribe-to-the-wetransact-page-notifications-on-linkedin": {
    "title": "Subscribe to the WeTransact Page notifications on LinkedIn",
    "hash": "1827266d9e63be7e",
    "bytes": 369007,
    "file": "docs-pdf/subscribe-to-the-wetransact-page-notifications-on-linkedin.pdf",
-   "blurb": "The attached guide covers: 🟣 Click on Subscribed to page notifications from people you may know. Click to manage → 🟣 Select All new posts… → 🟣 Click on Settings & Privacy → 🟣 Click on Notifications → 🟣 Click on Pages and activate notifications.",
-   "blurbSrc": "steps"
+   "blurb": "The attached guide covers: Click on Subscribed to page notifications from people you may know. Click to manage → Select All new posts… → Click on Settings & Privacy → Click on Notifications → Click on Pages and activate notifications.",
+   "blurbSrc": "steps",
+   "blurbV": 2
   },
   "the-steps-to-be-followed-by-your-global-admin-to-give-you-the-necessary-level-of-rights": {
    "title": "The steps to be followed by your global admin to give you the necessary level of rights.",
    "hash": "73fbfb75db6409d9",
    "bytes": 380907,
    "file": "docs-pdf/the-steps-to-be-followed-by-your-global-admin-to-give-you-the-necessary-level-of-rights.pdf",
-   "blurb": "The attached guide covers: 🟣1. Go to partner.microsoft.com → 🟣 2. Click on Settings → 🟣 3. Click on Account settings → 🟣 4. Click on User management → 🟣 5. Click on the User you need to elevate rights.",
-   "blurbSrc": "steps"
+   "blurb": "The attached guide covers: Go to partner.microsoft.com → Click on Settings → Click on Account settings → Click on User management → Click on the User you need to elevate rights.",
+   "blurbSrc": "steps",
+   "blurbV": 2
   },
   "troubleshooting": {
    "title": "Troubleshooting",
@@ -1181,31 +1326,35 @@
    "bytes": 120606,
    "file": "docs-pdf/troubleshooting.pdf",
    "blurb": "The attached guide covers: Deal registration tab error in WeTransact portal → Raising a support ticket because my legal profile was not validated → Have an issue with Marketplace leads → I have added WeTransact but support/bot can't login → Retrieving the ID – Managed Application.",
-   "blurbSrc": "steps"
+   "blurbSrc": "steps",
+   "blurbV": 2
   },
   "unable-to-enrol-in-the-commercial-marketplace-something-went-wrong-please-try-again-if-this-problem-persists-please-contact-microsoft-support": {
    "title": "Unable to enrol in the commercial Marketplace \"Something went wrong. Please try again; if this problem persists, please contact Microsoft support.\"",
    "hash": "107b3ae97970408a",
    "bytes": 194566,
    "file": "docs-pdf/unable-to-enrol-in-the-commercial-marketplace-something-went-wrong-please-try-again-if-this-problem-persists-please-contact-microsoft-support.pdf",
-   "blurb": "The attached guide covers: Step 1: Open a Microsoft Support Ticket → Step 2: Try This Workaround → Step 3: Check the Identifiers Section with this person's account → Step 4: Request User Access.",
-   "blurbSrc": "steps"
+   "blurb": "The attached guide covers: Open a Microsoft Support Ticket → Try This Workaround → Check the Identifiers Section with this person's account → Request User Access.",
+   "blurbSrc": "steps",
+   "blurbV": 2
   },
   "unable-to-verify-account-legal-info": {
    "title": "Unable to verify Account - Legal Info",
    "hash": "322cb6f0ae2b6544",
    "bytes": 292425,
    "file": "docs-pdf/unable-to-verify-account-legal-info.pdf",
-   "blurb": "The attached guide covers: 🟣 Step 1: Verify the Partner Tab first → Partner Tab in Pending status → 🪪 Identity Verification Process → 🕵️‍♂️ Employment verification → 🟣 Step 2: Verify Developer Tab.",
-   "blurbSrc": "steps"
+   "blurb": "The attached guide covers: Verify the Partner Tab first → Partner Tab in Pending status → Identity Verification Process → ‍ Employment verification → Verify Developer Tab.",
+   "blurbSrc": "steps",
+   "blurbV": 2
   },
   "video-masterclasses": {
    "title": "Video Masterclasses",
    "hash": "c5910d16cb290e2f",
    "bytes": 115994,
    "file": "docs-pdf/video-masterclasses.pdf",
-   "blurb": "The attached guide covers: Video Masterclasses-01. WeTransact Marketplace journey → Video Masterclasses-02. The Three Marketplace Channels → Video Masterclasses-03.The Marketplace Rewards and Incentives → Video Masterclasses-04. Why Approaches Differ Based on Your Audience Segmentation → Video Masterclasses-05.Optimise Your Listing on the Storefronts.",
-   "blurbSrc": "steps"
+   "blurb": "The attached guide covers: Video Masterclasses-01. WeTransact Marketplace journey → Video Masterclasses-02. The Three Marketplace Channels → Video Masterclasses-03.The Marketplace Rewards and Incentives → Video Masterclasses-04. Why Approaches Differ Based on Your Audience Segmentation → …",
+   "blurbSrc": "steps",
+   "blurbV": 2
   },
   "video-masterclasses-01-wetransact-marketplace-journey": {
    "title": "Video Masterclasses-01. WeTransact Marketplace journey",
@@ -1213,7 +1362,8 @@
    "bytes": 115049,
    "file": "docs-pdf/video-masterclasses-01-wetransact-marketplace-journey.pdf",
    "blurb": "The attached guide walks you through it step by step.",
-   "blurbSrc": "steps"
+   "blurbSrc": "steps",
+   "blurbV": 2
   },
   "video-masterclasses-02-the-three-marketplace-channels": {
    "title": "Video Masterclasses-02. The Three Marketplace Channels",
@@ -1221,7 +1371,8 @@
    "bytes": 113767,
    "file": "docs-pdf/video-masterclasses-02-the-three-marketplace-channels.pdf",
    "blurb": "The attached guide walks you through it step by step.",
-   "blurbSrc": "steps"
+   "blurbSrc": "steps",
+   "blurbV": 2
   },
   "video-masterclasses-03the-marketplace-rewards-and-incentives": {
    "title": "Video Masterclasses-03.The Marketplace Rewards and Incentives",
@@ -1229,7 +1380,8 @@
    "bytes": 114069,
    "file": "docs-pdf/video-masterclasses-03the-marketplace-rewards-and-incentives.pdf",
    "blurb": "The attached guide walks you through it step by step.",
-   "blurbSrc": "steps"
+   "blurbSrc": "steps",
+   "blurbV": 2
   },
   "video-masterclasses-04-why-approaches-differ-based-on-your-audience-segmentation": {
    "title": "Video Masterclasses-04. Why Approaches Differ Based on Your Audience Segmentation",
@@ -1237,7 +1389,8 @@
    "bytes": 120885,
    "file": "docs-pdf/video-masterclasses-04-why-approaches-differ-based-on-your-audience-segmentation.pdf",
    "blurb": "The attached guide walks you through it step by step.",
-   "blurbSrc": "steps"
+   "blurbSrc": "steps",
+   "blurbV": 2
   },
   "video-masterclasses-05optimise-your-listing-on-the-storefronts": {
    "title": "Video Masterclasses-05.Optimise Your Listing on the Storefronts",
@@ -1245,7 +1398,8 @@
    "bytes": 117577,
    "file": "docs-pdf/video-masterclasses-05optimise-your-listing-on-the-storefronts.pdf",
    "blurb": "The attached guide walks you through it step by step.",
-   "blurbSrc": "steps"
+   "blurbSrc": "steps",
+   "blurbV": 2
   },
   "video-masterclasses-06-how-to-partner-with-microsoft": {
    "title": "Video Masterclasses-06. How to Partner with Microsoft",
@@ -1253,7 +1407,8 @@
    "bytes": 109178,
    "file": "docs-pdf/video-masterclasses-06-how-to-partner-with-microsoft.pdf",
    "blurb": "The attached guide walks you through it step by step.",
-   "blurbSrc": "steps"
+   "blurbSrc": "steps",
+   "blurbV": 2
   },
   "video-masterclasses-07-how-to-start-working-with-microsoft": {
    "title": "Video Masterclasses-07. How to Start Working with Microsoft",
@@ -1261,7 +1416,8 @@
    "bytes": 114971,
    "file": "docs-pdf/video-masterclasses-07-how-to-start-working-with-microsoft.pdf",
    "blurb": "The attached guide walks you through it step by step.",
-   "blurbSrc": "steps"
+   "blurbSrc": "steps",
+   "blurbV": 2
   },
   "video-masterclasses-08-the-reseller-landscape": {
    "title": "Video Masterclasses-08. The Reseller Landscape",
@@ -1269,7 +1425,8 @@
    "bytes": 113918,
    "file": "docs-pdf/video-masterclasses-08-the-reseller-landscape.pdf",
    "blurb": "The attached guide walks you through it step by step.",
-   "blurbSrc": "steps"
+   "blurbSrc": "steps",
+   "blurbV": 2
   },
   "video-masterclasses-09build-your-reseller-offer": {
    "title": "Video Masterclasses-09.Build Your Reseller Offer",
@@ -1277,7 +1434,8 @@
    "bytes": 115196,
    "file": "docs-pdf/video-masterclasses-09build-your-reseller-offer.pdf",
    "blurb": "The attached guide walks you through it step by step.",
-   "blurbSrc": "steps"
+   "blurbSrc": "steps",
+   "blurbV": 2
   },
   "video-masterclasses-10find-your-first-resellers": {
    "title": "Video Masterclasses-10.Find Your First Resellers",
@@ -1285,7 +1443,8 @@
    "bytes": 109744,
    "file": "docs-pdf/video-masterclasses-10find-your-first-resellers.pdf",
    "blurb": "The attached guide walks you through it step by step.",
-   "blurbSrc": "steps"
+   "blurbSrc": "steps",
+   "blurbV": 2
   },
   "wetransact-hubspot-app-installation-guide": {
    "title": "WeTransact Hubspot App Installation guide",
@@ -1293,7 +1452,8 @@
    "bytes": 697119,
    "file": "docs-pdf/wetransact-hubspot-app-installation-guide.pdf",
    "blurb": "The attached guide covers: Step 1 – Install the WeTransact HubSpot App → Choose your HubSpot account → Click Connect App to continue → Once the installation is complete, you will see the following confirmation message → Step 2 – Configure Card Locations.",
-   "blurbSrc": "steps"
+   "blurbSrc": "steps",
+   "blurbV": 2
   },
   "wetransact-portal": {
    "title": "WeTransact Portal",
@@ -1301,7 +1461,8 @@
    "bytes": 85502,
    "file": "docs-pdf/wetransact-portal.pdf",
    "blurb": "The attached guide covers: Can I delete a pricing plan that has already been subscribed to? → How often you can report usage again? → How to add an Emoji in the listing description?.",
-   "blurbSrc": "steps"
+   "blurbSrc": "steps",
+   "blurbV": 2
   },
   "wetransact-portal-day-to-day": {
    "title": "WeTransact Portal, day-to-day",
@@ -1309,15 +1470,17 @@
    "bytes": 130868,
    "file": "docs-pdf/wetransact-portal-day-to-day.pdf",
    "blurb": "The attached guide covers: How to add users in the WeTransact Portal? → How to use existing terms and conditions for the product listing? → How to Create New Pricing Options? → How do I add a subscription ID to the supplemental tab in the WeTransact portal? → How to Set Up the Finance Tab in the Wetransact Portal?.",
-   "blurbSrc": "steps"
+   "blurbSrc": "steps",
+   "blurbV": 2
   },
   "what-to-do-if-your-only-admin-has-left-the-company-no-access-to-your-microsoft-marketplace-listing": {
    "title": "What to do if your only admin has left the company! No Access to Your Microsoft Marketplace Listing?",
    "hash": "045c33c9a0833be4",
    "bytes": 923940,
    "file": "docs-pdf/what-to-do-if-your-only-admin-has-left-the-company-no-access-to-your-microsoft-marketplace-listing.pdf",
-   "blurb": "The attached guide covers: 🟣 Click on AI assistant and Support → 🟣 Click on drop down menu and select 'Account settings workspace' → 🟣 Once it's generate the articles, click on Contact support → 🟣 Under problem type select ' update marketplace owner' option → 🟣 Click on Review Solutions.",
-   "blurbSrc": "steps"
+   "blurb": "The attached guide covers: Click on AI assistant and Support → Click on drop down menu and select 'Account settings workspace' → Once it's generate the articles, click on Contact support → Under problem type select ' update marketplace owner' option → Click on Review Solutions.",
+   "blurbSrc": "steps",
+   "blurbV": 2
   },
   "what-to-do-when-you-cant-lodge-a-claim-build-and-publish-ai-marketplace": {
    "title": "What to Do When You Can't Lodge a Claim — Build and Publish AI Marketplace",
@@ -1325,31 +1488,35 @@
    "bytes": 122626,
    "file": "docs-pdf/what-to-do-when-you-cant-lodge-a-claim-build-and-publish-ai-marketplace.pdf",
    "blurb": "The attached guide walks you through it step by step.",
-   "blurbSrc": "steps"
+   "blurbSrc": "steps",
+   "blurbV": 2
   },
   "where-are-my-marketing-benefits-in-partner-center": {
    "title": "Where are my marketing benefits in Partner Center ?",
    "hash": "356d33a7925966d7",
    "bytes": 243062,
    "file": "docs-pdf/where-are-my-marketing-benefits-in-partner-center.pdf",
-   "blurb": "The attached guide covers: 🟣 Click on Benefits → 🟣 Click on Marketing Benefits in the menu on the right.",
-   "blurbSrc": "steps"
+   "blurb": "The attached guide covers: Click on Benefits → Click on Marketing Benefits in the menu on the right.",
+   "blurbSrc": "steps",
+   "blurbV": 2
   },
   "where-to-find-the-azure-sponsorship": {
    "title": "Where to find the Azure Sponsorship?",
    "hash": "6fd4236b57196ab5",
    "bytes": 231627,
    "file": "docs-pdf/where-to-find-the-azure-sponsorship.pdf",
-   "blurb": "The attached guide covers: 🟣 Click on Benefits → 🟣 Click on Azure Credits on the menue on the right.",
-   "blurbSrc": "steps"
+   "blurb": "The attached guide covers: Click on Benefits → Click on Azure Credits on the menue on the right.",
+   "blurbSrc": "steps",
+   "blurbV": 2
   },
   "where-to-find-your-private-offers": {
    "title": "Where to find your Private Offers ?",
    "hash": "61ed5dcc0347bc90",
    "bytes": 213779,
    "file": "docs-pdf/where-to-find-your-private-offers.pdf",
-   "blurb": "The attached guide covers: 🟣 Click on Private Offer Management → 🟣 You will see all your private offers.",
-   "blurbSrc": "steps"
+   "blurb": "The attached guide covers: Click on Private Offer Management → You will see all your private offers.",
+   "blurbSrc": "steps",
+   "blurbV": 2
   }
  },
  "count": 167
