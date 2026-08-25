@@ -4,23 +4,23 @@
  "docs": [
   {
    "slug": "account-verification-email-not-received-by-primary-contact",
-   "title": "Account Verification Email Not Received by Primary Contact - WeTransact Docs"
+   "title": "Account Verification Email Not Received by Primary Contact"
   },
   {
    "slug": "add-more-users-for-free-trial",
-   "title": "Add more users for Free Trial - WeTransact Docs"
+   "title": "Add more users for Free Trial"
   },
   {
    "slug": "api-set-up-automated-order-management-aom-automated-usage-reporting",
-   "title": "API set up + Automated Order Management (AOM) + Automated Usage Reporting - WeTransact Docs"
+   "title": "API set up automated order management AOM automated usage reporting"
   },
   {
    "slug": "assign-global-admin-to-another-user-in-partner-center",
-   "title": "Assign Global Admin to another user in Partner Center - WeTransact Docs"
+   "title": "Assign Global Admin to another user in Partner Center"
   },
   {
    "slug": "azure-credits",
-   "title": "Azure Credits - WeTransact Docs"
+   "title": "Azure credits"
   },
   {
    "slug": "azure-marketplace-procurement-guide",
@@ -28,11 +28,11 @@
   },
   {
    "slug": "azure-portal-user-rights",
-   "title": "Azure Portal User Rights - WeTransact Docs"
+   "title": "Azure Portal User Rights"
   },
   {
    "slug": "change-the-amount-of-seats-in-an-already-purchased-subscription-in-the-marketplace",
-   "title": "Change the amount of seats in an already purchased subscription in the Marketplace. - WeTransact Docs"
+   "title": "Change the amount of seats in an already purchased subscription in the Marketplace."
   },
   {
    "slug": "configuring-cross-tenant-access-for-wetransact-in-microsoft-entra",
@@ -40,27 +40,27 @@
   },
   {
    "slug": "create-an-ip-cosell-support-ticket-acr",
-   "title": "Create an IP-cosell support ticket (ACR) - WeTransact Docs"
+   "title": "Create an IP co-sell support ticket ACR"
   },
   {
    "slug": "create-an-ip-cosell-support-ticket-billed-sales",
-   "title": "Create an IP-cosell support ticket (Billed Sales) - WeTransact Docs"
+   "title": "Create an IP co-sell support ticket billed sales"
   },
   {
    "slug": "create-azure-support-request-for-invoice-payment",
-   "title": "Create Azure Support Request for Invoice Payment - WeTransact Docs"
+   "title": "Create Azure Support Request for Invoice Payment"
   },
   {
    "slug": "create-warmify-email-rule-in-gmail",
-   "title": "Create Warmify Email Rule in Gmail - WeTransact Docs"
+   "title": "Create Warmify email rule in Gmail"
   },
   {
    "slug": "create-warmify-email-rule-in-outlook",
-   "title": "Create Warmify Email Rule in Outlook - WeTransact Docs"
+   "title": "Create Warmify email rule in Outlook"
   },
   {
    "slug": "creating-co-sell-deals-and-private-offers-in-salesforce",
-   "title": "Creating Co-Sell Deals & Private Offers in Salesforce - WeTransact Docs"
+   "title": "Creating co-sell deals and private offers in Salesforce"
   },
   {
    "slug": "crm-connectors",
@@ -68,71 +68,71 @@
   },
   {
    "slug": "csp-private-offer",
-   "title": "CSP Private Offer - WeTransact Docs"
+   "title": "CSP Private Offer"
   },
   {
    "slug": "csp-private-offer-vs-resale-enabled-offer",
-   "title": "CSP private offer vs Resale Enabled Offer - WeTransact Docs"
+   "title": "CSP private offer vs Resale Enabled Offer"
   },
   {
    "slug": "deal-registration-consent-and-troubleshooting-guide",
-   "title": "Deal Registration Consent & Troubleshooting Guide - WeTransact Docs"
+   "title": "Deal Registration Consent & Troubleshooting Guide"
   },
   {
    "slug": "deal-registration-create-a-new-co-sell-deal",
-   "title": "Deal Registration: Create a New Co-sell Deal - WeTransact Docs"
+   "title": "Deal Registration: Create a New Co-sell Deal"
   },
   {
    "slug": "direct-private-offer",
-   "title": "Direct Private Offer - WeTransact Docs"
+   "title": "Direct Private Offer"
   },
   {
    "slug": "ecosystem-watchers-explore-partners-and-vendors-across-microsoft-marketplace",
-   "title": "Ecosystem Watchers - Explore Partners and Vendors Across Microsoft Marketplace - WeTransact Docs"
+   "title": "Ecosystem watchers explore partners and vendors across Microsoft Marketplace"
   },
   {
    "slug": "error-system-error",
-   "title": "Error : System Error - WeTransact Docs"
+   "title": "Error : System Error"
   },
   {
    "slug": "error-looping-to-same-page",
-   "title": "Error: looping to same page - WeTransact Docs"
+   "title": "Error: looping to same page"
   },
   {
    "slug": "error-please-contact-support",
-   "title": "Error: Please contact Support - WeTransact Docs"
+   "title": "Error: Please contact Support"
   },
   {
    "slug": "faqs",
-   "title": "FAQs - WeTransact Docs"
+   "title": "FAQs"
   },
   {
    "slug": "finance-and-order",
-   "title": "Finance & Order - WeTransact Docs"
+   "title": "Finance & Order"
   },
   {
    "slug": "finance-how-marketplace-finance-works",
-   "title": "Finance, how marketplace finance works - WeTransact Docs"
+   "title": "Finance, how marketplace finance works"
   },
   {
    "slug": "find-out-who-the-azure-global-admin-is",
-   "title": "Find out who the Azure Global Admin is. - WeTransact Docs"
+   "title": "Find out who the Azure Global Admin is."
   },
   {
    "slug": "find-your-global-admin-to-add-an-external-user-on-partner-center",
-   "title": "Find your global admin to add an external user on Partner Center. - WeTransact Docs"
+   "title": "Find your global admin to add an external user on Partner Center."
   },
   {
    "slug": "fixing-legal-profile-issues",
-   "title": "Fixing Legal Profile Issues - WeTransact Docs"
+   "title": "Fixing legal profile issues"
   },
   {
    "slug": "go-live-in-5-days-with-your-csm",
-   "title": "Go Live in 5 Days with your CSM - WeTransact Docs"
+   "title": "Go Live in 5 Days with your CSM"
   },
   {
    "slug": "gtm-go-to-market",
-   "title": "GTM - Go To Market - WeTransact Docs"
+   "title": "GTM go to market"
   },
   {
    "slug": "guide-your-customer-when-they-have-not-completed-the-order",
@@ -140,31 +140,31 @@
   },
   {
    "slug": "have-an-issue-with-marketplace-leads",
-   "title": "Have an issue with Marketplace leads. - WeTransact Docs"
+   "title": "Have an issue with Marketplace leads."
   },
   {
    "slug": "how-can-i-verify-a-users-rights-to-complete-a-purchase",
-   "title": "How can I verify a user's rights to complete a purchase? - WeTransact Docs"
+   "title": "How can I verify a user's rights to complete a purchase?"
   },
   {
    "slug": "how-do-i-add-a-subscription-id-to-the-supplemental-tab-in-the-wetransact-portal",
-   "title": "How do I add a subscription ID to the supplemental tab in the WeTransact portal? - WeTransact Docs"
+   "title": "How do I add a subscription ID to the supplemental tab in the WeTransact portal?"
   },
   {
    "slug": "how-do-i-change-the-billing-region-in-azure-marketplace",
-   "title": "How do I change the billing region in Azure Marketplace? - WeTransact Docs"
+   "title": "How do I change the billing region in Azure Marketplace?"
   },
   {
    "slug": "how-do-i-check-incentive-transact-and-grow-cashback",
-   "title": "How do I check Incentive (Transact & Grow) Cashback? - WeTransact Docs"
+   "title": "How do I check incentive transact and grow cashback?"
   },
   {
    "slug": "how-do-i-check-who-has-owner-status",
-   "title": "How do I check who has 'Owner' status? - WeTransact Docs"
+   "title": "How do I check who has 'Owner' status?"
   },
   {
    "slug": "how-do-i-determine-who-has-global-admin-and-owner-status-in-partner-center",
-   "title": "How do I determine who has Global Admin & Owner status in Partner Center? - WeTransact Docs"
+   "title": "How do I determine who has Global Admin & Owner status in Partner Center?"
   },
   {
    "slug": "how-do-i-enrol-for-the-incentive-campaign",
@@ -172,79 +172,79 @@
   },
   {
    "slug": "how-do-i-export-a-technical-diagram-as-a-png",
-   "title": "How do I export a technical diagram as a .png? - WeTransact Docs"
+   "title": "How do I export a technical diagram as a PNG?"
   },
   {
    "slug": "how-do-i-select-a-publisher-location-for-the-product-listing",
-   "title": "How do I select a publisher location for the product listing? - WeTransact Docs"
+   "title": "How do I select a publisher location for the product listing?"
   },
   {
    "slug": "how-do-i-set-up-the-deal-registration-tab-on-wetransact-portal",
-   "title": "How do I set up the Deal Registration tab on Wetransact portal? - WeTransact Docs"
+   "title": "How do I set up the Deal Registration tab on Wetransact portal?"
   },
   {
    "slug": "how-do-i-turn-off-auto-renew-on-azure-subscriptions",
-   "title": "How do I turn off Auto Renew on Azure Subscriptions? - WeTransact Docs"
+   "title": "How do I turn off Auto Renew on Azure Subscriptions?"
   },
   {
    "slug": "how-do-i-update-owner-status-in-partner-centre",
-   "title": "How do I update Owner status in Partner Centre? - WeTransact Docs"
+   "title": "How do I update Owner status in Partner Centre?"
   },
   {
    "slug": "how-do-i-update-user-rights-to-manage-co-sell-solutions-in-partner-center",
-   "title": "How do I update user rights to manage co-sell solutions in Partner Center? - WeTransact Docs"
+   "title": "How do I update user rights to manage co-sell solutions in Partner Center?"
   },
   {
    "slug": "how-do-i-use-the-customisation-tool-to-expedite-the-co-sell-pitch-deck",
-   "title": "How do I use the customisation tool to expedite the co-sell pitch deck? - WeTransact Docs"
+   "title": "How do I use the customisation tool to expedite the co-sell pitch deck?"
   },
   {
    "slug": "how-do-i-use-the-report-function-for-custom-dimensions",
-   "title": "How do I use the report function for custom dimensions? - WeTransact Docs"
+   "title": "How do I use the report function for custom dimensions?"
   },
   {
    "slug": "how-do-you-assign-referral-admin-user-rights",
-   "title": "How do you assign Referral Admin user rights? - WeTransact Docs"
+   "title": "How do you assign Referral Admin user rights?"
   },
   {
    "slug": "how-do-you-assign-the-billing-administrator-role-in-microsoft-azure-portal",
-   "title": "How do you assign the billing administrator role in Microsoft Azure Portal? - WeTransact Docs"
+   "title": "How do you assign the billing administrator role in Microsoft Azure Portal?"
   },
   {
    "slug": "how-does-a-csp-resell-a-marketplace-solution-direct-csps",
-   "title": "How does a CSP resell a Marketplace Solution ? (Direct CSPs) - WeTransact Docs"
+   "title": "How does a CSP resell a Marketplace Solution ? (Direct CSPs)"
   },
   {
    "slug": "how-to-accept-a-private-offer-customer-walkthrough",
-   "title": "How to accept a Private Offer? - Customer walkthrough - WeTransact Docs"
+   "title": "How to accept a Private Offer? - Customer walkthrough"
   },
   {
    "slug": "how-to-action-admin-consent-requests",
-   "title": "How to action admin consent requests? - WeTransact Docs"
+   "title": "How to action admin consent requests?"
   },
   {
    "slug": "how-to-activateaccept-order",
-   "title": "How to Activate/Accept Order? - WeTransact Docs"
+   "title": "How to activateaccept order?"
   },
   {
    "slug": "how-to-add-a-location-and-publisher-account-in-partner-center",
-   "title": "How to Add a Location and Publisher Account in Partner Center? - WeTransact Docs"
+   "title": "How to Add a Location and Publisher Account in Partner Center?"
   },
   {
    "slug": "how-to-add-users-in-the-wetransact-portal",
-   "title": "How to add users in the WeTransact Portal? - WeTransact Docs"
+   "title": "How to add users in the WeTransact Portal?"
   },
   {
    "slug": "how-to-assign-yourself-as-a-subscription-owner-without-prior-access-as-a-global-admin",
-   "title": "How to Assign Yourself as a Subscription Owner Without Prior Access (As a Global Admin)? - WeTransact Docs"
+   "title": "How to Assign Yourself as a Subscription Owner Without Prior Access (As a Global Admin)?"
   },
   {
    "slug": "how-to-cancel-a-subscription",
-   "title": "How to Cancel a Subscription? - WeTransact Docs"
+   "title": "How to Cancel a Subscription?"
   },
   {
    "slug": "how-to-change-the-publisher-id-name",
-   "title": "How to change the publisher ID name? - WeTransact Docs"
+   "title": "How to change the publisher ID name?"
   },
   {
    "slug": "how-to-check-azure-consumption-acr-in-the-azure-portal",
@@ -252,67 +252,67 @@
   },
   {
    "slug": "how-to-check-if-a-legal-profile-is-verified",
-   "title": "How to Check if a Legal Profile is Verified? - WeTransact Docs"
+   "title": "How to check if a legal profile is verified?"
   },
   {
    "slug": "how-to-check-if-auto-renewal-is-on-for-your-azure-subscriptions",
-   "title": "How to check if auto-renewal is on for your Azure subscriptions? - WeTransact Docs"
+   "title": "How to check if auto-renewal is on for your Azure subscriptions?"
   },
   {
    "slug": "how-to-check-microsoft-entra-application-roles",
-   "title": "How to check Microsoft Entra application roles? - WeTransact Docs"
+   "title": "How to check Microsoft Entra application roles?"
   },
   {
    "slug": "how-to-clone-pricing",
-   "title": "How to clone pricing? - WeTransact Docs"
+   "title": "How to clone pricing?"
   },
   {
    "slug": "how-to-configure-a-saas-account-in-azure-portal",
-   "title": "How to configure a SaaS account in Azure Portal? - WeTransact Docs"
+   "title": "How to configure a SaaS account in Azure Portal?"
   },
   {
    "slug": "how-to-configure-multiple-publisher-ids-in-wetransact-portal",
-   "title": "How to configure multiple Publisher IDs in WeTransact portal? - WeTransact Docs"
+   "title": "How to configure multiple Publisher IDs in WeTransact portal?"
   },
   {
    "slug": "how-to-connect-an-email-account-for-outreach-campaigns",
-   "title": "How to connect an email account for Outreach campaigns? - WeTransact Docs"
+   "title": "How to connect an email account for outreach campaigns?"
   },
   {
    "slug": "how-to-create-a-billing-support-request-in-microsoft-azure-portal",
-   "title": "How to Create a Billing Support Request in Microsoft Azure Portal? - WeTransact Docs"
+   "title": "How to Create a Billing Support Request in Microsoft Azure Portal?"
   },
   {
    "slug": "how-to-create-a-microsoft-support-ticket-without-a-partner-center-account",
-   "title": "How to Create a Microsoft Support Ticket Without a Partner Center Account - WeTransact Docs"
+   "title": "How to Create a Microsoft Support Ticket Without a Partner Center Account"
   },
   {
    "slug": "how-to-create-a-new-users-in-partner-center",
-   "title": "How to create a new users in Partner Center? - WeTransact Docs"
+   "title": "How to create a new users in Partner Center?"
   },
   {
    "slug": "how-to-create-a-partner-center-support-ticket",
-   "title": "How to create a Partner Center support ticket? - WeTransact Docs"
+   "title": "How to create a Partner Center support ticket?"
   },
   {
    "slug": "how-to-create-a-private-offer-to-csp",
-   "title": "How to create a Private Offer to CSP - WeTransact Docs"
+   "title": "How to create a Private Offer to CSP"
   },
   {
    "slug": "how-to-create-a-private-offer",
-   "title": "How to create a Private Offer? - WeTransact Docs"
+   "title": "How to create a Private Offer?"
   },
   {
    "slug": "how-to-create-a-private-plan",
-   "title": "How to create a Private Plan? - WeTransact Docs"
+   "title": "How to create a Private Plan?"
   },
   {
    "slug": "how-to-create-new-pricing-options",
-   "title": "How to Create New Pricing Options? - WeTransact Docs"
+   "title": "How to Create New Pricing Options?"
   },
   {
    "slug": "how-to-delete-and-re-add-support-and-bot",
-   "title": "How to Delete and Re-add support and bot? - WeTransact Docs"
+   "title": "How to Delete and Re-add support and bot?"
   },
   {
    "slug": "how-to-download-the-incentive-justification",
@@ -320,59 +320,59 @@
   },
   {
    "slug": "how-to-enable-microsoft-authenticator-via-azure-portal",
-   "title": "How to Enable Microsoft Authenticator via Azure Portal - WeTransact Docs"
+   "title": "How to Enable Microsoft Authenticator via Azure Portal"
   },
   {
    "slug": "how-to-find-a-billing-id",
-   "title": "How to Find a Billing ID? - WeTransact Docs"
+   "title": "How to Find a Billing ID?"
   },
   {
    "slug": "how-to-find-an-object-id-of-a-user",
-   "title": "How to find an object ID of a user? - WeTransact Docs"
+   "title": "How to find an object ID of a user?"
   },
   {
    "slug": "how-to-find-and-purchase-a-private-plan",
-   "title": "How to find and purchase a private plan? - WeTransact Docs"
+   "title": "How to find and purchase a private plan?"
   },
   {
    "slug": "how-to-find-order-details-in-partner-center",
-   "title": "How to find order details in Partner Center? - WeTransact Docs"
+   "title": "How to find order details in Partner Center?"
   },
   {
    "slug": "how-to-find-partnerglobal-id",
-   "title": "How to find PartnerGlobal ID? - WeTransact Docs"
+   "title": "How to find PartnerGlobal ID?"
   },
   {
    "slug": "how-to-find-the-invoice-id-for-a-customer-transaction",
-   "title": "How to find the invoice ID for a customer transaction? - WeTransact Docs"
+   "title": "How to find the invoice ID for a customer transaction?"
   },
   {
    "slug": "how-to-find-the-mpn-id",
-   "title": "How to find the MPN ID? - WeTransact Docs"
+   "title": "How to find the MPN ID?"
   },
   {
    "slug": "how-to-find-your-marketplace-invoice",
-   "title": "How to find your marketplace invoice? - WeTransact Docs"
+   "title": "How to find your marketplace invoice?"
   },
   {
    "slug": "how-to-find-your-subscription-id",
-   "title": "How to find your subscription ID? - WeTransact Docs"
+   "title": "How to find your subscription ID?"
   },
   {
    "slug": "how-to-find-your-tenant-id-in-azure-portal",
-   "title": "How to find your Tenant ID in Azure portal? - WeTransact Docs"
+   "title": "How to find your Tenant ID in Azure portal?"
   },
   {
    "slug": "how-to-fix-a-suspended-subscription",
-   "title": "How to Fix a Suspended Subscription? - WeTransact Docs"
+   "title": "How to Fix a Suspended Subscription?"
   },
   {
    "slug": "how-to-generate-activation-links-in-partner-center-csps",
-   "title": "How to generate activation links in Partner Center (CSPs)? - WeTransact Docs"
+   "title": "How to generate activation links in Partner Center (CSPs)?"
   },
   {
    "slug": "how-to-know-which-customers-includes-a-microsoft-payment",
-   "title": "How to know which customers includes a Microsoft Payment - WeTransact Docs"
+   "title": "How to know which customers includes a Microsoft Payment"
   },
   {
    "slug": "how-to-leverage-the-wetransact-collaborative-customer-tab-for-enhanced-sales-strategies",
@@ -380,31 +380,31 @@
   },
   {
    "slug": "how-to-pay-your-marketplace-invoices",
-   "title": "How to pay your marketplace invoices? - WeTransact Docs"
+   "title": "How to pay your marketplace invoices?"
   },
   {
    "slug": "how-to-provide-or-update-partner-center-user-rights",
-   "title": "How to provide (or update) Partner Center user rights? - WeTransact Docs"
+   "title": "How to provide (or update) Partner Center user rights?"
   },
   {
    "slug": "how-to-purchase-a-solution-on-azure-marketplace-generic",
-   "title": "How to purchase a solution on Azure Marketplace (generic)? - WeTransact Docs"
+   "title": "How to purchase a solution on Azure Marketplace (generic)?"
   },
   {
    "slug": "how-to-purchase-a-wetransact-solution",
-   "title": "How to Purchase a WeTransact Solution? - WeTransact Docs"
+   "title": "How to Purchase a WeTransact Solution?"
   },
   {
    "slug": "how-to-set-up-a-new-subscription-azure",
-   "title": "How to set up a new Subscription (Azure)? - WeTransact Docs"
+   "title": "How to set up a new Subscription (Azure)?"
   },
   {
    "slug": "how-to-set-up-the-finance-tab-in-the-wetransact-portal",
-   "title": "How to Set Up the Finance Tab in the Wetransact Portal? - WeTransact Docs"
+   "title": "How to Set Up the Finance Tab in the Wetransact Portal?"
   },
   {
    "slug": "how-to-stop-distribution-of-a-listing",
-   "title": "How to Stop distribution of a Listing? - WeTransact Docs"
+   "title": "How to Stop distribution of a Listing?"
   },
   {
    "slug": "how-to-submit-the-ip-co-sell-documentation",
@@ -412,31 +412,31 @@
   },
   {
    "slug": "how-to-test-your-managed-application-package-before-publishing",
-   "title": "How to test your Managed Application package before publishing - WeTransact Docs"
+   "title": "How to test your managed application package before publishing?"
   },
   {
    "slug": "how-to-update-credentials-for-finance-tab-in-the-wetransact-portal",
-   "title": "How to update credentials for finance Tab in the Wetransact Portal? - WeTransact Docs"
+   "title": "How to update credentials for finance Tab in the Wetransact Portal?"
   },
   {
    "slug": "how-to-update-global-admin-from-non-actionable-to-actionable",
-   "title": "How to update Global Admin from non-actionable to actionable? - WeTransact Docs"
+   "title": "How to update Global Admin from non-actionable to actionable?"
   },
   {
    "slug": "how-to-update-payment-methods-in-microsoft-azure-portal",
-   "title": "How to update payment methods in Microsoft Azure Portal? - WeTransact Docs"
+   "title": "How to update payment methods in Microsoft Azure portal?"
   },
   {
    "slug": "how-to-update-the-primary-contact-email-address-in-legal-info",
-   "title": "How to update the primary contact email address in legal info? - WeTransact Docs"
+   "title": "How to update the primary contact email address in legal info?"
   },
   {
    "slug": "how-to-upgrade-your-plan-when-youre-ready",
-   "title": "How to upgrade your plan when you're ready - WeTransact Docs"
+   "title": "How to upgrade your plan when you're ready"
   },
   {
    "slug": "how-to-use-existing-terms-and-conditions-for-the-product-listing",
-   "title": "How to use existing terms and conditions for the product listing? - WeTransact Docs"
+   "title": "How to use existing terms and conditions for the product listing?"
   },
   {
    "slug": "how-to-use-the-reference-architecture-diagram-builder-for-ip-co-sell-documentation",
@@ -444,35 +444,35 @@
   },
   {
    "slug": "how-to-verify-a-subscription-is-cancelled",
-   "title": "How to verify a subscription is cancelled? - WeTransact Docs"
+   "title": "How to verify a subscription is cancelled?"
   },
   {
    "slug": "how-to-verify-mca-microsoft-customer-agreement-status-customer-guide",
-   "title": "How to Verify MCA (Microsoft Customer Agreement) Status - Customer Guide - WeTransact Docs"
+   "title": "How to Verify MCA (Microsoft Customer Agreement) Status - Customer Guide"
   },
   {
    "slug": "how-to-verify-the-level-of-user-rights",
-   "title": "How to verify the level of user rights? - WeTransact Docs"
+   "title": "How to verify the level of user rights?"
   },
   {
    "slug": "how-to-view-marketplace-listing-status",
-   "title": "How to view marketplace listing status? - WeTransact Docs"
+   "title": "How to view Marketplace listing status?"
   },
   {
    "slug": "i-have-added-wetransact-but-supportbot-cant-log-in",
-   "title": "I have added WeTransact, but support/bot can't log in. - WeTransact Docs"
+   "title": "I have added WeTransact, but support/bot can't log in."
   },
   {
    "slug": "incentive",
-   "title": "Incentive - WeTransact Docs"
+   "title": "Incentive"
   },
   {
    "slug": "incentives",
-   "title": "Incentives - WeTransact Docs"
+   "title": "Incentives"
   },
   {
    "slug": "invite-external-users-in-azure-portal",
-   "title": "Invite External Users in Azure Portal - WeTransact Docs"
+   "title": "Invite External Users in Azure Portal"
   },
   {
    "slug": "ip-co-sell",
@@ -480,11 +480,11 @@
   },
   {
    "slug": "ip-co-sellpartnership",
-   "title": "IP Co-Sell/Partnership - WeTransact Docs"
+   "title": "IP Co-Sell/Partnership"
   },
   {
    "slug": "listing-content-guidelines-what-microsoft-does-and-does-not-allow",
-   "title": "Listing Content Guidelines: What Microsoft Does and Does Not Allow - WeTransact Docs"
+   "title": "Listing Content Guidelines: What Microsoft Does and Does Not Allow"
   },
   {
    "slug": "metering-limitations-and-faq",
@@ -492,59 +492,59 @@
   },
   {
    "slug": "microsoft-partner-center",
-   "title": "Microsoft Partner Center - WeTransact Docs"
+   "title": "Microsoft Partner Center"
   },
   {
    "slug": "orsync-your-product-listings-in-one-click-and-go-live",
-   "title": "Or—Sync your product listings in one click, and Go Live - WeTransact Docs"
+   "title": "Or—Sync your product listings in one click, and Go Live"
   },
   {
    "slug": "part-1-enroll-into-the-microsoft-transact-and-grow-incentive",
-   "title": "Part 1 - Enroll into the Microsoft Transact & Grow Incentive - WeTransact Docs"
-  },
-  {
-   "slug": "part-2-us-entities-filling-tax-profile-walktrough-example",
-   "title": "Part 2 - (US Entities) Filling Tax Profile Walktrough example - WeTransact Docs"
+   "title": "Part 1 — Enroll into the Microsoft transact and grow incentive"
   },
   {
    "slug": "part-2-filling-up-tax-details-non-us-countries",
-   "title": "Part 2 - Filling Up Tax Details (Non US-Countries) - WeTransact Docs"
+   "title": "Part 2 — Filling up tax details non US countries"
+  },
+  {
+   "slug": "part-2-us-entities-filling-tax-profile-walktrough-example",
+   "title": "Part 2 — US entities filling tax profile walktrough example"
   },
   {
    "slug": "part-3-adding-the-payment-profile",
-   "title": "Part 3 - Adding the Payment Profile - WeTransact Docs"
+   "title": "Part 3 — Adding the payment profile"
   },
   {
    "slug": "part-4-submitting-the-incentive-profile",
-   "title": "Part 4 - Submitting the Incentive Profile - WeTransact Docs"
+   "title": "Part 4 — Submitting the incentive profile"
   },
   {
    "slug": "partner-center-user-rights",
-   "title": "Partner Center User Rights - WeTransact Docs"
+   "title": "Partner Center User Rights"
   },
   {
    "slug": "partner-center-day-to-day",
-   "title": "Partner Center, day-to-day - WeTransact Docs"
+   "title": "Partner Center, day-to-day"
   },
   {
    "slug": "partner-centerazure-user-rights",
-   "title": "Partner center/Azure User Rights - WeTransact Docs"
+   "title": "Partner center/Azure User Rights"
   },
   {
    "slug": "private-plan",
-   "title": "Private Plan - WeTransact Docs"
+   "title": "Private Plan"
   },
   {
    "slug": "private-plan-and-private-offer-setup",
-   "title": "Private Plan & Private Offer SetUp - WeTransact Docs"
+   "title": "Private Plan & Private Offer SetUp"
   },
   {
    "slug": "raising-a-support-ticket-because-my-legal-profile-was-not-validated",
-   "title": "Raising a support ticket because my legal profile was not validated. - WeTransact Docs"
+   "title": "Raising a support ticket because my legal profile was not validated"
   },
   {
    "slug": "retrieving-the-id-managed-application",
-   "title": "Retrieving the ID – Managed Application - WeTransact Docs"
+   "title": "Retrieving the ID managed application"
   },
   {
    "slug": "salesforce-installation-guide",
@@ -552,35 +552,35 @@
   },
   {
    "slug": "selling-and-offer-management",
-   "title": "Selling & Offer Management - WeTransact Docs"
+   "title": "Selling & Offer Management"
   },
   {
    "slug": "step-1-create-your-microsoft-work-account",
-   "title": "Step 1 — Create Your Microsoft Work Account - WeTransact Docs"
+   "title": "Step 1 — Create Your Microsoft Work Account"
   },
   {
    "slug": "step-2-become-a-microsoft-partner-and-access-partner-center",
-   "title": "Step 2 — Become a Microsoft Partner & Access Partner Center - WeTransact Docs"
+   "title": "Step 2 — Become a Microsoft Partner & Access Partner Center"
   },
   {
    "slug": "step-3-enroll-in-the-required-partner-center-programs",
-   "title": "Step 3 — Enroll in the Required Partner Center Programs - WeTransact Docs"
+   "title": "Step 3 — Enroll in the Required Partner Center Programs"
   },
   {
    "slug": "step-4-submit-your-legal-profile-24-hour-microsoft-validation",
-   "title": "Step 4 — Submit Your Legal Profile (24-hour Microsoft validation) - WeTransact Docs"
+   "title": "Step 4 — Submit Your Legal Profile (24-hour Microsoft validation)"
   },
   {
    "slug": "step-5-complete-your-payout-and-tax-profile-48-hour-microsoft-validation",
-   "title": "Step 5 — Complete Your Payout & Tax Profile (48-hour Microsoft validation) - WeTransact Docs"
+   "title": "Step 5 — Complete Your Payout & Tax Profile (48-hour Microsoft validation)"
   },
   {
    "slug": "step-6-grant-wetransact-access-to-partner-center",
-   "title": "Step 6 — Grant WeTransact Access to Partner Center - WeTransact Docs"
+   "title": "Step 6 — Grant WeTransact Access to Partner Center"
   },
   {
    "slug": "step-7-creating-your-first-microsoft-marketplace-listing-as-easy-as-1-2-3-and-go-live",
-   "title": "Step 7 — Creating your first Microsoft Marketplace Listing, As Easy as 1-2-3 and Go Live. - WeTransact Docs"
+   "title": "Step 7 — Creating your first Microsoft Marketplace Listing, As Easy as 1-2-3 and Go Live."
   },
   {
    "slug": "subscribe-to-the-wetransact-page-notifications-on-linkedin",
@@ -588,7 +588,7 @@
   },
   {
    "slug": "the-steps-to-be-followed-by-your-global-admin-to-give-you-the-necessary-level-of-rights",
-   "title": "The steps to be followed by your global admin to give you the necessary level of rights. - WeTransact Docs"
+   "title": "The steps to be followed by your global admin to give you the necessary level of rights."
   },
   {
    "slug": "troubleshooting",
@@ -600,15 +600,23 @@
   },
   {
    "slug": "unable-to-verify-account-legal-info",
-   "title": "Unable to verify Account - Legal Info - WeTransact Docs"
+   "title": "Unable to verify Account - Legal Info"
   },
   {
    "slug": "video-masterclasses",
-   "title": "Video Masterclasses - WeTransact Docs"
+   "title": "Video masterclasses"
   },
   {
    "slug": "video-masterclasses-01-wetransact-marketplace-journey",
    "title": "Video masterclasses 01 — WeTransact Marketplace journey"
+  },
+  {
+   "slug": "video-masterclasses-02-the-three-marketplace-channels",
+   "title": "Video masterclasses 02 — The three Marketplace channels"
+  },
+  {
+   "slug": "video-masterclasses-03the-marketplace-rewards-and-incentives",
+   "title": "Video masterclasses 03 — The Marketplace rewards and incentives"
   },
   {
    "slug": "video-masterclasses-04-why-approaches-differ-based-on-your-audience-segmentation",
@@ -619,48 +627,40 @@
    "title": "Video masterclasses 05 — Optimise your listing on the storefronts"
   },
   {
+   "slug": "video-masterclasses-06-how-to-partner-with-microsoft",
+   "title": "Video masterclasses 06 — How to Partner with Microsoft"
+  },
+  {
    "slug": "video-masterclasses-07-how-to-start-working-with-microsoft",
    "title": "Video masterclasses 07 — How to start working with Microsoft"
+  },
+  {
+   "slug": "video-masterclasses-08-the-reseller-landscape",
+   "title": "Video masterclasses 08 — The reseller landscape"
+  },
+  {
+   "slug": "video-masterclasses-09build-your-reseller-offer",
+   "title": "Video masterclasses 09 — Build your reseller offer"
   },
   {
    "slug": "video-masterclasses-10find-your-first-resellers",
    "title": "Video masterclasses 10 — Find your first resellers"
   },
   {
-   "slug": "video-masterclasses-02-the-three-marketplace-channels",
-   "title": "Video Masterclasses-02. The Three Marketplace Channels - WeTransact Docs"
-  },
-  {
-   "slug": "video-masterclasses-03the-marketplace-rewards-and-incentives",
-   "title": "Video Masterclasses-03.The Marketplace Rewards and Incentives - WeTransact Docs"
-  },
-  {
-   "slug": "video-masterclasses-06-how-to-partner-with-microsoft",
-   "title": "Video Masterclasses-06. How to Partner with Microsoft - WeTransact Docs"
-  },
-  {
-   "slug": "video-masterclasses-08-the-reseller-landscape",
-   "title": "Video Masterclasses-08. The Reseller Landscape - WeTransact Docs"
-  },
-  {
-   "slug": "video-masterclasses-09build-your-reseller-offer",
-   "title": "Video Masterclasses-09.Build Your Reseller Offer - WeTransact Docs"
-  },
-  {
    "slug": "wetransact-hubspot-app-installation-guide",
-   "title": "WeTransact Hubspot App Installation guide - WeTransact Docs"
+   "title": "WeTransact HubSpot app installation guide"
   },
   {
    "slug": "wetransact-portal",
-   "title": "WeTransact Portal - WeTransact Docs"
+   "title": "WeTransact portal"
   },
   {
    "slug": "wetransact-portal-day-to-day",
-   "title": "WeTransact Portal, day-to-day - WeTransact Docs"
+   "title": "WeTransact Portal, day-to-day"
   },
   {
    "slug": "what-to-do-if-your-only-admin-has-left-the-company-no-access-to-your-microsoft-marketplace-listing",
-   "title": "What to do if your only admin has left the company! No Access to Your Microsoft Marketplace Listing? - WeTransact Docs"
+   "title": "What to do if your only admin has left the company! No Access to Your Microsoft Marketplace Listing?"
   },
   {
    "slug": "what-to-do-when-you-cant-lodge-a-claim-build-and-publish-ai-marketplace",
@@ -668,15 +668,15 @@
   },
   {
    "slug": "where-are-my-marketing-benefits-in-partner-center",
-   "title": "Where are my marketing benefits in Partner Center ? - WeTransact Docs"
+   "title": "Where are my marketing benefits in Partner Center?"
   },
   {
    "slug": "where-to-find-the-azure-sponsorship",
-   "title": "Where to find the Azure Sponsorship? - WeTransact Docs"
+   "title": "Where to find the Azure sponsorship?"
   },
   {
    "slug": "where-to-find-your-private-offers",
-   "title": "Where to find your Private Offers ? - WeTransact Docs"
+   "title": "Where to find your Private Offers ?"
   }
  ]
 }
