@@ -48,6 +48,10 @@ jobs:
         run: npm install --no-save --no-fund --no-audit puppeteer@23 sharp@0.33
 
       - name: Render
+        env:
+          # optional — when this secret exists, blurbs are AI-worded;
+          # without it they fall back to each guide's own step headings
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
         run: |
           ARGS=""
           if [ -n "${{ inputs.only }}" ]; then
