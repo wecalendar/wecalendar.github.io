@@ -18,7 +18,7 @@
   "finance-how-marketplace-finance-works": {
    "title": "Finance, how marketplace finance works",
    "hash": "32ac3819a0b88116",
-   "bytes": 180128,
+   "bytes": 182627,
    "file": "docs-pdf/finance-how-marketplace-finance-works.pdf"
   },
   "how-to-find-your-subscription-id": {
@@ -48,7 +48,7 @@
   "api-set-up-automated-order-management-aom-automated-usage-reporting": {
    "title": "API set up + Automated Order Management (AOM) + Automated Usage Reporting",
    "hash": "ad65f9f7e24afc62",
-   "bytes": 406740,
+   "bytes": 408783,
    "file": "docs-pdf/api-set-up-automated-order-management-aom-automated-usage-reporting.pdf"
   },
   "assign-global-admin-to-another-user-in-partner-center": {
@@ -138,7 +138,7 @@
   "deal-registration-consent-and-troubleshooting-guide": {
    "title": "Deal Registration Consent & Troubleshooting Guide",
    "hash": "b0e2259a1f20e1e5",
-   "bytes": 195321,
+   "bytes": 195831,
    "file": "docs-pdf/deal-registration-consent-and-troubleshooting-guide.pdf"
   },
   "deal-registration-create-a-new-co-sell-deal": {
@@ -174,7 +174,7 @@
   "error-please-contact-support": {
    "title": "Error: Please contact Support",
    "hash": "a7a9eb6528b5cd27",
-   "bytes": 295679,
+   "bytes": 299642,
    "file": "docs-pdf/error-please-contact-support.pdf"
   },
   "faqs": {
@@ -498,7 +498,7 @@
   "how-to-enable-microsoft-authenticator-via-azure-portal": {
    "title": "How to Enable Microsoft Authenticator via Azure Portal",
    "hash": "20d3d389d4802ce6",
-   "bytes": 248292,
+   "bytes": 250321,
    "file": "docs-pdf/how-to-enable-microsoft-authenticator-via-azure-portal.pdf"
   },
   "how-to-find-a-billing-id": {
@@ -594,7 +594,7 @@
   "how-to-purchase-a-solution-on-azure-marketplace-generic": {
    "title": "How to purchase a solution on Azure Marketplace (generic)?",
    "hash": "52b0990866ef4e6d",
-   "bytes": 523122,
+   "bytes": 524274,
    "file": "docs-pdf/how-to-purchase-a-solution-on-azure-marketplace-generic.pdf"
   },
   "how-to-purchase-a-wetransact-solution": {
@@ -630,7 +630,7 @@
   "how-to-test-your-managed-application-package-before-publishing": {
    "title": "How to test your Managed Application package before publishing",
    "hash": "1ddae46589f0676a",
-   "bytes": 140832,
+   "bytes": 141980,
    "file": "docs-pdf/how-to-test-your-managed-application-package-before-publishing.pdf"
   },
   "how-to-update-credentials-for-finance-tab-in-the-wetransact-portal": {
@@ -738,7 +738,7 @@
   "listing-content-guidelines-what-microsoft-does-and-does-not-allow": {
    "title": "Listing Content Guidelines: What Microsoft Does and Does Not Allow",
    "hash": "43090d5803a9419a",
-   "bytes": 111089,
+   "bytes": 111604,
    "file": "docs-pdf/listing-content-guidelines-what-microsoft-does-and-does-not-allow.pdf"
   },
   "metering-limitations-and-faq": {
@@ -894,13 +894,13 @@
   "unable-to-enrol-in-the-commercial-marketplace-something-went-wrong-please-try-again-if-this-problem-persists-please-contact-microsoft-support": {
    "title": "Unable to enrol in the commercial Marketplace \"Something went wrong. Please try again; if this problem persists, please contact Microsoft support.\"",
    "hash": "107b3ae97970408a",
-   "bytes": 193076,
+   "bytes": 194566,
    "file": "docs-pdf/unable-to-enrol-in-the-commercial-marketplace-something-went-wrong-please-try-again-if-this-problem-persists-please-contact-microsoft-support.pdf"
   },
   "unable-to-verify-account-legal-info": {
    "title": "Unable to verify Account - Legal Info",
    "hash": "322cb6f0ae2b6544",
-   "bytes": 290904,
+   "bytes": 292425,
    "file": "docs-pdf/unable-to-verify-account-legal-info.pdf"
   },
   "video-masterclasses": {
