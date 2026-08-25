@@ -127,6 +127,13 @@ function sanitize(html) {
   s = s.replace(/<div>\s*<\/div>/g, "").replace(/<p>\s*<\/p>/g, "");
   s = s.replace(/<li>\s*<\/li>/g, "").replace(/<span>\s*<\/span>/g, "");
   s = s.replace(/<(ul|ol)>\s*<\/\1>/g, "");
+  // Archbee puts each step in its own <ol>, so numbering restarted at 1 for
+  // every item once the classes were gone. Merge adjacent lists of a kind.
+  for (let i = 0; i < 40; i++) {
+    const merged = s.replace(/<\/(ul|ol)>\s*(?:<div>\s*<\/div>\s*)*<\1>/g, "");
+    if (merged === s) break;
+    s = merged;
+  }
   return s.trim();
 }
 
