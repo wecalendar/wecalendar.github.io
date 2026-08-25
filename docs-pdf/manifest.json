@@ -3,7 +3,7 @@
  "stamp": {
   "preparedFor": {
    "x": 42.52,
-   "y": 736.33,
+   "y": 743.83,
    "size": 12.5,
    "maxWidth": 510
   },
@@ -18,1003 +18,1003 @@
   "finance-how-marketplace-finance-works": {
    "title": "Finance, how marketplace finance works",
    "hash": "32ac3819a0b88116",
-   "bytes": 177233,
+   "bytes": 180128,
    "file": "docs-pdf/finance-how-marketplace-finance-works.pdf"
   },
   "how-to-find-your-subscription-id": {
    "title": "How to find your subscription ID?",
    "hash": "41531c69c4b787d2",
-   "bytes": 226435,
+   "bytes": 235944,
    "file": "docs-pdf/how-to-find-your-subscription-id.pdf"
   },
   "step-6-grant-wetransact-access-to-partner-center": {
    "title": "Step 6 — Grant WeTransact Access to Partner Center",
    "hash": "b44e24c422236a23",
-   "bytes": 301583,
+   "bytes": 303306,
    "file": "docs-pdf/step-6-grant-wetransact-access-to-partner-center.pdf"
   },
   "account-verification-email-not-received-by-primary-contact": {
    "title": "Account Verification Email Not Received by Primary Contact",
    "hash": "5830884b21f1d7a2",
-   "bytes": 189206,
+   "bytes": 199525,
    "file": "docs-pdf/account-verification-email-not-received-by-primary-contact.pdf"
   },
   "add-more-users-for-free-trial": {
    "title": "Add more users for Free Trial",
    "hash": "4be46d221b61adfd",
-   "bytes": 203402,
+   "bytes": 212477,
    "file": "docs-pdf/add-more-users-for-free-trial.pdf"
   },
   "api-set-up-automated-order-management-aom-automated-usage-reporting": {
    "title": "API set up + Automated Order Management (AOM) + Automated Usage Reporting",
    "hash": "ad65f9f7e24afc62",
-   "bytes": 392971,
+   "bytes": 406740,
    "file": "docs-pdf/api-set-up-automated-order-management-aom-automated-usage-reporting.pdf"
   },
   "assign-global-admin-to-another-user-in-partner-center": {
    "title": "Assign Global Admin to another user in Partner Center",
    "hash": "90fd31c46d84f0b3",
-   "bytes": 434700,
+   "bytes": 437776,
    "file": "docs-pdf/assign-global-admin-to-another-user-in-partner-center.pdf"
   },
   "azure-credits": {
    "title": "Azure Credits",
    "hash": "c542214c2b8fa36b",
-   "bytes": 142280,
+   "bytes": 150032,
    "file": "docs-pdf/azure-credits.pdf"
   },
   "azure-portal-user-rights": {
    "title": "Azure Portal User Rights",
    "hash": "b94e7f6b643052ee",
-   "bytes": 111408,
+   "bytes": 121089,
    "file": "docs-pdf/azure-portal-user-rights.pdf"
   },
   "change-the-amount-of-seats-in-an-already-purchased-subscription-in-the-marketplace": {
    "title": "Change the amount of seats in an already purchased subscription in the Marketplace.",
    "hash": "c6dafae995db6446",
-   "bytes": 85548,
+   "bytes": 88379,
    "file": "docs-pdf/change-the-amount-of-seats-in-an-already-purchased-subscription-in-the-marketplace.pdf"
   },
   "configuring-cross-tenant-access-for-wetransact-in-microsoft-entra": {
    "title": "Configuring Cross-Tenant Access for WeTransact in Microsoft Entra",
    "hash": "1548b59d8ad1732d",
-   "bytes": 336967,
+   "bytes": 346512,
    "file": "docs-pdf/configuring-cross-tenant-access-for-wetransact-in-microsoft-entra.pdf"
   },
   "create-an-ip-cosell-support-ticket-acr": {
    "title": "Create an IP-cosell support ticket (ACR)",
    "hash": "cee74b243821b198",
-   "bytes": 475497,
+   "bytes": 479042,
    "file": "docs-pdf/create-an-ip-cosell-support-ticket-acr.pdf"
   },
   "create-an-ip-cosell-support-ticket-billed-sales": {
    "title": "Create an IP-cosell support ticket (Billed Sales)",
    "hash": "b55f044b0cd84ef2",
-   "bytes": 477667,
+   "bytes": 481262,
    "file": "docs-pdf/create-an-ip-cosell-support-ticket-billed-sales.pdf"
   },
   "create-azure-support-request-for-invoice-payment": {
    "title": "Create Azure Support Request for Invoice Payment",
    "hash": "3ee7658cc00fbfc7",
-   "bytes": 1190303,
+   "bytes": 1195545,
    "file": "docs-pdf/create-azure-support-request-for-invoice-payment.pdf"
   },
   "create-warmify-email-rule-in-gmail": {
    "title": "Create Warmify Email Rule in Gmail",
    "hash": "455a56c46fdf4424",
-   "bytes": 307566,
+   "bytes": 317526,
    "file": "docs-pdf/create-warmify-email-rule-in-gmail.pdf"
   },
   "create-warmify-email-rule-in-outlook": {
    "title": "Create Warmify Email Rule in Outlook",
    "hash": "c80e04049454596e",
-   "bytes": 403724,
+   "bytes": 413436,
    "file": "docs-pdf/create-warmify-email-rule-in-outlook.pdf"
   },
   "creating-co-sell-deals-and-private-offers-in-salesforce": {
    "title": "Creating Co-Sell Deals & Private Offers in Salesforce",
    "hash": "274e45e9aa272ed6",
-   "bytes": 128583,
+   "bytes": 130155,
    "file": "docs-pdf/creating-co-sell-deals-and-private-offers-in-salesforce.pdf"
   },
   "crm-connectors": {
    "title": "CRM Connectors",
    "hash": "9df07aa64e00839e",
-   "bytes": 74108,
+   "bytes": 82082,
    "file": "docs-pdf/crm-connectors.pdf"
   },
   "csp-private-offer": {
    "title": "CSP Private Offer",
    "hash": "cdcd46b37810dd09",
-   "bytes": 78195,
+   "bytes": 86789,
    "file": "docs-pdf/csp-private-offer.pdf"
   },
   "csp-private-offer-vs-resale-enabled-offer": {
    "title": "CSP private offer vs Resale Enabled Offer",
    "hash": "3b450bd5c515942b",
-   "bytes": 190313,
+   "bytes": 199421,
    "file": "docs-pdf/csp-private-offer-vs-resale-enabled-offer.pdf"
   },
   "deal-registration-consent-and-troubleshooting-guide": {
    "title": "Deal Registration Consent & Troubleshooting Guide",
    "hash": "b0e2259a1f20e1e5",
-   "bytes": 187034,
+   "bytes": 195321,
    "file": "docs-pdf/deal-registration-consent-and-troubleshooting-guide.pdf"
   },
   "deal-registration-create-a-new-co-sell-deal": {
    "title": "Deal Registration: Create a New Co-sell Deal",
    "hash": "9c9ec733243abb56",
-   "bytes": 790596,
+   "bytes": 799131,
    "file": "docs-pdf/deal-registration-create-a-new-co-sell-deal.pdf"
   },
   "direct-private-offer": {
    "title": "Direct Private Offer",
    "hash": "f88eac99f01fa647",
-   "bytes": 82252,
+   "bytes": 90828,
    "file": "docs-pdf/direct-private-offer.pdf"
   },
   "ecosystem-watchers-explore-partners-and-vendors-across-microsoft-marketplace": {
    "title": "Ecosystem Watchers - Explore Partners and Vendors Across Microsoft Marketplace",
    "hash": "8c12b4ba0a2b6a2b",
-   "bytes": 104827,
+   "bytes": 108210,
    "file": "docs-pdf/ecosystem-watchers-explore-partners-and-vendors-across-microsoft-marketplace.pdf"
   },
   "error-system-error": {
    "title": "Error : System Error",
    "hash": "b09f71dcd442a1c1",
-   "bytes": 95698,
+   "bytes": 104032,
    "file": "docs-pdf/error-system-error.pdf"
   },
   "error-looping-to-same-page": {
    "title": "Error: looping to same page",
    "hash": "360914d63399b4f4",
-   "bytes": 145972,
+   "bytes": 153098,
    "file": "docs-pdf/error-looping-to-same-page.pdf"
   },
   "error-please-contact-support": {
    "title": "Error: Please contact Support",
    "hash": "a7a9eb6528b5cd27",
-   "bytes": 291239,
+   "bytes": 295679,
    "file": "docs-pdf/error-please-contact-support.pdf"
   },
   "faqs": {
    "title": "FAQs",
    "hash": "9d7c01c8fa5b5863",
-   "bytes": 82954,
+   "bytes": 90646,
    "file": "docs-pdf/faqs.pdf"
   },
   "finance-and-order": {
    "title": "Finance & Order",
    "hash": "fb521bb26d341c25",
-   "bytes": 109444,
+   "bytes": 117308,
    "file": "docs-pdf/finance-and-order.pdf"
   },
   "find-out-who-the-azure-global-admin-is": {
    "title": "Find out who the Azure Global Admin is.",
    "hash": "b1a133efb1e9d276",
-   "bytes": 402291,
+   "bytes": 412329,
    "file": "docs-pdf/find-out-who-the-azure-global-admin-is.pdf"
   },
   "find-your-global-admin-to-add-an-external-user-on-partner-center": {
    "title": "Find your global admin to add an external user on Partner Center.",
    "hash": "c243f44f2ac95876",
-   "bytes": 342010,
+   "bytes": 352527,
    "file": "docs-pdf/find-your-global-admin-to-add-an-external-user-on-partner-center.pdf"
   },
   "fixing-legal-profile-issues": {
    "title": "Fixing Legal Profile Issues",
    "hash": "1024670e9c9fb163",
-   "bytes": 441421,
+   "bytes": 451074,
    "file": "docs-pdf/fixing-legal-profile-issues.pdf"
   },
   "go-live-in-5-days-with-your-csm": {
    "title": "Go Live in 5 Days with your CSM",
    "hash": "efb1b7a0ad203f4f",
-   "bytes": 110498,
+   "bytes": 120773,
    "file": "docs-pdf/go-live-in-5-days-with-your-csm.pdf"
   },
   "gtm-go-to-market": {
    "title": "GTM - Go To Market",
    "hash": "252b9695e380287c",
-   "bytes": 96666,
+   "bytes": 105726,
    "file": "docs-pdf/gtm-go-to-market.pdf"
   },
   "guide-your-customer-when-they-have-not-completed-the-order": {
    "title": "Guide your customer when they have not completed the order.",
    "hash": "72b5028927f72bd4",
-   "bytes": 69963,
+   "bytes": 80764,
    "file": "docs-pdf/guide-your-customer-when-they-have-not-completed-the-order.pdf"
   },
   "have-an-issue-with-marketplace-leads": {
    "title": "Have an issue with Marketplace leads.",
    "hash": "479e88089acb450d",
-   "bytes": 331874,
+   "bytes": 342014,
    "file": "docs-pdf/have-an-issue-with-marketplace-leads.pdf"
   },
   "how-can-i-verify-a-users-rights-to-complete-a-purchase": {
    "title": "How can I verify a user's rights to complete a purchase?",
    "hash": "b7b6aa2631feaeca",
-   "bytes": 269550,
+   "bytes": 280700,
    "file": "docs-pdf/how-can-i-verify-a-users-rights-to-complete-a-purchase.pdf"
   },
   "how-do-i-add-a-subscription-id-to-the-supplemental-tab-in-the-wetransact-portal": {
    "title": "How do I add a subscription ID to the supplemental tab in the WeTransact portal?",
    "hash": "06ee41e15b491ea2",
-   "bytes": 304142,
+   "bytes": 313858,
    "file": "docs-pdf/how-do-i-add-a-subscription-id-to-the-supplemental-tab-in-the-wetransact-portal.pdf"
   },
   "how-do-i-change-the-billing-region-in-azure-marketplace": {
    "title": "How do I change the billing region in Azure Marketplace?",
    "hash": "49840c1168f03ee7",
-   "bytes": 250023,
+   "bytes": 260642,
    "file": "docs-pdf/how-do-i-change-the-billing-region-in-azure-marketplace.pdf"
   },
   "how-do-i-check-incentive-transact-and-grow-cashback": {
    "title": "How do I check Incentive (Transact & Grow) Cashback?",
    "hash": "8aed73fce26793c2",
-   "bytes": 104227,
+   "bytes": 106451,
    "file": "docs-pdf/how-do-i-check-incentive-transact-and-grow-cashback.pdf"
   },
   "how-do-i-check-who-has-owner-status": {
    "title": "How do I check who has 'Owner' status?",
    "hash": "cb33ef93b4e09f81",
-   "bytes": 202780,
+   "bytes": 211465,
    "file": "docs-pdf/how-do-i-check-who-has-owner-status.pdf"
   },
   "how-do-i-determine-who-has-global-admin-and-owner-status-in-partner-center": {
    "title": "How do I determine who has Global Admin & Owner status in Partner Center?",
    "hash": "24fd34fde56a7318",
-   "bytes": 397269,
+   "bytes": 397687,
    "file": "docs-pdf/how-do-i-determine-who-has-global-admin-and-owner-status-in-partner-center.pdf"
   },
   "how-do-i-enrol-for-the-incentive-campaign": {
    "title": "How do I enrol for the incentive campaign?",
    "hash": "bbb22e7b9d3440ff",
-   "bytes": 95362,
+   "bytes": 105708,
    "file": "docs-pdf/how-do-i-enrol-for-the-incentive-campaign.pdf"
   },
   "how-do-i-export-a-technical-diagram-as-a-png": {
    "title": "How do I export a technical diagram as a .png?",
    "hash": "5c64bb9dac299b4d",
-   "bytes": 398883,
+   "bytes": 408746,
    "file": "docs-pdf/how-do-i-export-a-technical-diagram-as-a-png.pdf"
   },
   "how-do-i-select-a-publisher-location-for-the-product-listing": {
    "title": "How do I select a publisher location for the product listing?",
    "hash": "b70111dbe84b0438",
-   "bytes": 235951,
+   "bytes": 246083,
    "file": "docs-pdf/how-do-i-select-a-publisher-location-for-the-product-listing.pdf"
   },
   "how-do-i-set-up-the-deal-registration-tab-on-wetransact-portal": {
    "title": "How do I set up the Deal Registration tab on Wetransact portal?",
    "hash": "3d9c9080bd2dbc41",
-   "bytes": 184551,
+   "bytes": 184992,
    "file": "docs-pdf/how-do-i-set-up-the-deal-registration-tab-on-wetransact-portal.pdf"
   },
   "how-do-i-turn-off-auto-renew-on-azure-subscriptions": {
    "title": "How do I turn off Auto Renew on Azure Subscriptions?",
    "hash": "1d3015fce9ea684e",
-   "bytes": 230035,
+   "bytes": 239328,
    "file": "docs-pdf/how-do-i-turn-off-auto-renew-on-azure-subscriptions.pdf"
   },
   "how-do-i-update-owner-status-in-partner-centre": {
    "title": "How do I update Owner status in Partner Centre?",
    "hash": "a3ce3f1ed3284755",
-   "bytes": 375333,
+   "bytes": 377819,
    "file": "docs-pdf/how-do-i-update-owner-status-in-partner-centre.pdf"
   },
   "how-do-i-update-user-rights-to-manage-co-sell-solutions-in-partner-center": {
    "title": "How do I update user rights to manage co-sell solutions in Partner Center?",
    "hash": "b430fcba9c24c3d3",
-   "bytes": 349428,
+   "bytes": 359703,
    "file": "docs-pdf/how-do-i-update-user-rights-to-manage-co-sell-solutions-in-partner-center.pdf"
   },
   "how-do-i-use-the-customisation-tool-to-expedite-the-co-sell-pitch-deck": {
    "title": "How do I use the customisation tool to expedite the co-sell pitch deck?",
    "hash": "9041608a95a3e4c1",
-   "bytes": 475610,
+   "bytes": 482875,
    "file": "docs-pdf/how-do-i-use-the-customisation-tool-to-expedite-the-co-sell-pitch-deck.pdf"
   },
   "how-do-i-use-the-report-function-for-custom-dimensions": {
    "title": "How do I use the report function for custom dimensions?",
    "hash": "71371dff5cc65b70",
-   "bytes": 517147,
+   "bytes": 526827,
    "file": "docs-pdf/how-do-i-use-the-report-function-for-custom-dimensions.pdf"
   },
   "how-do-you-assign-referral-admin-user-rights": {
    "title": "How do you assign Referral Admin user rights?",
    "hash": "341b2bdbdf68bcc0",
-   "bytes": 110367,
+   "bytes": 113092,
    "file": "docs-pdf/how-do-you-assign-referral-admin-user-rights.pdf"
   },
   "how-do-you-assign-the-billing-administrator-role-in-microsoft-azure-portal": {
    "title": "How do you assign the billing administrator role in Microsoft Azure Portal?",
    "hash": "73294101920b6aff",
-   "bytes": 409012,
+   "bytes": 420005,
    "file": "docs-pdf/how-do-you-assign-the-billing-administrator-role-in-microsoft-azure-portal.pdf"
   },
   "how-does-a-csp-resell-a-marketplace-solution-direct-csps": {
    "title": "How does a CSP resell a Marketplace Solution ? (Direct CSPs)",
    "hash": "2815663285803874",
-   "bytes": 583264,
+   "bytes": 593355,
    "file": "docs-pdf/how-does-a-csp-resell-a-marketplace-solution-direct-csps.pdf"
   },
   "how-to-accept-a-private-offer-customer-walkthrough": {
    "title": "How to accept a Private Offer? - Customer walkthrough",
    "hash": "9fb3f421df11a6de",
-   "bytes": 412883,
+   "bytes": 424171,
    "file": "docs-pdf/how-to-accept-a-private-offer-customer-walkthrough.pdf"
   },
   "how-to-action-admin-consent-requests": {
    "title": "How to action admin consent requests?",
    "hash": "c11908b1b8151c3e",
-   "bytes": 318016,
+   "bytes": 326879,
    "file": "docs-pdf/how-to-action-admin-consent-requests.pdf"
   },
   "how-to-activateaccept-order": {
    "title": "How to Activate/Accept Order?",
    "hash": "cce16c45a94f6abe",
-   "bytes": 189417,
+   "bytes": 198119,
    "file": "docs-pdf/how-to-activateaccept-order.pdf"
   },
   "how-to-add-a-location-and-publisher-account-in-partner-center": {
    "title": "How to Add a Location and Publisher Account in Partner Center?",
    "hash": "0b41445d61c9517d",
-   "bytes": 420952,
+   "bytes": 430172,
    "file": "docs-pdf/how-to-add-a-location-and-publisher-account-in-partner-center.pdf"
   },
   "how-to-add-users-in-the-wetransact-portal": {
    "title": "How to add users in the WeTransact Portal?",
    "hash": "33f240c5efff176d",
-   "bytes": 313701,
+   "bytes": 322820,
    "file": "docs-pdf/how-to-add-users-in-the-wetransact-portal.pdf"
   },
   "how-to-assign-yourself-as-a-subscription-owner-without-prior-access-as-a-global-admin": {
    "title": "How to Assign Yourself as a Subscription Owner Without Prior Access (As a Global Admin)?",
    "hash": "c4bcfa171928ed57",
-   "bytes": 1576433,
+   "bytes": 1587452,
    "file": "docs-pdf/how-to-assign-yourself-as-a-subscription-owner-without-prior-access-as-a-global-admin.pdf"
   },
   "how-to-cancel-a-subscription": {
    "title": "How to Cancel a Subscription?",
    "hash": "0cf499f24e34e564",
-   "bytes": 459741,
+   "bytes": 468828,
    "file": "docs-pdf/how-to-cancel-a-subscription.pdf"
   },
   "how-to-change-the-publisher-id-name": {
    "title": "How to change the publisher ID name?",
    "hash": "0750bf4fcb1e4ef9",
-   "bytes": 379506,
+   "bytes": 389611,
    "file": "docs-pdf/how-to-change-the-publisher-id-name.pdf"
   },
   "how-to-check-azure-consumption-acr-in-the-azure-portal": {
    "title": "How to check Azure Consumption (ACR) in the Azure portal?",
    "hash": "bdd3e832a897bb08",
-   "bytes": 240242,
+   "bytes": 250308,
    "file": "docs-pdf/how-to-check-azure-consumption-acr-in-the-azure-portal.pdf"
   },
   "how-to-check-if-a-legal-profile-is-verified": {
    "title": "How to Check if a Legal Profile is Verified?",
    "hash": "d4b54fde285a99d3",
-   "bytes": 258924,
+   "bytes": 269192,
    "file": "docs-pdf/how-to-check-if-a-legal-profile-is-verified.pdf"
   },
   "how-to-check-if-auto-renewal-is-on-for-your-azure-subscriptions": {
    "title": "How to check if auto-renewal is on for your Azure subscriptions?",
    "hash": "388bf8571d402c1b",
-   "bytes": 211648,
+   "bytes": 221812,
    "file": "docs-pdf/how-to-check-if-auto-renewal-is-on-for-your-azure-subscriptions.pdf"
   },
   "how-to-check-microsoft-entra-application-roles": {
    "title": "How to check Microsoft Entra application roles?",
    "hash": "82633048f9e24887",
-   "bytes": 360393,
+   "bytes": 370380,
    "file": "docs-pdf/how-to-check-microsoft-entra-application-roles.pdf"
   },
   "how-to-clone-pricing": {
    "title": "How to clone pricing?",
    "hash": "2a9aeca38e842d08",
-   "bytes": 98823,
+   "bytes": 100834,
    "file": "docs-pdf/how-to-clone-pricing.pdf"
   },
   "how-to-configure-a-saas-account-in-azure-portal": {
    "title": "How to configure a SaaS account in Azure Portal?",
    "hash": "9492976b4b692b0c",
-   "bytes": 493713,
+   "bytes": 503797,
    "file": "docs-pdf/how-to-configure-a-saas-account-in-azure-portal.pdf"
   },
   "how-to-configure-multiple-publisher-ids-in-wetransact-portal": {
    "title": "How to configure multiple Publisher IDs in WeTransact portal?",
    "hash": "e8875fa9890b07f1",
-   "bytes": 538952,
+   "bytes": 541754,
    "file": "docs-pdf/how-to-configure-multiple-publisher-ids-in-wetransact-portal.pdf"
   },
   "how-to-connect-an-email-account-for-outreach-campaigns": {
    "title": "How to connect an email account for Outreach campaigns?",
    "hash": "2a7c43fa8367f364",
-   "bytes": 360262,
+   "bytes": 361904,
    "file": "docs-pdf/how-to-connect-an-email-account-for-outreach-campaigns.pdf"
   },
   "how-to-create-a-billing-support-request-in-microsoft-azure-portal": {
    "title": "How to Create a Billing Support Request in Microsoft Azure Portal?",
    "hash": "1b8f62d5a89f97e5",
-   "bytes": 1256237,
+   "bytes": 1266831,
    "file": "docs-pdf/how-to-create-a-billing-support-request-in-microsoft-azure-portal.pdf"
   },
   "how-to-create-a-microsoft-support-ticket-without-a-partner-center-account": {
    "title": "How to Create a Microsoft Support Ticket Without a Partner Center Account",
    "hash": "de2474c2e3babc5b",
-   "bytes": 317887,
+   "bytes": 320005,
    "file": "docs-pdf/how-to-create-a-microsoft-support-ticket-without-a-partner-center-account.pdf"
   },
   "how-to-create-a-new-users-in-partner-center": {
    "title": "How to create a new users in Partner Center?",
    "hash": "50a7f0b7a90cac32",
-   "bytes": 257167,
+   "bytes": 266073,
    "file": "docs-pdf/how-to-create-a-new-users-in-partner-center.pdf"
   },
   "how-to-create-a-partner-center-support-ticket": {
    "title": "How to create a Partner Center support ticket?",
    "hash": "f9c57aac780434db",
-   "bytes": 465574,
+   "bytes": 474850,
    "file": "docs-pdf/how-to-create-a-partner-center-support-ticket.pdf"
   },
   "how-to-create-a-private-offer-to-csp": {
    "title": "How to create a Private Offer to CSP",
    "hash": "4b5ae56e139b0011",
-   "bytes": 96313,
+   "bytes": 97053,
    "file": "docs-pdf/how-to-create-a-private-offer-to-csp.pdf"
   },
   "how-to-create-a-private-offer": {
    "title": "How to create a Private Offer?",
    "hash": "2fb526660149aece",
-   "bytes": 306914,
+   "bytes": 307704,
    "file": "docs-pdf/how-to-create-a-private-offer.pdf"
   },
   "how-to-create-a-private-plan": {
    "title": "How to create a Private Plan?",
    "hash": "3ac0a465d950c2a2",
-   "bytes": 99263,
+   "bytes": 100989,
    "file": "docs-pdf/how-to-create-a-private-plan.pdf"
   },
   "how-to-create-new-pricing-options": {
    "title": "How to Create New Pricing Options?",
    "hash": "5edc986ef7db221e",
-   "bytes": 360740,
+   "bytes": 369809,
    "file": "docs-pdf/how-to-create-new-pricing-options.pdf"
   },
   "how-to-delete-and-re-add-support-and-bot": {
    "title": "How to Delete and Re-add support and bot?",
    "hash": "64f514fb5ceb5025",
-   "bytes": 354214,
+   "bytes": 363369,
    "file": "docs-pdf/how-to-delete-and-re-add-support-and-bot.pdf"
   },
   "how-to-download-the-incentive-justification": {
    "title": "How to download the incentive justification?",
    "hash": "039e20d8c7e98806",
-   "bytes": 173626,
+   "bytes": 182909,
    "file": "docs-pdf/how-to-download-the-incentive-justification.pdf"
   },
   "how-to-enable-microsoft-authenticator-via-azure-portal": {
    "title": "How to Enable Microsoft Authenticator via Azure Portal",
    "hash": "20d3d389d4802ce6",
-   "bytes": 245300,
+   "bytes": 248292,
    "file": "docs-pdf/how-to-enable-microsoft-authenticator-via-azure-portal.pdf"
   },
   "how-to-find-a-billing-id": {
    "title": "How to Find a Billing ID?",
    "hash": "18d68c4ac4b333db",
-   "bytes": 212001,
+   "bytes": 212305,
    "file": "docs-pdf/how-to-find-a-billing-id.pdf"
   },
   "how-to-find-an-object-id-of-a-user": {
    "title": "How to find an object ID of a user?",
    "hash": "f8971bc80700e7a3",
-   "bytes": 196115,
+   "bytes": 204925,
    "file": "docs-pdf/how-to-find-an-object-id-of-a-user.pdf"
   },
   "how-to-find-and-purchase-a-private-plan": {
    "title": "How to find and purchase a private plan?",
    "hash": "d39ec103d1c1ab6a",
-   "bytes": 509731,
+   "bytes": 519399,
    "file": "docs-pdf/how-to-find-and-purchase-a-private-plan.pdf"
   },
   "how-to-find-order-details-in-partner-center": {
    "title": "How to find order details in Partner Center?",
    "hash": "288ef26c443d9d01",
-   "bytes": 196171,
+   "bytes": 205231,
    "file": "docs-pdf/how-to-find-order-details-in-partner-center.pdf"
   },
   "how-to-find-partnerglobal-id": {
    "title": "How to find PartnerGlobal ID?",
    "hash": "14a3c7143527b2e4",
-   "bytes": 155095,
+   "bytes": 164821,
    "file": "docs-pdf/how-to-find-partnerglobal-id.pdf"
   },
   "how-to-find-the-invoice-id-for-a-customer-transaction": {
    "title": "How to find the invoice ID for a customer transaction?",
    "hash": "03d131bc485f85fa",
-   "bytes": 192053,
+   "bytes": 201564,
    "file": "docs-pdf/how-to-find-the-invoice-id-for-a-customer-transaction.pdf"
   },
   "how-to-find-the-mpn-id": {
    "title": "How to find the MPN ID?",
    "hash": "0294f25ad6fb057f",
-   "bytes": 229412,
+   "bytes": 238679,
    "file": "docs-pdf/how-to-find-the-mpn-id.pdf"
   },
   "how-to-find-your-marketplace-invoice": {
    "title": "How to find your marketplace invoice?",
    "hash": "5a5460627a8fa453",
-   "bytes": 252708,
+   "bytes": 263622,
    "file": "docs-pdf/how-to-find-your-marketplace-invoice.pdf"
   },
   "how-to-find-your-tenant-id-in-azure-portal": {
    "title": "How to find your Tenant ID in Azure portal?",
    "hash": "0de4f781411fe4f8",
-   "bytes": 127073,
+   "bytes": 138341,
    "file": "docs-pdf/how-to-find-your-tenant-id-in-azure-portal.pdf"
   },
   "how-to-fix-a-suspended-subscription": {
    "title": "How to Fix a Suspended Subscription?",
    "hash": "d97b27443876f4a3",
-   "bytes": 179817,
+   "bytes": 189040,
    "file": "docs-pdf/how-to-fix-a-suspended-subscription.pdf"
   },
   "how-to-generate-activation-links-in-partner-center-csps": {
    "title": "How to generate activation links in Partner Center (CSPs)?",
    "hash": "570b59789e0e735d",
-   "bytes": 234113,
+   "bytes": 244110,
    "file": "docs-pdf/how-to-generate-activation-links-in-partner-center-csps.pdf"
   },
   "how-to-know-which-customers-includes-a-microsoft-payment": {
    "title": "How to know which customers includes a Microsoft Payment",
    "hash": "b297ab3942b5d011",
-   "bytes": 183692,
+   "bytes": 185844,
    "file": "docs-pdf/how-to-know-which-customers-includes-a-microsoft-payment.pdf"
   },
   "how-to-leverage-the-wetransact-collaborative-customer-tab-for-enhanced-sales-strategies": {
    "title": "How to leverage the WeTransact Collaborative Customer Tab for enhanced sales strategies?",
    "hash": "fcb794e6894ceb26",
-   "bytes": 112315,
+   "bytes": 114677,
    "file": "docs-pdf/how-to-leverage-the-wetransact-collaborative-customer-tab-for-enhanced-sales-strategies.pdf"
   },
   "how-to-pay-your-marketplace-invoices": {
    "title": "How to pay your marketplace invoices?",
    "hash": "9d7227196340a554",
-   "bytes": 394830,
+   "bytes": 405361,
    "file": "docs-pdf/how-to-pay-your-marketplace-invoices.pdf"
   },
   "how-to-provide-or-update-partner-center-user-rights": {
    "title": "How to provide (or update) Partner Center user rights?",
    "hash": "0c60e93bf7ba0d6d",
-   "bytes": 391863,
+   "bytes": 395187,
    "file": "docs-pdf/how-to-provide-or-update-partner-center-user-rights.pdf"
   },
   "how-to-purchase-a-solution-on-azure-marketplace-generic": {
    "title": "How to purchase a solution on Azure Marketplace (generic)?",
    "hash": "52b0990866ef4e6d",
-   "bytes": 518836,
+   "bytes": 523122,
    "file": "docs-pdf/how-to-purchase-a-solution-on-azure-marketplace-generic.pdf"
   },
   "how-to-purchase-a-wetransact-solution": {
    "title": "How to Purchase a WeTransact Solution?",
    "hash": "b892c5a4a63e79be",
-   "bytes": 375592,
+   "bytes": 384354,
    "file": "docs-pdf/how-to-purchase-a-wetransact-solution.pdf"
   },
   "how-to-set-up-a-new-subscription-azure": {
    "title": "How to set up a new Subscription (Azure)?",
    "hash": "a1672a237dac6d75",
-   "bytes": 436873,
+   "bytes": 445768,
    "file": "docs-pdf/how-to-set-up-a-new-subscription-azure.pdf"
   },
   "how-to-set-up-the-finance-tab-in-the-wetransact-portal": {
    "title": "How to Set Up the Finance Tab in the Wetransact Portal?",
    "hash": "2f97fff193fd20ac",
-   "bytes": 431719,
+   "bytes": 438068,
    "file": "docs-pdf/how-to-set-up-the-finance-tab-in-the-wetransact-portal.pdf"
   },
   "how-to-stop-distribution-of-a-listing": {
    "title": "How to Stop distribution of a Listing?",
    "hash": "ff81f299e107be13",
-   "bytes": 187362,
+   "bytes": 197365,
    "file": "docs-pdf/how-to-stop-distribution-of-a-listing.pdf"
   },
   "how-to-submit-the-ip-co-sell-documentation": {
    "title": "How to submit the IP Co sell documentation?",
    "hash": "614cc94c74d5e527",
-   "bytes": 109238,
+   "bytes": 110638,
    "file": "docs-pdf/how-to-submit-the-ip-co-sell-documentation.pdf"
   },
   "how-to-test-your-managed-application-package-before-publishing": {
    "title": "How to test your Managed Application package before publishing",
    "hash": "1ddae46589f0676a",
-   "bytes": 140025,
+   "bytes": 140832,
    "file": "docs-pdf/how-to-test-your-managed-application-package-before-publishing.pdf"
   },
   "how-to-update-credentials-for-finance-tab-in-the-wetransact-portal": {
    "title": "How to update credentials for finance Tab in the Wetransact Portal?",
    "hash": "cd7586d6de05446e",
-   "bytes": 416961,
+   "bytes": 426512,
    "file": "docs-pdf/how-to-update-credentials-for-finance-tab-in-the-wetransact-portal.pdf"
   },
   "how-to-update-global-admin-from-non-actionable-to-actionable": {
    "title": "How to update Global Admin from non-actionable to actionable?",
    "hash": "758ed12d9e4fd52a",
-   "bytes": 390253,
+   "bytes": 400886,
    "file": "docs-pdf/how-to-update-global-admin-from-non-actionable-to-actionable.pdf"
   },
   "how-to-update-payment-methods-in-microsoft-azure-portal": {
    "title": "How to update payment methods in Microsoft Azure Portal?",
    "hash": "400fad17848a1658",
-   "bytes": 267702,
+   "bytes": 278030,
    "file": "docs-pdf/how-to-update-payment-methods-in-microsoft-azure-portal.pdf"
   },
   "how-to-update-the-primary-contact-email-address-in-legal-info": {
    "title": "How to update the primary contact email address in legal info?",
    "hash": "5ac3d04bdb8fa21a",
-   "bytes": 323215,
+   "bytes": 334204,
    "file": "docs-pdf/how-to-update-the-primary-contact-email-address-in-legal-info.pdf"
   },
   "how-to-upgrade-your-plan-when-youre-ready": {
    "title": "How to upgrade your plan when you're ready",
    "hash": "72f2a0d15bfdf419",
-   "bytes": 238144,
+   "bytes": 248270,
    "file": "docs-pdf/how-to-upgrade-your-plan-when-youre-ready.pdf"
   },
   "how-to-use-existing-terms-and-conditions-for-the-product-listing": {
    "title": "How to use existing terms and conditions for the product listing?",
    "hash": "a665adaf580092af",
-   "bytes": 214535,
+   "bytes": 225168,
    "file": "docs-pdf/how-to-use-existing-terms-and-conditions-for-the-product-listing.pdf"
   },
   "how-to-use-the-reference-architecture-diagram-builder-for-ip-co-sell-documentation": {
    "title": "How to use the reference architecture diagram builder for IP co-sell documentation?",
    "hash": "dba85ab7801bcf0d",
-   "bytes": 526976,
+   "bytes": 537638,
    "file": "docs-pdf/how-to-use-the-reference-architecture-diagram-builder-for-ip-co-sell-documentation.pdf"
   },
   "how-to-verify-a-subscription-is-cancelled": {
    "title": "How to verify a subscription is cancelled?",
    "hash": "e9a26a038f5d6150",
-   "bytes": 233533,
+   "bytes": 243615,
    "file": "docs-pdf/how-to-verify-a-subscription-is-cancelled.pdf"
   },
   "how-to-verify-mca-microsoft-customer-agreement-status-customer-guide": {
    "title": "How to Verify MCA (Microsoft Customer Agreement) Status - Customer Guide",
    "hash": "c81e96c14a4cc8d9",
-   "bytes": 182982,
+   "bytes": 188338,
    "file": "docs-pdf/how-to-verify-mca-microsoft-customer-agreement-status-customer-guide.pdf"
   },
   "how-to-verify-the-level-of-user-rights": {
    "title": "How to verify the level of user rights?",
    "hash": "7b2e73e80f01e0bb",
-   "bytes": 276452,
+   "bytes": 280027,
    "file": "docs-pdf/how-to-verify-the-level-of-user-rights.pdf"
   },
   "how-to-view-marketplace-listing-status": {
    "title": "How to view marketplace listing status?",
    "hash": "a7cd5228c53d2c9b",
-   "bytes": 177828,
+   "bytes": 188597,
    "file": "docs-pdf/how-to-view-marketplace-listing-status.pdf"
   },
   "i-have-added-wetransact-but-supportbot-cant-log-in": {
    "title": "I have added WeTransact, but support/bot can't log in.",
    "hash": "be64449620351e5e",
-   "bytes": 662467,
+   "bytes": 672541,
    "file": "docs-pdf/i-have-added-wetransact-but-supportbot-cant-log-in.pdf"
   },
   "incentive": {
    "title": "Incentive",
    "hash": "451d579e5cbfb6c8",
-   "bytes": 82552,
+   "bytes": 90085,
    "file": "docs-pdf/incentive.pdf"
   },
   "incentives": {
    "title": "Incentives",
    "hash": "ea6cd43bf3343a0e",
-   "bytes": 64120,
+   "bytes": 71680,
    "file": "docs-pdf/incentives.pdf"
   },
   "invite-external-users-in-azure-portal": {
    "title": "Invite External Users in Azure Portal",
    "hash": "6887582fd4ecda11",
-   "bytes": 383891,
+   "bytes": 385938,
    "file": "docs-pdf/invite-external-users-in-azure-portal.pdf"
   },
   "ip-co-sell": {
    "title": "IP Co-Sell",
    "hash": "ba2aca960feb145c",
-   "bytes": 90453,
+   "bytes": 97262,
    "file": "docs-pdf/ip-co-sell.pdf"
   },
   "ip-co-sellpartnership": {
    "title": "IP Co-Sell/Partnership",
    "hash": "e6df463344e500bb",
-   "bytes": 89535,
+   "bytes": 98105,
    "file": "docs-pdf/ip-co-sellpartnership.pdf"
   },
   "listing-content-guidelines-what-microsoft-does-and-does-not-allow": {
    "title": "Listing Content Guidelines: What Microsoft Does and Does Not Allow",
    "hash": "43090d5803a9419a",
-   "bytes": 100978,
+   "bytes": 111089,
    "file": "docs-pdf/listing-content-guidelines-what-microsoft-does-and-does-not-allow.pdf"
   },
   "metering-limitations-and-faq": {
    "title": "Metering limitations and FAQ",
    "hash": "610cea9030ee679e",
-   "bytes": 179737,
+   "bytes": 182745,
    "file": "docs-pdf/metering-limitations-and-faq.pdf"
   },
   "microsoft-partner-center": {
    "title": "Microsoft Partner Center",
    "hash": "d06f6e84effd52b2",
-   "bytes": 89738,
+   "bytes": 98567,
    "file": "docs-pdf/microsoft-partner-center.pdf"
   },
   "orsync-your-product-listings-in-one-click-and-go-live": {
    "title": "Or—Sync your product listings in one click, and Go Live",
    "hash": "8a011bb95dc27f77",
-   "bytes": 814029,
+   "bytes": 824268,
    "file": "docs-pdf/orsync-your-product-listings-in-one-click-and-go-live.pdf"
   },
   "part-1-enroll-into-the-microsoft-transact-and-grow-incentive": {
    "title": "Part 1 - Enroll into the Microsoft Transact & Grow Incentive",
    "hash": "1a59b37046d1e309",
-   "bytes": 263205,
+   "bytes": 267244,
    "file": "docs-pdf/part-1-enroll-into-the-microsoft-transact-and-grow-incentive.pdf"
   },
   "part-2-filling-up-tax-details-non-us-countries": {
    "title": "Part 2 - Filling Up Tax Details (Non US-Countries)",
    "hash": "5211966ff0df6d87",
-   "bytes": 1005693,
+   "bytes": 1015364,
    "file": "docs-pdf/part-2-filling-up-tax-details-non-us-countries.pdf"
   },
   "part-2-us-entities-filling-tax-profile-walktrough-example": {
    "title": "Part 2 - (US Entities) Filling Tax Profile Walktrough example",
    "hash": "28b32aeb0718f8a3",
-   "bytes": 727269,
+   "bytes": 738190,
    "file": "docs-pdf/part-2-us-entities-filling-tax-profile-walktrough-example.pdf"
   },
   "part-3-adding-the-payment-profile": {
    "title": "Part 3 - Adding the Payment Profile",
    "hash": "b760430d292602e9",
-   "bytes": 478824,
+   "bytes": 489324,
    "file": "docs-pdf/part-3-adding-the-payment-profile.pdf"
   },
   "part-4-submitting-the-incentive-profile": {
    "title": "Part 4 - Submitting the Incentive Profile",
    "hash": "77c62d6e4a991ac8",
-   "bytes": 449311,
+   "bytes": 460044,
    "file": "docs-pdf/part-4-submitting-the-incentive-profile.pdf"
   },
   "partner-center-user-rights": {
    "title": "Partner Center User Rights",
    "hash": "08316d2e537a5474",
-   "bytes": 102435,
+   "bytes": 111878,
    "file": "docs-pdf/partner-center-user-rights.pdf"
   },
   "partner-center-day-to-day": {
    "title": "Partner Center, day-to-day",
    "hash": "e3f84715fb57c6ca",
-   "bytes": 128620,
+   "bytes": 130240,
    "file": "docs-pdf/partner-center-day-to-day.pdf"
   },
   "partner-centerazure-user-rights": {
    "title": "Partner center/Azure User Rights",
    "hash": "a4155645c66cca55",
-   "bytes": 79322,
+   "bytes": 88741,
    "file": "docs-pdf/partner-centerazure-user-rights.pdf"
   },
   "private-plan": {
    "title": "Private Plan",
    "hash": "a27d89fae592c758",
-   "bytes": 76658,
+   "bytes": 85118,
    "file": "docs-pdf/private-plan.pdf"
   },
   "raising-a-support-ticket-because-my-legal-profile-was-not-validated": {
    "title": "Raising a support ticket because my legal profile was not validated.",
    "hash": "4df7d76d5cbb518a",
-   "bytes": 744352,
+   "bytes": 755621,
    "file": "docs-pdf/raising-a-support-ticket-because-my-legal-profile-was-not-validated.pdf"
   },
   "retrieving-the-id-managed-application": {
    "title": "Retrieving the ID – Managed Application",
    "hash": "96f8aa29e3e011cd",
-   "bytes": 232711,
+   "bytes": 241339,
    "file": "docs-pdf/retrieving-the-id-managed-application.pdf"
   },
   "salesforce-installation-guide": {
    "title": "SalesForce Installation Guide",
    "hash": "b3e89569d3bc7f12",
-   "bytes": 819509,
+   "bytes": 814569,
    "file": "docs-pdf/salesforce-installation-guide.pdf"
   },
   "selling-and-offer-management": {
    "title": "Selling & Offer Management",
    "hash": "a5a984d8c2a94382",
-   "bytes": 139641,
+   "bytes": 148958,
    "file": "docs-pdf/selling-and-offer-management.pdf"
   },
   "step-1-create-your-microsoft-work-account": {
    "title": "Step 1 — Create Your Microsoft Work Account",
    "hash": "897980c1ee3285f0",
-   "bytes": 473201,
+   "bytes": 483263,
    "file": "docs-pdf/step-1-create-your-microsoft-work-account.pdf"
   },
   "step-2-become-a-microsoft-partner-and-access-partner-center": {
    "title": "Step 2 — Become a Microsoft Partner & Access Partner Center",
    "hash": "ffd47a60d24d0fb8",
-   "bytes": 431678,
+   "bytes": 440764,
    "file": "docs-pdf/step-2-become-a-microsoft-partner-and-access-partner-center.pdf"
   },
   "step-3-enroll-in-the-required-partner-center-programs": {
    "title": "Step 3 — Enroll in the Required Partner Center Programs",
    "hash": "0345979e01fd3c46",
-   "bytes": 256452,
+   "bytes": 266770,
    "file": "docs-pdf/step-3-enroll-in-the-required-partner-center-programs.pdf"
   },
   "step-4-submit-your-legal-profile-24-hour-microsoft-validation": {
    "title": "Step 4 — Submit Your Legal Profile (24-hour Microsoft validation)",
    "hash": "d97ccc2f50058b3a",
-   "bytes": 273895,
+   "bytes": 285024,
    "file": "docs-pdf/step-4-submit-your-legal-profile-24-hour-microsoft-validation.pdf"
   },
   "step-5-complete-your-payout-and-tax-profile-48-hour-microsoft-validation": {
    "title": "Step 5 — Complete Your Payout & Tax Profile (48-hour Microsoft validation)",
    "hash": "07102b0cbce05ef6",
-   "bytes": 130474,
+   "bytes": 131316,
    "file": "docs-pdf/step-5-complete-your-payout-and-tax-profile-48-hour-microsoft-validation.pdf"
   },
   "step-7-creating-your-first-microsoft-marketplace-listing-as-easy-as-1-2-3-and-go-live": {
    "title": "Step 7 — Creating your first Microsoft Marketplace Listing, As Easy as 1-2-3 and Go Live.",
    "hash": "dbbc730f4341e592",
-   "bytes": 763067,
+   "bytes": 769658,
    "file": "docs-pdf/step-7-creating-your-first-microsoft-marketplace-listing-as-easy-as-1-2-3-and-go-live.pdf"
   },
   "subscribe-to-the-wetransact-page-notifications-on-linkedin": {
    "title": "Subscribe to the WeTransact Page notifications on LinkedIn",
    "hash": "1827266d9e63be7e",
-   "bytes": 358635,
+   "bytes": 369007,
    "file": "docs-pdf/subscribe-to-the-wetransact-page-notifications-on-linkedin.pdf"
   },
   "the-steps-to-be-followed-by-your-global-admin-to-give-you-the-necessary-level-of-rights": {
    "title": "The steps to be followed by your global admin to give you the necessary level of rights.",
    "hash": "73fbfb75db6409d9",
-   "bytes": 369618,
+   "bytes": 380907,
    "file": "docs-pdf/the-steps-to-be-followed-by-your-global-admin-to-give-you-the-necessary-level-of-rights.pdf"
   },
   "troubleshooting": {
    "title": "Troubleshooting",
    "hash": "08e064508bb563de",
-   "bytes": 111657,
+   "bytes": 120606,
    "file": "docs-pdf/troubleshooting.pdf"
   },
   "unable-to-enrol-in-the-commercial-marketplace-something-went-wrong-please-try-again-if-this-problem-persists-please-contact-microsoft-support": {
    "title": "Unable to enrol in the commercial Marketplace \"Something went wrong. Please try again; if this problem persists, please contact Microsoft support.\"",
    "hash": "107b3ae97970408a",
-   "bytes": 180879,
+   "bytes": 193076,
    "file": "docs-pdf/unable-to-enrol-in-the-commercial-marketplace-something-went-wrong-please-try-again-if-this-problem-persists-please-contact-microsoft-support.pdf"
   },
   "unable-to-verify-account-legal-info": {
    "title": "Unable to verify Account - Legal Info",
    "hash": "322cb6f0ae2b6544",
-   "bytes": 281057,
+   "bytes": 290904,
    "file": "docs-pdf/unable-to-verify-account-legal-info.pdf"
   },
   "video-masterclasses": {
    "title": "Video Masterclasses",
    "hash": "c5910d16cb290e2f",
-   "bytes": 107498,
+   "bytes": 115994,
    "file": "docs-pdf/video-masterclasses.pdf"
   },
   "video-masterclasses-01-wetransact-marketplace-journey": {
    "title": "Video Masterclasses-01. WeTransact Marketplace journey",
    "hash": "3512463959c01a47",
-   "bytes": 115332,
+   "bytes": 115049,
    "file": "docs-pdf/video-masterclasses-01-wetransact-marketplace-journey.pdf"
   },
   "video-masterclasses-02-the-three-marketplace-channels": {
    "title": "Video Masterclasses-02. The Three Marketplace Channels",
    "hash": "a956902e3334368e",
-   "bytes": 113896,
+   "bytes": 113767,
    "file": "docs-pdf/video-masterclasses-02-the-three-marketplace-channels.pdf"
   },
   "video-masterclasses-03the-marketplace-rewards-and-incentives": {
    "title": "Video Masterclasses-03.The Marketplace Rewards and Incentives",
    "hash": "0e1b31dd4fb06a7f",
-   "bytes": 114316,
+   "bytes": 114069,
    "file": "docs-pdf/video-masterclasses-03the-marketplace-rewards-and-incentives.pdf"
   },
   "video-masterclasses-04-why-approaches-differ-based-on-your-audience-segmentation": {
    "title": "Video Masterclasses-04. Why Approaches Differ Based on Your Audience Segmentation",
    "hash": "d8f65d61d936c936",
-   "bytes": 121162,
+   "bytes": 120885,
    "file": "docs-pdf/video-masterclasses-04-why-approaches-differ-based-on-your-audience-segmentation.pdf"
   },
   "video-masterclasses-05optimise-your-listing-on-the-storefronts": {
    "title": "Video Masterclasses-05.Optimise Your Listing on the Storefronts",
    "hash": "b088bdbbe4671de0",
-   "bytes": 117677,
+   "bytes": 117577,
    "file": "docs-pdf/video-masterclasses-05optimise-your-listing-on-the-storefronts.pdf"
   },
   "video-masterclasses-06-how-to-partner-with-microsoft": {
    "title": "Video Masterclasses-06. How to Partner with Microsoft",
    "hash": "6dc868dc56916a5e",
-   "bytes": 109287,
+   "bytes": 109178,
    "file": "docs-pdf/video-masterclasses-06-how-to-partner-with-microsoft.pdf"
   },
   "video-masterclasses-07-how-to-start-working-with-microsoft": {
    "title": "Video Masterclasses-07. How to Start Working with Microsoft",
    "hash": "914a4b2a6befe84a",
-   "bytes": 114840,
+   "bytes": 114971,
    "file": "docs-pdf/video-masterclasses-07-how-to-start-working-with-microsoft.pdf"
   },
   "video-masterclasses-08-the-reseller-landscape": {
    "title": "Video Masterclasses-08. The Reseller Landscape",
    "hash": "8f0d5283866f0104",
-   "bytes": 114200,
+   "bytes": 113918,
    "file": "docs-pdf/video-masterclasses-08-the-reseller-landscape.pdf"
   },
   "video-masterclasses-09build-your-reseller-offer": {
    "title": "Video Masterclasses-09.Build Your Reseller Offer",
    "hash": "4661b029b5c96211",
-   "bytes": 115772,
+   "bytes": 115196,
    "file": "docs-pdf/video-masterclasses-09build-your-reseller-offer.pdf"
   },
   "video-masterclasses-10find-your-first-resellers": {
    "title": "Video Masterclasses-10.Find Your First Resellers",
    "hash": "f1667b7ebe3d85d2",
-   "bytes": 109652,
+   "bytes": 109744,
    "file": "docs-pdf/video-masterclasses-10find-your-first-resellers.pdf"
   },
   "wetransact-hubspot-app-installation-guide": {
    "title": "WeTransact Hubspot App Installation guide",
    "hash": "4976c82af75eabf8",
-   "bytes": 687420,
+   "bytes": 697119,
    "file": "docs-pdf/wetransact-hubspot-app-installation-guide.pdf"
   },
   "wetransact-portal": {
    "title": "WeTransact Portal",
    "hash": "72fe0488ee9927be",
-   "bytes": 77244,
+   "bytes": 85502,
    "file": "docs-pdf/wetransact-portal.pdf"
   },
   "wetransact-portal-day-to-day": {
    "title": "WeTransact Portal, day-to-day",
    "hash": "e059be1e0df5ea8b",
-   "bytes": 123268,
+   "bytes": 130868,
    "file": "docs-pdf/wetransact-portal-day-to-day.pdf"
   },
   "what-to-do-if-your-only-admin-has-left-the-company-no-access-to-your-microsoft-marketplace-listing": {
    "title": "What to do if your only admin has left the company! No Access to Your Microsoft Marketplace Listing?",
    "hash": "045c33c9a0833be4",
-   "bytes": 919612,
+   "bytes": 923940,
    "file": "docs-pdf/what-to-do-if-your-only-admin-has-left-the-company-no-access-to-your-microsoft-marketplace-listing.pdf"
   },
   "what-to-do-when-you-cant-lodge-a-claim-build-and-publish-ai-marketplace": {
    "title": "What to Do When You Can't Lodge a Claim — Build and Publish AI Marketplace",
    "hash": "7ff44108fe2e0bb8",
-   "bytes": 119340,
+   "bytes": 122626,
    "file": "docs-pdf/what-to-do-when-you-cant-lodge-a-claim-build-and-publish-ai-marketplace.pdf"
   },
   "where-are-my-marketing-benefits-in-partner-center": {
    "title": "Where are my marketing benefits in Partner Center ?",
    "hash": "356d33a7925966d7",
-   "bytes": 232454,
+   "bytes": 243062,
    "file": "docs-pdf/where-are-my-marketing-benefits-in-partner-center.pdf"
   },
   "where-to-find-the-azure-sponsorship": {
    "title": "Where to find the Azure Sponsorship?",
    "hash": "6fd4236b57196ab5",
-   "bytes": 222379,
+   "bytes": 231627,
    "file": "docs-pdf/where-to-find-the-azure-sponsorship.pdf"
   },
   "where-to-find-your-private-offers": {
    "title": "Where to find your Private Offers ?",
    "hash": "61ed5dcc0347bc90",
-   "bytes": 203933,
+   "bytes": 213779,
    "file": "docs-pdf/where-to-find-your-private-offers.pdf"
   }
  },
