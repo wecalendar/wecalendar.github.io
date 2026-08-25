@@ -1,0 +1,46 @@
+name: Refresh docs index
+
+# Keeps docs-index.json (the article list behind the "Insert docs links" picker
+# in the WeCalendar add-in and web app) in step with docs.wetransact.io.
+# Publish an article in Archbee and it appears in the picker the next morning.
+
+on:
+  schedule:
+    - cron: "17 4 * * *"   # 04:17 UTC nightly
+  workflow_dispatch:        # or run it on demand from the Actions tab
+  push:
+    paths:
+      - "build-docs-index.mjs"
+      - ".github/workflows/docs-index.yml"
+
+permissions:
+  contents: write
+
+concurrency:
+  group: docs-index
+  cancel-in-progress: false
+
+jobs:
+  refresh:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      - name: Rebuild docs-index.json
+        run: node build-docs-index.mjs
+
+      - name: Commit if it changed
+        run: |
+          if git diff --quiet -- docs-index.json; then
+            echo "No change — docs site is unchanged."
+            exit 0
+          fi
+          git config user.name  "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add docs-index.json
+          git commit -m "docs-index: refresh from docs.wetransact.io sitemap"
+          git push

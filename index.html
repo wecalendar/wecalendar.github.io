@@ -510,6 +510,9 @@
         <div class="panel-btns">
           <button class="btn" id="myLinkBtn" style="flex:1" title="Instantly create and copy a booking link from your free time over the next 2 weeks — no painting needed">🔗 Copy my calendar link</button>
         </div>
+        <div class="panel-btns">
+          <button class="btn" id="docsBtn" style="flex:1" title="Search WeTransact Docs and copy the links, ready to paste into an email">📄 Copy docs links</button>
+        </div>
         <div id="focusCard" title="Tap for another tip" style="display:none; margin-top:20px; background:#fff; border:1px solid #E2DBFF; border-radius:16px; padding:15px 16px; cursor:pointer;">
           <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:11px;">
             <span style="font-size:11px; font-weight:600; letter-spacing:.07em; color:#5E43C8; text-transform:uppercase;">Focus tip</span>
@@ -582,6 +585,29 @@
     <div id="blkMsg" style="font-size:12px;color:#b91c1c;margin-top:8px;min-height:14px"></div>
     <button class="btn primary" id="blkSave" style="width:100%;margin-top:12px">Block this time</button>
     <button id="blkCancel" style="width:100%;margin-top:8px;background:none;border:none;color:var(--muted2);font:inherit;font-size:13px;cursor:pointer">Cancel</button>
+  </div>
+</div>
+<div id="docsModal" style="display:none; position:fixed; inset:0; background:rgba(20,16,40,.45); z-index:1250; align-items:center; justify-content:center; padding:20px;">
+  <div style="background:var(--card); border-radius:18px; padding:22px; width:min(460px,94vw); box-shadow:0 24px 70px rgba(20,16,40,.3);">
+    <h3 style="font-size:16px; font-weight:600; color:var(--ink); margin:0 0 4px;">📄 Copy docs links</h3>
+    <div style="font-size:12px; color:var(--muted2); margin:0 0 12px; line-height:1.45;">Tick the articles you need — you'll get them formatted, ready to paste into an email.</div>
+    <input type="text" id="dkIn" autocomplete="off" placeholder="Search the docs — or paste a docs link" style="width:100%;border:1px solid var(--line);border-radius:10px;padding:9px 11px;font-size:13px;font-family:inherit;color:var(--ink);background:var(--bg);outline:none">
+    <style>
+      #dkRes .dkgrp{font-size:10px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:#7A6FB8;padding:6px 4px 4px}
+      #dkRes .dkrow{display:flex;gap:9px;align-items:flex-start;padding:7px 8px;border-radius:9px;cursor:pointer;font-size:13px;color:var(--ink);line-height:1.35}
+      #dkRes .dkrow:hover{background:rgba(94,67,200,.08)}
+      #dkRes .dkrow.on{background:rgba(94,67,200,.13);font-weight:600}
+      #dkRes .dkrow input{width:15px;height:15px;accent-color:#5E43C8;flex:none;margin:2px 0 0}
+      #dkRes .dkempty{font-size:12px;color:var(--muted2);padding:8px 4px;line-height:1.5}
+      #dkChips .dkchip{display:inline-flex;align-items:center;gap:6px;background:rgba(94,67,200,.11);color:#5E43C8;border-radius:20px;padding:4px 10px;font-size:12px;font-weight:600}
+      #dkChips .dkchip .cx{cursor:pointer;font-weight:700;opacity:.65}
+      #dkChips .dkchip .cx:hover{opacity:1;color:#b91c1c}
+    </style>
+    <div id="dkRes" style="max-height:250px;overflow:auto;margin-top:8px"></div>
+    <div id="dkChips" style="display:flex;flex-wrap:wrap;gap:6px;margin-top:10px"></div>
+    <div id="dkMsg" style="font-size:12px;margin-top:8px;min-height:14px;color:var(--muted2)"></div>
+    <button class="btn primary" id="dkGo" style="width:100%;margin-top:10px">Copy links</button>
+    <button id="dkCancel" style="width:100%;margin-top:8px;background:none;border:none;color:var(--muted2);font:inherit;font-size:13px;cursor:pointer">Close</button>
   </div>
 </div>
 <div id="confirmModal" style="display:none; position:fixed; inset:0; background:rgba(20,16,40,.45); z-index:1300; align-items:center; justify-content:center; padding:20px;">
@@ -2515,6 +2541,183 @@ function toast(msg){
   const t = document.getElementById("toast"); t.textContent = msg;
   t.classList.add("show"); setTimeout(() => t.classList.remove("show"), 2200);
 }
+
+/* ===== Docs link picker (2026-08-25) — mirror of the Outlook add-in's
+   "Insert docs links". The index (docs-index.json) is rebuilt nightly from the
+   docs.wetransact.io sitemap by .github/workflows/docs-index.yml, so newly
+   published articles show up on their own. A pasted docs URL always works,
+   even before the index has caught up. Browser has no compose window, so this
+   copies the formatted links (rich + plain) to the clipboard instead. ===== */
+(function(){
+  const DOCS_ORIGIN = "https://docs.wetransact.io";
+  const DOCS_INDEX_URL = "docs-index.json";
+  const PINNED = [
+    "step-6-grant-wetransact-access-to-partner-center",
+    "step-5-complete-your-payout-and-tax-profile-48-hour-microsoft-validation",
+    "finance-how-marketplace-finance-works",
+    "how-do-i-determine-who-has-global-admin-and-owner-status-in-partner-center",
+    "how-to-find-your-subscription-id",
+    "listing-content-guidelines-what-microsoft-does-and-does-not-allow",
+    "how-to-accept-a-private-offer-customer-walkthrough",
+    "how-to-pay-your-marketplace-invoices",
+    "how-to-find-your-marketplace-invoice",
+    "go-live-in-5-days-with-your-csm"
+  ];
+  const ACRO = { id:"ID", ids:"IDs", api:"API", vat:"VAT", tin:"TIN", ein:"EIN", csp:"CSP", csps:"CSPs",
+    gtm:"GTM", macc:"MACC", sso:"SSO", mca:"MCA", mpn:"MPN", acr:"ACR", ip:"IP", saas:"SaaS", png:"PNG",
+    pdf:"PDF", url:"URL", faq:"FAQ", faqs:"FAQs", crm:"CRM", us:"US", ai:"AI", i:"I", csm:"CSM",
+    microsoft:"Microsoft", azure:"Azure", entra:"Entra", salesforce:"Salesforce", hubspot:"HubSpot",
+    linkedin:"LinkedIn", wetransact:"WeTransact", partner:"Partner", center:"Center", centre:"Centre",
+    marketplace:"Marketplace", global:"Global", admin:"Admin" };
+  const Q = /^(how|what|why|who|where|when|which|can|do|does|is|are|should|could|will|have)$/;
+
+  let DOCS = null, loading = null, PICK = [];
+
+  const $d = (id) => document.getElementById(id);
+  const url = (slug) => slug ? DOCS_ORIGIN + "/" + slug : DOCS_ORIGIN;
+  const escH = (s) => String(s || "").replace(/[<>&"]/g, c => ({ "<":"&lt;", ">":"&gt;", "&":"&amp;", '"':"&quot;" }[c]));
+
+  function titleFromSlug(slug){
+    const w = String(slug || "").replace(/(\d)([a-z])/gi, "$1-$2").replace(/([a-z])(\d)/gi, "$1-$2")
+      .split("-").filter(Boolean).map(x => ACRO[x.toLowerCase()] || x.toLowerCase());
+    if (!w.length) return "WeTransact Docs | Help Center";
+    const out = [];
+    w.forEach((x, i) => { out.push(x); if (/^\d+$/.test(x) && i >= 1 && i <= 2 && i < w.length - 1) out.push("—"); });
+    let t = out.join(" ").replace(/ — (\S)/g, (m, c) => " — " + c.toUpperCase())
+      .replace(/\bco sell\b/gi, "co-sell").replace(/\bcosell\b/gi, "co-sell");
+    t = t.charAt(0).toUpperCase() + t.slice(1);
+    if (Q.test(w[0].toLowerCase()) && !/[?.!]$/.test(t)) t += "?";
+    return t;
+  }
+
+  const bySlug = (slug) => {
+    const s = String(slug || "").replace(/^\/+|\/+$/g, "");
+    return (DOCS || []).find(d => d.slug === s) || { slug: s, title: titleFromSlug(s) };
+  };
+
+  function load(){
+    if (DOCS) return Promise.resolve(DOCS);
+    if (loading) return loading;
+    loading = fetch(DOCS_INDEX_URL + "?t=" + Date.now(), { cache: "no-store" })
+      .then(r => { if (!r.ok) throw new Error("HTTP " + r.status); return r.json(); })
+      .then(j => { DOCS = ((j && j.docs) || []).filter(d => d && d.slug); return DOCS; })
+      .catch(() => { DOCS = []; return DOCS; });
+    return loading;
+  }
+
+  function search(q){
+    const ql = q.toLowerCase(), terms = ql.split(/\s+/).filter(Boolean);
+    if (!terms.length) return [];
+    const out = [];
+    (DOCS || []).forEach(d => {
+      const hay = (d.title + " " + d.slug.replace(/-/g, " ")).toLowerCase();
+      if (!terms.every(t => hay.includes(t))) return;
+      const tl = d.title.toLowerCase();
+      let sc = 3;
+      if (tl.indexOf(ql) === 0) sc = 0;
+      else if (tl.includes(" " + terms[0]) || tl.indexOf(terms[0]) === 0) sc = 1;
+      else if (tl.includes(ql)) sc = 2;
+      out.push({ d, sc });
+    });
+    out.sort((a, b) => (a.sc - b.sc) || a.d.title.localeCompare(b.d.title));
+    return out.slice(0, 40).map(x => x.d);
+  }
+
+  const picked = (slug) => PICK.some(d => d.slug === slug);
+  function add(doc){ if (!picked(doc.slug)) PICK.push(doc); chips(); render(); }
+  function drop(slug){ PICK = PICK.filter(d => d.slug !== slug); chips(); render(); }
+
+  function chips(){
+    const c = $d("dkChips"); if (!c) return;
+    c.innerHTML = "";
+    PICK.forEach(d => {
+      const s = document.createElement("span"); s.className = "dkchip";
+      const t = document.createElement("span");
+      t.textContent = d.title.length > 40 ? d.title.slice(0, 39) + "…" : d.title;
+      t.title = d.title;
+      const x = document.createElement("span"); x.className = "cx"; x.innerHTML = "&times;";
+      x.onclick = () => drop(d.slug);
+      s.append(t, x); c.appendChild(s);
+    });
+  }
+
+  function render(){
+    const box = $d("dkRes"), inp = $d("dkIn"); if (!box || !inp) return;
+    const q = (inp.value || "").trim();
+    box.innerHTML = "";
+    const list = q ? search(q) : PINNED.map(bySlug);
+    if (!list.length){
+      const e = document.createElement("div"); e.className = "dkempty";
+      e.textContent = (DOCS && DOCS.length)
+        ? "No docs match that. Try fewer words — or paste the article link and it'll be added."
+        : "Couldn't load the docs list. Paste a docs.wetransact.io link and it'll still work.";
+      box.appendChild(e); return;
+    }
+    if (!q){ const h = document.createElement("div"); h.className = "dkgrp"; h.textContent = "Frequently sent"; box.appendChild(h); }
+    list.forEach(d => {
+      const row = document.createElement("div"); row.className = "dkrow" + (picked(d.slug) ? " on" : "");
+      const cb = document.createElement("input"); cb.type = "checkbox"; cb.checked = picked(d.slug); cb.tabIndex = -1;
+      const tx = document.createElement("div"); tx.textContent = d.title;
+      row.append(cb, tx);
+      row.onclick = () => picked(d.slug) ? drop(d.slug) : add(d);
+      box.appendChild(row);
+    });
+  }
+
+  function html(){
+    if (PICK.length === 1) return '<div><a href="' + url(PICK[0].slug) + '">' + escH(PICK[0].title) + '</a></div>';
+    return '<ul>' + PICK.map(d => '<li><a href="' + url(d.slug) + '">' + escH(d.title) + '</a></li>').join("") + '</ul>';
+  }
+  const plain = () => PICK.map(d => d.title + " — " + url(d.slug)).join("\n");
+
+  function open(){
+    const m = $d("docsModal"); if (!m) return;
+    m.style.display = "flex";
+    $d("dkMsg").textContent = "";
+    render();
+    load().then(render);
+    setTimeout(() => { try { $d("dkIn").focus(); } catch(e){} }, 60);
+  }
+  function close(){ const m = $d("docsModal"); if (m) m.style.display = "none"; }
+
+  const btn = $d("docsBtn"); if (!btn) return;
+  btn.onclick = open;
+  $d("dkCancel").onclick = close;
+  $d("docsModal").addEventListener("click", e => { if (e.target.id === "docsModal") close(); });
+  document.addEventListener("keydown", e => { if (e.key === "Escape" && $d("docsModal").style.display === "flex") close(); });
+
+  $d("dkIn").addEventListener("input", () => {
+    const inp = $d("dkIn"), m = (inp.value || "").match(/docs\.wetransact\.io\/?([A-Za-z0-9\-_%]*)/);
+    if (m){ inp.value = ""; add(bySlug(decodeURIComponent(m[1] || ""))); return; }
+    render();
+  });
+  $d("dkIn").addEventListener("keydown", e => {
+    if (e.key !== "Enter") return;
+    e.preventDefault();
+    const inp = $d("dkIn"), q = (inp.value || "").trim(); if (!q) return;
+    const hits = search(q); if (hits.length){ inp.value = ""; add(hits[0]); }
+  });
+
+  $d("dkGo").onclick = async () => {
+    const msg = $d("dkMsg");
+    if (!PICK.length){ msg.style.color = "#b91c1c"; msg.textContent = "Tick at least one doc first."; return; }
+    const n = PICK.length, h = html(), p = plain();
+    try {
+      await navigator.clipboard.write([new ClipboardItem({
+        "text/html": new Blob([h], { type: "text/html" }),
+        "text/plain": new Blob([p], { type: "text/plain" })
+      })]);
+    } catch(e){
+      try { await navigator.clipboard.writeText(p); } catch(e2){
+        msg.style.color = "#b91c1c"; msg.textContent = "Couldn't reach the clipboard — copy the links manually.";
+        return;
+      }
+    }
+    PICK = []; chips(); render();
+    close();
+    try { toast(n === 1 ? "Docs link copied — paste it into your email" : n + " docs links copied — paste them into your email"); } catch(e){}
+  };
+})();
 </script>
 </body>
 </html>

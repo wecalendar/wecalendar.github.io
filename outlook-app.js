@@ -77,6 +77,17 @@
     + '.tplhint{font-size:11px;color:var(--muted);text-align:center;margin-top:8px;line-height:1.4}'
     + '.tplmenu{max-height:330px;overflow-y:auto}'
     + '.tplgrp{font-size:10px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:#7A6FB8;padding:9px 12px 5px;background:#FAF9FF;border-bottom:1px solid #F0ECFF}'
+    /* docs link picker (2026-08-25) */
+    + '.dkwrap{border:1px solid var(--line);border-radius:12px;padding:10px;margin-top:8px;background:#FDFCFF}'
+    + '.dkres{max-height:212px;overflow:auto;margin-top:6px}'
+    + '.dkgrp{font-size:10px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:#7A6FB8;padding:6px 4px 4px}'
+    + '.dkrow{display:flex;gap:8px;align-items:flex-start;padding:7px 8px;border-radius:8px;cursor:pointer;font-size:12.5px;color:var(--ink);line-height:1.32}'
+    + '.dkrow:hover{background:#F0ECFF}.dkrow.on{background:#EEEDFE;font-weight:600}'
+    + '.dkrow input{width:14px;height:14px;accent-color:var(--accent);flex:none;margin:2px 0 0}'
+    + '.dkempty{font-size:11.5px;color:var(--muted);padding:8px 4px;line-height:1.45}'
+    + '.dkhint{font-size:11px;color:var(--muted);margin-top:8px;line-height:1.4}'
+    + '.dkwrap .chips:not(:empty){border-top:1px solid var(--line);padding-top:9px;margin-top:10px}'
+    + '.dkres::-webkit-scrollbar{width:8px}.dkres::-webkit-scrollbar-thumb{background:rgba(94,67,200,.18);border-radius:99px}'
     + '.hide{display:none}'
     /* beauty pass 2026-07-19 — matches web app polish */
     + '.btn,.seg button,.mc-day,.tplbtn,.weeknav button,.tplopt{transition:background .15s ease,color .15s ease,border-color .15s ease,box-shadow .15s ease,transform .12s ease}'
@@ -142,6 +153,14 @@
     +       '<button class="btn" id="pbGo" type="button" style="margin-top:10px">Personalize &amp; attach PDF</button>'
     +       '<div class="msg" id="pbMsg"></div>'
     +     '</div>'
+    +   '</div>'
+    +   '<button class="btn sec" id="dkBtn" type="button" style="margin-top:8px" title="Search WeTransact Docs and drop the links straight into your email">&#128196; Insert docs links</button>'
+    +   '<div id="dkPanel" class="dkwrap hide">'
+    +     '<input type="text" id="dkIn" autocomplete="off" placeholder="Search the docs — or paste a docs link">'
+    +     '<div id="dkRes" class="dkres"></div>'
+    +     '<div class="chips" id="dkChips"></div>'
+    +     '<button class="btn" id="dkGo" type="button" style="margin-top:10px">Insert links</button>'
+    +     '<div class="msg" id="dkMsg"></div>'
     +   '</div>'
     +   '<div class="or hide" id="tplOr" style="margin:8px 0 2px">or share your free times</div>'
     +   '<button class="btn sec" id="mcBtn" type="button" style="margin-top:8px" title="Instantly create and copy a booking link from your free time over the next 2 weeks — no painting needed">&#128279; Copy my calendar link</button>'
@@ -779,6 +798,153 @@
             .then(function(){ msg.className = "msg ok"; msg.textContent = "✓ Standard playbook attached (personalization failed: " + ((e && e.message) || "error") + ")."; })
             .catch(function(){ msg.className = "msg err"; msg.textContent = "Couldn't attach: " + ((e && e.message) || "try again"); });
         });
+    };
+  })();
+
+  /* ---- Docs link picker (2026-08-25) — search WeTransact Docs, insert the links.
+         Index = docs-index.json, rebuilt nightly from the Archbee sitemap by
+         .github/workflows/docs-index.yml, so new articles appear on their own.
+         A pasted docs URL always works, even before it's in the index. ---- */
+  var DOCS_ORIGIN = "https://docs.wetransact.io";
+  var DOCS_INDEX_URL = "https://wecalendar.github.io/docs-index.json";
+  var DOCS_PINNED = [
+    "step-6-grant-wetransact-access-to-partner-center",
+    "step-5-complete-your-payout-and-tax-profile-48-hour-microsoft-validation",
+    "finance-how-marketplace-finance-works",
+    "how-do-i-determine-who-has-global-admin-and-owner-status-in-partner-center",
+    "how-to-find-your-subscription-id",
+    "listing-content-guidelines-what-microsoft-does-and-does-not-allow",
+    "how-to-accept-a-private-offer-customer-walkthrough",
+    "how-to-pay-your-marketplace-invoices",
+    "how-to-find-your-marketplace-invoice",
+    "go-live-in-5-days-with-your-csm"
+  ];
+  var DOCS = null, _dkLoad = null, DKPICK = [];
+
+  function dkUrl(slug){ return slug ? DOCS_ORIGIN + "/" + slug : DOCS_ORIGIN; }
+
+  /* Archbee slugs are the title kebab-cased, so this reads well enough as a
+     fallback for a link pasted before the nightly index picked it up. */
+  function dkTitleFromSlug(slug){
+    var A = { id:"ID", ids:"IDs", api:"API", vat:"VAT", tin:"TIN", ein:"EIN", csp:"CSP", csps:"CSPs",
+      gtm:"GTM", macc:"MACC", sso:"SSO", mca:"MCA", mpn:"MPN", acr:"ACR", ip:"IP", saas:"SaaS",
+      png:"PNG", pdf:"PDF", url:"URL", faq:"FAQ", faqs:"FAQs", crm:"CRM", us:"US", ai:"AI", i:"I", csm:"CSM",
+      microsoft:"Microsoft", azure:"Azure", entra:"Entra", salesforce:"Salesforce", hubspot:"HubSpot",
+      linkedin:"LinkedIn", wetransact:"WeTransact", partner:"Partner", center:"Center", centre:"Centre",
+      marketplace:"Marketplace", global:"Global", admin:"Admin" };
+    var w = String(slug || "").replace(/(\d)([a-z])/gi, "$1-$2").replace(/([a-z])(\d)/gi, "$1-$2")
+      .split("-").filter(Boolean).map(function(x){ var l = x.toLowerCase(); return A[l] || l; });
+    if (!w.length) return "WeTransact Docs | Help Center";
+    var out = []; w.forEach(function(x, i){ out.push(x); if (/^\d+$/.test(x) && i >= 1 && i <= 2 && i < w.length - 1) out.push("—"); });
+    var t = out.join(" ").replace(/ — (\S)/g, function(m, c){ return " — " + c.toUpperCase(); }).replace(/\bco sell\b/gi, "co-sell").replace(/\bcosell\b/gi, "co-sell");
+    t = t.charAt(0).toUpperCase() + t.slice(1);
+    if (/^(how|what|why|who|where|when|which|can|do|does|is|are|should|could|will|have)$/.test(w[0].toLowerCase()) && !/[?.!]$/.test(t)) t += "?";
+    return t;
+  }
+
+  function dkBySlug(slug){
+    var s = String(slug || "").replace(/^\/+|\/+$/g, "");
+    var hit = (DOCS || []).filter(function(d){ return d.slug === s; })[0];
+    return hit || { slug: s, title: dkTitleFromSlug(s) };
+  }
+
+  function dkLoad(){
+    if (DOCS) return Promise.resolve(DOCS);
+    if (_dkLoad) return _dkLoad;
+    _dkLoad = fetch(DOCS_INDEX_URL + "?t=" + Date.now(), { cache: "no-store" })
+      .then(function(r){ if (!r.ok) throw new Error("HTTP " + r.status); return r.json(); })
+      .then(function(j){ DOCS = ((j && j.docs) || []).filter(function(d){ return d && d.slug; }); return DOCS; })
+      .catch(function(){ DOCS = []; return DOCS; });
+    return _dkLoad;
+  }
+
+  function dkSearch(q){
+    var ql = q.toLowerCase(), terms = ql.split(/\s+/).filter(Boolean);
+    if (!terms.length) return [];
+    var out = [];
+    (DOCS || []).forEach(function(d){
+      var hay = (d.title + " " + d.slug.replace(/-/g, " ")).toLowerCase();
+      for (var i = 0; i < terms.length; i++){ if (hay.indexOf(terms[i]) < 0) return; }
+      var tl = d.title.toLowerCase(), sc = 3;
+      if (tl.indexOf(ql) === 0) sc = 0;
+      else if (tl.indexOf(" " + terms[0]) > -1 || tl.indexOf(terms[0]) === 0) sc = 1;
+      else if (tl.indexOf(ql) > -1) sc = 2;
+      out.push({ d: d, sc: sc });
+    });
+    out.sort(function(a, b){ return (a.sc - b.sc) || a.d.title.localeCompare(b.d.title); });
+    return out.slice(0, 40).map(function(x){ return x.d; });
+  }
+
+  function dkPicked(slug){ return DKPICK.some(function(d){ return d.slug === slug; }); }
+  function dkAdd(doc){ if (!dkPicked(doc.slug)) DKPICK.push(doc); dkChips(); dkRender(); }
+  function dkDrop(slug){ DKPICK = DKPICK.filter(function(d){ return d.slug !== slug; }); dkChips(); dkRender(); }
+
+  function dkChips(){
+    var c = $("dkChips"); if (!c) return; c.innerHTML = "";
+    DKPICK.forEach(function(d){
+      var s = document.createElement("span"); s.className = "chip";
+      var t = document.createElement("span"); t.textContent = d.title.length > 34 ? d.title.slice(0, 33) + "…" : d.title;
+      t.title = d.title;
+      var x = document.createElement("span"); x.className = "cx"; x.innerHTML = "&times;";
+      x.onclick = function(){ dkDrop(d.slug); };
+      s.appendChild(t); s.appendChild(x); c.appendChild(s);
+    });
+  }
+
+  function dkRender(){
+    var box = $("dkRes"), inp = $("dkIn"); if (!box || !inp) return;
+    var q = (inp.value || "").trim();
+    box.innerHTML = "";
+    var list, head = "";
+    if (q){ list = dkSearch(q); }
+    else { list = DOCS_PINNED.map(dkBySlug); head = "Frequently sent"; }
+    if (!list.length){
+      var e = document.createElement("div"); e.className = "dkempty";
+      e.textContent = (DOCS && DOCS.length)
+        ? "No docs match that. Try fewer words — or paste the article link and it'll be added."
+        : "Couldn't load the docs list. Paste a docs.wetransact.io link and it'll still work.";
+      box.appendChild(e); return;
+    }
+    if (head){ var h = document.createElement("div"); h.className = "dkgrp"; h.textContent = head; box.appendChild(h); }
+    list.forEach(function(d){
+      var row = document.createElement("div"); row.className = "dkrow" + (dkPicked(d.slug) ? " on" : "");
+      var cb = document.createElement("input"); cb.type = "checkbox"; cb.checked = dkPicked(d.slug); cb.tabIndex = -1;
+      var tx = document.createElement("div"); tx.textContent = d.title;
+      row.appendChild(cb); row.appendChild(tx);
+      row.onclick = function(){ if (dkPicked(d.slug)) dkDrop(d.slug); else dkAdd(d); };
+      box.appendChild(row);
+    });
+  }
+
+  function dkInsertHtml(){
+    if (DKPICK.length === 1) return '<div><a href="' + dkUrl(DKPICK[0].slug) + '">' + esc(DKPICK[0].title) + '</a></div>';
+    return '<ul>' + DKPICK.map(function(d){ return '<li><a href="' + dkUrl(d.slug) + '">' + esc(d.title) + '</a></li>'; }).join("") + '</ul>';
+  }
+
+  (function(){
+    var btn = $("dkBtn"), panel = $("dkPanel"), inp = $("dkIn"), go = $("dkGo"); if (!btn) return;
+    btn.onclick = function(){
+      var open = panel.classList.contains("hide");
+      panel.classList.toggle("hide", !open);
+      if (open){ dkLoad().then(function(){ dkRender(); try { inp.focus(); } catch(e){} }); dkRender(); }
+    };
+    inp.addEventListener("input", function(){
+      var v = inp.value || "", m = v.match(/docs\.wetransact\.io\/?([A-Za-z0-9\-_%]*)/);
+      if (m){ inp.value = ""; dkAdd(dkBySlug(decodeURIComponent(m[1] || ""))); return; }
+      dkRender();
+    });
+    inp.addEventListener("keydown", function(e){
+      if (e.key !== "Enter") return;
+      e.preventDefault();
+      var q = (inp.value || "").trim(); if (!q) return;
+      var hits = dkSearch(q); if (hits.length){ inp.value = ""; dkAdd(hits[0]); }
+    });
+    go.onclick = function(){
+      var msg = $("dkMsg");
+      if (!DKPICK.length){ msg.className = "msg err"; msg.textContent = "Tick at least one doc first."; return; }
+      var n = DKPICK.length;
+      insertHtml(dkInsertHtml(), msg, "✓ " + n + (n === 1 ? " docs link added." : " docs links added."));
+      DKPICK = []; dkChips(); dkRender();
     };
   })();
 
