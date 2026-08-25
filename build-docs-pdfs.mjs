@@ -177,13 +177,22 @@ async function inlineImages(html) {
      when ANTHROPIC_API_KEY is set (GitHub Actions secret). Validated hard;
      any failure falls back to the step list, so the text can't be wrong. */
 
+const BLURB_V = 2;   // bump to regenerate every blurb on the next run
+
 export function stepsBlurb(heads) {
   const hs = (heads || [])
-    .map((h) => String(h).replace(/\s+/g, " ").replace(/[.:\s]+$/, "").trim())
+    .map((h) => String(h)
+      .replace(/\((?:https?:\/\/|www\.)[^)]*\)/gi, "")     // "(https://…)" asides
+      .replace(/(?:https?:\/\/|www\.)\S+/gi, "")            // bare URLs
+      .replace(/[\u{1F000}-\u{1FAFF}\u{2190}-\u{2BFF}\u{FE0F}\u{2700}-\u{27BF}\u{2600}-\u{26FF}]/gu, "")  // emoji/markers
+      .replace(/^\s*(?:step\s*)?\d+\s*[.)\-:]\s*/i, "")   // leading "1." / "Step 2:"
+      .replace(/\s+/g, " ").replace(/[.:,;\s]+$/, "").trim())
     .filter((h) => h.length > 2 && h.length < 90)
     .slice(0, 5);
   if (!hs.length) return "The attached guide walks you through it step by step.";
-  return "The attached guide covers: " + hs.join(" → ") + ".";
+  let out = hs;
+  while (out.length > 1 && ("The attached guide covers: " + out.join(" → ") + ".").length > 320) out = out.slice(0, -1);
+  return "The attached guide covers: " + out.join(" → ") + (out.length < hs.length ? " → …" : ".");
 }
 
 export function validBlurb(t) {
@@ -377,9 +386,9 @@ async function main() {
         const entry = { ...prev.docs[d.slug] };
         // fill a missing blurb, and upgrade a step-list one to AI wording
         // once a key exists — without re-rendering the PDF
-        if (!entry.blurb || (process.env.ANTHROPIC_API_KEY && entry.blurbSrc !== "ai")) {
+        if (!entry.blurb || entry.blurbV !== BLURB_V || (process.env.ANTHROPIC_API_KEY && entry.blurbSrc !== "ai")) {
           const b = await makeBlurb(title, art.text, art.heads);
-          entry.blurb = b.blurb; entry.blurbSrc = b.blurbSrc;
+          entry.blurb = b.blurb; entry.blurbSrc = b.blurbSrc; entry.blurbV = BLURB_V;
           blurbed++;
         }
         out.docs[d.slug] = entry;
@@ -392,7 +401,7 @@ async function main() {
       writeFileSync(file, pdf);
       out.stamp = stamp;
       const b = await makeBlurb(title, art.text, art.heads);
-      out.docs[d.slug] = { title, hash, bytes: pdf.length, file: `docs-pdf/${d.slug}.pdf`, blurb: b.blurb, blurbSrc: b.blurbSrc };
+      out.docs[d.slug] = { title, hash, bytes: pdf.length, file: `docs-pdf/${d.slug}.pdf`, blurb: b.blurb, blurbSrc: b.blurbSrc, blurbV: BLURB_V };
       rendered++; blurbed++;
       console.error(`✓ ${d.slug} — ${(pdf.length / 1024).toFixed(0)} KB`);
     } catch (e) {
