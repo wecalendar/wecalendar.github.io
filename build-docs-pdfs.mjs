@@ -97,7 +97,7 @@ export const FOOTER = `<div style="width:100%;font-family:sans-serif;font-size:7
 const KEEP = new Set(["p","br","hr","strong","b","em","i","u","s","code","pre","blockquote","ul","ol","li",
   "h1","h2","h3","h4","h5","h6","table","thead","tbody","tr","th","td","a","img","figure","figcaption","span","div","sup","sub"]);
 
-function sanitize(html) {
+export function sanitize(html) {
   let s = String(html);
   s = s.replace(/<(script|style|noscript|svg|button|input|form)[\s\S]*?<\/\1>/gi, "");
   // videos and embeds can't print — leave a link instead
@@ -112,6 +112,12 @@ function sanitize(html) {
     if (t === "a") {
       const href = (attrs.match(/\shref=["']([^"']*)["']/i) || [])[1];
       if (href) keep += ` href="${href.startsWith("/") ? ORIGIN + href : href}"`;
+    }
+    if (t === "ol") {
+      // Archbee wraps every step in its own <ol start="N"> — keep that number,
+      // otherwise each step restarts at 1.
+      const st = (attrs.match(/\sstart=["']?(\d+)["']?/i) || [])[1];
+      if (st) keep += ` start="${st}"`;
     }
     if (t === "img") {
       const src = (attrs.match(/\ssrc=["']([^"']*)["']/i) || [])[1];
