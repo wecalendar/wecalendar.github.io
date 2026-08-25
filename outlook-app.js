@@ -1,6 +1,6 @@
 (function(){
   var WC = window.WECAL || {};
-  var ready = false, TOKEN = null, EMAIL = "", SLOTS = [], SLOTLEN = 30, WS = 9, WE = 18, BUF = 0, MINNOTICE = 0, SELDAY = null, LAST = null, BUSY = [], OFFV = {}, VIEWDAYS = [], WEEKMON = null, NAME = "", DAYCAP = 0;
+  var ready = false, TOKEN = null, EMAIL = "", SLOTS = [], SLOTLEN = 30, WS = 9, WE = 18, BUF = 0, MINNOTICE = 0, SELDAY = null, LAST = null, BUSY = [], OFFV = {}, VIEWDAYS = [], WEEKMON = null, NAME = "", DAYCAP = 0, FOCUSHOWN = {};
   var TZ = (function(){ try { return Intl.DateTimeFormat().resolvedOptions().timeZone; } catch(e){ return "UTC"; } })();
   var TZLIST = [["America/Los_Angeles","Los Angeles · PT"],["America/Denver","Denver · MT"],["America/Chicago","Chicago · CT"],["America/New_York","New York · ET"],["America/Sao_Paulo","São Paulo"],["Europe/London","London"],["Europe/Lisbon","Lisbon"],["Europe/Paris","Paris · CET"],["Europe/Berlin","Berlin"],["Europe/Madrid","Madrid"],["Africa/Johannesburg","Johannesburg"],["Asia/Dubai","Dubai"],["Asia/Kolkata","India"],["Asia/Singapore","Singapore"],["Asia/Tokyo","Tokyo"],["Australia/Sydney","Sydney"],["Pacific/Auckland","Auckland"],["UTC","UTC"]];
   var now0 = new Date(), MC = { y: now0.getFullYear(), m: now0.getMonth() };
@@ -96,7 +96,12 @@
     + '.grow.busy.mtg{background:linear-gradient(135deg,#EEEDFE,#E2DBFF);color:#3C3489}'
     + '.grow.busy.mtg .dot{background:#5E43C8}'
     + '.grow.busy.solo{background:linear-gradient(135deg,#FCEBEB,#F8D6D6);color:#A32D2D}'
-    + '.grow.busy.solo .dot{background:#E24B4A}';
+    + '.grow.busy.solo .dot{background:#E24B4A}'
+    /* focus time: amber, tickable, never auto-selected */
+    + '.grow.free.focusrow{background:#FFF6E5;border:1px dashed #F0B65B;color:#8A5300}'
+    + '.grow.free.focusrow.on{background:#FCE7C2;border-color:#D97706}'
+    + '.grow.free.focusrow input{accent-color:#D97706}'
+    + '.grow.free.focusrow:hover{box-shadow:0 3px 10px rgba(217,119,6,.18)}';
 
   var HTML = ''
     + '<div class="brand"><span class="a1">we</span><span class="a2">calendar</span></div>'
@@ -267,8 +272,19 @@
   function niceName(email){ var lp = String(email || "").split("@")[0]; if (!lp) return ""; return lp.replace(/[._\-]+/g, " ").replace(/\d+/g, "").replace(/\s+/g, " ").trim().replace(/\b\w/g, function(c){ return c.toUpperCase(); }); }
   function loadProfile(){ if (!TOKEN) return; fetch("https://graph.microsoft.com/v1.0/me?$select=displayName", { headers: { Authorization: "Bearer " + TOKEN } }).then(function(r){ return r.json(); }).then(function(j){ if (j && j.displayName) NAME = j.displayName; }).catch(function(){}); }
   function graphAll(url, acc){ return fetch(url, { headers: { Authorization: "Bearer " + TOKEN, Prefer: 'outlook.timezone="UTC"' } }).then(function(r){ if (r.status === 401) throw { expired: true }; return r.json(); }).then(function(j){ acc = acc.concat(j.value || []); var nx = j["@odata.nextLink"]; if (nx && acc.length < 2000) return graphAll(nx, acc); return acc; }); }
+  // Focus time stays out of the auto-picked free blocks, but shows up as a tickable
+  // amber row: yours to keep by default, yours to hand to a client when it's urgent.
+  function isFocusEv(ev){
+    if (ev.isAllDay || ev.showAs === "oof") return false;
+    var myEm = (EMAIL || "").toLowerCase();
+    var others = (ev.attendees || []).some(function(a){ var e = (a.emailAddress && a.emailAddress.address || "").toLowerCase(); return e && e !== myEm; });
+    if (others) return false;
+    if ((ev.categories || []).join(" ").toLowerCase().indexOf("focus") >= 0) return true;
+    var s = (ev.subject || "").trim().toLowerCase();
+    return /^focus$|^(focus\s*(time|block|session)|deep\s*work|heads?[\s-]?down|no\s*meetings?)\b/.test(s) || /\bfocus time\b|\bdeep work\b/.test(s);
+  }
   function pick(scope, date){
-    var msg = $("msg"); msg.className = "msg"; msg.textContent = "Reading your calendar…"; SLOTS = []; BUSY = []; OFFV = {}; VIEWDAYS = []; renderSlots();
+    var msg = $("msg"); msg.className = "msg"; msg.textContent = "Reading your calendar…"; SLOTS = []; BUSY = []; OFFV = {}; VIEWDAYS = []; FOCUSHOWN = {}; renderSlots();
     LAST = { scope: scope, date: date };
     var days = daysFor(scope, date);
     WEEKMON = (scope === "week") ? days[0] : null;
@@ -277,7 +293,7 @@
     var PAD = 48 * 3600000;
     var ws = new Date(new Date(days[0].getFullYear(), days[0].getMonth(), days[0].getDate()).getTime() - PAD);
     var last = days[days.length - 1], we = new Date(new Date(last.getFullYear(), last.getMonth(), last.getDate() + 1).getTime() + PAD);
-    var url = "https://graph.microsoft.com/v1.0/me/calendarView?" + new URLSearchParams({ startDateTime: ws.toISOString(), endDateTime: we.toISOString(), "$select": "start,end,showAs,isAllDay,responseStatus,subject,attendees,organizer,isOrganizer", "$top": "200" });
+    var url = "https://graph.microsoft.com/v1.0/me/calendarView?" + new URLSearchParams({ startDateTime: ws.toISOString(), endDateTime: we.toISOString(), "$select": "start,end,showAs,isAllDay,responseStatus,subject,attendees,organizer,isOrganizer,categories", "$top": "200" });
     graphAll(url, []).then(function(items){
         var busy = [], offDays = {}, seenB = {};
         items.forEach(function(ev){
@@ -289,7 +305,7 @@
           var s = new Date(ev.start.dateTime + "Z"), e = new Date(ev.end.dateTime + "Z");
           if (isNaN(s.getTime()) || isNaN(e.getTime())) return;
           if (ev.isAllDay){ for (var t = s.getTime(); t < e.getTime(); t += 86400000){ var od = new Date(t); offDays[od.getUTCFullYear() + "-" + od.getUTCMonth() + "-" + od.getUTCDate()] = true; } }
-          else { var bk = s.getTime() + "_" + e.getTime() + "_" + (ev.subject || ""); if (!seenB[bk]){ seenB[bk] = 1; var myEm = (EMAIL || "").toLowerCase(); var orgEm = (ev.organizer && ev.organizer.emailAddress && ev.organizer.emailAddress.address || "").toLowerCase(); var hasOthers = (ev.attendees || []).some(function(a){ var ae = (a.emailAddress && a.emailAddress.address || "").toLowerCase(); return ae && ae !== myEm; }) || (orgEm && orgEm !== myEm); busy.push({ start: s, end: e, subject: ev.subject || "", mtg: hasOthers }); } }
+          else { var bk = s.getTime() + "_" + e.getTime() + "_" + (ev.subject || ""); if (!seenB[bk]){ seenB[bk] = 1; var myEm = (EMAIL || "").toLowerCase(); var orgEm = (ev.organizer && ev.organizer.emailAddress && ev.organizer.emailAddress.address || "").toLowerCase(); var hasOthers = (ev.attendees || []).some(function(a){ var ae = (a.emailAddress && a.emailAddress.address || "").toLowerCase(); return ae && ae !== myEm; }) || (orgEm && orgEm !== myEm); busy.push({ start: s, end: e, subject: ev.subject || "", mtg: hasOthers, focus: isFocusEv(ev) }); } }
         });
         var nowMs = Date.now(), nw = nowMs + MINNOTICE * 3600000, minLen = SLOTLEN * 60000, bufMs = BUF * 60000;
         days.forEach(function(d){
@@ -299,14 +315,23 @@
           var mid = new Date(Math.floor((ws2 + we2) / 2)), key = dayKey(mid);
           VIEWDAYS.push({ key: key, label: fmtDay(mid) });
           if (offDays[d.getFullYear() + "-" + d.getMonth() + "-" + d.getDate()]){ OFFV[key] = true; return; }
-          busy.forEach(function(b){ if (b.end.getTime() > Math.max(ws2, nowMs) && b.start.getTime() < we2) BUSY.push({ start: b.start, end: b.end, subject: b.subject, mtg: b.mtg, key: key }); });
+          busy.forEach(function(b){ if (b.end.getTime() > Math.max(ws2, nowMs) && b.start.getTime() < we2) BUSY.push({ start: b.start, end: b.end, subject: b.subject, mtg: b.mtg, focus: b.focus, key: key }); });
           var segs = busy.filter(function(b){ return b.end.getTime() > ws2 && b.start.getTime() < we2; }).map(function(b){ return [b.start.getTime() - bufMs, b.end.getTime() + bufMs]; }).sort(function(a, b){ return a[0] - b[0]; });
           var cur = Math.max(ws2, nw);
           segs.forEach(function(sg){ if (sg[0] > cur && Math.min(sg[0], we2) - cur >= minLen) SLOTS.push({ start: new Date(cur), end: new Date(Math.min(sg[0], we2)), sel: true, key: key }); if (sg[1] > cur) cur = sg[1]; });
           if (we2 - cur >= minLen) SLOTS.push({ start: new Date(cur), end: new Date(we2), sel: true, key: key });
+          // focus blocks — offered, never auto-ticked
+          busy.forEach(function(b){
+            if (!b.focus) return;
+            var fs = Math.max(b.start.getTime(), ws2, nw), fe = Math.min(b.end.getTime(), we2);
+            if (fe - fs < minLen) return;
+            FOCUSHOWN[key + "_" + b.start.getTime()] = 1;
+            SLOTS.push({ start: new Date(fs), end: new Date(fe), sel: false, focus: true, subject: b.subject, key: key });
+          });
         });
         renderSlots();
-        if (SLOTS.length){ msg.className = "msg"; msg.textContent = SLOTS.length + " free block" + (SLOTS.length > 1 ? "s" : "") + " — tick the ones to offer, then Copy slots."; }
+        var nFoc = SLOTS.filter(function(s){ return s.focus; }).length, nFree = SLOTS.length - nFoc;
+        if (SLOTS.length){ msg.className = "msg"; msg.textContent = nFree + " free block" + (nFree === 1 ? "" : "s") + (nFoc ? " · " + nFoc + " focus block" + (nFoc === 1 ? "" : "s") + " you can tick too" : "") + " — tick the ones to offer, then Copy slots."; }
         else { msg.className = "msg err"; msg.textContent = "No open time in your working hours " + (scope === "day" ? "that day" : "this week") + "."; }
       })
       .catch(function(err){
@@ -337,13 +362,13 @@
       h += '<div class="gday">' + vd.label + '</div>';
       if (OFFV[vd.key]){ h += '<div class="grow off"><span class="tmcol">All day</span><span class="ttl">Out of office</span></div>'; return; }
       var rows = [];
-      (busyByKey[vd.key] || []).forEach(function(b){ rows.push({ t: b.start.getTime(), busy: b }); });
+      (busyByKey[vd.key] || []).forEach(function(b){ if (b.focus && FOCUSHOWN[vd.key + "_" + b.start.getTime()]) return; rows.push({ t: b.start.getTime(), busy: b }); });
       (freeByKey[vd.key] || []).forEach(function(i){ rows.push({ t: SLOTS[i].start.getTime(), free: i }); });
       rows.sort(function(a, b){ return a.t - b.t; });
       if (!rows.length){ h += '<div class="grow off"><span class="ttl">No open time in your working hours</span></div>'; return; }
       rows.forEach(function(r){
         if (r.busy){ h += '<div class="grow busy' + (r.busy.mtg ? ' mtg' : ' solo') + '"><span class="dot"></span><span class="tmcol">' + fmtTime(r.busy.start) + ' &ndash; ' + fmtTime(r.busy.end) + '</span><span class="ttl">' + esc(r.busy.subject || "Busy") + '</span></div>'; }
-        else { var x = SLOTS[r.free]; h += '<label class="grow free' + (x.sel ? " on" : "") + '"><input type="checkbox" data-i="' + r.free + '"' + (x.sel ? " checked" : "") + '><span class="tmcol">' + fmtTime(x.start) + ' &ndash; ' + fmtTime(x.end) + '</span><span class="ttl">Free · ' + durLabel(x.end - x.start) + '</span></label>'; }
+        else { var x = SLOTS[r.free]; h += '<label class="grow free' + (x.focus ? " focusrow" : "") + (x.sel ? " on" : "") + '" title="' + (x.focus ? "Your focus time — tick it only when a client really needs this slot" : "") + '"><input type="checkbox" data-i="' + r.free + '"' + (x.sel ? " checked" : "") + '><span class="tmcol">' + fmtTime(x.start) + ' &ndash; ' + fmtTime(x.end) + '</span><span class="ttl">' + (x.focus ? '\u26A1 Focus time' + (x.subject ? ' · ' + esc(x.subject) : '') + ' — tick to offer' : 'Free · ' + durLabel(x.end - x.start)) + '</span></label>'; }
       });
     });
     $("slots").innerHTML = h;

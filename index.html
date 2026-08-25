@@ -227,6 +227,7 @@
   .sel .x { position:absolute; top:2px; right:5px; font-weight:700; opacity:.75; }
   .sel.tmp { background:rgba(0,200,117,.5); box-shadow:none; }
   .sel.conflict { background:rgba(239,68,68,.9); box-shadow:0 1px 4px rgba(220,38,38,.4); }
+  .sel.override { background:rgba(217,119,6,.92); box-shadow:0 1px 4px rgba(180,83,9,.4); }
   .addtz { display:block; margin:4px auto 0; border:none; background:none; color:var(--muted); font-size:10px; cursor:pointer; font-family:inherit; }
   .addtz:hover { color:var(--blue-dark); }
   .tzremove { color:#b91c1c; font-weight:600; }
@@ -312,10 +313,17 @@
   .busy.solo { background:linear-gradient(135deg,#FCE9E9,#F8D4D4); border-left-color:#E24B4A; color:#A32D2D; }
   .busy.solo .bt { color:#C24A44; }
   .busy.solo:hover { box-shadow:0 4px 12px rgba(226,75,74,.28); }
+  .busy.focus { background:linear-gradient(135deg,#FFF3DC,#FFE6BC); border-left-color:#D97706; color:#8A5300; }
+  .busy.focus .bt { color:#B4700A; }
+  .busy.focus:hover { box-shadow:0 4px 12px rgba(217,119,6,.28); }
+  .busy .focx { position:absolute; top:3px; right:4px; background:#D97706; color:#fff; font-size:9.5px; font-weight:700; padding:1px 6px; border-radius:6px; line-height:1.5; z-index:2; opacity:0; transition:opacity .12s; }
+  .busy.focus:hover .focx { opacity:1; }
   body.dark .busy.mtg { background:linear-gradient(135deg,rgba(139,147,248,.22),rgba(139,147,248,.13)); color:#CECBF6; }
   body.dark .busy.mtg .bt { color:#AFA9EC; }
   body.dark .busy.solo { background:linear-gradient(135deg,rgba(226,75,74,.20),rgba(226,75,74,.12)); color:#F7C1C1; }
   body.dark .busy.solo .bt { color:#F09595; }
+  body.dark .busy.focus { background:linear-gradient(135deg,rgba(217,119,6,.22),rgba(217,119,6,.12)); color:#FBD9A5; }
+  body.dark .busy.focus .bt { color:#EFB865; }
 
   /* ==== teammate overlays (distinct colors) + mutual-free bands (2026-07-19) ==== */
   /* new-version notice */
@@ -677,6 +685,20 @@ function foreignOOO(ev){
   const org = ev.organizer && ev.organizer.emailAddress && ev.organizer.emailAddress.address;
   return !!(org && ME.email && org.toLowerCase() !== ME.email.toLowerCase());
 }
+// ---- focus time ----
+// Your focus blocks still hold the slot (auto-fill and the green "all free" bands skip them),
+// but they are YOURS to give away: painting over one by hand is allowed, for the urgent client
+// who needs today. Anything with other attendees is a real meeting, never an overridable block.
+const FOCUS_RE = /^focus$|^(focus\s*(time|block|session)|deep\s*work|heads?[\s-]?down|no\s*meetings?)\b/;
+function isFocusEv(ev){
+  if (ev.isAllDay || ev.showAs === "oof") return false;
+  const myEm = (ME && ME.email || "").toLowerCase();
+  const others = (ev.attendees || []).some(a => { const e = (a.emailAddress && a.emailAddress.address || "").toLowerCase(); return e && e !== myEm; });
+  if (others) return false;
+  if (/focus/.test((ev.categories || []).join(" ").toLowerCase())) return true;
+  const s = (ev.subject || "").trim().toLowerCase();
+  return FOCUS_RE.test(s) || /\bfocus time\b|\bdeep work\b/.test(s);
+}
 async function fetchEvents(weekStart, weekEnd, calIds){
   const ids = (calIds && calIds.length) ? calIds : [null];
   const all = [];
@@ -685,7 +707,7 @@ async function fetchEvents(weekStart, weekEnd, calIds){
     const tk = await token();
     let next = "https://graph.microsoft.com/v1.0" + base + "?" + new URLSearchParams({
       startDateTime: weekStart.toISOString(), endDateTime: weekEnd.toISOString(),
-      $select: "subject,start,end,showAs,isAllDay,isOnlineMeeting,onlineMeeting,webLink,responseStatus,body,attendees,organizer,isOrganizer", $orderby: "start/dateTime", $top: "200",
+      $select: "subject,start,end,showAs,isAllDay,isOnlineMeeting,onlineMeeting,webLink,responseStatus,body,attendees,organizer,isOrganizer,categories", $orderby: "start/dateTime", $top: "200",
     });
     let guard = 0;
     while (next && guard++ < 25){
@@ -693,7 +715,7 @@ async function fetchEvents(weekStart, weekEnd, calIds){
       if (!r.ok) throw new Error("Graph " + r.status);
       const obj = await r.json();
       (obj.value || []).filter(ev => ev.start && ev.start.dateTime && ev.end && ev.end.dateTime && ev.showAs !== "free" && ev.showAs !== "workingElsewhere" && !(ev.responseStatus && ev.responseStatus.response === "declined") && (!ev.isAllDay || ev.showAs === "oof") && !foreignOOO(ev))
-        .forEach(ev => all.push({ id: ev.id, subject: ev.subject || "(busy)", start: new Date(ev.start.dateTime + "Z"), end: new Date(ev.end.dateTime + "Z"), allDay: !!ev.isAllDay, oof: ev.showAs === "oof", join: (ev.onlineMeeting && ev.onlineMeeting.joinUrl) || null, web: ev.webLink || null, cancelId: (ev.body && ev.body.content && (/[?&]cancel=([0-9a-fA-F-]{36})/.exec(ev.body.content) || [])[1]) || null, org: (ev.organizer && ev.organizer.emailAddress && ev.organizer.emailAddress.name) || null, orgEmail: (ev.organizer && ev.organizer.emailAddress && ev.organizer.emailAddress.address) || null, att: (ev.attendees || []).map(function(a){ return { name: (a.emailAddress && (a.emailAddress.name || a.emailAddress.address)) || "", email: (a.emailAddress && a.emailAddress.address) || "", resp: (a.status && a.status.response) || "none" }; }) }));
+        .forEach(ev => all.push({ id: ev.id, subject: ev.subject || "(busy)", start: new Date(ev.start.dateTime + "Z"), end: new Date(ev.end.dateTime + "Z"), allDay: !!ev.isAllDay, oof: ev.showAs === "oof", focus: isFocusEv(ev), join: (ev.onlineMeeting && ev.onlineMeeting.joinUrl) || null, web: ev.webLink || null, cancelId: (ev.body && ev.body.content && (/[?&]cancel=([0-9a-fA-F-]{36})/.exec(ev.body.content) || [])[1]) || null, org: (ev.organizer && ev.organizer.emailAddress && ev.organizer.emailAddress.name) || null, orgEmail: (ev.organizer && ev.organizer.emailAddress && ev.organizer.emailAddress.address) || null, att: (ev.attendees || []).map(function(a){ return { name: (a.emailAddress && (a.emailAddress.name || a.emailAddress.address)) || "", email: (a.emailAddress && a.emailAddress.address) || "", resp: (a.status && a.status.response) || "none" }; }) }));
       next = obj["@odata.nextLink"] || null;
     }
   }));
@@ -1013,15 +1035,43 @@ setInterval(() => {
 function overlaps(aS, aE, bS, bE){ return bS < aE && aS < bE; }
 function hardConflict(start, end, skipIdx){
   const BUF = (S.buffer || 0) * 60000;
-  for (const ev of S.events) if (overlaps(start.getTime(), end.getTime(), ev.start.getTime() - BUF, ev.end.getTime() + BUF)) return (overlaps(start, end, ev.start, ev.end) ? "your “" + ev.subject + "”" : "the " + S.buffer + "-min buffer around “" + ev.subject + "”");
+  for (const ev of S.events){
+    if (ev.focus) continue;   // focus time never hard-blocks — you can hand it to a client
+    if (overlaps(start.getTime(), end.getTime(), ev.start.getTime() - BUF, ev.end.getTime() + BUF)) return (overlaps(start, end, ev.start, ev.end) ? "your “" + ev.subject + "”" : "the " + S.buffer + "-min buffer around “" + ev.subject + "”");
+  }
   for (let i = 0; i < S.sel.length; i++){
     if (i === skipIdx) continue;
     if (overlaps(start, end, S.sel[i].start, S.sel[i].end)) return "a slot you already painted";
   }
   return null;
 }
+// One click on a focus block offers it (and clicking again takes it back) — the urgent-case
+// escape hatch, without having to switch on paint mode and drag over your own block.
+function offerFocusBlock(ev){
+  if (S.paintMode) return;
+  const now = Date.now(), en = new Date(ev.end.getTime());
+  const i = S.sel.findIndex(x => x.start < en && ev.start < x.end);
+  if (i >= 0){ S.sel.splice(i, 1); saveSel(); renderAll(); toast("↩ Kept as focus time — slot removed"); return; }
+  let stMs = Math.max(ev.start.getTime(), now);
+  if (S.minNotice) stMs = Math.max(stMs, now + S.minNotice * 3600000);
+  stMs = Math.ceil(stMs / (SNAP * 60000)) * SNAP * 60000;
+  const st = new Date(stMs);
+  if (en - st < (S.slotLen || 30) * 60000){ toast("⏰ Not enough of that focus block left to offer"); return; }
+  if (hardConflict(st, en)){ toast("🚫 " + hardConflict(st, en) + " overlaps this block"); return; }
+  if (S.dayCap && S.sel.filter(x => keyOf(x.start) === keyOf(st)).length >= S.dayCap){ toast("🚫 Daily limit reached (" + S.dayCap + " slots/day)"); return; }
+  S.sel.push({ start: st, end: en });
+  S.sel.sort((a, b) => a.start - b.start);
+  saveSel();
+  if (document.body.classList.contains("panelhide") && window.showSharePanel) window.showSharePanel();
+  toast("⚡ Offering your focus time — “" + ev.subject + "” stays in your calendar");
+  renderAll();
+}
+function focusOverlap(start, end){
+  for (const ev of S.events) if (ev.focus && overlaps(start, end, ev.start, ev.end)) return ev.subject;
+  return null;
+}
 function findConflict(start, end){
-  for (const ev of S.events) if (overlaps(start, end, ev.start, ev.end)) return "your “" + ev.subject + "”";
+  for (const ev of S.events) if (!ev.focus && overlaps(start, end, ev.start, ev.end)) return "your “" + ev.subject + "”";
   for (const p of S.people)
     for (const it of (S.schedules[p.email] || []))
       if (overlaps(start, end, it.start, it.end)) return (p.name || p.email) + "’s busy time";
@@ -1578,10 +1628,16 @@ function renderBody(){
       const hgt = Math.max(b - a - 1, 10);
       const myEm = (ME && ME.email || "").toLowerCase();
       const hasOthers = (ev.att || []).some(x => x.email && x.email.toLowerCase() !== myEm) || (ev.orgEmail && ev.orgEmail.toLowerCase() !== myEm);
-      el.className = "evt busy " + (hasOthers ? "mtg" : "solo") + (match ? "" : " dim") + (hgt < 46 ? " short" : "");
+      el.className = "evt busy " + (ev.focus ? "focus" : (hasOthers ? "mtg" : "solo")) + (match ? "" : " dim") + (hgt < 46 ? " short" : "");
       el.style.top = a + "px"; el.style.height = hgt + "px";
       el.innerHTML = '<span class="bn"></span><span class="bt">' + fmtRange(ev.start, ev.end) + "</span>";
       el.querySelector(".bn").textContent = ev.subject;
+      if (ev.focus){
+        el.title = "Focus time — click to offer this slot to a client (click again to keep it)";
+        el.style.cursor = "copy";
+        el.insertAdjacentHTML("beforeend", '<span class="focx">⚡ offer</span>');
+        el.onclick = e => { e.stopPropagation(); offerFocusBlock(ev); };
+      }
       if (ev.oof && ev.id){ el.classList.add("rmable"); el.title = "Click to remove this out-of-office block"; el.onclick = () => removeOOO(ev); el.insertAdjacentHTML("beforeend", '<span class="rmx">×</span>'); }
       else if (ev.cancelId && ev.end > now){ el.classList.add("rmable"); el.title = "Click to cancel this booking"; el.onclick = () => confirmCancel(ev); el.insertAdjacentHTML("beforeend", '<span class="rmx">×</span>'); }
       if (ev.join && ev.end > now){
@@ -1651,11 +1707,12 @@ function renderBody(){
       if (s.end <= dayStart || s.start >= dayEnd) return;
       const a = Math.max(top(s.start), 0), b = Math.min(top(s.end), H);
       const conflict = findConflict(s.start, s.end);
-      const el = document.createElement("div"); el.className = "evt sel" + (conflict ? " conflict" : "");
+      const fov = conflict ? null : focusOverlap(s.start, s.end);
+      const el = document.createElement("div"); el.className = "evt sel" + (conflict ? " conflict" : (fov ? " override" : ""));
       el.style.top = a + "px"; el.style.height = Math.max(b - a - 1, 12) + "px";
-      el.textContent = (conflict ? "⚠ " : "") + fmtRange(s.start, s.end);
+      el.textContent = (conflict ? "⚠ " : (fov ? "⚡ " : "")) + fmtRange(s.start, s.end);
       el.insertAdjacentHTML("beforeend", '<span class="x">×</span>');
-      el.title = conflict ? "Overlaps " + conflict + " — click to remove" : "Click to remove";
+      el.title = conflict ? "Overlaps " + conflict + " — click to remove" : (fov ? "Offering your focus time “" + fov + "” — click to remove" : "Click to remove");
       el.onpointerdown = e => e.stopPropagation();
       el.onclick = e => { e.stopPropagation(); S.sel.splice(idx, 1); saveSel(); renderAll(); };
       col.appendChild(el);
@@ -1900,7 +1957,9 @@ function attachPaint(col, dayStart){
     saveSel();
     if (document.body.classList.contains("panelhide") && window.showSharePanel) window.showSharePanel(); // auto-open share panel so Copy slots is right there
     const c = findConflict(start, end);
+    const fo = focusOverlap(start, end);
     if (c) toast("⚠ Heads up — this overlaps " + c);
+    else if (fo) toast("⚡ Offering your focus time — “" + fo + "” stays in your calendar");
     renderAll();
   };
 }
