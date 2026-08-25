@@ -1,0 +1,38 @@
+{
+ "generated": "2026-08-25",
+ "stamp": {
+  "preparedFor": {
+   "x": 42.52,
+   "y": 734.83,
+   "size": 12.5,
+   "maxWidth": 510
+  },
+  "footer": {
+   "x": 42.52,
+   "y": 22,
+   "size": 8,
+   "maxWidth": 316.2
+  }
+ },
+ "docs": {
+  "finance-how-marketplace-finance-works": {
+   "title": "Finance, how marketplace finance works",
+   "hash": "32ac3819a0b88116",
+   "bytes": 177238,
+   "file": "docs-pdf/finance-how-marketplace-finance-works.pdf"
+  },
+  "how-to-find-your-subscription-id": {
+   "title": "How to find your subscription ID?",
+   "hash": "41531c69c4b787d2",
+   "bytes": 226976,
+   "file": "docs-pdf/how-to-find-your-subscription-id.pdf"
+  },
+  "step-6-grant-wetransact-access-to-partner-center": {
+   "title": "Step 6 — Grant WeTransact Access to Partner Center",
+   "hash": "b44e24c422236a23",
+   "bytes": 302003,
+   "file": "docs-pdf/step-6-grant-wetransact-access-to-partner-center.pdf"
+  }
+ },
+ "count": 3
+}
