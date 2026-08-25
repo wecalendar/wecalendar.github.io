@@ -975,10 +975,46 @@
     return _dkMan;
   }
   function dkFonts(){ if (!_dkFonts) _dkFonts = Promise.all([pbFetch(PB_FONT_BOLD), pbFetch(PB_FONT_MED)]); return _dkFonts; }
+  /* Outlook is fussy about attachment names — keep it plain ASCII, the way the
+     playbook attachment does, or the attach can fail and fall back to a link. */
   function dkFileName(title){
-    var t = String(title || "WeTransact-Docs").replace(/[\\/:*?"<>|]/g, "").replace(/\s+/g, " ").trim();
-    if (t.length > 80) t = t.slice(0, 80).trim();
+    var t = String(title || "WeTransact Docs")
+      .replace(/[\u2012-\u2015\u2212]/g, "-")     /* – — ‒ ― − */
+      .replace(/[\u2018\u2019\u201A\u201B]/g, "'")
+      .replace(/[\u201C\u201D\u201E\u201F]/g, "")
+      .replace(/[\u2026]/g, "")
+      .replace(/&/g, "and")
+      .replace(/[^A-Za-z0-9 ._-]/g, " ")
+      .replace(/\s+/g, " ")
+      .replace(/^[ .-]+|[ .-]+$/g, "")
+      .trim();
+    if (!t) t = "WeTransact Docs";
+    if (t.length > 70) t = t.slice(0, 70).replace(/[ .-]+$/, "");
     return t + " - WeTransact.pdf";
+  }
+
+  /* explicit isInline:false — an inline attachment with nothing referencing it
+     in the body is the classic "it vanished when I sent it" case */
+  function dkAttach64(it, b64, name){
+    return new Promise(function(res, rej){
+      it.addFileAttachmentFromBase64Async(b64, name, { isInline: false }, function(r){
+        if (r.status === Office.AsyncResultStatus.Succeeded) res();
+        else rej(new Error((r.error && r.error.message) || "couldn't attach"));
+      });
+    });
+  }
+
+  /* confirm the attachment is really on the item, rather than trusting the callback */
+  function dkVerify(it){
+    return new Promise(function(res){
+      if (!it.getAttachmentsAsync) return res(null);
+      try {
+        it.getAttachmentsAsync(function(r){
+          if (r.status !== Office.AsyncResultStatus.Succeeded || !r.value) return res(null);
+          res(r.value.filter(function(a){ return /\.pdf$/i.test(a.name || ""); }).length);
+        });
+      } catch(e){ res(null); }
+    });
   }
 
   /* stamp page 1 with the client name + the CSM's name, then hand back base64 */
@@ -1011,11 +1047,14 @@
   function dkAttachOne(it, doc, company, st, canStamp, manTitle){
     var url = DOCS_PDF_BASE + encodeURIComponent(doc.slug) + ".pdf";
     var name = dkFileName(manTitle || doc.title);
-    if (!canStamp) return pbAttachUrl(it, url, name);   // old Outlook: attach as-is
+    /* Only very old Outlook takes the URL route. We don't fall back to it on
+       error any more: Outlook fetches that URL at send time and drops the
+       attachment without warning if the fetch fails, which looks like a
+       successful attach that silently vanishes. Better to surface the error. */
+    if (!canStamp) return pbAttachUrl(it, url, name);
     return pbFetch(url)
       .then(function(buf){ return dkStamp(buf, company, st); })
-      .then(function(b64){ return pbAttach64(it, b64, name); })
-      .catch(function(){ return pbAttachUrl(it, url, name); });   // stamping failed — still attach
+      .then(function(b64){ return dkAttach64(it, b64, name); });
   }
 
   function dkAttachPdfs(){
@@ -1041,11 +1080,12 @@
         }
         return ready2.reduce(function(chain, d){
           return chain.then(function(){ return dkAttachOne(it, d, company, st, canStamp, have[d.slug] && have[d.slug].title); });
-        }, Promise.resolve()).then(function(){
+        }, Promise.resolve()).then(function(){ return dkVerify(it); }).then(function(onItem){
           var k = ready2.length;
           msg.className = "msg ok";
           msg.textContent = "✓ " + k + (k === 1 ? " PDF attached" : " PDFs attached")
             + (company ? " — prepared for " + company : "")
+            + (onItem != null ? " (" + onItem + " on this email)" : "")
             + (missing.length ? ". " + missing.length + " not rendered yet (links instead)." : ".");
           if (missing.length){ DKPICK = missing; dkChips(); dkRender(); }
           else { DKPICK = []; dkChips(); dkRender(); }
