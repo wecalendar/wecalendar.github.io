@@ -598,7 +598,8 @@
       #dkRes .dkrow:hover{background:rgba(94,67,200,.08)}
       #dkRes .dkrow.on{background:rgba(94,67,200,.13);font-weight:600}
       #dkRes .dkrow input{width:15px;height:15px;accent-color:#5E43C8;flex:none;margin:2px 0 0}
-      #dkRes .dkempty{font-size:12px;color:var(--muted2);padding:8px 4px;line-height:1.5}
+      #dkRes .dkempty{display:flex;gap:11px;align-items:center;font-size:12px;color:var(--muted2);padding:10px 4px;line-height:1.5}
+      #dkRes .dkempty img{width:58px;height:auto;flex:none}
       #dkChips .dkchip{display:inline-flex;align-items:center;gap:6px;background:rgba(94,67,200,.11);color:#5E43C8;border-radius:20px;padding:4px 10px;font-size:12px;font-weight:600}
       #dkChips .dkchip .cx{cursor:pointer;font-weight:700;opacity:.65}
       #dkChips .dkchip .cx:hover{opacity:1;color:#b91c1c}
@@ -606,7 +607,8 @@
     <div id="dkRes" style="max-height:250px;overflow:auto;margin-top:8px"></div>
     <div id="dkChips" style="display:flex;flex-wrap:wrap;gap:6px;margin-top:10px"></div>
     <div id="dkMsg" style="font-size:12px;margin-top:8px;min-height:14px;color:var(--muted2)"></div>
-    <button class="btn primary" id="dkGo" style="width:100%;margin-top:10px">Copy links</button>
+    <button class="btn primary" id="dkPdf" style="width:100%;margin-top:10px">📘 Download as PDF</button>
+    <button class="btn" id="dkGo" style="width:100%;margin-top:8px">Copy links instead</button>
     <button id="dkCancel" style="width:100%;margin-top:8px;background:none;border:none;color:var(--muted2);font:inherit;font-size:13px;cursor:pointer">Close</button>
   </div>
 </div>
@@ -2648,10 +2650,12 @@ function toast(msg){
     const list = q ? search(q) : PINNED.map(bySlug);
     if (!list.length){
       const e = document.createElement("div"); e.className = "dkempty";
-      e.textContent = (DOCS && DOCS.length)
+      const oct = document.createElement("img"); oct.src = "octavia-question-mark.png"; oct.alt = "";
+      const tx = document.createElement("div");
+      tx.textContent = (DOCS && DOCS.length)
         ? "No docs match that. Try fewer words — or paste the article link and it'll be added."
         : "Couldn't load the docs list. Paste a docs.wetransact.io link and it'll still work.";
-      box.appendChild(e); return;
+      e.append(oct, tx); box.appendChild(e); return;
     }
     if (!q){ const h = document.createElement("div"); h.className = "dkgrp"; h.textContent = "Frequently sent"; box.appendChild(h); }
     list.forEach(d => {
@@ -2697,6 +2701,50 @@ function toast(msg){
     const inp = $d("dkIn"), q = (inp.value || "").trim(); if (!q) return;
     const hits = search(q); if (hits.length){ inp.value = ""; add(hits[0]); }
   });
+
+  /* Branded PDFs, rendered nightly from docs.wetransact.io by the docs-index
+     workflow. The browser has no draft to attach to, so it downloads them;
+     the Outlook add-in attaches the same files, stamped with the client name. */
+  const PDF_BASE = "docs-pdf/";
+  let MAN = null;
+  const manifest = () => MAN ? Promise.resolve(MAN) : fetch(PDF_BASE + "manifest.json?t=" + Date.now(), { cache: "no-store" })
+    .then(r => r.ok ? r.json() : { docs: {} }).then(j => (MAN = j || { docs: {} })).catch(() => (MAN = { docs: {} }));
+  const pdfName = (title) => String(title || "WeTransact-Docs").replace(/[\\/:*?"<>|]/g, "").replace(/\s+/g, " ").trim().slice(0, 80) + " - WeTransact.pdf";
+
+  $d("dkPdf").onclick = async () => {
+    const msg = $d("dkMsg");
+    if (!PICK.length){ msg.style.color = "#b91c1c"; msg.textContent = "Tick at least one doc first."; return; }
+    const picks = PICK.slice();
+    msg.style.color = "var(--muted2)";
+    msg.textContent = picks.length === 1 ? "Fetching the PDF…" : `Fetching ${picks.length} PDFs…`;
+    const man = await manifest();
+    const have = man.docs || {};
+    const known = Object.keys(have).length;
+    const ok = [], missing = [];
+    for (const d of picks){
+      if (known && !have[d.slug]){ missing.push(d); continue; }
+      try {
+        const r = await fetch(PDF_BASE + encodeURIComponent(d.slug) + ".pdf", { cache: "no-store" });
+        if (!r.ok) throw new Error("HTTP " + r.status);
+        const url = URL.createObjectURL(await r.blob());
+        const a = document.createElement("a");
+        a.href = url; a.download = pdfName(have[d.slug]?.title || d.title);
+        document.body.appendChild(a); a.click(); a.remove();
+        setTimeout(() => URL.revokeObjectURL(url), 30000);
+        ok.push(d);
+        await new Promise(r2 => setTimeout(r2, 350));   // browsers throttle rapid downloads
+      } catch(e){ missing.push(d); }
+    }
+    if (!ok.length){
+      msg.style.color = "#b91c1c";
+      msg.textContent = "Not rendered yet — tonight's refresh will pick that up. Copy the links instead for now.";
+      return;
+    }
+    PICK = missing; chips(); render();
+    if (!missing.length) close();
+    else { msg.style.color = "#b91c1c"; msg.textContent = missing.length + " not rendered yet — still ticked."; }
+    try { toast(ok.length === 1 ? "PDF downloaded" : ok.length + " PDFs downloaded"); } catch(e){}
+  };
 
   $d("dkGo").onclick = async () => {
     const msg = $d("dkMsg");

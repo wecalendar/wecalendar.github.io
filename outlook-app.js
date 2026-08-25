@@ -78,13 +78,14 @@
     + '.tplmenu{max-height:330px;overflow-y:auto}'
     + '.tplgrp{font-size:10px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:#7A6FB8;padding:9px 12px 5px;background:#FAF9FF;border-bottom:1px solid #F0ECFF}'
     /* docs link picker (2026-08-25) */
-    + '.dkwrap{border:1px solid var(--line);border-radius:12px;padding:10px;margin-top:8px;background:#FDFCFF}'
+    + '.dkwrap{border:1px solid var(--line);border-radius:12px;padding:10px;margin-top:8px;background:#FBF9FF}'
     + '.dkres{max-height:212px;overflow:auto;margin-top:6px}'
     + '.dkgrp{font-size:10px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:#7A6FB8;padding:6px 4px 4px}'
     + '.dkrow{display:flex;gap:8px;align-items:flex-start;padding:7px 8px;border-radius:8px;cursor:pointer;font-size:12.5px;color:var(--ink);line-height:1.32}'
-    + '.dkrow:hover{background:#F0ECFF}.dkrow.on{background:#EEEDFE;font-weight:600}'
+    + '.dkrow:hover{background:#F2EEFF}.dkrow.on{background:#F2EEFF;font-weight:600}'
     + '.dkrow input{width:14px;height:14px;accent-color:var(--accent);flex:none;margin:2px 0 0}'
-    + '.dkempty{font-size:11.5px;color:var(--muted);padding:8px 4px;line-height:1.45}'
+    + '.dkempty{display:flex;gap:10px;align-items:center;font-size:11.5px;color:var(--muted);padding:10px 4px;line-height:1.45}'
+    + '.dkempty img{width:54px;height:auto;flex:none}'
     + '.dkhint{font-size:11px;color:var(--muted);margin-top:8px;line-height:1.4}'
     + '.dkwrap .chips:not(:empty){border-top:1px solid var(--line);padding-top:9px;margin-top:10px}'
     + '.dkres::-webkit-scrollbar{width:8px}.dkres::-webkit-scrollbar-thumb{background:rgba(94,67,200,.18);border-radius:99px}'
@@ -159,7 +160,8 @@
     +     '<input type="text" id="dkIn" autocomplete="off" placeholder="Search the docs — or paste a docs link">'
     +     '<div id="dkRes" class="dkres"></div>'
     +     '<div class="chips" id="dkChips"></div>'
-    +     '<button class="btn" id="dkGo" type="button" style="margin-top:10px">Insert links</button>'
+    +     '<button class="btn" id="dkGo" type="button" style="margin-top:10px">&#128216; Attach as PDF</button>'
+    +     '<button class="btn sec" id="dkIns" type="button" style="margin-top:8px">Insert links instead</button>'
     +     '<div class="msg" id="dkMsg"></div>'
     +   '</div>'
     +   '<div class="or hide" id="tplOr" style="margin:8px 0 2px">or share your free times</div>'
@@ -807,6 +809,7 @@
          A pasted docs URL always works, even before it's in the index. ---- */
   var DOCS_ORIGIN = "https://docs.wetransact.io";
   var DOCS_INDEX_URL = "https://wecalendar.github.io/docs-index.json";
+  var DOCS_OCTAVIA = "https://wecalendar.github.io/octavia-question-mark.png";
   var DOCS_PINNED = [
     "step-6-grant-wetransact-access-to-partner-center",
     "step-5-complete-your-payout-and-tax-profile-48-hour-microsoft-validation",
@@ -900,10 +903,12 @@
     else { list = DOCS_PINNED.map(dkBySlug); head = "Frequently sent"; }
     if (!list.length){
       var e = document.createElement("div"); e.className = "dkempty";
-      e.textContent = (DOCS && DOCS.length)
+      var oct = document.createElement("img"); oct.src = DOCS_OCTAVIA; oct.alt = "";
+      var tx = document.createElement("div");
+      tx.textContent = (DOCS && DOCS.length)
         ? "No docs match that. Try fewer words — or paste the article link and it'll be added."
         : "Couldn't load the docs list. Paste a docs.wetransact.io link and it'll still work.";
-      box.appendChild(e); return;
+      e.appendChild(oct); e.appendChild(tx); box.appendChild(e); return;
     }
     if (head){ var h = document.createElement("div"); h.className = "dkgrp"; h.textContent = head; box.appendChild(h); }
     list.forEach(function(d){
@@ -939,7 +944,9 @@
       var q = (inp.value || "").trim(); if (!q) return;
       var hits = dkSearch(q); if (hits.length){ inp.value = ""; dkAdd(hits[0]); }
     });
-    go.onclick = function(){
+    go.onclick = function(){ dkAttachPdfs(); };
+    var ins = $("dkIns");
+    if (ins) ins.onclick = function(){
       var msg = $("dkMsg");
       if (!DKPICK.length){ msg.className = "msg err"; msg.textContent = "Tick at least one doc first."; return; }
       var n = DKPICK.length;
@@ -947,6 +954,105 @@
       DKPICK = []; dkChips(); dkRender();
     };
   })();
+
+  /* ---- Attach a docs article as a branded PDF ------------------------------
+     The PDFs are rendered nightly from docs.wetransact.io by
+     .github/workflows/docs-index.yml (build-docs-pdfs.mjs) and hosted next to
+     the playbook. manifest.json carries the stamp coordinates, so "Prepared for
+     {Company}" and the CSM footer always land in the right place even if the
+     PDF template changes. Same pdf-lib pipeline as the onboarding playbook. */
+  var DOCS_PDF_BASE = "https://wecalendar.github.io/docs-pdf/";
+  var DOCS_MANIFEST_URL = DOCS_PDF_BASE + "manifest.json";
+  var DKMAN = null, _dkMan = null, _dkFonts = null;
+
+  function dkManifest(){
+    if (DKMAN) return Promise.resolve(DKMAN);
+    if (_dkMan) return _dkMan;
+    _dkMan = fetch(DOCS_MANIFEST_URL + "?t=" + Date.now(), { cache: "no-store" })
+      .then(function(r){ if (!r.ok) throw new Error("HTTP " + r.status); return r.json(); })
+      .then(function(j){ DKMAN = j || {}; return DKMAN; })
+      .catch(function(){ DKMAN = { docs: {}, stamp: null }; return DKMAN; });
+    return _dkMan;
+  }
+  function dkFonts(){ if (!_dkFonts) _dkFonts = Promise.all([pbFetch(PB_FONT_BOLD), pbFetch(PB_FONT_MED)]); return _dkFonts; }
+  function dkFileName(title){
+    var t = String(title || "WeTransact-Docs").replace(/[\\/:*?"<>|]/g, "").replace(/\s+/g, " ").trim();
+    if (t.length > 80) t = t.slice(0, 80).trim();
+    return t + " - WeTransact.pdf";
+  }
+
+  /* stamp page 1 with the client name + the CSM's name, then hand back base64 */
+  function dkStamp(buf, company, st){
+    return pbLoadLibs().then(dkFonts).then(function(f){
+      var PL = window.PDFLib;
+      return PL.PDFDocument.load(buf).then(function(doc){
+        doc.registerFontkit(window.fontkit);
+        return Promise.all([doc.embedFont(f[0], { subset: true }), doc.embedFont(f[1], { subset: true })]).then(function(fonts){
+          var bold = fonts[0], med = fonts[1], p1 = doc.getPage(0);
+          var purple = PL.rgb(0.369, 0.263, 0.784), muted = PL.rgb(0.396, 0.396, 0.471);
+          var pf = st && st.preparedFor;
+          if (company && pf){
+            var t = "Prepared for " + company, size = pf.size || 12.5;
+            while (bold.widthOfTextAtSize(t, size) > (pf.maxWidth || 380) && size > 8) size -= 0.5;
+            p1.drawText(t, { x: pf.x, y: pf.y, size: size, font: bold, color: purple });
+          }
+          var me = NAME || niceName(EMAIL) || "", ft = st && st.footer;
+          if (me && ft){
+            var foot = "Your CSM: " + me, fs = ft.size || 8;
+            while (med.widthOfTextAtSize(foot, fs) > (ft.maxWidth || 392) && fs > 5.5) fs -= 0.25;
+            p1.drawText(foot, { x: ft.x, y: ft.y, size: fs, font: med, color: muted });
+          }
+          return doc.saveAsBase64();
+        });
+      });
+    });
+  }
+
+  function dkAttachOne(it, doc, company, st, canStamp){
+    var url = DOCS_PDF_BASE + encodeURIComponent(doc.slug) + ".pdf";
+    var name = dkFileName(doc.title);
+    if (!canStamp) return pbAttachUrl(it, url, name);   // old Outlook: attach as-is
+    return pbFetch(url)
+      .then(function(buf){ return dkStamp(buf, company, st); })
+      .then(function(b64){ return pbAttach64(it, b64, name); })
+      .catch(function(){ return pbAttachUrl(it, url, name); });   // stamping failed — still attach
+  }
+
+  function dkAttachPdfs(){
+    var msg = $("dkMsg");
+    if (!DKPICK.length){ msg.className = "msg err"; msg.textContent = "Tick at least one doc first."; return; }
+    var it = Office.context.mailbox && Office.context.mailbox.item;
+    if (!ready || !it || !it.addFileAttachmentAsync){ msg.className = "msg err"; msg.textContent = "Open this while composing an email."; return; }
+    var canStamp = typeof it.addFileAttachmentFromBase64Async === "function";
+    var picks = DKPICK.slice(), n = picks.length;
+    msg.className = "msg"; msg.textContent = n === 1 ? "Building the PDF…" : "Building " + n + " PDFs…";
+    if (canStamp) pbLoadLibs();
+
+    Promise.all([dkManifest(), new Promise(function(res){ try { recipCtx(function(ctx){ res(ctx || {}); }); } catch(e){ res({}); } })])
+      .then(function(r){
+        var man = r[0] || {}, ctx = r[1] || {}, have = man.docs || {}, st = man.stamp;
+        var company = ctx.company || "";
+        var ready2 = picks.filter(function(d){ return have[d.slug] || !Object.keys(have).length; });
+        var missing = picks.filter(function(d){ return ready2.indexOf(d) < 0; });
+        if (!ready2.length){
+          msg.className = "msg err";
+          msg.textContent = "Not rendered yet — tonight's refresh will pick " + (n === 1 ? "it" : "them") + " up. Use “Insert links instead” for now.";
+          return;
+        }
+        return ready2.reduce(function(chain, d){
+          return chain.then(function(){ return dkAttachOne(it, d, company, st, canStamp); });
+        }, Promise.resolve()).then(function(){
+          var k = ready2.length;
+          msg.className = "msg ok";
+          msg.textContent = "✓ " + k + (k === 1 ? " PDF attached" : " PDFs attached")
+            + (company ? " — prepared for " + company : "")
+            + (missing.length ? ". " + missing.length + " not rendered yet (links instead)." : ".");
+          if (missing.length){ DKPICK = missing; dkChips(); dkRender(); }
+          else { DKPICK = []; dkChips(); dkRender(); }
+        });
+      })
+      .catch(function(e){ msg.className = "msg err"; msg.textContent = "Couldn't attach: " + ((e && e.message) || "try again"); });
+  }
 
   /* ---- One-click "Copy my calendar link" — mirrors the web app's quickCalendarLink ---- */
   function mcCopy(text){
