@@ -952,18 +952,45 @@
     var have = (DKMAN && DKMAN.docs) || {};
     var d = DKPICK[0], m = have[d.slug] || {};
     var blurb = m.blurb || "A short summary of each guide will be added with its link.";
+    var pb = dkBlurbParts(blurb);
     box.innerHTML = '<div class="pk">Will add to your email</div>'
-      + '<div class="pt"><b>' + esc(m.title || d.title) + '</b> · ' + esc(blurb)
-      + (DKPICK.length > 1 ? ' <span style="color:#7A6FB8">(+' + (DKPICK.length - 1) + ' more)</span>' : '') + '</div>';
+      + '<div class="pt"><b>' + esc(m.title || d.title) + '</b><br>' + esc(pb.lead)
+      + (pb.steps.length
+          ? '<ul style="margin:3px 0 0;padding-left:16px">'
+            + pb.steps.map(function(x){ return '<li style="margin:0 0 1px">' + esc(x) + '</li>'; }).join("")
+            + '</ul>'
+          : '')
+      + (DKPICK.length > 1 ? '<div style="color:#7A6FB8;margin-top:3px">(+' + (DKPICK.length - 1) + ' more)</div>' : '') + '</div>';
     if (!DKMAN) dkManifest().then(function(){ dkPrev(); });
   }
+  /* A blurb reads "The attached guide covers: A \u2192 B \u2192 C." — the arrow run is hard
+     to scan in an email, so split it into bullets. Anything without arrows
+     (e.g. "…walks you through it step by step.") stays a single line.
+     Ruby, 2026-08-26: "can you make the instruction like bullet points". */
+  function dkBlurbParts(blurb){
+    var t = String(blurb || "").trim();
+    var m = t.match(/^(.*?:)\s*([\s\S]+)$/);
+    if (!m) return { lead: t, steps: [] };
+    var steps = m[2].split(/\s*(?:\u2192|->|\u00bb)\s*/)
+      .map(function(x){ return x.replace(/\s+/g, " ").trim().replace(/[.;,]+$/, ""); })
+      .filter(Boolean);
+    if (steps.length < 2) return { lead: t, steps: [] };
+    return { lead: m[1].trim(), steps: steps };
+  }
+
   function dkInstrHtml(list, have){
     return list.map(function(d){
       var m = (have && have[d.slug]) || {};
       var url = dkUrl(d.slug), shown = url.replace(/^https:\/\//, "");
-      return '<div><p style="margin:0"><b>' + esc(m.title || d.title) + '</b></p>'
-        + (m.blurb ? '<p style="margin:0">' + esc(m.blurb) + '</p>' : '')
-        + '<p style="margin:0 0 12px">Full guide: <a href="' + url + '">' + esc(shown) + '</a></p></div>';
+      var pb = m.blurb ? dkBlurbParts(m.blurb) : null;
+      return '<div><p style="margin:0 0 2px"><b>' + esc(m.title || d.title) + '</b></p>'
+        + (pb ? '<p style="margin:0">' + esc(pb.lead) + '</p>' : '')
+        + (pb && pb.steps.length
+            ? '<ul style="margin:2px 0 0;padding-left:22px">'
+              + pb.steps.map(function(x){ return '<li style="margin:0 0 2px">' + esc(x) + '</li>'; }).join("")
+              + '</ul>'
+            : '')
+        + '<p style="margin:' + (pb && pb.steps.length ? '6px' : '0') + ' 0 12px">Full guide: <a href="' + url + '">' + esc(shown) + '</a></p></div>';
     }).join("");
   }
   function dkInsertSilent(html){
