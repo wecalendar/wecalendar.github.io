@@ -750,11 +750,14 @@
   var PB_FALLBACK_URL = "https://wecalendar.github.io/WeTransact-Onboarding-Playbook.pdf";
   var PB_GA_PDF = "https://wecalendar.github.io/Forward-to-Global-Admin.pdf";
   var PB_GA_PAGE = "https://wecalendar.github.io/ga.html";
+  var PB_SELF_PDF = "https://wecalendar.github.io/WeTransact-Onboarding-Playbook.pdf";
+  var PB_SELF_PAGE = "https://wecalendar.github.io/pb.html";
   /* Ruby 2026-08-26: one attachment as always, but when a portal link is given
      the playbook's "Download & forward … Global Admin" link points at ga.html,
      which hands the Alliance Manager a GA one-pager with THEIR portal link
      stamped into the self-service step (a static PDF can't be per-client). */
-  function pbSetGaLink(doc, PL, url){
+  function pbSetLink(doc, PL, from, to){
+    var changed = [];
     try {
       doc.getPages().forEach(function(p){
         var annots = p.node.Annots ? p.node.Annots() : null; if (!annots) return;
@@ -764,11 +767,12 @@
             var act = a && a.lookup(PL.PDFName.of("A"), PL.PDFDict); if (!act) continue;
             var u = act.lookup(PL.PDFName.of("URI"));
             var txt = u && u.decodeText ? u.decodeText() : "";
-            if (txt === PB_GA_PDF) act.set(PL.PDFName.of("URI"), PL.PDFString.of(url));
+            if (txt === from){ act.set(PL.PDFName.of("URI"), PL.PDFString.of(to)); changed.push(a); }
           } catch(e){}
         }
       });
     } catch(e){}
+    return changed;
   }
   var _pbLibs = null, _pbAssets = null;
   function pbScript(src){ return new Promise(function(res, rej){ var sc = document.createElement("script"); sc.src = src; sc.onload = res; sc.onerror = function(){ rej(new Error("couldn't load PDF library")); }; document.head.appendChild(sc); }); }
@@ -792,7 +796,23 @@
           var foot = me ? (" · Your CSM: " + me) : "";
           if (link) foot += " · Book time: " + link;
           if (foot){ var fsz = 8; while (med.widthOfTextAtSize(foot, fsz) > 392 && fsz > 5.5) fsz -= 0.25; p1.drawText(foot, { x: 87, y: 23.5, size: fsz, font: med, color: muted }); }
-          if (portal) pbSetGaLink(doc, PL, PB_GA_PAGE + "?p=" + encodeURIComponent(portal) + "&c=" + encodeURIComponent(company));
+          /* "Share this playbook" must hand out the SAME personalised copy —
+             Ruby 2026-08-26: clicking it gave the generic {Company} version. It
+             now points at pb.html, which rebuilds this exact PDF in the
+             recipient's browser (and its own share link recurses). */
+          var shareUrl = PB_SELF_PAGE + "?c=" + encodeURIComponent(company)
+            + (portal ? "&p=" + encodeURIComponent(portal) : "")
+            + (link ? "&b=" + encodeURIComponent(link) : "")
+            + (me ? "&n=" + encodeURIComponent(me) : "");
+          var share = pbSetLink(doc, PL, PB_SELF_PDF, shareUrl);
+          if (share.length){
+            p1.drawRectangle({ x: 157.5, y: 467.5, width: 303, height: 14, color: PL.rgb(1, 1, 1) });
+            var ptxt = "your personalised copy \u00bb", psz = 10, pw = bold.widthOfTextAtSize(ptxt, psz);
+            p1.drawText(ptxt, { x: 160, y: 471.4, size: psz, font: bold, color: purple });
+            p1.drawRectangle({ x: 160, y: 469.6, width: pw, height: 0.7, color: purple });
+            try { share[0].set(PL.PDFName.of("Rect"), doc.context.obj([160, 469.4, 160 + pw, 481])); } catch(e){}
+          }
+          if (portal) pbSetLink(doc, PL, PB_GA_PDF, PB_GA_PAGE + "?p=" + encodeURIComponent(portal) + "&c=" + encodeURIComponent(company));
           return doc.saveAsBase64();
         });
       });
