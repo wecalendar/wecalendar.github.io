@@ -20,7 +20,7 @@
   },
   {
    "slug": "azure-credits",
-   "title": "Azure credits"
+   "title": "Azure Credits"
   },
   {
    "slug": "change-the-amount-of-seats-in-an-already-purchased-subscription-in-the-marketplace",
@@ -44,7 +44,7 @@
   },
   {
    "slug": "create-warmify-email-rule-in-gmail",
-   "title": "Create Warmify email rule in Gmail"
+   "title": "Create Warmify Email Rule in Gmail"
   },
   {
    "slug": "create-warmify-email-rule-in-outlook",
@@ -52,7 +52,7 @@
   },
   {
    "slug": "creating-co-sell-deals-and-private-offers-in-salesforce",
-   "title": "Creating co-sell deals and private offers in Salesforce"
+   "title": "Creating Co-Sell Deals & Private Offers in Salesforce"
   },
   {
    "slug": "csp-private-offer",
@@ -128,7 +128,7 @@
   },
   {
    "slug": "how-do-i-check-incentive-transact-and-grow-cashback",
-   "title": "How do I check incentive transact and grow cashback?"
+   "title": "How do I check Incentive (Transact & Grow) Cashback?"
   },
   {
    "slug": "how-do-i-check-who-has-owner-status",
@@ -140,7 +140,7 @@
   },
   {
    "slug": "how-do-i-export-a-technical-diagram-as-a-png",
-   "title": "How do I export a technical diagram as a PNG?"
+   "title": "How do I export a technical diagram as a .png?"
   },
   {
    "slug": "how-do-i-select-a-publisher-location-for-the-product-listing",
@@ -192,7 +192,7 @@
   },
   {
    "slug": "how-to-activateaccept-order",
-   "title": "How to activateaccept order?"
+   "title": "How to Activate/Accept Order?"
   },
   {
    "slug": "how-to-add-a-location-and-publisher-account-in-partner-center",
@@ -244,7 +244,7 @@
   },
   {
    "slug": "how-to-connect-an-email-account-for-outreach-campaigns",
-   "title": "How to connect an email account for outreach campaigns?"
+   "title": "How to connect an email account for Outreach campaigns?"
   },
   {
    "slug": "how-to-create-a-billing-support-request-in-microsoft-azure-portal",
@@ -380,7 +380,7 @@
   },
   {
    "slug": "how-to-test-your-managed-application-package-before-publishing",
-   "title": "How to test your managed application package before publishing?"
+   "title": "How to test your Managed Application package before publishing"
   },
   {
    "slug": "how-to-update-credentials-for-finance-tab-in-the-wetransact-portal",
@@ -392,7 +392,7 @@
   },
   {
    "slug": "how-to-update-payment-methods-in-microsoft-azure-portal",
-   "title": "How to update payment methods in Microsoft Azure portal?"
+   "title": "How to update payment methods in Microsoft Azure Portal?"
   },
   {
    "slug": "how-to-update-the-primary-contact-email-address-in-legal-info",
@@ -424,7 +424,7 @@
   },
   {
    "slug": "how-to-view-marketplace-listing-status",
-   "title": "How to view Marketplace listing status?"
+   "title": "How to view marketplace listing status?"
   },
   {
    "slug": "i-have-added-wetransact-but-supportbot-cant-log-in",
@@ -463,12 +463,12 @@
    "title": "Part 1 — Enroll into the Microsoft transact and grow incentive"
   },
   {
-   "slug": "part-2-filling-up-tax-details-non-us-countries",
-   "title": "Part 2 — Filling up tax details non US countries"
+   "slug": "part-2-us-entities-filling-tax-profile-walktrough-example",
+   "title": "Part 2 - (US Entities) Filling Tax Profile Walktrough example"
   },
   {
-   "slug": "part-2-us-entities-filling-tax-profile-walktrough-example",
-   "title": "Part 2 — US entities filling tax profile walktrough example"
+   "slug": "part-2-filling-up-tax-details-non-us-countries",
+   "title": "Part 2 — Filling up tax details non US countries"
   },
   {
    "slug": "part-3-adding-the-payment-profile",
@@ -484,11 +484,11 @@
   },
   {
    "slug": "raising-a-support-ticket-because-my-legal-profile-was-not-validated",
-   "title": "Raising a support ticket because my legal profile was not validated"
+   "title": "Raising a support ticket because my legal profile was not validated."
   },
   {
    "slug": "retrieving-the-id-managed-application",
-   "title": "Retrieving the ID managed application"
+   "title": "Retrieving the ID – Managed Application"
   },
   {
    "slug": "salesforce-installation-guide",
@@ -600,7 +600,7 @@
   },
   {
    "slug": "where-to-find-the-azure-sponsorship",
-   "title": "Where to find the Azure sponsorship?"
+   "title": "Where to find the Azure Sponsorship?"
   },
   {
    "slug": "where-to-find-your-private-offers",
