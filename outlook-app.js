@@ -160,6 +160,8 @@
     +       '<input type="text" id="pbCompany" autocomplete="off" placeholder="e.g. SmartFense">'
     +       '<label>Booking link (optional)</label>'
     +       '<input type="text" id="pbLink" autocomplete="off" placeholder="https://…">'
+    +       '<label>Client portal link (optional) — personalises the Global Admin guide</label>'
+    +       '<input type="text" id="pbPortal" autocomplete="off" placeholder="https://…">'
     +       '<button class="btn" id="pbGo" type="button" style="margin-top:10px">Personalize &amp; attach PDF</button>'
     +       '<div class="msg" id="pbMsg"></div>'
     +     '</div>'
@@ -746,12 +748,34 @@
   var PB_FONT_BOLD = "https://wecalendar.github.io/GreycliffCF-Bold.ttf";
   var PB_FONT_MED = "https://wecalendar.github.io/GreycliffCF-Medium.ttf";
   var PB_FALLBACK_URL = "https://wecalendar.github.io/WeTransact-Onboarding-Playbook.pdf";
+  var PB_GA_PDF = "https://wecalendar.github.io/Forward-to-Global-Admin.pdf";
+  var PB_GA_PAGE = "https://wecalendar.github.io/ga.html";
+  /* Ruby 2026-08-26: one attachment as always, but when a portal link is given
+     the playbook's "Download & forward … Global Admin" link points at ga.html,
+     which hands the Alliance Manager a GA one-pager with THEIR portal link
+     stamped into the self-service step (a static PDF can't be per-client). */
+  function pbSetGaLink(doc, PL, url){
+    try {
+      doc.getPages().forEach(function(p){
+        var annots = p.node.Annots ? p.node.Annots() : null; if (!annots) return;
+        for (var i = 0; i < annots.size(); i++){
+          try {
+            var a = annots.lookup(i, PL.PDFDict);
+            var act = a && a.lookup(PL.PDFName.of("A"), PL.PDFDict); if (!act) continue;
+            var u = act.lookup(PL.PDFName.of("URI"));
+            var txt = u && u.decodeText ? u.decodeText() : "";
+            if (txt === PB_GA_PDF) act.set(PL.PDFName.of("URI"), PL.PDFString.of(url));
+          } catch(e){}
+        }
+      });
+    } catch(e){}
+  }
   var _pbLibs = null, _pbAssets = null;
   function pbScript(src){ return new Promise(function(res, rej){ var sc = document.createElement("script"); sc.src = src; sc.onload = res; sc.onerror = function(){ rej(new Error("couldn't load PDF library")); }; document.head.appendChild(sc); }); }
   function pbLoadLibs(){ if (!_pbLibs){ _pbLibs = Promise.resolve().then(function(){ if (!window.PDFLib) return pbScript("https://cdnjs.cloudflare.com/ajax/libs/pdf-lib/1.17.1/pdf-lib.min.js"); }).then(function(){ if (!window.fontkit) return pbScript("https://cdn.jsdelivr.net/npm/@pdf-lib/fontkit@1.1.1/dist/fontkit.umd.min.js"); }); } return _pbLibs; }
   function pbFetch(url){ return fetch(url).then(function(r){ if (!r.ok) throw new Error("download failed (" + r.status + ")"); return r.arrayBuffer(); }); }
   function pbLoadAssets(){ if (!_pbAssets){ _pbAssets = Promise.all([pbFetch(PB_TPL_URL), pbFetch(PB_FONT_BOLD), pbFetch(PB_FONT_MED)]); } return _pbAssets; }
-  function pbBuild(company, link){
+  function pbBuild(company, link, portal){
     return pbLoadLibs().then(pbLoadAssets).then(function(assets){
       var PL = window.PDFLib;
       return PL.PDFDocument.load(assets[0]).then(function(doc){
@@ -768,6 +792,7 @@
           var foot = me ? (" · Your CSM: " + me) : "";
           if (link) foot += " · Book time: " + link;
           if (foot){ var fsz = 8; while (med.widthOfTextAtSize(foot, fsz) > 392 && fsz > 5.5) fsz -= 0.25; p1.drawText(foot, { x: 87, y: 23.5, size: fsz, font: med, color: muted }); }
+          if (portal) pbSetGaLink(doc, PL, PB_GA_PAGE + "?p=" + encodeURIComponent(portal) + "&c=" + encodeURIComponent(company));
           return doc.saveAsBase64();
         });
       });
@@ -795,6 +820,8 @@
     btn.onclick = function(){ form.classList.toggle("hide"); if (!form.classList.contains("hide")){ try { $("pbCompany").focus(); } catch(e){} pbLoadLibs(); pbLoadAssets(); } };
     $("pbGo").onclick = function(){
       var msg = $("pbMsg"), company = $("pbCompany").value.trim(), link = $("pbLink").value.trim();
+      var portal = ($("pbPortal") ? $("pbPortal").value.trim() : "");
+      if (portal && !/^https?:\/\/\S+$/i.test(portal)){ msg.className = "msg err"; msg.textContent = "The portal link needs to be a full https:// URL."; return; }
       var it = Office.context.mailbox && Office.context.mailbox.item;
       if (!company){ msg.className = "msg err"; msg.textContent = "Type the client company name first."; return; }
       if (!ready || !it || !it.addFileAttachmentAsync){ msg.className = "msg err"; msg.textContent = "Open this while composing an email."; return; }
@@ -806,9 +833,9 @@
           .catch(function(e){ msg.className = "msg err"; msg.textContent = "Couldn't attach: " + ((e && e.message) || "try again"); });
         return;
       }
-      pbBuild(company, link)
+      pbBuild(company, link, portal)
         .then(function(b64){ return pbAttach64(it, b64, "WeTransact-Onboarding-Playbook" + (tok ? "-" + tok : "") + ".pdf"); })
-        .then(function(){ msg.className = "msg ok"; msg.textContent = "✓ Playbook for " + company + " attached."; })
+        .then(function(){ msg.className = "msg ok"; msg.textContent = "✓ Playbook for " + company + " attached." + (portal ? " Global Admin guide link personalised." : ""); })
         .catch(function(e){
           pbAttachUrl(it, PB_FALLBACK_URL, "WeTransact-Onboarding-Playbook.pdf")
             .then(function(){ msg.className = "msg ok"; msg.textContent = "✓ Standard playbook attached (personalization failed: " + ((e && e.message) || "error") + ")."; })
