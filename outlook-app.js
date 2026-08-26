@@ -774,6 +774,21 @@
     } catch(e){}
     return changed;
   }
+  function pbRemoveLink(doc, PL, from){
+    try {
+      doc.getPages().forEach(function(p){
+        var annots = p.node.Annots ? p.node.Annots() : null; if (!annots) return;
+        for (var i = annots.size() - 1; i >= 0; i--){
+          try {
+            var a = annots.lookup(i, PL.PDFDict);
+            var act = a && a.lookup(PL.PDFName.of("A"), PL.PDFDict); if (!act) continue;
+            var u = act.lookup(PL.PDFName.of("URI"));
+            if (u && u.decodeText && u.decodeText() === from) annots.remove(i);
+          } catch(e){}
+        }
+      });
+    } catch(e){}
+  }
   var _pbLibs = null, _pbAssets = null;
   function pbScript(src){ return new Promise(function(res, rej){ var sc = document.createElement("script"); sc.src = src; sc.onload = res; sc.onerror = function(){ rej(new Error("couldn't load PDF library")); }; document.head.appendChild(sc); }); }
   function pbLoadLibs(){ if (!_pbLibs){ _pbLibs = Promise.resolve().then(function(){ if (!window.PDFLib) return pbScript("https://cdnjs.cloudflare.com/ajax/libs/pdf-lib/1.17.1/pdf-lib.min.js"); }).then(function(){ if (!window.fontkit) return pbScript("https://cdn.jsdelivr.net/npm/@pdf-lib/fontkit@1.1.1/dist/fontkit.umd.min.js"); }); } return _pbLibs; }
@@ -796,22 +811,12 @@
           var foot = me ? (" · Your CSM: " + me) : "";
           if (link) foot += " · Book time: " + link;
           if (foot){ var fsz = 8; while (med.widthOfTextAtSize(foot, fsz) > 392 && fsz > 5.5) fsz -= 0.25; p1.drawText(foot, { x: 87, y: 23.5, size: fsz, font: med, color: muted }); }
-          /* "Share this playbook" must hand out the SAME personalised copy —
-             Ruby 2026-08-26: clicking it gave the generic {Company} version. It
-             now points at pb.html, which rebuilds this exact PDF in the
-             recipient's browser (and its own share link recurses). */
-          var shareUrl = PB_SELF_PAGE + "?c=" + encodeURIComponent(company)
-            + (portal ? "&p=" + encodeURIComponent(portal) : "")
-            + (link ? "&b=" + encodeURIComponent(link) : "")
-            + (me ? "&n=" + encodeURIComponent(me) : "");
-          var share = pbSetLink(doc, PL, PB_SELF_PDF, shareUrl);
-          if (share.length){
-            p1.drawRectangle({ x: 157.5, y: 467.5, width: 303, height: 14, color: PL.rgb(1, 1, 1) });
-            var ptxt = "your personalised copy \u00bb", psz = 10, pw = bold.widthOfTextAtSize(ptxt, psz);
-            p1.drawText(ptxt, { x: 160, y: 471.4, size: psz, font: bold, color: purple });
-            p1.drawRectangle({ x: 160, y: 469.6, width: pw, height: 0.7, color: purple });
-            try { share[0].set(PL.PDFName.of("Rect"), doc.context.obj([160, 469.4, 160 + pw, 481])); } catch(e){}
-          }
+          /* Ruby 2026-08-26: the "Share this playbook" pill is REMOVED from the
+             attached copy — the playbook itself is the attachment, so the pill
+             is redundant (it briefly pointed at pb.html; that page stays live
+             only for copies sent earlier today). */
+          pbRemoveLink(doc, PL, PB_SELF_PDF);
+          p1.drawRectangle({ x: 38, y: 462.5, width: 438, height: 26.5, color: PL.rgb(247/255, 244/255, 1) });
           if (portal) pbSetLink(doc, PL, PB_GA_PDF, PB_GA_PAGE + "?p=" + encodeURIComponent(portal) + "&c=" + encodeURIComponent(company));
           return doc.saveAsBase64();
         });

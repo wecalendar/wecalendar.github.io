@@ -13,7 +13,7 @@ body{margin:0;font-family:-apple-system,'Segoe UI',sans-serif;background:#fff;co
 </style>
 </head>
 <body>
-<div class="m" id="m">Preparing your download…</div>
+<div class="m" id="m"></div>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf-lib/1.17.1/pdf-lib.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@pdf-lib/fontkit@1.1.1/dist/fontkit.umd.min.js"></script>
 <script>
@@ -74,9 +74,12 @@ body{margin:0;font-family:-apple-system,'Segoe UI',sans-serif;background:#fff;co
       var a = document.createElement("a");
       a.href = URL.createObjectURL(blob); a.download = FILE;
       document.body.appendChild(a); a.click(); a.remove();
-      m.innerHTML = "✓ " + FILE + " downloaded — you can close this tab.<br><a href=\"#\" id=\"re\">Download again</a>";
-      document.getElementById("re").onclick = function(e){ e.preventDefault(); download(); };
-      setTimeout(function(){ try { window.close(); } catch(e){} }, 1500);
+      try { window.close(); } catch(e){}
+      setTimeout(function(){ try { window.close(); } catch(e){} }, 300);
+      setTimeout(function(){
+        m.innerHTML = "✓ " + FILE + " downloaded — you can close this tab.<br><a href=\"#\" id=\"re\">Download again</a>";
+        var re = document.getElementById("re"); if (re) re.onclick = function(e){ e.preventDefault(); download(); };
+      }, 900);
     }).catch(function(e){
       built = null;
       m.innerHTML = "Couldn't personalise the PDF (" + String((e && e.message) || e).replace(/[<>&]/g, "") + ").<br><a href=\"" + PDF_URL + "\">Download the standard guide</a> · <a href=\"#\" id=\"re\">try again</a>";
