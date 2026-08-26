@@ -1,6 +1,6 @@
 {
  "source": "https://docs.wetransact.io/sitemap.xml",
- "count": 169,
+ "count": 151,
  "docs": [
   {
    "slug": "account-verification-email-not-received-by-primary-contact",
@@ -12,7 +12,7 @@
   },
   {
    "slug": "api-set-up-automated-order-management-aom-automated-usage-reporting",
-   "title": "API set up + Automated Order Management (AOM) + Automated Usage Reporting"
+   "title": "API set up automated order management AOM automated usage reporting"
   },
   {
    "slug": "assign-global-admin-to-another-user-in-partner-center",
@@ -20,15 +20,7 @@
   },
   {
    "slug": "azure-credits",
-   "title": "Azure Credits"
-  },
-  {
-   "slug": "azure-marketplace-procurement-guide",
-   "title": "Azure Marketplace procurement guide"
-  },
-  {
-   "slug": "azure-portal-user-rights",
-   "title": "Azure Portal User Rights"
+   "title": "Azure credits"
   },
   {
    "slug": "change-the-amount-of-seats-in-an-already-purchased-subscription-in-the-marketplace",
@@ -36,15 +28,15 @@
   },
   {
    "slug": "configuring-cross-tenant-access-for-wetransact-in-microsoft-entra",
-   "title": "Configuring Cross-Tenant Access for WeTransact in Microsoft Entra"
+   "title": "Configuring cross tenant access for WeTransact in Microsoft Entra"
   },
   {
    "slug": "create-an-ip-cosell-support-ticket-acr",
-   "title": "Create an IP-cosell support ticket (ACR)"
+   "title": "Create an IP co-sell support ticket ACR"
   },
   {
    "slug": "create-an-ip-cosell-support-ticket-billed-sales",
-   "title": "Create an IP-cosell support ticket (Billed Sales)"
+   "title": "Create an IP co-sell support ticket billed sales"
   },
   {
    "slug": "create-azure-support-request-for-invoice-payment",
@@ -52,19 +44,15 @@
   },
   {
    "slug": "create-warmify-email-rule-in-gmail",
-   "title": "Create Warmify Email Rule in Gmail"
+   "title": "Create Warmify email rule in Gmail"
   },
   {
    "slug": "create-warmify-email-rule-in-outlook",
-   "title": "Create Warmify Email Rule in Outlook"
+   "title": "Create Warmify email rule in Outlook"
   },
   {
    "slug": "creating-co-sell-deals-and-private-offers-in-salesforce",
-   "title": "Creating Co-Sell Deals & Private Offers in Salesforce"
-  },
-  {
-   "slug": "crm-connectors",
-   "title": "CRM connectors"
+   "title": "Creating co-sell deals and private offers in Salesforce"
   },
   {
    "slug": "csp-private-offer",
@@ -88,7 +76,7 @@
   },
   {
    "slug": "ecosystem-watchers-explore-partners-and-vendors-across-microsoft-marketplace",
-   "title": "Ecosystem Watchers - Explore Partners and Vendors Across Microsoft Marketplace"
+   "title": "Ecosystem watchers explore partners and vendors across Microsoft Marketplace"
   },
   {
    "slug": "error-system-error",
@@ -101,14 +89,6 @@
   {
    "slug": "error-please-contact-support",
    "title": "Error: Please contact Support"
-  },
-  {
-   "slug": "faqs",
-   "title": "FAQs"
-  },
-  {
-   "slug": "finance-and-order",
-   "title": "Finance & Order"
   },
   {
    "slug": "finance-how-marketplace-finance-works",
@@ -124,15 +104,7 @@
   },
   {
    "slug": "fixing-legal-profile-issues",
-   "title": "Fixing Legal Profile Issues"
-  },
-  {
-   "slug": "go-live-in-5-days-with-your-csm",
-   "title": "Go Live in 5 Days with your CSM"
-  },
-  {
-   "slug": "gtm-go-to-market",
-   "title": "GTM - Go To Market"
+   "title": "Fixing legal profile issues"
   },
   {
    "slug": "guide-your-customer-when-they-have-not-completed-the-order",
@@ -156,7 +128,7 @@
   },
   {
    "slug": "how-do-i-check-incentive-transact-and-grow-cashback",
-   "title": "How do I check Incentive (Transact & Grow) Cashback?"
+   "title": "How do I check incentive transact and grow cashback?"
   },
   {
    "slug": "how-do-i-check-who-has-owner-status",
@@ -167,12 +139,8 @@
    "title": "How do I determine who has Global Admin & Owner status in Partner Center?"
   },
   {
-   "slug": "how-do-i-enrol-for-the-incentive-campaign",
-   "title": "How do I enrol for the incentive campaign?"
-  },
-  {
    "slug": "how-do-i-export-a-technical-diagram-as-a-png",
-   "title": "How do I export a technical diagram as a .png?"
+   "title": "How do I export a technical diagram as a PNG?"
   },
   {
    "slug": "how-do-i-select-a-publisher-location-for-the-product-listing",
@@ -224,7 +192,7 @@
   },
   {
    "slug": "how-to-activateaccept-order",
-   "title": "How to Activate/Accept Order?"
+   "title": "How to activateaccept order?"
   },
   {
    "slug": "how-to-add-a-location-and-publisher-account-in-partner-center",
@@ -248,11 +216,11 @@
   },
   {
    "slug": "how-to-check-azure-consumption-acr-in-the-azure-portal",
-   "title": "How to check Azure Consumption (ACR) in the Azure portal?"
+   "title": "How to check Azure consumption ACR in the Azure portal?"
   },
   {
    "slug": "how-to-check-if-a-legal-profile-is-verified",
-   "title": "How to Check if a Legal Profile is Verified?"
+   "title": "How to check if a legal profile is verified?"
   },
   {
    "slug": "how-to-check-if-auto-renewal-is-on-for-your-azure-subscriptions",
@@ -276,7 +244,7 @@
   },
   {
    "slug": "how-to-connect-an-email-account-for-outreach-campaigns",
-   "title": "How to connect an email account for Outreach campaigns?"
+   "title": "How to connect an email account for outreach campaigns?"
   },
   {
    "slug": "how-to-create-a-billing-support-request-in-microsoft-azure-portal",
@@ -408,11 +376,11 @@
   },
   {
    "slug": "how-to-submit-the-ip-co-sell-documentation",
-   "title": "How to submit the IP Co sell documentation?"
+   "title": "How to submit the IP co-sell documentation?"
   },
   {
    "slug": "how-to-test-your-managed-application-package-before-publishing",
-   "title": "How to test your Managed Application package before publishing"
+   "title": "How to test your managed application package before publishing?"
   },
   {
    "slug": "how-to-update-credentials-for-finance-tab-in-the-wetransact-portal",
@@ -424,7 +392,7 @@
   },
   {
    "slug": "how-to-update-payment-methods-in-microsoft-azure-portal",
-   "title": "How to update payment methods in Microsoft Azure Portal?"
+   "title": "How to update payment methods in Microsoft Azure portal?"
   },
   {
    "slug": "how-to-update-the-primary-contact-email-address-in-legal-info",
@@ -456,15 +424,11 @@
   },
   {
    "slug": "how-to-view-marketplace-listing-status",
-   "title": "How to view marketplace listing status?"
+   "title": "How to view Marketplace listing status?"
   },
   {
    "slug": "i-have-added-wetransact-but-supportbot-cant-log-in",
    "title": "I have added WeTransact, but support/bot can't log in."
-  },
-  {
-   "slug": "incentive",
-   "title": "Incentive"
   },
   {
    "slug": "incentives",
@@ -476,11 +440,7 @@
   },
   {
    "slug": "ip-co-sell",
-   "title": "IP Co-Sell"
-  },
-  {
-   "slug": "ip-co-sellpartnership",
-   "title": "IP Co-Sell/Partnership"
+   "title": "IP co-sell"
   },
   {
    "slug": "listing-content-guidelines-what-microsoft-does-and-does-not-allow",
@@ -500,59 +460,39 @@
   },
   {
    "slug": "part-1-enroll-into-the-microsoft-transact-and-grow-incentive",
-   "title": "Part 1 - Enroll into the Microsoft Transact & Grow Incentive"
-  },
-  {
-   "slug": "part-2-us-entities-filling-tax-profile-walktrough-example",
-   "title": "Part 2 - (US Entities) Filling Tax Profile Walktrough example"
+   "title": "Part 1 — Enroll into the Microsoft transact and grow incentive"
   },
   {
    "slug": "part-2-filling-up-tax-details-non-us-countries",
-   "title": "Part 2 - Filling Up Tax Details (Non US-Countries)"
+   "title": "Part 2 — Filling up tax details non US countries"
+  },
+  {
+   "slug": "part-2-us-entities-filling-tax-profile-walktrough-example",
+   "title": "Part 2 — US entities filling tax profile walktrough example"
   },
   {
    "slug": "part-3-adding-the-payment-profile",
-   "title": "Part 3 - Adding the Payment Profile"
+   "title": "Part 3 — Adding the payment profile"
   },
   {
    "slug": "part-4-submitting-the-incentive-profile",
-   "title": "Part 4 - Submitting the Incentive Profile"
-  },
-  {
-   "slug": "partner-center-user-rights",
-   "title": "Partner Center User Rights"
-  },
-  {
-   "slug": "partner-center-day-to-day",
-   "title": "Partner Center, day-to-day"
-  },
-  {
-   "slug": "partner-centerazure-user-rights",
-   "title": "Partner center/Azure User Rights"
+   "title": "Part 4 — Submitting the incentive profile"
   },
   {
    "slug": "private-plan",
    "title": "Private Plan"
   },
   {
-   "slug": "private-plan-and-private-offer-setup",
-   "title": "Private Plan & Private Offer SetUp"
-  },
-  {
    "slug": "raising-a-support-ticket-because-my-legal-profile-was-not-validated",
-   "title": "Raising a support ticket because my legal profile was not validated."
+   "title": "Raising a support ticket because my legal profile was not validated"
   },
   {
    "slug": "retrieving-the-id-managed-application",
-   "title": "Retrieving the ID – Managed Application"
+   "title": "Retrieving the ID managed application"
   },
   {
    "slug": "salesforce-installation-guide",
-   "title": "SalesForce Installation Guide"
-  },
-  {
-   "slug": "selling-and-offer-management",
-   "title": "Selling & Offer Management"
+   "title": "Salesforce installation guide"
   },
   {
    "slug": "step-1-create-your-microsoft-work-account",
@@ -584,79 +524,67 @@
   },
   {
    "slug": "subscribe-to-the-wetransact-page-notifications-on-linkedin",
-   "title": "Subscribe to the WeTransact Page notifications on LinkedIn"
+   "title": "Subscribe to the WeTransact page notifications on LinkedIn"
   },
   {
    "slug": "the-steps-to-be-followed-by-your-global-admin-to-give-you-the-necessary-level-of-rights",
    "title": "The steps to be followed by your global admin to give you the necessary level of rights."
   },
   {
-   "slug": "troubleshooting",
-   "title": "Troubleshooting"
-  },
-  {
    "slug": "unable-to-enrol-in-the-commercial-marketplace-something-went-wrong-please-try-again-if-this-problem-persists-please-contact-microsoft-support",
-   "title": "Unable to enrol in the commercial Marketplace \"Something went wrong. Please try again; if this problem persists, please contact Microsoft…"
+   "title": "Unable to enrol in the commercial Marketplace something went wrong please try again if this problem persists please contact Microsoft support"
   },
   {
    "slug": "unable-to-verify-account-legal-info",
    "title": "Unable to verify Account - Legal Info"
   },
   {
-   "slug": "video-masterclasses",
-   "title": "Video Masterclasses"
-  },
-  {
    "slug": "video-masterclasses-01-wetransact-marketplace-journey",
    "title": "Video masterclasses 01 — WeTransact Marketplace journey"
+  },
+  {
+   "slug": "video-masterclasses-02-the-three-marketplace-channels",
+   "title": "Video masterclasses 02 — The three Marketplace channels"
+  },
+  {
+   "slug": "video-masterclasses-03the-marketplace-rewards-and-incentives",
+   "title": "Video masterclasses 03 — The Marketplace rewards and incentives"
+  },
+  {
+   "slug": "video-masterclasses-04-why-approaches-differ-based-on-your-audience-segmentation",
+   "title": "Video masterclasses 04 — Why approaches differ based on your audience segmentation"
+  },
+  {
+   "slug": "video-masterclasses-05optimise-your-listing-on-the-storefronts",
+   "title": "Video masterclasses 05 — Optimise your listing on the storefronts"
+  },
+  {
+   "slug": "video-masterclasses-06-how-to-partner-with-microsoft",
+   "title": "Video masterclasses 06 — How to Partner with Microsoft"
+  },
+  {
+   "slug": "video-masterclasses-07-how-to-start-working-with-microsoft",
+   "title": "Video masterclasses 07 — How to start working with Microsoft"
   },
   {
    "slug": "video-masterclasses-08-the-reseller-landscape",
    "title": "Video masterclasses 08 — The reseller landscape"
   },
   {
-   "slug": "video-masterclasses-02-the-three-marketplace-channels",
-   "title": "Video Masterclasses-02. The Three Marketplace Channels"
-  },
-  {
-   "slug": "video-masterclasses-03the-marketplace-rewards-and-incentives",
-   "title": "Video Masterclasses-03.The Marketplace Rewards and Incentives"
-  },
-  {
-   "slug": "video-masterclasses-04-why-approaches-differ-based-on-your-audience-segmentation",
-   "title": "Video Masterclasses-04. Why Approaches Differ Based on Your Audience Segmentation"
-  },
-  {
-   "slug": "video-masterclasses-05optimise-your-listing-on-the-storefronts",
-   "title": "Video Masterclasses-05.Optimise Your Listing on the Storefronts"
-  },
-  {
-   "slug": "video-masterclasses-06-how-to-partner-with-microsoft",
-   "title": "Video Masterclasses-06. How to Partner with Microsoft"
-  },
-  {
-   "slug": "video-masterclasses-07-how-to-start-working-with-microsoft",
-   "title": "Video Masterclasses-07. How to Start Working with Microsoft"
-  },
-  {
    "slug": "video-masterclasses-09build-your-reseller-offer",
-   "title": "Video Masterclasses-09.Build Your Reseller Offer"
+   "title": "Video masterclasses 09 — Build your reseller offer"
   },
   {
    "slug": "video-masterclasses-10find-your-first-resellers",
-   "title": "Video Masterclasses-10.Find Your First Resellers"
+   "title": "Video masterclasses 10 — Find your first resellers"
   },
   {
    "slug": "wetransact-hubspot-app-installation-guide",
-   "title": "WeTransact Hubspot App Installation guide"
+   "title": "WeTransact HubSpot app installation guide"
   },
   {
    "slug": "wetransact-portal",
-   "title": "WeTransact Portal"
-  },
-  {
-   "slug": "wetransact-portal-day-to-day",
-   "title": "WeTransact Portal, day-to-day"
+   "title": "WeTransact portal"
   },
   {
    "slug": "what-to-do-if-your-only-admin-has-left-the-company-no-access-to-your-microsoft-marketplace-listing",
@@ -664,15 +592,15 @@
   },
   {
    "slug": "what-to-do-when-you-cant-lodge-a-claim-build-and-publish-ai-marketplace",
-   "title": "What to Do When You Can't Lodge a Claim — Build and Publish AI Marketplace"
+   "title": "What to do when you cant lodge a claim build and publish AI Marketplace?"
   },
   {
    "slug": "where-are-my-marketing-benefits-in-partner-center",
-   "title": "Where are my marketing benefits in Partner Center ?"
+   "title": "Where are my marketing benefits in Partner Center?"
   },
   {
    "slug": "where-to-find-the-azure-sponsorship",
-   "title": "Where to find the Azure Sponsorship?"
+   "title": "Where to find the Azure sponsorship?"
   },
   {
    "slug": "where-to-find-your-private-offers",

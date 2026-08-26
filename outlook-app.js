@@ -834,7 +834,7 @@
     "how-to-accept-a-private-offer-customer-walkthrough",
     "how-to-pay-your-marketplace-invoices",
     "how-to-find-your-marketplace-invoice",
-    "go-live-in-5-days-with-your-csm"
+    "how-to-create-a-private-offer"
   ];
   var DOCS = null, _dkLoad = null, DKPICK = [];
 

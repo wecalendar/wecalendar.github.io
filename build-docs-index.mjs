@@ -3,7 +3,8 @@
  * Rebuilds docs-index.json for the WeCalendar "Insert docs links" picker.
  *
  * Source of truth = https://docs.wetransact.io/sitemap.xml (Archbee publishes
- * every article there). For each URL we fetch the page and read its real title;
+ * every article there). Category/section pages in the sitemap are filtered out —
+ * the picker lists articles only (see CATEGORY_SLUGS / classifyPage). For each URL we fetch the page and read its real title;
  * if a page can't be fetched we fall back to deriving the title from the slug,
  * which for Archbee is the title kebab-cased, so it stays readable.
  *
@@ -144,6 +145,66 @@ async function mapLimit(items, limit, fn) {
 
 const SKIP_SLUG = /^(untitled|)$/i;
 
+/* ---------- category / section pages ----------
+ * The sitemap lists Archbee *category* pages next to real articles ("Azure
+ * Portal User Rights" is a folder; the how-tos inside it are the articles).
+ * The picker must offer articles only — Ruby, 2026-08-26.
+ *
+ * Two filters, belt and braces:
+ *  1. CATEGORY_SLUGS — the ones known today (audited against the rendered PDFs).
+ *  2. classifyPage()  — catches new ones: an Archbee category page is a stack of
+ *     "Read more >" cards, so lots of Read-more links over very little prose.
+ * Anything dropped is printed, so a false positive is visible in the run log.
+ */
+const CATEGORY_SLUGS = new Set([
+  "azure-marketplace-procurement-guide",       // section page, no article body
+  "azure-portal-user-rights",
+  "crm-connectors",
+  "faqs",
+  "finance-and-order",
+  "go-live-in-5-days-with-your-csm",
+  "gtm-go-to-market",
+  "how-do-i-enrol-for-the-incentive-campaign", // index of Part 1-4
+  "incentive",
+  "ip-co-sellpartnership",
+  "partner-center-day-to-day",
+  "partner-center-user-rights",
+  "partner-centerazure-user-rights",
+  "private-plan-and-private-offer-setup",      // section page, no article body
+  "selling-and-offer-management",
+  "troubleshooting",
+  "video-masterclasses",
+  "wetransact-portal-day-to-day",
+]);
+
+// Slugs that look like categories but are real articles — never auto-drop these.
+const NEVER_CATEGORY = new Set([
+  "deal-registration-consent-and-troubleshooting-guide",
+]);
+
+function bodyText(html) {
+  let h = String(html);
+  const at = h.search(/id=["']STRIPE_TEMPLATE_EDITOR["']/i);
+  if (at > -1) h = h.slice(at);                       // article body onwards
+  return h
+    .replace(/<(script|style)[\s\S]*?<\/\1>/gi, " ")
+    .replace(/<[^>]+>/g, " ")
+    .replace(/&nbsp;/g, " ")
+    .replace(/\s+/g, " ")
+    .trim();
+}
+
+export function classifyPage(html) {
+  const at = String(html).search(/id=["']STRIPE_TEMPLATE_EDITOR["']/i);
+  const body = at > -1 ? String(html).slice(at) : String(html);
+  const cards = (body.match(/read\s*more\s*(?:&gt;|>|›|»)?/gi) || []).length;
+  const words = bodyText(html).split(" ").filter(Boolean).length;
+  if (!cards) return { cat: false };
+  if (cards >= 2 && words / cards < 140) return { cat: true, why: `${cards} "Read more" cards over ${words} words` };
+  if (cards >= 1 && words < 140) return { cat: true, why: `link-only page (${words} words)` };
+  return { cat: false };
+}
+
 async function main() {
   let urls = [];
   try {
@@ -175,16 +236,36 @@ async function main() {
     let real = 0;
     await mapLimit(items, CONCURRENCY, async (it) => {
       try {
-        const t = titleFromHtml(await get(ORIGIN + "/" + it.slug));
+        const html = await get(ORIGIN + "/" + it.slug);
+        const t = titleFromHtml(html);
         if (t) { it.title = t; real++; }
+        if (!NEVER_CATEGORY.has(it.slug)) {
+          const c = classifyPage(html);
+          if (c.cat) it._cat = c.why;
+        }
       } catch { /* keep the slug-derived title */ }
     });
     console.error(`titles: ${real} live / ${items.length - real} derived from slug`);
   }
 
-  items.sort((a, b) => a.title.localeCompare(b.title, "en"));
+  /* Articles only — categories are folders, their articles are already listed. */
+  const dropped = [];
+  const articles = items.filter((it) => {
+    const why = CATEGORY_SLUGS.has(it.slug) ? "known category page" : it._cat;
+    if (why) { dropped.push(`${it.slug} — ${why}`); return false; }
+    return true;
+  });
+  if (dropped.length) console.error(`skipped ${dropped.length} category pages:\n  ` + dropped.join("\n  "));
+  if (articles.length < items.length * 0.55) {
+    console.error(`category filter dropped ${dropped.length} of ${items.length} — refusing to write`);
+    process.exitCode = 1;
+    return;
+  }
+  articles.forEach((it) => { delete it._cat; });
 
-  const payload = { source: SITEMAP, count: items.length, docs: items };
+  articles.sort((a, b) => a.title.localeCompare(b.title, "en"));
+
+  const payload = { source: SITEMAP, count: articles.length, docs: articles };
   const json = JSON.stringify(payload, null, 1) + "\n";
 
   // Guard against a bad run wiping a good index (e.g. docs site half-down).
@@ -192,8 +273,8 @@ async function main() {
     try {
       const prev = JSON.parse(readFileSync(OUT, "utf8"));
       const prevCount = (prev.docs || []).length;
-      if (prevCount > 20 && items.length < prevCount * 0.6) {
-        console.error(`refusing to shrink index from ${prevCount} to ${items.length} — treating as a bad fetch`);
+      if (prevCount > 20 && articles.length < prevCount * 0.6) {
+        console.error(`refusing to shrink index from ${prevCount} to ${articles.length} — treating as a bad fetch`);
         process.exitCode = 1;
         return;
       }
@@ -202,7 +283,7 @@ async function main() {
 
   if (DRY) { console.log(json); return; }
   writeFileSync(OUT, json);
-  console.error(`wrote docs-index.json — ${items.length} articles`);
+  console.error(`wrote docs-index.json — ${articles.length} articles`);
 }
 
 if (import.meta.url === `file://${process.argv[1]}`) await main();
