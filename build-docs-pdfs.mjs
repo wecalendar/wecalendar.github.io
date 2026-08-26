@@ -43,6 +43,8 @@ const PT_PER_PX = 0.75;               // 96dpi CSS px → PDF points
 const PAGE_H_PT = 841.89;             // A4 height
 const MARGIN = { top: 17, bottom: 15, side: 15 };   // mm
 const CONTENT_W_PX = Math.round((210 - MARGIN.side * 2) * PX_PER_MM);   // 680
+const PAGE_W_PX = 210 * PX_PER_MM;                  // full paper width, for the bleed band
+const HERO_H_PX = Math.round(22 * PX_PER_MM);       // cover band height (22mm)
 const MARGIN_TOP_PX = MARGIN.top * PX_PER_MM;
 const MARGIN_SIDE_PX = MARGIN.side * PX_PER_MM;
 
@@ -52,23 +54,65 @@ const FONT_BOLD = b64("GreycliffCF-Bold.ttf");
 const FONT_MED = b64("GreycliffCF-Medium.ttf");
 const LOGO = b64("wt-logo.png");
 
-export const GEOM = { PX_PER_MM, PT_PER_PX, PAGE_H_PT, MARGIN, CONTENT_W_PX, MARGIN_TOP_PX, MARGIN_SIDE_PX };
+export const GEOM = { PX_PER_MM, PT_PER_PX, PAGE_H_PT, MARGIN, CONTENT_W_PX, MARGIN_TOP_PX, MARGIN_SIDE_PX, PAGE_W_PX, HERO_H_PX };
+
+/* ---------- cover artwork (2026-08-26, Ruby's brand shapes) ----------
+ * A full-bleed band of concentric WeTransact arcs across the top of page 1.
+ * Full bleed only works because page.pdf() is given margin:0 and the margins
+ * come from @page instead — @page :first drops the top margin for the cover,
+ * so the band can touch the paper edge while pages 2+ keep their 17mm.
+ * The variant is picked from the slug, so a guide always looks the same but
+ * the set as a whole is mixed. Arcs sit on the right; nothing prints on them.
+ */
+const PAL = { navy: "#021774", purple: "#8266F4", yellow: "#FFE163", cyan: "#03DEFE", pink: "#F36DC8" };
+
+// each: [cx px, cy as a fraction of the band height, r px, colour] outer → inner
+const HERO_VARIANTS = [
+  { rings: [[600, 1, 132, PAL.purple], [600, 1, 60, PAL.yellow]], accent: [PAL.purple, PAL.yellow] },
+  { rings: [[794, 0, 150, PAL.yellow], [794, 0, 70, PAL.cyan]],   accent: [PAL.yellow, PAL.cyan] },
+  { rings: [[794, 1, 150, PAL.pink],   [794, 1, 70, PAL.yellow]], accent: [PAL.pink, PAL.yellow] },
+  { rings: [[640, 0, 140, PAL.cyan],   [640, 0, 62, PAL.yellow]], accent: [PAL.cyan, PAL.yellow] },
+  { rings: [[700, 1, 145, PAL.purple], [700, 1, 66, PAL.pink]],   accent: [PAL.purple, PAL.pink] },
+  { rings: [[560, 0, 135, PAL.yellow], [560, 0, 58, PAL.purple]], accent: [PAL.yellow, PAL.purple] },
+];
+
+export function heroVariant(slug) {
+  const h = createHash("sha1").update(String(slug)).digest();
+  return HERO_VARIANTS[h[0] % HERO_VARIANTS.length];
+}
+
+export function heroSvg(slug) {
+  const v = heroVariant(slug), W = PAGE_W_PX, H = HERO_H_PX;
+  const rings = v.rings.map(([cx, cyf, r, c]) =>
+    `<circle cx="${cx}" cy="${(cyf * H).toFixed(1)}" r="${r}" fill="${c}"/>`).join("");
+  return `<svg width="${W}" height="${H}" viewBox="0 0 ${Math.round(W)} ${Math.round(H)}" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">`
+    + `<rect width="${Math.round(W)}" height="${Math.round(H)}" fill="${PAL.navy}"/>${rings}</svg>`;
+}
 
 export const CSS = `
 @font-face{font-family:'Greycliff CF';src:url(data:font/ttf;base64,${FONT_MED}) format('truetype');font-weight:500;font-display:block}
 @font-face{font-family:'Greycliff CF';src:url(data:font/ttf;base64,${FONT_BOLD}) format('truetype');font-weight:700;font-display:block}
+/* margins live here, NOT in page.pdf(), so the cover band can bleed off the
+   paper edge; :first kills the top margin on page 1 only */
+/* side margins are 0 and the body carries the side padding instead — Chrome
+   clips anything outside the @page content box, so a full-bleed band is only
+   possible when that box is the whole paper width */
+@page{size:A4;margin:${MARGIN.top}mm 0 ${MARGIN.bottom}mm}
+@page :first{margin:0 0 ${MARGIN.bottom}mm}
 *{box-sizing:border-box}
 html,body{margin:0;padding:0}
-body{width:${CONTENT_W_PX}px;font-family:'Greycliff CF',-apple-system,'Segoe UI',sans-serif;font-weight:500;
+body{width:${PAGE_W_PX}px;padding:0 ${MARGIN_SIDE_PX}px;font-family:'Greycliff CF',-apple-system,'Segoe UI',sans-serif;font-weight:500;
   font-size:11.4px;line-height:1.58;color:#343130;-webkit-print-color-adjust:exact;print-color-adjust:exact}
-img.logo{display:block;height:26px;width:auto;margin:0 auto}
+.hero{width:${PAGE_W_PX}px;height:${HERO_H_PX}px;margin:0 -${MARGIN_SIDE_PX}px;line-height:0;overflow:hidden}
+.hero svg{display:block;width:100%;height:100%}
+img.logo{display:block;height:26px;width:auto;margin:16px auto 0}
 .kicker{height:13px;margin:13px 0 0;font-size:9px;font-weight:700;letter-spacing:.13em;text-transform:uppercase;color:#5E43C8}
 /* stamp band — kept empty on purpose; the add-in writes "Prepared for X" here */
-#preparedFor{height:19px;margin:0 0 3px}
+#preparedFor{height:19px;margin:0 0 7px}
 h1.doc{margin:0;font-size:25px;line-height:1.2;font-weight:700;color:#2C1C6C;letter-spacing:-.01em}
 .src{margin:9px 0 0;font-size:9px;color:#9191A4}
 .src a{color:#9191A4;text-decoration:none}
-.rule{height:1px;background:#E2DBFF;margin:15px 0 19px}
+.rule{height:3px;border-radius:2px;background:#E2DBFF;margin:15px 0 19px}
 h2,h3,h4{color:#2C1C6C;font-weight:700;line-height:1.3;margin:20px 0 7px;page-break-after:avoid}
 h2{font-size:16px}h3{font-size:13.5px}h4{font-size:12px}
 p{margin:0 0 9px}
@@ -177,6 +221,8 @@ async function inlineImages(html) {
      when ANTHROPIC_API_KEY is set (GitHub Actions secret). Validated hard;
      any failure falls back to the step list, so the text can't be wrong. */
 
+/* bump when the PDF design changes — every guide re-renders on the next run */
+const RENDER_V = 2;
 const BLURB_V = 2;   // bump to regenerate every blurb on the next run
 
 export function stepsBlurb(heads) {
@@ -265,13 +311,16 @@ async function extract(page, slug) {
 
 /* ---------- render the branded PDF ---------- */
 export function buildDocHtml({ slug, title, html }) {
+  const v = heroVariant(slug);
+  const rule = `linear-gradient(90deg,${v.accent[0]} 0 21%,${v.accent[1]} 21% 33%,#E2DBFF 33% 100%)`;
   return `<!doctype html><html><head><meta charset="utf-8"><style>${CSS}</style></head><body>
+    <div class="hero">${heroSvg(slug)}</div>
     <img class="logo" src="data:image/png;base64,${LOGO}" alt="WeTransact">
     <div class="kicker">WeTransact Docs</div>
     <div id="preparedFor"></div>
     <h1 class="doc">${title.replace(/[<>&]/g, (c) => ({ "<": "&lt;", ">": "&gt;", "&": "&amp;" }[c]))}</h1>
     <div class="src"><a href="https://docs.wetransact.io/${slug}">docs.wetransact.io/${slug}</a></div>
-    <div class="rule"></div>
+    <div class="rule" style="background:${rule}"></div>
     <div class="content">${html}</div>
     <div class="end">Always-current version of this guide: <a href="https://docs.wetransact.io/${slug}">docs.wetransact.io/${slug}</a> &nbsp;·&nbsp; Questions? Reply to this email and your CSM will pick it up.</div>
   </body></html>`;
@@ -280,8 +329,11 @@ export function buildDocHtml({ slug, title, html }) {
 export function stampFromBand(band) {
   return {
     preparedFor: {
-      x: +((MARGIN_SIDE_PX + band.left) * PT_PER_PX).toFixed(2),
-      y: +(PAGE_H_PT - (MARGIN_TOP_PX + band.top + band.height - 4.5) * PT_PER_PX).toFixed(2),
+      // band.left already carries the body's side padding (page margin is 0)
+      x: +(band.left * PT_PER_PX).toFixed(2),
+      // page 1's top margin is 0 (see @page :first), so the band's own offset
+      // from the paper edge is all there is
+      y: +(PAGE_H_PT - (band.top + band.height - 4.5) * PT_PER_PX).toFixed(2),
       size: 12.5,
       maxWidth: +(CONTENT_W_PX * PT_PER_PX).toFixed(2),
     },
@@ -297,7 +349,7 @@ export function stampFromBand(band) {
 async function render(page, { slug, title, html }) {
   const doc = buildDocHtml({ slug, title, html });
 
-  await page.setViewport({ width: CONTENT_W_PX, height: 1000 });
+  await page.setViewport({ width: Math.round(PAGE_W_PX), height: 1000 });
   await page.setContent(doc, { waitUntil: "load", timeout: 60000 });
 
   // Anchors already print as clickable links; bare addresses typed into the
@@ -345,7 +397,9 @@ async function render(page, { slug, title, html }) {
     displayHeaderFooter: true,
     headerTemplate: "<div></div>",
     footerTemplate: FOOTER,
-    margin: { top: `${MARGIN.top}mm`, bottom: `${MARGIN.bottom}mm`, left: `${MARGIN.side}mm`, right: `${MARGIN.side}mm` },
+    // zero here on purpose: the margins come from @page so the cover band can
+    // bleed to the paper edge. Chrome clips anything outside a page.pdf margin.
+    margin: { top: 0, bottom: 0, left: 0, right: 0 },
   });
 
   return { pdf, stamp: stampFromBand(band) };
@@ -380,7 +434,7 @@ async function main() {
       const art = await extract(page, d.slug);
       if (!art.html || art.text.length < 40) throw new Error("no article body found");
       const title = art.title || d.title;
-      const hash = createHash("sha1").update(title + "|" + art.text).digest("hex").slice(0, 16);
+      const hash = createHash("sha1").update(RENDER_V + "|" + title + "|" + art.text).digest("hex").slice(0, 16);
 
       if (!FORCE && prev.docs?.[d.slug]?.hash === hash && existsSync(file)) {
         const entry = { ...prev.docs[d.slug] };
