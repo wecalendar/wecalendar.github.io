@@ -1,5 +1,5 @@
 {
- "generated": "2026-08-26",
+ "generated": "2026-08-27",
  "stamp": {
   "preparedFor": {
    "x": 42.52,
@@ -1373,7 +1373,16 @@
    "blurb": "The attached guide covers: Click on Private Offer Management → You will see all your private offers.",
    "blurbSrc": "steps",
    "blurbV": 2
+  },
+  "guide-to-submitting-the-claim-for-ai-build-and-publish-marketplace-incentives-fy27": {
+   "title": "Guide to Submitting the Claim for AI Build & Publish Marketplace Incentives FY27",
+   "hash": "7c3572db98073ccf",
+   "bytes": 286929,
+   "file": "docs-pdf/guide-to-submitting-the-claim-for-ai-build-and-publish-marketplace-incentives-fy27.pdf",
+   "blurb": "The attached guide covers: Pre-Application Gates → Application Process → Access Partner Center and Click on Incentive Workspace → Confirm Enrollment and Tax Profile → Customer Claims.",
+   "blurbSrc": "steps",
+   "blurbV": 2
   }
  },
- "count": 151
+ "count": 152
 }
