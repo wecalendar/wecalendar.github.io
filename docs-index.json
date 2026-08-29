@@ -12,7 +12,7 @@
   },
   {
    "slug": "api-set-up-automated-order-management-aom-automated-usage-reporting",
-   "title": "API set up + Automated Order Management (AOM) + Automated Usage Reporting"
+   "title": "API set up automated order management AOM automated usage reporting"
   },
   {
    "slug": "assign-global-admin-to-another-user-in-partner-center",
@@ -36,7 +36,7 @@
   },
   {
    "slug": "create-an-ip-cosell-support-ticket-billed-sales",
-   "title": "Create an IP-cosell support ticket (Billed Sales)"
+   "title": "Create an IP co-sell support ticket billed sales"
   },
   {
    "slug": "create-azure-support-request-for-invoice-payment",
@@ -52,7 +52,7 @@
   },
   {
    "slug": "creating-co-sell-deals-and-private-offers-in-salesforce",
-   "title": "Creating Co-Sell Deals & Private Offers in Salesforce"
+   "title": "Creating co-sell deals and private offers in Salesforce"
   },
   {
    "slug": "csp-private-offer",
@@ -196,7 +196,7 @@
   },
   {
    "slug": "how-to-activateaccept-order",
-   "title": "How to Activate/Accept Order?"
+   "title": "How to activateaccept order?"
   },
   {
    "slug": "how-to-add-a-location-and-publisher-account-in-partner-center",
@@ -248,7 +248,7 @@
   },
   {
    "slug": "how-to-connect-an-email-account-for-outreach-campaigns",
-   "title": "How to connect an email account for Outreach campaigns?"
+   "title": "How to connect an email account for outreach campaigns?"
   },
   {
    "slug": "how-to-create-a-billing-support-request-in-microsoft-azure-portal",
@@ -396,7 +396,7 @@
   },
   {
    "slug": "how-to-update-payment-methods-in-microsoft-azure-portal",
-   "title": "How to update payment methods in Microsoft Azure Portal?"
+   "title": "How to update payment methods in Microsoft Azure portal?"
   },
   {
    "slug": "how-to-update-the-primary-contact-email-address-in-legal-info",
@@ -428,7 +428,7 @@
   },
   {
    "slug": "how-to-view-marketplace-listing-status",
-   "title": "How to view marketplace listing status?"
+   "title": "How to view Marketplace listing status?"
   },
   {
    "slug": "i-have-added-wetransact-but-supportbot-cant-log-in",
@@ -467,12 +467,12 @@
    "title": "Part 1 - Enroll into the Microsoft Transact & Grow Incentive"
   },
   {
-   "slug": "part-2-us-entities-filling-tax-profile-walktrough-example",
-   "title": "Part 2 - (US Entities) Filling Tax Profile Walktrough example"
-  },
-  {
    "slug": "part-2-filling-up-tax-details-non-us-countries",
    "title": "Part 2 — Filling up tax details non US countries"
+  },
+  {
+   "slug": "part-2-us-entities-filling-tax-profile-walktrough-example",
+   "title": "Part 2 — US entities filling tax profile walktrough example"
   },
   {
    "slug": "part-3-adding-the-payment-profile",
@@ -488,11 +488,11 @@
   },
   {
    "slug": "raising-a-support-ticket-because-my-legal-profile-was-not-validated",
-   "title": "Raising a support ticket because my legal profile was not validated."
+   "title": "Raising a support ticket because my legal profile was not validated"
   },
   {
    "slug": "retrieving-the-id-managed-application",
-   "title": "Retrieving the ID – Managed Application"
+   "title": "Retrieving the ID managed application"
   },
   {
    "slug": "salesforce-installation-guide",
