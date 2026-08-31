@@ -20,7 +20,7 @@
   },
   {
    "slug": "azure-credits",
-   "title": "Azure credits"
+   "title": "Azure Credits"
   },
   {
    "slug": "change-the-amount-of-seats-in-an-already-purchased-subscription-in-the-marketplace",
@@ -44,7 +44,7 @@
   },
   {
    "slug": "create-warmify-email-rule-in-gmail",
-   "title": "Create Warmify email rule in Gmail"
+   "title": "Create Warmify Email Rule in Gmail"
   },
   {
    "slug": "create-warmify-email-rule-in-outlook",
@@ -52,7 +52,7 @@
   },
   {
    "slug": "creating-co-sell-deals-and-private-offers-in-salesforce",
-   "title": "Creating co-sell deals and private offers in Salesforce"
+   "title": "Creating Co-Sell Deals & Private Offers in Salesforce"
   },
   {
    "slug": "csp-private-offer",
@@ -108,7 +108,7 @@
   },
   {
    "slug": "guide-to-submitting-the-claim-for-ai-build-and-publish-marketplace-incentives-fy27",
-   "title": "Guide to submitting the claim for AI build and publish Marketplace incentives fy 27"
+   "title": "Guide to Submitting the Claim for AI Build & Publish Marketplace Incentives FY27"
   },
   {
    "slug": "guide-your-customer-when-they-have-not-completed-the-order",
@@ -132,7 +132,7 @@
   },
   {
    "slug": "how-do-i-check-incentive-transact-and-grow-cashback",
-   "title": "How do I check incentive transact and grow cashback?"
+   "title": "How do I check Incentive (Transact & Grow) Cashback?"
   },
   {
    "slug": "how-do-i-check-who-has-owner-status",
@@ -144,7 +144,7 @@
   },
   {
    "slug": "how-do-i-export-a-technical-diagram-as-a-png",
-   "title": "How do I export a technical diagram as a PNG?"
+   "title": "How do I export a technical diagram as a .png?"
   },
   {
    "slug": "how-do-i-select-a-publisher-location-for-the-product-listing",
@@ -196,7 +196,7 @@
   },
   {
    "slug": "how-to-activateaccept-order",
-   "title": "How to activateaccept order?"
+   "title": "How to Activate/Accept Order?"
   },
   {
    "slug": "how-to-add-a-location-and-publisher-account-in-partner-center",
@@ -384,7 +384,7 @@
   },
   {
    "slug": "how-to-test-your-managed-application-package-before-publishing",
-   "title": "How to test your managed application package before publishing?"
+   "title": "How to test your Managed Application package before publishing"
   },
   {
    "slug": "how-to-update-credentials-for-finance-tab-in-the-wetransact-portal",
@@ -396,7 +396,7 @@
   },
   {
    "slug": "how-to-update-payment-methods-in-microsoft-azure-portal",
-   "title": "How to update payment methods in Microsoft Azure portal?"
+   "title": "How to update payment methods in Microsoft Azure Portal?"
   },
   {
    "slug": "how-to-update-the-primary-contact-email-address-in-legal-info",
@@ -428,7 +428,7 @@
   },
   {
    "slug": "how-to-view-marketplace-listing-status",
-   "title": "How to view Marketplace listing status?"
+   "title": "How to view marketplace listing status?"
   },
   {
    "slug": "i-have-added-wetransact-but-supportbot-cant-log-in",
@@ -444,7 +444,7 @@
   },
   {
    "slug": "ip-co-sell",
-   "title": "IP co-sell"
+   "title": "IP Co-Sell"
   },
   {
    "slug": "listing-content-guidelines-what-microsoft-does-and-does-not-allow",
@@ -464,15 +464,15 @@
   },
   {
    "slug": "part-1-enroll-into-the-microsoft-transact-and-grow-incentive",
-   "title": "Part 1 — Enroll into the Microsoft transact and grow incentive"
+   "title": "Part 1 - Enroll into the Microsoft Transact & Grow Incentive"
+  },
+  {
+   "slug": "part-2-us-entities-filling-tax-profile-walktrough-example",
+   "title": "Part 2 - (US Entities) Filling Tax Profile Walktrough example"
   },
   {
    "slug": "part-2-filling-up-tax-details-non-us-countries",
    "title": "Part 2 — Filling up tax details non US countries"
-  },
-  {
-   "slug": "part-2-us-entities-filling-tax-profile-walktrough-example",
-   "title": "Part 2 — US entities filling tax profile walktrough example"
   },
   {
    "slug": "part-3-adding-the-payment-profile",
@@ -492,7 +492,7 @@
   },
   {
    "slug": "retrieving-the-id-managed-application",
-   "title": "Retrieving the ID managed application"
+   "title": "Retrieving the ID – Managed Application"
   },
   {
    "slug": "salesforce-installation-guide",
@@ -543,44 +543,44 @@
    "title": "Unable to verify Account - Legal Info"
   },
   {
-   "slug": "video-masterclasses-01-wetransact-marketplace-journey",
-   "title": "Video masterclasses 01 — WeTransact Marketplace journey"
-  },
-  {
    "slug": "video-masterclasses-02-the-three-marketplace-channels",
    "title": "Video masterclasses 02 — The three Marketplace channels"
-  },
-  {
-   "slug": "video-masterclasses-03the-marketplace-rewards-and-incentives",
-   "title": "Video masterclasses 03 — The Marketplace rewards and incentives"
-  },
-  {
-   "slug": "video-masterclasses-04-why-approaches-differ-based-on-your-audience-segmentation",
-   "title": "Video masterclasses 04 — Why approaches differ based on your audience segmentation"
-  },
-  {
-   "slug": "video-masterclasses-05optimise-your-listing-on-the-storefronts",
-   "title": "Video masterclasses 05 — Optimise your listing on the storefronts"
   },
   {
    "slug": "video-masterclasses-06-how-to-partner-with-microsoft",
    "title": "Video masterclasses 06 — How to Partner with Microsoft"
   },
   {
-   "slug": "video-masterclasses-07-how-to-start-working-with-microsoft",
-   "title": "Video masterclasses 07 — How to start working with Microsoft"
-  },
-  {
-   "slug": "video-masterclasses-08-the-reseller-landscape",
-   "title": "Video masterclasses 08 — The reseller landscape"
-  },
-  {
    "slug": "video-masterclasses-09build-your-reseller-offer",
    "title": "Video masterclasses 09 — Build your reseller offer"
   },
   {
+   "slug": "video-masterclasses-01-wetransact-marketplace-journey",
+   "title": "Video Masterclasses-01. WeTransact Marketplace journey"
+  },
+  {
+   "slug": "video-masterclasses-03the-marketplace-rewards-and-incentives",
+   "title": "Video Masterclasses-03.The Marketplace Rewards and Incentives"
+  },
+  {
+   "slug": "video-masterclasses-04-why-approaches-differ-based-on-your-audience-segmentation",
+   "title": "Video Masterclasses-04. Why Approaches Differ Based on Your Audience Segmentation"
+  },
+  {
+   "slug": "video-masterclasses-05optimise-your-listing-on-the-storefronts",
+   "title": "Video Masterclasses-05.Optimise Your Listing on the Storefronts"
+  },
+  {
+   "slug": "video-masterclasses-07-how-to-start-working-with-microsoft",
+   "title": "Video Masterclasses-07. How to Start Working with Microsoft"
+  },
+  {
+   "slug": "video-masterclasses-08-the-reseller-landscape",
+   "title": "Video Masterclasses-08. The Reseller Landscape"
+  },
+  {
    "slug": "video-masterclasses-10find-your-first-resellers",
-   "title": "Video masterclasses 10 — Find your first resellers"
+   "title": "Video Masterclasses-10.Find Your First Resellers"
   },
   {
    "slug": "wetransact-hubspot-app-installation-guide",
@@ -604,7 +604,7 @@
   },
   {
    "slug": "where-to-find-the-azure-sponsorship",
-   "title": "Where to find the Azure sponsorship?"
+   "title": "Where to find the Azure Sponsorship?"
   },
   {
    "slug": "where-to-find-your-private-offers",
