@@ -1,5 +1,5 @@
 {
- "generated": "2026-08-31",
+ "generated": "2026-09-01",
  "stamp": {
   "preparedFor": {
    "x": 42.52,
@@ -161,10 +161,10 @@
   },
   "csp-private-offer": {
    "title": "CSP Private Offer",
-   "hash": "2acfda5a92bd921c",
-   "bytes": 92656,
+   "hash": "f013f1b3ec75cc82",
+   "bytes": 121986,
    "file": "docs-pdf/csp-private-offer.pdf",
-   "blurb": "The attached guide walks you through it step by step.",
+   "blurb": "The attached guide covers: Key characteristics → When to use one → In this section → Related.",
    "blurbSrc": "steps",
    "blurbV": 2
   },
@@ -197,10 +197,10 @@
   },
   "direct-private-offer": {
    "title": "Direct Private Offer",
-   "hash": "70c1fc05d8b4e87e",
-   "bytes": 96780,
+   "hash": "2d51c88b8fefdaba",
+   "bytes": 127594,
    "file": "docs-pdf/direct-private-offer.pdf",
-   "blurb": "The attached guide walks you through it step by step.",
+   "blurb": "The attached guide covers: Key characteristics → When to use one → In this section.",
    "blurbSrc": "steps",
    "blurbV": 2
   },
@@ -269,8 +269,8 @@
   },
   "guide-your-customer-when-they-have-not-completed-the-order": {
    "title": "Guide your customer when they have not completed the order.",
-   "hash": "b99cf4093cc7c468",
-   "bytes": 86608,
+   "hash": "eb8455c19d79e8d9",
+   "bytes": 119672,
    "file": "docs-pdf/guide-your-customer-when-they-have-not-completed-the-order.pdf",
    "blurb": "The attached guide walks you through it step by step.",
    "blurbSrc": "steps",
@@ -633,15 +633,6 @@
    "bytes": 313257,
    "file": "docs-pdf/how-to-create-a-private-offer.pdf",
    "blurb": "The attached guide covers: Prerequisites for Private offer → Sign in to Wetransact portal and click on Private offer tab → Choose 'Direct private Offer' option → Fill out the details → Pick the public plan this offer is based on.",
-   "blurbSrc": "steps",
-   "blurbV": 2
-  },
-  "how-to-create-a-private-plan": {
-   "title": "How to create a Private Plan?",
-   "hash": "d2c87b5e27c09205",
-   "bytes": 106849,
-   "file": "docs-pdf/how-to-create-a-private-plan.pdf",
-   "blurb": "The attached guide walks you through it step by step.",
    "blurbSrc": "steps",
    "blurbV": 2
   },
@@ -1097,10 +1088,10 @@
   },
   "private-plan": {
    "title": "Private Plan",
-   "hash": "c86b1c79ac1f0972",
-   "bytes": 90630,
+   "hash": "c64b805e751df0a3",
+   "bytes": 123807,
    "file": "docs-pdf/private-plan.pdf",
-   "blurb": "The attached guide walks you through it step by step.",
+   "blurb": "The attached guide covers: Key characteristics → When to use one → In this section → Related.",
    "blurbSrc": "steps",
    "blurbV": 2
   },
@@ -1380,6 +1371,15 @@
    "bytes": 286929,
    "file": "docs-pdf/guide-to-submitting-the-claim-for-ai-build-and-publish-marketplace-incentives-fy27.pdf",
    "blurb": "The attached guide covers: Pre-Application Gates → Application Process → Access Partner Center and Click on Incentive Workspace → Confirm Enrollment and Tax Profile → Customer Claims.",
+   "blurbSrc": "steps",
+   "blurbV": 2
+  },
+  "private-plans-a-complete-guide": {
+   "title": "Private Plans: a complete guide",
+   "hash": "ff73d3b60944cd98",
+   "bytes": 262684,
+   "file": "docs-pdf/private-plans-a-complete-guide.pdf",
+   "blurb": "The attached guide covers: When to use a private plan → Key characteristics → How it works → How to publish a private plan → Steps.",
    "blurbSrc": "steps",
    "blurbV": 2
   }
