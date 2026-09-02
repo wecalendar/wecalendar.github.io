@@ -20,7 +20,7 @@
   },
   {
    "slug": "azure-credits",
-   "title": "Azure Credits"
+   "title": "Azure credits"
   },
   {
    "slug": "change-the-amount-of-seats-in-an-already-purchased-subscription-in-the-marketplace",
@@ -36,7 +36,7 @@
   },
   {
    "slug": "create-an-ip-cosell-support-ticket-billed-sales",
-   "title": "Create an IP co-sell support ticket billed sales"
+   "title": "Create an IP-cosell support ticket (Billed Sales)"
   },
   {
    "slug": "create-azure-support-request-for-invoice-payment",
@@ -44,7 +44,7 @@
   },
   {
    "slug": "create-warmify-email-rule-in-gmail",
-   "title": "Create Warmify Email Rule in Gmail"
+   "title": "Create Warmify email rule in Gmail"
   },
   {
    "slug": "create-warmify-email-rule-in-outlook",
@@ -144,7 +144,7 @@
   },
   {
    "slug": "how-do-i-export-a-technical-diagram-as-a-png",
-   "title": "How do I export a technical diagram as a .png?"
+   "title": "How do I export a technical diagram as a PNG?"
   },
   {
    "slug": "how-do-i-select-a-publisher-location-for-the-product-listing",
@@ -380,7 +380,7 @@
   },
   {
    "slug": "how-to-test-your-managed-application-package-before-publishing",
-   "title": "How to test your Managed Application package before publishing"
+   "title": "How to test your managed application package before publishing?"
   },
   {
    "slug": "how-to-update-credentials-for-finance-tab-in-the-wetransact-portal",
@@ -463,20 +463,20 @@
    "title": "Part 1 — Enroll into the Microsoft transact and grow incentive"
   },
   {
-   "slug": "part-2-us-entities-filling-tax-profile-walktrough-example",
-   "title": "Part 2 - (US Entities) Filling Tax Profile Walktrough example"
-  },
-  {
    "slug": "part-2-filling-up-tax-details-non-us-countries",
    "title": "Part 2 — Filling up tax details non US countries"
   },
   {
+   "slug": "part-2-us-entities-filling-tax-profile-walktrough-example",
+   "title": "Part 2 — US entities filling tax profile walktrough example"
+  },
+  {
    "slug": "part-3-adding-the-payment-profile",
-   "title": "Part 3 — Adding the payment profile"
+   "title": "Part 3 - Adding the Payment Profile"
   },
   {
    "slug": "part-4-submitting-the-incentive-profile",
-   "title": "Part 4 — Submitting the incentive profile"
+   "title": "Part 4 - Submitting the Incentive Profile"
   },
   {
    "slug": "private-plan",
@@ -528,7 +528,7 @@
   },
   {
    "slug": "subscribe-to-the-wetransact-page-notifications-on-linkedin",
-   "title": "Subscribe to the WeTransact page notifications on LinkedIn"
+   "title": "Subscribe to the WeTransact Page notifications on LinkedIn"
   },
   {
    "slug": "the-steps-to-be-followed-by-your-global-admin-to-give-you-the-necessary-level-of-rights",
@@ -536,7 +536,7 @@
   },
   {
    "slug": "unable-to-enrol-in-the-commercial-marketplace-something-went-wrong-please-try-again-if-this-problem-persists-please-contact-microsoft-support",
-   "title": "Unable to enrol in the commercial Marketplace something went wrong please try again if this problem persists please contact Microsoft support"
+   "title": "Unable to enrol in the commercial Marketplace \"Something went wrong. Please try again; if this problem persists, please contact Microsoft…"
   },
   {
    "slug": "unable-to-verify-account-legal-info",
@@ -588,7 +588,7 @@
   },
   {
    "slug": "wetransact-portal",
-   "title": "WeTransact portal"
+   "title": "WeTransact Portal"
   },
   {
    "slug": "what-to-do-if-your-only-admin-has-left-the-company-no-access-to-your-microsoft-marketplace-listing",
@@ -604,7 +604,7 @@
   },
   {
    "slug": "where-to-find-the-azure-sponsorship",
-   "title": "Where to find the Azure Sponsorship?"
+   "title": "Where to find the Azure sponsorship?"
   },
   {
    "slug": "where-to-find-your-private-offers",
