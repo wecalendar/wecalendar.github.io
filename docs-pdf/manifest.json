@@ -1,5 +1,5 @@
 {
- "generated": "2026-09-02",
+ "generated": "2026-09-03",
  "stamp": {
   "preparedFor": {
    "x": 42.52,
@@ -1382,7 +1382,16 @@
    "blurb": "The attached guide covers: When to use a private plan → Key characteristics → How it works → How to publish a private plan → Steps.",
    "blurbSrc": "steps",
    "blurbV": 2
+  },
+  "create-a-support-ticket-outside-partner-center": {
+   "title": "Create a Support Ticket Outside Partner center",
+   "hash": "63d277349afae110",
+   "bytes": 122545,
+   "file": "docs-pdf/create-a-support-ticket-outside-partner-center.pdf",
+   "blurb": "The attached guide walks you through it step by step.",
+   "blurbSrc": "steps",
+   "blurbV": 2
   }
  },
- "count": 152
+ "count": 153
 }
