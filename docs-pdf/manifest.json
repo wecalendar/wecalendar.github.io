@@ -1,5 +1,5 @@
 {
- "generated": "2026-09-05",
+ "generated": "2026-09-06",
  "stamp": {
   "preparedFor": {
    "x": 42.52,
@@ -836,8 +836,8 @@
   },
   "how-to-set-up-the-finance-tab-in-the-wetransact-portal": {
    "title": "How to Set Up the Finance Tab in the Wetransact Portal?",
-   "hash": "420eb8ce3fdb7a4d",
-   "bytes": 443563,
+   "hash": "656baf4bd0d0ac02",
+   "bytes": 519187,
    "file": "docs-pdf/how-to-set-up-the-finance-tab-in-the-wetransact-portal.pdf",
    "blurb": "The attached guide covers: On Partner Center click on the little wheel on the top right → Click on Account settings → Click on User management → Click on Microsoft Entra Applications → Click Add Microsoft Entra Application.",
    "blurbSrc": "steps",
@@ -1034,10 +1034,10 @@
   },
   "orsync-your-product-listings-in-one-click-and-go-live": {
    "title": "Or—Sync your product listings in one click, and Go Live",
-   "hash": "ef8cbd0dc9baa02d",
-   "bytes": 829653,
+   "hash": "a136bef17f74b7c7",
+   "bytes": 711130,
    "file": "docs-pdf/orsync-your-product-listings-in-one-click-and-go-live.pdf",
-   "blurb": "The attached guide covers: Sign in to Wetransact portal and Go to Settings → Click on Credentials → Click on Client ID → Add Client Secret → Click on Validate Credentials.",
+   "blurb": "The attached guide covers: Sign in to Wetransact portal and Go to Settings → Click on Organisation → Under credentials, click on symbol → Enter tenant ID, Client ID and secret with Seller ID → Click on Validate Credentials and Save.",
    "blurbSrc": "steps",
    "blurbV": 2
   },
@@ -1151,8 +1151,8 @@
   },
   "step-4-submit-your-legal-profile-24-hour-microsoft-validation": {
    "title": "Step 4 — Submit Your Legal Profile (24-hour Microsoft validation)",
-   "hash": "9f57bced1f8cc50d",
-   "bytes": 290622,
+   "hash": "9331257c28595b55",
+   "bytes": 290031,
    "file": "docs-pdf/step-4-submit-your-legal-profile-24-hour-microsoft-validation.pdf",
    "blurb": "The attached guide covers: Go to partner.microsoft.com → Click on Settings → Click on Account settings → Click on Legal info → Verify that the \"Partner\" & \"Developer\" tabs are ticked with the green symbol.",
    "blurbSrc": "steps",
