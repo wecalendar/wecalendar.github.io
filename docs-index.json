@@ -1,6 +1,6 @@
 {
  "source": "https://docs.wetransact.io/sitemap.xml",
- "count": 153,
+ "count": 158,
  "docs": [
   {
    "slug": "account-verification-email-not-received-by-primary-contact",
@@ -21,6 +21,14 @@
   {
    "slug": "azure-credits",
    "title": "Azure credits"
+  },
+  {
+   "slug": "benefits-limitation-and-troubleshooting-of-managed-applications",
+   "title": "Benefits, Limitation and troubleshooting of Managed Applications"
+  },
+  {
+   "slug": "build-managed-application-offer",
+   "title": "Build Managed Application Offer"
   },
   {
    "slug": "change-the-amount-of-seats-in-an-already-purchased-subscription-in-the-marketplace",
@@ -96,7 +104,7 @@
   },
   {
    "slug": "finance-how-marketplace-finance-works",
-   "title": "Finance, how marketplace finance works"
+   "title": "Finance how Marketplace finance works"
   },
   {
    "slug": "find-out-who-the-azure-global-admin-is",
@@ -344,7 +352,7 @@
   },
   {
    "slug": "how-to-know-which-customers-includes-a-microsoft-payment",
-   "title": "How to know which customers includes a Microsoft Payment"
+   "title": "How to know which customers includes a Microsoft payment?"
   },
   {
    "slug": "how-to-leverage-the-wetransact-collaborative-customer-tab-for-enhanced-sales-strategies",
@@ -396,7 +404,7 @@
   },
   {
    "slug": "how-to-update-payment-methods-in-microsoft-azure-portal",
-   "title": "How to update payment methods in Microsoft Azure portal?"
+   "title": "How to update payment methods in Microsoft Azure Portal?"
   },
   {
    "slug": "how-to-update-the-primary-contact-email-address-in-legal-info",
@@ -451,6 +459,10 @@
    "title": "Listing Content Guidelines: What Microsoft Does and Does Not Allow"
   },
   {
+   "slug": "managed-application",
+   "title": "Managed Application"
+  },
+  {
    "slug": "metering-limitations-and-faq",
    "title": "Metering limitations and FAQ"
   },
@@ -489,6 +501,14 @@
   {
    "slug": "private-plans-a-complete-guide",
    "title": "Private Plans: a complete guide"
+  },
+  {
+   "slug": "publisher-access-control-and-permissions",
+   "title": "Publisher Access control and permissions"
+  },
+  {
+   "slug": "purchase-process-managed-application",
+   "title": "Purchase process - Managed Application"
   },
   {
    "slug": "raising-a-support-ticket-because-my-legal-profile-was-not-validated",
@@ -551,12 +571,20 @@
    "title": "Video masterclasses 01 — WeTransact Marketplace journey"
   },
   {
+   "slug": "video-masterclasses-02-the-three-marketplace-channels",
+   "title": "Video masterclasses 02 — The three Marketplace channels"
+  },
+  {
    "slug": "video-masterclasses-03the-marketplace-rewards-and-incentives",
    "title": "Video masterclasses 03 — The Marketplace rewards and incentives"
   },
   {
    "slug": "video-masterclasses-04-why-approaches-differ-based-on-your-audience-segmentation",
    "title": "Video masterclasses 04 — Why approaches differ based on your audience segmentation"
+  },
+  {
+   "slug": "video-masterclasses-05optimise-your-listing-on-the-storefronts",
+   "title": "Video masterclasses 05 — Optimise your listing on the storefronts"
   },
   {
    "slug": "video-masterclasses-06-how-to-partner-with-microsoft",
@@ -577,14 +605,6 @@
   {
    "slug": "video-masterclasses-10find-your-first-resellers",
    "title": "Video masterclasses 10 — Find your first resellers"
-  },
-  {
-   "slug": "video-masterclasses-02-the-three-marketplace-channels",
-   "title": "Video Masterclasses-02. The Three Marketplace Channels"
-  },
-  {
-   "slug": "video-masterclasses-05optimise-your-listing-on-the-storefronts",
-   "title": "Video Masterclasses-05.Optimise Your Listing on the Storefronts"
   },
   {
    "slug": "wetransact-hubspot-app-installation-guide",
