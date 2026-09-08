@@ -1,5 +1,5 @@
 {
- "generated": "2026-09-07",
+ "generated": "2026-09-08",
  "stamp": {
   "preparedFor": {
    "x": 42.52,
@@ -1391,7 +1391,52 @@
    "blurb": "The attached guide walks you through it step by step.",
    "blurbSrc": "steps",
    "blurbV": 2
+  },
+  "benefits-limitation-and-troubleshooting-of-managed-applications": {
+   "title": "Benefits, Limitation and troubleshooting of Managed Applications",
+   "hash": "30a7303c8c5a2566",
+   "bytes": 170883,
+   "file": "docs-pdf/benefits-limitation-and-troubleshooting-of-managed-applications.pdf",
+   "blurb": "The attached guide covers: Benefits of Managed Applications → Limitations and things to watch → Troubleshooting → FAQs.",
+   "blurbSrc": "steps",
+   "blurbV": 2
+  },
+  "build-managed-application-offer": {
+   "title": "Build Managed Application Offer",
+   "hash": "47b6e2c318b2e915",
+   "bytes": 369103,
+   "file": "docs-pdf/build-managed-application-offer.pdf",
+   "blurb": "The attached guide covers: Building the offer: the deployment package → mainTemplate.json → createUiDefinition.json → Working example → mainTemplate.json.",
+   "blurbSrc": "steps",
+   "blurbV": 2
+  },
+  "managed-application": {
+   "title": "Managed Application",
+   "hash": "d445d65b13a1e814",
+   "bytes": 142307,
+   "file": "docs-pdf/managed-application.pdf",
+   "blurb": "The attached guide covers: What is a Managed Application? → When to use a Managed Application → Key characteristics → Managed Application vs SaaS at a glance.",
+   "blurbSrc": "steps",
+   "blurbV": 2
+  },
+  "publisher-access-control-and-permissions": {
+   "title": "Publisher Access control and permissions",
+   "hash": "005cb98144b0eb09",
+   "bytes": 336074,
+   "file": "docs-pdf/publisher-access-control-and-permissions.pdf",
+   "blurb": "The attached guide covers: Updating your application → Commercial model → The flat fee limitation → Cancellation and refunds → Pricing policy disclaimer.",
+   "blurbSrc": "steps",
+   "blurbV": 2
+  },
+  "purchase-process-managed-application": {
+   "title": "Purchase process - Managed Application",
+   "hash": "879c478e5a752dbc",
+   "bytes": 367864,
+   "file": "docs-pdf/purchase-process-managed-application.pdf",
+   "blurb": "The attached guide covers: Public plan → Private offer → Facts to keep in mind → Access control and permissions.",
+   "blurbSrc": "steps",
+   "blurbV": 2
   }
  },
- "count": 153
+ "count": 158
 }
