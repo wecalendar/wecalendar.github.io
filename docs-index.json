@@ -1,6 +1,6 @@
 {
  "source": "https://docs.wetransact.io/sitemap.xml",
- "count": 158,
+ "count": 157,
  "docs": [
   {
    "slug": "account-verification-email-not-received-by-primary-contact",
@@ -91,6 +91,10 @@
    "title": "Ecosystem watchers explore partners and vendors across Microsoft Marketplace"
   },
   {
+   "slug": "emitting-a-private-plan",
+   "title": "Emitting a Private Plan"
+  },
+  {
    "slug": "error-system-error",
    "title": "Error : System Error"
   },
@@ -128,7 +132,7 @@
   },
   {
    "slug": "have-an-issue-with-marketplace-leads",
-   "title": "Have an issue with Marketplace leads?"
+   "title": "Have an issue with Marketplace leads."
   },
   {
    "slug": "how-can-i-verify-a-users-rights-to-complete-a-purchase",
@@ -371,10 +375,6 @@
    "title": "How to purchase a solution on Azure Marketplace (generic)?"
   },
   {
-   "slug": "how-to-purchase-a-wetransact-solution",
-   "title": "How to Purchase a WeTransact Solution?"
-  },
-  {
    "slug": "how-to-set-up-a-new-subscription-azure",
    "title": "How to set up a new Subscription (Azure)?"
   },
@@ -497,10 +497,6 @@
   {
    "slug": "private-plan",
    "title": "Private Plan"
-  },
-  {
-   "slug": "private-plans-a-complete-guide",
-   "title": "Private Plans: a complete guide"
   },
   {
    "slug": "publisher-access-control-and-permissions",
