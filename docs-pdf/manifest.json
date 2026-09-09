@@ -1,5 +1,5 @@
 {
- "generated": "2026-09-08",
+ "generated": "2026-09-09",
  "stamp": {
   "preparedFor": {
    "x": 42.52,
@@ -440,8 +440,8 @@
   },
   "how-to-accept-a-private-offer-customer-walkthrough": {
    "title": "How to accept a Private Offer? - Customer walkthrough",
-   "hash": "f0ff57270e77d80e",
-   "bytes": 430337,
+   "hash": "689a5b05e49b12d9",
+   "bytes": 576171,
    "file": "docs-pdf/how-to-accept-a-private-offer-customer-walkthrough.pdf",
    "blurb": "The attached guide covers: Click on 'Private Offer Management' on the left menu → Below is what they see on their screen after click on the link or View offer → Click on 'Accept Private Offer' → Click on Accepting your Private Offer → Click on Purchase.",
    "blurbSrc": "steps",
@@ -692,10 +692,10 @@
   },
   "how-to-find-and-purchase-a-private-plan": {
    "title": "How to find and purchase a private plan?",
-   "hash": "11abe6230d6fdcd3",
-   "bytes": 525140,
+   "hash": "b488e2403a40fd8b",
+   "bytes": 562216,
    "file": "docs-pdf/how-to-find-and-purchase-a-private-plan.pdf",
-   "blurb": "The attached guide covers: Step 1 — Find your Private Plan → Sign in to your Azure Portal → On the homepage, search 'Marketplace' in the search bar → Step 2 — Complete your purchase → On the offer, click the \"Plans + Pricing\" tab.",
+   "blurb": "The attached guide covers: Step 1 — Find your Private Plan → Sign in to your Azure Portal → On the homepage, search 'Marketplace' in the search bar → Step 2 — Complete your purchase → Choose the right subscription for the purchase.",
    "blurbSrc": "steps",
    "blurbV": 2
   },
@@ -813,15 +813,6 @@
    "bytes": 530038,
    "file": "docs-pdf/how-to-purchase-a-solution-on-azure-marketplace-generic.pdf",
    "blurb": "The attached guide covers: Create a work account if you don't have one → Sign in to Azure portal and search marketplace → Search the product name in the search box → On the offer, click the \"Plans + Pricing\" tab → Verify you have selected the right Plan and then click on \"Subscribe\".",
-   "blurbSrc": "steps",
-   "blurbV": 2
-  },
-  "how-to-purchase-a-wetransact-solution": {
-   "title": "How to Purchase a WeTransact Solution?",
-   "hash": "a6e27a23a591f556",
-   "bytes": 390524,
-   "file": "docs-pdf/how-to-purchase-a-wetransact-solution.pdf",
-   "blurb": "The attached guide covers: Choose the WeTransact plan you want to purchase → On the offer, click the \"Plans + Pricing\" tab → Verify you have selected the right Plan and then click on \"Subscribe\" → Select the \"Resource Group\" into which the \"WeTransact\" SaaS resource will be deployed → …",
    "blurbSrc": "steps",
    "blurbV": 2
   },
@@ -1304,10 +1295,10 @@
   },
   "wetransact-hubspot-app-installation-guide": {
    "title": "WeTransact Hubspot App Installation guide",
-   "hash": "c29a67079b1b92ee",
-   "bytes": 703002,
+   "hash": "cc5ee6dfdc07b395",
+   "bytes": 213860,
    "file": "docs-pdf/wetransact-hubspot-app-installation-guide.pdf",
-   "blurb": "The attached guide covers: Step 1 – Install the WeTransact HubSpot App → Choose your HubSpot account → Click Connect App to continue → Once the installation is complete, you will see the following confirmation message → Step 2 – Configure Card Locations.",
+   "blurb": "The attached guide covers: WeTransact for HubSpot: Setup Guide → Before you start → Connect HubSpot to WeTransact → Add the cards to deal records → Verify.",
    "blurbSrc": "steps",
    "blurbV": 2
   },
@@ -1367,19 +1358,10 @@
   },
   "guide-to-submitting-the-claim-for-ai-build-and-publish-marketplace-incentives-fy27": {
    "title": "Guide to Submitting the Claim for AI Build & Publish Marketplace Incentives FY27",
-   "hash": "7c3572db98073ccf",
-   "bytes": 286929,
+   "hash": "3f1c544cac7515f3",
+   "bytes": 305219,
    "file": "docs-pdf/guide-to-submitting-the-claim-for-ai-build-and-publish-marketplace-incentives-fy27.pdf",
    "blurb": "The attached guide covers: Pre-Application Gates → Application Process → Access Partner Center and Click on Incentive Workspace → Confirm Enrollment and Tax Profile → Customer Claims.",
-   "blurbSrc": "steps",
-   "blurbV": 2
-  },
-  "private-plans-a-complete-guide": {
-   "title": "Private Plans: a complete guide",
-   "hash": "ff73d3b60944cd98",
-   "bytes": 262684,
-   "file": "docs-pdf/private-plans-a-complete-guide.pdf",
-   "blurb": "The attached guide covers: When to use a private plan → Key characteristics → How it works → How to publish a private plan → Steps.",
    "blurbSrc": "steps",
    "blurbV": 2
   },
@@ -1436,7 +1418,16 @@
    "blurb": "The attached guide covers: Public plan → Private offer → Facts to keep in mind → Access control and permissions.",
    "blurbSrc": "steps",
    "blurbV": 2
+  },
+  "emitting-a-private-plan": {
+   "title": "Emitting a Private Plan",
+   "hash": "11ff973c43350cd3",
+   "bytes": 246532,
+   "file": "docs-pdf/emitting-a-private-plan.pdf",
+   "blurb": "The attached guide covers: When to use a private plan → Key characteristics → How it works → How to publish a private plan → Steps.",
+   "blurbSrc": "steps",
+   "blurbV": 2
   }
  },
- "count": 158
+ "count": 157
 }
