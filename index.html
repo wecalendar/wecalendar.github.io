@@ -669,9 +669,9 @@ async function token(){
   try { return (await pca.acquireTokenSilent({ scopes: SCOPES, account })).accessToken; }
   catch(e){ pca.acquireTokenRedirect({ scopes: SCOPES }); throw e; }
 }
-async function gget(url){
+async function gget(url, extraHeaders){
   const tk = await token();
-  const r = await fetch("https://graph.microsoft.com/v1.0" + url, { headers: { Authorization: "Bearer " + tk, Prefer: 'outlook.timezone="UTC"' } });
+  const r = await fetch("https://graph.microsoft.com/v1.0" + url, { headers: Object.assign({ Authorization: "Bearer " + tk, Prefer: 'outlook.timezone="UTC"' }, extraHeaders || {}) });
   if (!r.ok) throw new Error("Graph " + r.status);
   return r.json();
 }
@@ -763,18 +763,32 @@ function ptoNamesForDay(d){
   (S.pto || []).forEach(p => { if (p.dates.includes(dk) && !names.includes(p.name)) names.push(p.name); });
   return names;
 }
+// A colleague is anyone in the company's own domains. The old rule demanded the address
+// look exactly like first.last@, which silently hid perfectly real mailboxes — one-word
+// addresses, names with digits, three-part names — so they simply could not be added.
+const OK_DOMAINS = /@(wetransact|awssome)\.io$/;
 async function searchPeople(q){
   const safe = q.replace(/[^\p{L}\p{N}@.\- ]/gu, "").slice(0, 64);
   if (!safe) return [];
-  const obj = await gget("/users?" + new URLSearchParams({
-    "$filter": "startswith(displayName,'" + safe + "') or startswith(givenName,'" + safe + "') or startswith(surname,'" + safe + "') or startswith(mail,'" + safe + "')",
-    "$select": "displayName,mail,userPrincipalName",
-    "$top": "8",
-  }));
-  const OKRE = /^[a-z-]+\.[a-z-]+@(wetransact|awssome)\.io$/;
-  return (obj.value || [])
-    .map(u => ({ name: u.displayName, email: (u.mail || u.userPrincipalName || "").toLowerCase() }))
-    .filter(u => u.email && OKRE.test(u.email));
+  const pick = obj => (obj.value || [])
+    .map(u => ({ name: u.displayName || (u.mail || u.userPrincipalName || ""), email: (u.mail || u.userPrincipalName || "").toLowerCase() }))
+    .filter(u => u.email && OK_DOMAINS.test(u.email));
+  // Same query the add-in uses, so both surfaces return the same people: a substring match
+  // on the name AND the address, rather than a prefix-only match on the name.
+  try {
+    return pick(await gget("/users?" + new URLSearchParams({
+      "$search": '"displayName:' + safe + '" OR "mail:' + safe + '"',
+      "$select": "displayName,mail,userPrincipalName",
+      "$top": "10",
+    }), { ConsistencyLevel: "eventual" }));
+  } catch(e){
+    // $search needs advanced-query support; fall back to the old prefix filter.
+    return pick(await gget("/users?" + new URLSearchParams({
+      "$filter": "startswith(displayName,'" + safe + "') or startswith(givenName,'" + safe + "') or startswith(surname,'" + safe + "') or startswith(mail,'" + safe + "')",
+      "$select": "displayName,mail,userPrincipalName",
+      "$top": "10",
+    })));
+  }
 }
 // ---- teammate free/busy ----
 // FAIL CLOSED. A teammate counts as free only for a window Graph actually confirmed. Every

@@ -353,7 +353,47 @@
     });
   }
   var mateT = null;
-  function searchMates(term, box){ if (!TOKEN) return; var url = "https://graph.microsoft.com/v1.0/users?$search=%22displayName:" + encodeURIComponent(term) + "%22&$select=displayName,mail,userPrincipalName&$top=6"; fetch(url, { headers: { Authorization: "Bearer " + TOKEN, ConsistencyLevel: "eventual" } }).then(function(r){ return r.json(); }).then(function(j){ var list = (j.value || []).filter(function(u){ var em = ((u.mail || u.userPrincipalName) || "").toLowerCase(); return /^[a-z-]+\.[a-z-]+@(wetransact|awssome)\.io$/.test(em); }); box.innerHTML = ""; if (!list.length) return; var wrap = document.createElement("div"); wrap.className = "mres"; list.forEach(function(u){ var em = u.mail || u.userPrincipalName; var row = document.createElement("div"); var nm = document.createElement("div"); nm.textContent = u.displayName || em; var e2 = document.createElement("div"); e2.className = "em"; e2.textContent = em; row.appendChild(nm); row.appendChild(e2); row.onclick = function(){ addMate(u.displayName || em, em); $("mateIn").value = ""; box.innerHTML = ""; }; wrap.appendChild(row); }); box.appendChild(wrap); }).catch(function(){ box.innerHTML = ""; }); }
+  // A colleague is anyone in the company's own domains — matching the web app. The old rule
+  // demanded first.last@, which silently hid real mailboxes. Query shape now matches the web
+  // app too (name AND address, substring), so both surfaces find the same people.
+  var OK_DOMAINS = /@(wetransact|awssome)\.io$/;
+  function mateRows(j, box){
+    var list = (j.value || []).filter(function(u){
+      var em = ((u.mail || u.userPrincipalName) || "").toLowerCase();
+      return em && OK_DOMAINS.test(em);
+    });
+    box.innerHTML = "";
+    if (!list.length) return;
+    var wrap = document.createElement("div"); wrap.className = "mres";
+    list.forEach(function(u){
+      var em = u.mail || u.userPrincipalName;
+      var row = document.createElement("div");
+      var nm = document.createElement("div"); nm.textContent = u.displayName || em;
+      var e2 = document.createElement("div"); e2.className = "em"; e2.textContent = em;
+      row.appendChild(nm); row.appendChild(e2);
+      row.onclick = function(){ addMate(u.displayName || em, em); $("mateIn").value = ""; box.innerHTML = ""; };
+      wrap.appendChild(row);
+    });
+    box.appendChild(wrap);
+  }
+  function searchMates(term, box){
+    if (!TOKEN) return;
+    var safe = term.replace(/[^\p{L}\p{N}@.\- ]/gu, "").slice(0, 64);
+    if (!safe) return;
+    var qs = "$search=" + encodeURIComponent('"displayName:' + safe + '" OR "mail:' + safe + '"') + "&$select=displayName,mail,userPrincipalName&$top=10";
+    fetch("https://graph.microsoft.com/v1.0/users?" + qs, { headers: { Authorization: "Bearer " + TOKEN, ConsistencyLevel: "eventual" } })
+      .then(function(r){ if (!r.ok) throw new Error("Graph " + r.status); return r.json(); })
+      .then(function(j){ mateRows(j, box); })
+      .catch(function(){
+        // $search needs advanced-query support; fall back to the prefix filter.
+        var f = "$filter=" + encodeURIComponent("startswith(displayName,'" + safe + "') or startswith(mail,'" + safe + "')") + "&$select=displayName,mail,userPrincipalName&$top=10";
+        fetch("https://graph.microsoft.com/v1.0/users?" + f, { headers: { Authorization: "Bearer " + TOKEN } })
+          .then(function(r){ return r.json(); })
+          .then(function(j){ mateRows(j, box); })
+          .catch(function(){ box.innerHTML = ""; });
+      });
+  }
+
   $("mateIn").addEventListener("input", function(){ var term = $("mateIn").value.trim(), box = $("mateRes"); clearTimeout(mateT); if (term.length < 2){ box.innerHTML = ""; return; } mateT = setTimeout(function(){ searchMates(term, box); }, 300); });
 
   $("signin").onclick = function(){
