@@ -2478,9 +2478,18 @@ function renderPTOBox(){
   const box = document.getElementById("ptoBox"), list = document.getElementById("ptoList"), scope = document.getElementById("ptoScope");
   if (!box || !list) return;
   if (!account){ box.style.display = "none"; return; }
-  const days = S.dayView ? [new Date(S.dayView)] : weekDaysFull().filter(d => d.getDay() >= 1 && d.getDay() <= 5);
-  if (scope) scope.textContent = S.dayView ? "· this day" : "· this week";
+  let days = S.dayView ? [new Date(S.dayView)] : weekDaysFull().filter(d => d.getDay() >= 1 && d.getDay() <= 5);
   const todayK = keyOf(new Date());
+  // Days already gone are noise here — nobody schedules into Monday on a Thursday. Only trim
+  // when the week on screen actually CONTAINS today; paging to another week still shows it whole.
+  const midnight = new Date(); midnight.setHours(0, 0, 0, 0);
+  let trimmed = false;
+  if (!S.dayView && days.some(d => keyOf(d) === todayK)){
+    const before = days.length;
+    days = days.filter(d => new Date(d.getFullYear(), d.getMonth(), d.getDate()) >= midnight);
+    trimmed = days.length < before;
+  }
+  if (scope) scope.textContent = S.dayView ? "· this day" : (trimmed ? "· rest of this week" : "· this week");
   let html = "", total = 0;
   days.forEach(d => {
     const names = ptoNamesForDay(d);
@@ -2493,7 +2502,7 @@ function renderPTOBox(){
       + names.map(n => '<div style="font-size:12.5px; color:var(--ink); padding:2px 0; display:flex; gap:8px; align-items:center;"><span style="width:6px; height:6px; border-radius:50%; background:#12B76A; flex:none;"></span>' + n.replace(/</g, "&lt;") + '</div>').join("")
       + '</div>';
   });
-  list.innerHTML = total ? html : '<div style="font-size:12.5px; color:var(--muted2);">No one’s off ' + (S.dayView ? "that day" : "this week") + '. 🎉</div>';
+  list.innerHTML = total ? html : '<div style="font-size:12.5px; color:var(--muted2);">No one’s off ' + (S.dayView ? "that day" : (trimmed ? "for the rest of this week" : "this week")) + '. 🎉</div>';
   box.style.display = "block";
 }
 
