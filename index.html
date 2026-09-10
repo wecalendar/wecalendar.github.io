@@ -1122,8 +1122,24 @@ setInterval(() => {
 
 // ---- conflict detection ----
 function overlaps(aS, aE, bS, bE){ return bS < aE && aS < bE; }
+// Who, among the teammates whose calendars we actually READ, is busy in this window.
+// Verified only: unknown availability warns loudly elsewhere but must never block painting,
+// or a flaky Graph call would lock the whole grid.
+function mateBusyWho(start, end){
+  for (const p of S.people){
+    if (!schedOK(p)) continue;
+    for (const it of schedItems(p))
+      if (overlaps(start, end, it.start, it.end)) return (p.name || p.email);
+  }
+  return null;
+}
 function hardConflict(start, end, skipIdx){
   const BUF = (S.buffer || 0) * 60000;
+  // A teammate who is confirmed busy blocks the slot outright. They are an attendee on whatever
+  // the client books, and check-availability hides these slots anyway — so offering one is a
+  // dead end that also makes the share text claim they're free.
+  const mw = mateBusyWho(start, end);
+  if (mw) return mw + "\u2019s busy time";
   for (const ev of S.events){
     if (ev.focus) continue;   // focus time never hard-blocks — you can hand it to a client
     if (overlaps(start.getTime(), end.getTime(), ev.start.getTime() - BUF, ev.end.getTime() + BUF)) return (overlaps(start, end, ev.start, ev.end) ? "your “" + ev.subject + "”" : "the " + S.buffer + "-min buffer around “" + ev.subject + "”");
@@ -1469,6 +1485,15 @@ async function addPerson(email, name){
   S.people.push({ email, name: name || email.split("@")[0], color: PCOLORS[S.people.length % PCOLORS.length] });
   renderChips();
   await loadSchedules();
+  // Slots painted BEFORE this person was added may clash with them. They can't be offered now,
+  // so retire them rather than leave them sitting there looking offerable.
+  const clash = S.sel.filter(s => mateBusyWho(s.start, s.end));
+  if (clash.length){
+    S.sel = S.sel.filter(s => !mateBusyWho(s.start, s.end));
+    saveSel();
+    toast("\uD83D\uDEAB Removed " + clash.length + " painted slot" + (clash.length > 1 ? "s" : "") + " \u2014 " + (name || email) + " is busy then");
+  }
+  renderAll();
 }
 
 let pplSeq = 0, pplResults = [], pplActive = -1, pplTimer = null;
@@ -2192,7 +2217,11 @@ async function createBookingLink(){
   // calendar. Make that an explicit decision instead of a silent one.
   const unv = unverifiedPeople();
   if (unv.length && !confirm("No free/busy for " + firstNames(unv) + ".\n\nThese slots have NOT been checked against their calendar, and they will be invited to whatever the client books.\n\nSend anyway?")) { status(""); return; }
-  const clientSlots = splitForClient();
+  // Belt and braces: hardConflict should already have stopped these being painted, but a
+  // teammate's calendar can change after the fact. Never publish one — the share text says
+  // "all available", and the booking page would hide it anyway.
+  const clientSlots = splitForClient().filter(x => !mateBusyWho(x.start, x.end));
+  if (!clientSlots.length){ status(""); toast("\uD83D\uDEAB Nothing to publish \u2014 every painted slot clashes with a teammate."); return; }
   status('<span class="spin"></span>Creating booking link…');
   try {
     const tk = await token();
