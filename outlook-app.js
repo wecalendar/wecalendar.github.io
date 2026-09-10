@@ -118,6 +118,9 @@
     + '.grow.busy.mtg .dot{background:#5E43C8}'
     + '.grow.busy.solo{background:linear-gradient(135deg,#FCEBEB,#F8D6D6);color:#A32D2D}'
     + '.grow.busy.solo .dot{background:#E24B4A}'
+    /* teammate busy: amber-grey, so it is obvious the block is gone because of THEM */
+    + '.grow.busy.mate{background:linear-gradient(135deg,#EFF3F8,#DDE5F0);color:#33475B}'
+    + '.grow.busy.mate .dot{background:#5B7A99}'
     /* focus time: amber, tickable, never auto-selected */
     + '.grow.free.focusrow{background:#FFF6E5;border:1px dashed #F0B65B;color:#8A5300}'
     + '.grow.free.focusrow.on{background:#FCE7C2;border-color:#D97706}'
@@ -258,9 +261,97 @@
     inp.value = tzLabelFor(TZ) + " · " + offLabel(TZ);
   })();
 
-  var MATES = [];
-  function renderMates(){ var c = $("mateChips"); c.innerHTML = ""; MATES.forEach(function(m, i){ var s = document.createElement("span"); s.className = "chip"; var t = document.createElement("span"); t.textContent = m.name; var x = document.createElement("span"); x.className = "cx"; x.innerHTML = "&times;"; x.onclick = function(){ MATES.splice(i, 1); renderMates(); }; s.appendChild(t); s.appendChild(x); c.appendChild(s); }); }
-  function addMate(name, email){ if (!email || MATES.some(function(m){ return m.email === email; })) return; MATES.push({ name: name || email, email: email }); renderMates(); }
+  var MATES = [], MATESCHED = {}, MATE_CAP = 4;
+  function renderMates(){ var c = $("mateChips"); c.innerHTML = ""; MATES.forEach(function(m, i){ var s = document.createElement("span"); s.className = "chip"; var sc = MATESCHED[m.email]; var t = document.createElement("span"); t.textContent = (sc && !sc.ok ? "⚠ " : "") + m.name; if (sc && !sc.ok) s.title = "No free/busy for " + m.email + " — their busy time is not being checked"; var x = document.createElement("span"); x.className = "cx"; x.innerHTML = "&times;"; x.onclick = function(){ MATES.splice(i, 1); renderMates(); repick(); }; s.appendChild(t); s.appendChild(x); c.appendChild(s); }); }
+  function addMate(name, email){
+    var em = String(email || "").toLowerCase();
+    if (!em || MATES.some(function(m){ return m.email === em; })) return;
+    if (MATES.length >= MATE_CAP){ var mm = $("msg"); mm.className = "msg err"; mm.textContent = "Up to " + MATE_CAP + " teammates at a time."; return; }
+    MATES.push({ name: name || em, email: em });
+    renderMates();
+    repick();   // their busy time has to come OUT of the offered blocks straight away
+  }
+  // Adding or removing a teammate changes which blocks are free, so recompute. Without this
+  // the list kept showing the blocks picked before they were added.
+  function repick(){ if (LAST) pick(LAST.scope, LAST.date); }
+
+  // Teammate free/busy for the add-in. Until now MATES were only ever used as invite
+  // recipients and their calendars were never read at all, so every teammate looked free
+  // whenever Ruby was. Same fail-closed contract as the web app: ok:false means "could not
+  // read", which must never be treated as free.
+  function avBusy(av, windowStart, ivMin){
+    var out = [], t0 = windowStart.getTime(), step = ivMin * 60000, i = 0, j;
+    while (i < av.length){
+      if (av.charAt(i) === "0"){ i++; continue; }
+      j = i; while (j < av.length && av.charAt(j) !== "0") j++;
+      out.push({ start: new Date(t0 + i * step), end: new Date(t0 + j * step) });
+      i = j;
+    }
+    return out;
+  }
+  // Prefer: outlook.timezone="UTC" should make every reply UTC, but honour what actually came
+  // back: reading a non-UTC time as UTC slides busy blocks hours off and frees real meetings.
+  function mDate(x){
+    var s = String((x && x.dateTime) || "");
+    if (!s) return null;
+    if (/(Z|[+-]\d\d:?\d\d)$/.test(s)){ var d0 = new Date(s); return isNaN(+d0) ? null : d0; }
+    var tz = String((x && x.timeZone) || "UTC");
+    var t = Date.parse(s + "Z");
+    if (isNaN(t)) return null;
+    if (/^(utc|gmt|coordinated universal time)$/i.test(tz)) return new Date(t);
+    try {
+      var off = function(ms){ var p = {}; new Intl.DateTimeFormat("en-US", { timeZone: tz, hourCycle: "h23", year: "numeric", month: "2-digit", day: "2-digit", hour: "2-digit", minute: "2-digit" }).formatToParts(new Date(ms)).forEach(function(q){ p[q.type] = q.value; }); return (Date.UTC(+p.year, +p.month - 1, +p.day, +p.hour, +p.minute) - ms) / 60000; };
+      var inst = t - off(t - off(t) * 60000) * 60000;
+      return isNaN(inst) ? null : new Date(inst);
+    } catch(e){ return null; }
+  }
+  function fetchMateSched(emails, ws, we){
+    var want = (emails || []).map(function(e){ return String(e || "").toLowerCase(); }).filter(Boolean);
+    var out = {};
+    want.forEach(function(e){ out[e] = { items: [], ok: false, err: "no reply from Graph" }; });
+    if (!want.length || !TOKEN) return Promise.resolve(out);
+    var IV = 30;
+    return fetch("https://graph.microsoft.com/v1.0/me/calendar/getSchedule", {
+      method: "POST",
+      headers: { Authorization: "Bearer " + TOKEN, "Content-Type": "application/json", Prefer: 'outlook.timezone="UTC"' },
+      body: JSON.stringify({
+        schedules: want.slice(0, 20),   // Graph caps getSchedule at 20 mailboxes per call
+        startTime: { dateTime: ws.toISOString().slice(0, 19), timeZone: "UTC" },
+        endTime: { dateTime: we.toISOString().slice(0, 19), timeZone: "UTC" },
+        availabilityViewInterval: IV
+      })
+    }).then(function(r){
+      if (r.status === 401) throw { expired: true };
+      if (!r.ok) throw new Error("Graph " + r.status);
+      return r.json();
+    }).then(function(j){
+      // value[] comes back in the order asked; scheduleId can echo different casing or the
+      // resolved primary SMTP address, so match by position and fall back to the id.
+      (j.value || []).forEach(function(s, i){
+        var echoed = String(s.scheduleId || "").toLowerCase();
+        var key = want[i] || (want.indexOf(echoed) >= 0 ? echoed : null);
+        if (!key) return;
+        if (s.error){ out[key] = { items: [], ok: false, err: String(s.error.message || "Graph error").slice(0, 140) }; return; }
+        var bad = false, items = [];
+        (s.scheduleItems || []).forEach(function(it){
+          if (it.status === "free") return;   // busy / tentative / oof / unknown all block
+          var a = mDate(it.start), b = mDate(it.end);
+          if (!a || !b || +b <= +a){ bad = true; return; }
+          items.push({ start: a, end: b });
+        });
+        var av = typeof s.availabilityView === "string" ? s.availabilityView : "";
+        // Limited-detail mailboxes return availabilityView with no scheduleItems.
+        if (!items.length && /[1-9]/.test(av)) items = avBusy(av, ws, IV);
+        var okk = !bad && (items.length > 0 || av.length > 0);
+        out[key] = { items: items, ok: okk, err: okk ? "" : (bad ? "unreadable times in the reply" : "no free/busy data returned") };
+      });
+      return out;
+    }).catch(function(e){
+      if (e && e.expired) throw e;   // let pick()'s handler show the sign-in prompt
+      want.forEach(function(em){ out[em] = { items: [], ok: false, err: (e && e.message) || "request failed" }; });
+      return out;
+    });
+  }
   var mateT = null;
   function searchMates(term, box){ if (!TOKEN) return; var url = "https://graph.microsoft.com/v1.0/users?$search=%22displayName:" + encodeURIComponent(term) + "%22&$select=displayName,mail,userPrincipalName&$top=6"; fetch(url, { headers: { Authorization: "Bearer " + TOKEN, ConsistencyLevel: "eventual" } }).then(function(r){ return r.json(); }).then(function(j){ var list = (j.value || []).filter(function(u){ var em = ((u.mail || u.userPrincipalName) || "").toLowerCase(); return /^[a-z-]+\.[a-z-]+@(wetransact|awssome)\.io$/.test(em); }); box.innerHTML = ""; if (!list.length) return; var wrap = document.createElement("div"); wrap.className = "mres"; list.forEach(function(u){ var em = u.mail || u.userPrincipalName; var row = document.createElement("div"); var nm = document.createElement("div"); nm.textContent = u.displayName || em; var e2 = document.createElement("div"); e2.className = "em"; e2.textContent = em; row.appendChild(nm); row.appendChild(e2); row.onclick = function(){ addMate(u.displayName || em, em); $("mateIn").value = ""; box.innerHTML = ""; }; wrap.appendChild(row); }); box.appendChild(wrap); }).catch(function(){ box.innerHTML = ""; }); }
   $("mateIn").addEventListener("input", function(){ var term = $("mateIn").value.trim(), box = $("mateRes"); clearTimeout(mateT); if (term.length < 2){ box.innerHTML = ""; return; } mateT = setTimeout(function(){ searchMates(term, box); }, 300); });
@@ -331,7 +422,10 @@
     var ws = new Date(new Date(days[0].getFullYear(), days[0].getMonth(), days[0].getDate()).getTime() - PAD);
     var last = days[days.length - 1], we = new Date(new Date(last.getFullYear(), last.getMonth(), last.getDate() + 1).getTime() + PAD);
     var url = "https://graph.microsoft.com/v1.0/me/calendarView?" + new URLSearchParams({ startDateTime: ws.toISOString(), endDateTime: we.toISOString(), "$select": "start,end,showAs,isAllDay,responseStatus,subject,attendees,organizer,isOrganizer,categories", "$top": "200" });
-    graphAll(url, []).then(function(items){
+    Promise.all([graphAll(url, []), fetchMateSched(MATES.map(function(m){ return m.email; }), ws, we)]).then(function(_res){
+        var items = _res[0];
+        MATESCHED = _res[1];
+        renderMates();
         var busy = [], offDays = {}, seenB = {};
         items.forEach(function(ev){
           if (!ev.start || !ev.start.dateTime || !ev.end || !ev.end.dateTime || ev.showAs === "free" || ev.showAs === "workingElsewhere") return;
@@ -353,7 +447,19 @@
           VIEWDAYS.push({ key: key, label: fmtDay(mid) });
           if (offDays[d.getFullYear() + "-" + d.getMonth() + "-" + d.getDate()]){ OFFV[key] = true; return; }
           busy.forEach(function(b){ if (b.end.getTime() > Math.max(ws2, nowMs) && b.start.getTime() < we2) BUSY.push({ start: b.start, end: b.end, subject: b.subject, mtg: b.mtg, focus: b.focus, key: key }); });
-          var segs = busy.filter(function(b){ return b.end.getTime() > ws2 && b.start.getTime() < we2; }).map(function(b){ return [b.start.getTime() - bufMs, b.end.getTime() + bufMs]; }).sort(function(a, b){ return a[0] - b[0]; });
+          // Teammates' busy time must REMOVE the block, not merely annotate it.
+          var mateSegs = [];
+          MATES.forEach(function(m){
+            var sc = MATESCHED[m.email];
+            if (!sc) return;
+            sc.items.forEach(function(it){
+              var bs = it.start.getTime(), be = it.end.getTime();
+              if (be <= ws2 || bs >= we2) return;
+              mateSegs.push([bs - bufMs, be + bufMs]);
+              if (be > Math.max(ws2, nowMs)) BUSY.push({ start: it.start, end: it.end, subject: (m.name || m.email) + " \u2014 busy", mate: true, key: key });
+            });
+          });
+          var segs = busy.filter(function(b){ return b.end.getTime() > ws2 && b.start.getTime() < we2; }).map(function(b){ return [b.start.getTime() - bufMs, b.end.getTime() + bufMs]; }).concat(mateSegs).sort(function(a, b){ return a[0] - b[0]; });
           var cur = Math.max(ws2, nw);
           segs.forEach(function(sg){ if (sg[0] > cur && Math.min(sg[0], we2) - cur >= minLen) SLOTS.push({ start: new Date(cur), end: new Date(Math.min(sg[0], we2)), sel: true, key: key }); if (sg[1] > cur) cur = sg[1]; });
           if (we2 - cur >= minLen) SLOTS.push({ start: new Date(cur), end: new Date(we2), sel: true, key: key });
@@ -362,14 +468,23 @@
             if (!b.focus) return;
             var fs = Math.max(b.start.getTime(), ws2, nw), fe = Math.min(b.end.getTime(), we2);
             if (fe - fs < minLen) return;
+            if (mateSegs.some(function(sg){ return sg[0] < fe && sg[1] > fs; })) return;   // a teammate is busy then
             FOCUSHOWN[key + "_" + b.start.getTime()] = 1;
             SLOTS.push({ start: new Date(fs), end: new Date(fe), sel: false, focus: true, subject: b.subject, key: key });
           });
         });
+        // If a teammate's calendar could not be read we do NOT know these blocks are free,
+        // so nothing is pre-ticked: Ruby has to choose deliberately.
+        var matesBad = MATES.filter(function(m){ var sc = MATESCHED[m.email]; return !sc || !sc.ok; });
+        if (matesBad.length) SLOTS.forEach(function(s){ s.sel = false; });
         renderSlots();
         var nFoc = SLOTS.filter(function(s){ return s.focus; }).length, nFree = SLOTS.length - nFoc;
-        if (SLOTS.length){ msg.className = "msg"; msg.textContent = nFree + " free block" + (nFree === 1 ? "" : "s") + (nFoc ? " · " + nFoc + " focus block" + (nFoc === 1 ? "" : "s") + " you can tick too" : "") + " — tick the ones to offer, then Copy slots."; }
-        else { msg.className = "msg err"; msg.textContent = "No open time in your working hours " + (scope === "day" ? "that day" : "this week") + "."; }
+        if (matesBad.length){
+          msg.className = "msg err";
+          msg.textContent = "\u26A0 No free/busy for " + matesBad.map(function(m){ return (m.name || m.email).split(" ")[0]; }).join(", ") + " \u2014 these blocks are NOT checked against their calendar. Nothing is pre-ticked; tick only what you have confirmed.";
+        }
+        else if (SLOTS.length){ msg.className = "msg"; msg.textContent = nFree + " free block" + (nFree === 1 ? "" : "s") + (nFoc ? " \u00b7 " + nFoc + " focus block" + (nFoc === 1 ? "" : "s") + " you can tick too" : "") + (MATES.length ? " \u00b7 checked against " + MATES.length + " teammate calendar" + (MATES.length === 1 ? "" : "s") : "") + " \u2014 tick the ones to offer, then Copy slots."; }
+        else { msg.className = "msg err"; msg.textContent = "No open time in your working hours " + (scope === "day" ? "that day" : "this week") + (MATES.length ? " once " + MATES.map(function(m){ return (m.name || m.email).split(" ")[0]; }).join(", ") + " is taken into account" : "") + "."; }
       })
       .catch(function(err){
         if (err && err.expired){ msg.className = "msg err"; msg.textContent = "Session expired — sign in again."; TOKEN = null; clearAuth(); $("picker").classList.add("hide"); $("signedout").classList.remove("hide"); }
@@ -404,7 +519,7 @@
       rows.sort(function(a, b){ return a.t - b.t; });
       if (!rows.length){ h += '<div class="grow off"><span class="ttl">No open time in your working hours</span></div>'; return; }
       rows.forEach(function(r){
-        if (r.busy){ h += '<div class="grow busy' + (r.busy.mtg ? ' mtg' : ' solo') + '"><span class="dot"></span><span class="tmcol">' + fmtTime(r.busy.start) + ' &ndash; ' + fmtTime(r.busy.end) + '</span><span class="ttl">' + esc(r.busy.subject || "Busy") + '</span></div>'; }
+        if (r.busy){ var bcls = r.busy.mate ? ' mate' : (r.busy.mtg ? ' mtg' : ' solo'); h += '<div class="grow busy' + bcls + '"><span class="dot"></span><span class="tmcol">' + fmtTime(r.busy.start) + ' &ndash; ' + fmtTime(r.busy.end) + '</span><span class="ttl">' + (r.busy.mate ? '\uD83D\uDC65 ' : '') + esc(r.busy.subject || "Busy") + '</span></div>'; }
         else { var x = SLOTS[r.free]; h += '<label class="grow free' + (x.focus ? " focusrow" : "") + (x.sel ? " on" : "") + '" title="' + (x.focus ? "Your focus time — tick it only when a client really needs this slot" : "") + '"><input type="checkbox" data-i="' + r.free + '"' + (x.sel ? " checked" : "") + '><span class="tmcol">' + fmtTime(x.start) + ' &ndash; ' + fmtTime(x.end) + '</span><span class="ttl">' + (x.focus ? '\u26A1 Focus time' + (x.subject ? ' · ' + esc(x.subject) : '') + ' — tick to offer' : 'Free · ' + durLabel(x.end - x.start)) + '</span></label>'; }
       });
     });

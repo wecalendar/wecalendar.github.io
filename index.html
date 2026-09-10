@@ -222,6 +222,9 @@
   .busy .joinbtn:hover{ background:#402C93; }
   .busy.dim { opacity:.18; }
   .ovl { pointer-events:none; z-index:3; opacity:.85; border-radius:6px; font-size:9.5px; color:#fff; padding:2px 4px; font-weight:600; overflow:hidden; white-space:nowrap; left:55% !important; }
+  /* teammate we could not read: hatched, never blank — a blank column reads as 'free' */
+  .ovl.unk { background:repeating-linear-gradient(135deg, rgba(122,122,134,.34) 0 6px, rgba(122,122,134,.10) 6px 12px); color:#3A3A44; border:1px dashed rgba(90,90,100,.6); opacity:1; }
+  body.dark .ovl.unk { background:repeating-linear-gradient(135deg, rgba(190,190,205,.30) 0 6px, rgba(190,190,205,.08) 6px 12px); color:#E7E7F0; border-color:rgba(200,200,215,.5); }
   .sel { background:#12B76A; color:#fff; font-size:11px; font-weight:600; padding:3px 6px; line-height:1.3; z-index:4; cursor:pointer; box-shadow:0 2px 6px rgba(0,200,117,.45); display:flex; align-items:center; }
   .sel:hover { background:#00B268; }
   .sel .x { position:absolute; top:2px; right:5px; font-weight:700; opacity:.75; }
@@ -773,31 +776,103 @@ async function searchPeople(q){
     .map(u => ({ name: u.displayName, email: (u.mail || u.userPrincipalName || "").toLowerCase() }))
     .filter(u => u.email && OKRE.test(u.email));
 }
+// ---- teammate free/busy ----
+// FAIL CLOSED. A teammate counts as free only for a window Graph actually confirmed. Every
+// entry carries .ok; .ok === false means "we could not read this calendar", which is NOT the
+// same as "they are free". Reading one as the other is what showed colleagues as available
+// when they were booked solid.
+function avToBusy(av, windowStart, ivMin){
+  const out = [], t0 = windowStart.getTime(), step = ivMin * 60000;
+  let i = 0;
+  while (i < av.length){
+    if (av[i] === "0"){ i++; continue; }
+    let j = i; while (j < av.length && av[j] !== "0") j++;
+    out.push({ start: new Date(t0 + i * step), end: new Date(t0 + j * step) });
+    i = j;
+  }
+  return out;
+}
+// Graph honours Prefer: outlook.timezone="UTC" here, but don't stake the feature on it — a
+// non-UTC reply read as UTC slides a busy block hours from where it really is, painting
+// genuinely busy time green. Returns null when the zone can't be resolved (fail closed).
+function gDate(x){
+  const s = String((x && x.dateTime) || "");
+  if (!s) return null;
+  if (/(Z|[+-]\d\d:?\d\d)$/.test(s)){ const d = new Date(s); return isNaN(+d) ? null : d; }
+  const tz = String((x && x.timeZone) || "UTC");
+  const t = Date.parse(s + "Z");
+  if (isNaN(t)) return null;
+  if (/^(utc|gmt|coordinated universal time)$/i.test(tz)) return new Date(t);
+  try {
+    const inst = t - whTzOffset(t - whTzOffset(t, tz) * 60000, tz) * 60000;
+    return isNaN(inst) ? null : new Date(inst);
+  } catch(e){ return null; }
+}
 async function fetchSchedules(emails, weekStart, weekEnd){
-  if (!emails.length) return {};
-  const tk = await token();
-  const r = await fetch("https://graph.microsoft.com/v1.0/me/calendar/getSchedule", {
-    method: "POST",
-    headers: { Authorization: "Bearer " + tk, "Content-Type": "application/json", Prefer: 'outlook.timezone="UTC"' },
-    body: JSON.stringify({
-      schedules: emails,
-      startTime: { dateTime: weekStart.toISOString().slice(0,19), timeZone: "UTC" },
-      endTime:   { dateTime: weekEnd.toISOString().slice(0,19),   timeZone: "UTC" },
-      availabilityViewInterval: 30,
-    }),
-  });
-  if (!r.ok) throw new Error("Graph " + r.status);
-  const obj = await r.json();
+  const want = (emails || []).map(e => String(e || "").toLowerCase()).filter(Boolean);
   const out = {};
-  (obj.value || []).forEach(s => {
-    const arr = (s.scheduleItems || [])
-      .filter(it => it.status !== "free")
-      .map(it => ({ start: new Date(it.start.dateTime + "Z"), end: new Date(it.end.dateTime + "Z") }));
+  const blank = err => { const a = []; a.wh = null; a.ok = false; a.err = err || "unreadable"; return a; };
+  if (!want.length) return out;
+  want.forEach(e => { out[e] = blank("no reply from Graph"); });   // default: unconfirmed, never "free"
+  const IV = 30;
+  let obj;
+  try {
+    const tk = await token();
+    const r = await fetch("https://graph.microsoft.com/v1.0/me/calendar/getSchedule", {
+      method: "POST",
+      headers: { Authorization: "Bearer " + tk, "Content-Type": "application/json", Prefer: 'outlook.timezone="UTC"' },
+      body: JSON.stringify({
+        schedules: want.slice(0, 20),   // Graph caps getSchedule at 20 mailboxes per call
+        startTime: { dateTime: weekStart.toISOString().slice(0,19), timeZone: "UTC" },
+        endTime:   { dateTime: weekEnd.toISOString().slice(0,19),   timeZone: "UTC" },
+        availabilityViewInterval: IV,
+      }),
+    });
+    if (!r.ok) throw new Error("Graph " + r.status);
+    obj = await r.json();
+  } catch(err){
+    // Whole call failed. Leave everyone unconfirmed: the old code threw here, which kept the
+    // previous (often empty) S.schedules and drew every teammate wide open.
+    want.forEach(em => { out[em] = blank((err && err.message) || "request failed"); });
+    return out;
+  }
+  // value[] comes back in the order we asked, but scheduleId is not a safe key: Graph can echo
+  // different casing or the resolved primary SMTP address, and keying on that left the teammate
+  // with no busy data at all — i.e. silently free. Match by position, fall back to the id.
+  (obj.value || []).forEach((s, i) => {
+    const echoed = String(s.scheduleId || "").toLowerCase();
+    const key = want[i] || (want.indexOf(echoed) >= 0 ? echoed : null);
+    if (!key) return;
+    if (s.error){ out[key] = blank(String(s.error.message || "Graph error").slice(0, 140)); return; }
+    let tzFail = false;
+    const items = [];
+    (s.scheduleItems || []).forEach(it => {
+      if (it.status === "free") return;   // busy / tentative / oof / unknown all block
+      const a = gDate(it.start), b = gDate(it.end);
+      if (!a || !b || +b <= +a){ tzFail = true; return; }
+      items.push({ start: a, end: b });
+    });
+    const av = typeof s.availabilityView === "string" ? s.availabilityView : "";
+    // Limited-detail mailboxes hand back availabilityView with no scheduleItems. Rebuild the
+    // busy blocks from the digit string (0 free, 1 tentative, 2 busy, 3 oof, 4 elsewhere)
+    // instead of reading "no items" as "free all week".
+    const arr = (!items.length && /[1-9]/.test(av)) ? avToBusy(av, weekStart, IV) : items;
+    const confirmed = !tzFail && (items.length > 0 || av.length > 0);
     arr.wh = s.workingHours || null; // their work days + hours, used to bound "all free" bands
-    out[s.scheduleId] = arr;
+    arr.ok = confirmed;
+    if (!confirmed) arr.err = tzFail ? "unreadable times in the reply" : "no free/busy data returned";
+    out[key] = arr;
   });
   return out;
 }
+// Always read teammate schedules through these — they keep the key lower-cased and make
+// "we don't know" impossible to mistake for "free".
+function schedOf(p){ return (p && S.schedules[String(p.email || "").toLowerCase()]) || null; }
+function schedOK(p){ const s = schedOf(p); return !!(s && s.ok); }
+function schedItems(p){ return schedOf(p) || []; }
+function unverifiedPeople(){ return (S.people || []).filter(p => !schedOK(p)); }
+function firstNames(list){ return list.map(p => (p.name || p.email).split(" ")[0]).join(", "); }
+function escHtml(s){ return String(s == null ? "" : s).replace(/[&<>"']/g, c => ({ "&":"&amp;", "<":"&lt;", ">":"&gt;", '"':"&quot;", "'":"&#39;" })[c]); }
 // convert a teammate's working-hours time ("09:00:00" in their timezone) to a UTC instant on day d
 function whTzOffset(ms, tz){
   const dtf = new Intl.DateTimeFormat("en-US", { timeZone: tz, hourCycle: "h23", year: "numeric", month: "2-digit", day: "2-digit", hour: "2-digit", minute: "2-digit" });
@@ -1073,7 +1148,7 @@ function focusOverlap(start, end){
 function findConflict(start, end){
   for (const ev of S.events) if (!ev.focus && overlaps(start, end, ev.start, ev.end)) return "your “" + ev.subject + "”";
   for (const p of S.people)
-    for (const it of (S.schedules[p.email] || []))
+    for (const it of schedItems(p))
       if (overlaps(start, end, it.start, it.end)) return (p.name || p.email) + "’s busy time";
   return null;
 }
@@ -1300,7 +1375,7 @@ function freeWindows(d){
   const busy = [];
   (S.events || []).forEach(ev => { const bs = ev.start.getTime() - BUF, be = ev.end.getTime() + BUF; if (be > ws && bs < we) busy.push([bs, be]); });
   (S.sel || []).forEach(x => { if (keyOf(x.start) === keyOf(d)){ const bs = x.start.getTime(), be = x.end.getTime(); if (be > ws && bs < we) busy.push([bs, be]); } });
-  (S.people || []).forEach(p => { (S.schedules[p.email] || []).forEach(it => { const bs = it.start.getTime(), be = it.end.getTime(); if (be > ws && bs < we) busy.push([bs, be]); }); });
+  (S.people || []).forEach(p => { schedItems(p).forEach(it => { const bs = it.start.getTime(), be = it.end.getTime(); if (be > ws && bs < we) busy.push([bs, be]); }); });
   busy.sort((a, b) => a[0] - b[0]);
   const out = [];
   busy.forEach(seg => { if (seg[0] > cur && Math.min(seg[0], we) - cur >= minLen) out.push({ start: new Date(cur), end: new Date(Math.min(seg[0], we)) }); if (seg[1] > cur) cur = seg[1]; });
@@ -1308,6 +1383,10 @@ function freeWindows(d){
   return out;
 }
 function fillFreeSlots(scope){
+  // Auto-fill is the dangerous one: it offers time without you looking at it. If a teammate's
+  // calendar is unreadable, refuse rather than hand out slots we never checked against theirs.
+  const unv = unverifiedPeople();
+  if (unv.length){ toast("\uD83D\uDEAB Can\u2019t auto-fill \u2014 no free/busy for " + firstNames(unv) + ". Remove them to fill your own time."); return; }
   const days = (scope === "day") ? [dayForFill()] : weekDaysFull();
   let added = 0;
   days.forEach(d => { freeWindows(d).forEach(w => { S.sel.push(w); added++; }); });
@@ -1430,9 +1509,10 @@ function renderChips(){
   S.people.forEach((p, i) => {
     const c = document.createElement("span"); c.className = "chip"; c.style.background = p.color;
     c.innerHTML = '<span class="nm"></span><span class="x">×</span>';
-    c.querySelector(".nm").textContent = p.name || p.email.split("@")[0];
-    c.title = p.email;
-    c.querySelector(".x").onclick = () => { S.people.splice(i,1); delete S.schedules[p.email]; renderChips(); renderBody(); };
+    const tried = !!schedOf(p), warn = tried && !schedOK(p);
+    c.querySelector(".nm").textContent = (warn ? "\u26A0 " : "") + (p.name || p.email.split("@")[0]);
+    c.title = p.email + (warn ? " \u2014 no free/busy available; not treated as free" : "");
+    c.querySelector(".x").onclick = () => { S.people.splice(i,1); delete S.schedules[String(p.email || "").toLowerCase()]; renderChips(); renderBody(); };
     box.appendChild(c);
   });
   if (S.people.length >= 2){
@@ -1444,13 +1524,20 @@ function renderChips(){
   }
 }
 async function loadSchedules(){
-  if (!CAPS.meetWith || !S.people.length) { S.schedules = {}; renderBody(); return; }
+  if (!CAPS.meetWith || !S.people.length) { S.schedules = {}; renderChips(); renderBody(); return; }
   const [ws, we] = weekRange();
-  try {
-    S.schedules = await fetchSchedules(S.people.map(p => p.email), ws, we);
-    const missing = S.people.filter(p => !(S.schedules[p.email] || []).length);
-    status(missing.length ? "No busy data for " + missing.map(p=>p.email).join(", ") + " (check the address)." : "");
-  } catch(e){ console.error(e); toast("Couldn’t load their calendar"); }
+  S.schedules = await fetchSchedules(S.people.map(p => p.email), ws, we);
+  const bad = unverifiedPeople();
+  if (bad.length){
+    // Say it loudly. When we can't read a teammate the grid genuinely cannot tell you whether
+    // they are free, so no "all free" band is drawn and auto-fill is refused.
+    const names = bad.map(p => (p.name || p.email) + " (" + ((schedOf(p) || {}).err || "unreadable") + ")").join("; ");
+    status('<span class="err">\u26A0 No free/busy for ' + escHtml(names) + ' \u2014 their busy time is NOT being checked, so nothing is marked \u201Call free\u201D. Remove them, or ask them to share free/busy.</span>');
+    toast("\u26A0 Couldn\u2019t read " + firstNames(bad) + "\u2019s calendar \u2014 not treating them as free");
+  } else {
+    status("");
+  }
+  renderChips();
   renderBody();
 }
 
@@ -1653,18 +1740,45 @@ function renderBody(){
       col.appendChild(el);
     });
 
-    // colleagues' busy overlays (one distinct color per person)
-    S.people.forEach(p => {
-      (S.schedules[p.email] || []).forEach(it => {
+    // colleagues' busy overlays (one distinct color per person), each in its OWN lane.
+    // Every overlay used to be drawn at the same left/width, so whoever rendered last covered
+    // the others completely — a teammate who was busy simply looked free.
+    const NP = Math.max(S.people.length, 1), LN0 = 55, LNW = 45 / NP;
+    const lane = (el, pi) => {
+      el.style.setProperty("left", (LN0 + pi * LNW).toFixed(2) + "%", "important");
+      el.style.setProperty("right", "auto", "important");
+      el.style.setProperty("width", "calc(" + LNW.toFixed(2) + "% - 2px)", "important");
+    };
+    S.people.forEach((p, pi) => {
+      schedItems(p).forEach(it => {
         if (it.end <= dayStart || it.start >= dayEnd) return;
         const a = Math.max(top(it.start), 0), b = Math.min(top(it.end), H);
         if (b - a < 4) return;
         const el = document.createElement("div"); el.className = "evt ovl";
         el.style.top = a + "px"; el.style.height = Math.max(b - a - 1, 8) + "px";
         el.style.background = p.color;
-        el.textContent = (p.name || p.email.split("@")[0]).split(" ")[0];
+        lane(el, pi);
+        const nm = (p.name || p.email.split("@")[0]).split(" ")[0];
+        el.textContent = NP > 2 ? nm.slice(0, 3) : nm;
+        el.title = (p.name || p.email) + " \u00B7 busy " + fmtTime(it.start) + " \u2013 " + fmtTime(it.end);
         col.appendChild(el);
       });
+    });
+
+    // A teammate whose calendar we couldn't read gets a hatched band across the working day,
+    // so an empty column is never mistaken for "they're free".
+    S.people.forEach((p, pi) => {
+      if (schedOK(p) || !schedOf(p)) return;
+      const us = new Date(d.getFullYear(), d.getMonth(), d.getDate(), S.workStart);
+      const ue = new Date(d.getFullYear(), d.getMonth(), d.getDate(), S.workEnd);
+      const a = Math.max(top(us), 0), b = Math.min(top(ue), H);
+      if (b - a < 6) return;
+      const el = document.createElement("div"); el.className = "evt ovl unk";
+      el.style.top = a + "px"; el.style.height = (b - a) + "px";
+      lane(el, pi);
+      el.textContent = "? " + (NP > 2 ? (p.name || p.email.split("@")[0]).split(" ")[0].slice(0, 3) : (p.name || p.email.split("@")[0]).split(" ")[0]);
+      el.title = (p.name || p.email) + " \u2014 no free/busy available; their busy time is not being checked";
+      col.appendChild(el);
     });
 
     // mutual-free bands: you + every selected teammate free, bounded by their working hours
@@ -1674,7 +1788,8 @@ function renderBody(){
       let dayOK = true;
       const DOW = ["sunday","monday","tuesday","wednesday","thursday","friday","saturday"];
       S.people.forEach(p => {
-        const wh = (S.schedules[p.email] || {}).wh;
+        if (!schedOK(p)){ dayOK = false; return; }   // unknown availability is never "all free"
+        const wh = (schedOf(p) || {}).wh;
         if (!wh) return;
         if (wh.daysOfWeek && wh.daysOfWeek.length && wh.daysOfWeek.map(x => String(x).toLowerCase()).indexOf(DOW[d.getDay()]) === -1){ dayOK = false; return; }
         const ps = whInstant(wh.startTime, wh.timeZone, d), pe = whInstant(wh.endTime, wh.timeZone, d);
@@ -1685,7 +1800,7 @@ function renderBody(){
       if (dayOK && bandE - bandS >= 15 * 60000){
         const busyAll = [];
         S.events.forEach(ev => { if (ev.allDay && !ev.oof) return; const bs = ev.start.getTime(), be = ev.end.getTime(); if (be > bandS && bs < bandE) busyAll.push([bs, be]); });
-        S.people.forEach(p => (S.schedules[p.email] || []).forEach(it => { const bs = it.start.getTime(), be = it.end.getTime(); if (be > bandS && bs < bandE) busyAll.push([bs, be]); }));
+        S.people.forEach(p => schedItems(p).forEach(it => { const bs = it.start.getTime(), be = it.end.getTime(); if (be > bandS && bs < bandE) busyAll.push([bs, be]); }));
         busyAll.sort((x, y) => x[0] - y[0]);
         let curB = bandS; const bands = [];
         busyAll.forEach(sg => { if (sg[0] > curB && sg[0] - curB >= 15 * 60000) bands.push([curB, Math.min(sg[0], bandE)]); if (sg[1] > curB) curB = sg[1]; });
@@ -2059,6 +2174,10 @@ async function createBookingLink(){
   if (!WECAL_ON){ toast("Booking backend not set up yet — see wecalendar-backend/README.md"); return; }
   warmLink();
   if (!S.sel.length){ toast("Paint some slots first"); return; }
+  // These teammates get invited to whatever the client picks, and we could not check their
+  // calendar. Make that an explicit decision instead of a silent one.
+  const unv = unverifiedPeople();
+  if (unv.length && !confirm("No free/busy for " + firstNames(unv) + ".\n\nThese slots have NOT been checked against their calendar, and they will be invited to whatever the client books.\n\nSend anyway?")) { status(""); return; }
   const clientSlots = splitForClient();
   status('<span class="spin"></span>Creating booking link…');
   try {
