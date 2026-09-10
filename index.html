@@ -2253,6 +2253,22 @@ async function quickCalendarLink(){
     const ids = S.cals.filter(c => c.checked).map(c => c.id);
     const evs = await fetchEvents(rangeStart, rangeEnd, ids);
     const minLen = (S.slotLen || 30) * 60000, BUF = (S.buffer || 0) * 60000;
+    // Teammates you have added get invited to whatever the client books, so this link has to be
+    // built from time you are ALL free. It used to offer two weeks of your own calendar and not
+    // even pass them as attendees — the same defect as the grid, in the one path that skipped it.
+    let mateBusy = [];
+    if (S.people.length){
+      const sch = await fetchSchedules(S.people.map(p => p.email), rangeStart, rangeEnd);
+      const bad = S.people.filter(p => { const s = sch[String(p.email || "").toLowerCase()]; return !s || !s.ok; });
+      if (bad.length){
+        // Fail closed: this button publishes without you reviewing anything.
+        status("");
+        toast("\uD83D\uDEAB Can\u2019t build the link \u2014 no free/busy for " + firstNames(bad) + ". Remove them, or paint slots by hand.");
+        if (btn) btn.disabled = false;
+        return;
+      }
+      S.people.forEach(p => (sch[String(p.email || "").toLowerCase()] || []).forEach(it => mateBusy.push([it.start.getTime() - BUF, it.end.getTime() + BUF])));
+    }
     const slots = [];
     for (let i = 0; i < 14; i++){
       const d = new Date(rangeStart.getFullYear(), rangeStart.getMonth(), rangeStart.getDate() + i);
@@ -2265,6 +2281,7 @@ async function quickCalendarLink(){
         const bs = ev.start.getTime() - BUF, be = ev.end.getTime() + BUF;
         if (be > wsD && bs < weD) dayBusy.push([bs, be]);
       });
+      mateBusy.forEach(sg => { if (sg[1] > wsD && sg[0] < weD) dayBusy.push(sg); });
       dayBusy.sort((a, b) => a[0] - b[0]);
       let cur = Math.max(wsD, now.getTime() + (S.minNotice || 0) * 3600000);
       const wins = [];
@@ -2288,7 +2305,7 @@ async function quickCalendarLink(){
         title: document.getElementById("subj").value || ("Meeting with " + pname()),
         tz: S.tz,
         slots: slots.slice(0, 400).map(x => ({ start: x.start.toISOString(), end: x.end.toISOString() })),
-        attendees: [],
+        attendees: S.people.map(p => p.email),
         videoLink: S.linkVid || "",
         settings: { workStart:S.workStart, workEnd:S.workEnd, buffer:S.buffer, minNotice:S.minNotice, dayCap:S.dayCap },
       }),

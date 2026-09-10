@@ -1425,7 +1425,15 @@
     var end = new Date(start.getTime() + 14 * 86400000);
     var PAD = 48 * 3600000;
     var url = "https://graph.microsoft.com/v1.0/me/calendarView?" + new URLSearchParams({ startDateTime: new Date(start.getTime() - PAD).toISOString(), endDateTime: new Date(end.getTime() + PAD).toISOString(), "$select": "start,end,showAs,isAllDay,responseStatus,subject,organizer,isOrganizer", "$top": "200" });
-    return graphAll(url, []).then(function(items){
+    // MATES are passed to publish-link as attendees, so they get invited to whatever the client
+    // books — their busy time has to shape these slots. It never did until now.
+    return Promise.all([
+      graphAll(url, []),
+      fetchMateSched(MATES.map(function(m){ return m.email; }), new Date(start.getTime() - PAD), new Date(end.getTime() + PAD))
+    ]).then(function(_r){
+      var items = _r[0], MSC = _r[1];
+      var badMates = MATES.filter(function(m){ var sc = MSC[m.email]; return !sc || !sc.ok; });
+      if (badMates.length) throw new Error("No free/busy for " + badMates.map(function(m){ return (m.name || m.email).split(" ")[0]; }).join(", ") + " \u2014 can't build a link that invites them. Remove them, or tick blocks by hand.");
       var busy = [], offDays = {};
       items.forEach(function(ev){
         if (!ev.start || !ev.start.dateTime || !ev.end || !ev.end.dateTime || ev.showAs === "free" || ev.showAs === "workingElsewhere") return;
@@ -1435,6 +1443,11 @@
         if (isNaN(s2.getTime()) || isNaN(e2.getTime())) return;
         if (ev.isAllDay){ for (var t = s2.getTime(); t < e2.getTime(); t += 86400000){ var od = new Date(t); offDays[od.getUTCFullYear() + "-" + od.getUTCMonth() + "-" + od.getUTCDate()] = true; } }
         else busy.push([s2.getTime() - BUF * 60000, e2.getTime() + BUF * 60000]);
+      });
+      MATES.forEach(function(m){
+        var sc = MSC[m.email];
+        if (!sc) return;
+        sc.items.forEach(function(it){ busy.push([it.start.getTime() - BUF * 60000, it.end.getTime() + BUF * 60000]); });
       });
       busy.sort(function(a, b){ return a[0] - b[0]; });
       var minLen = SLOTLEN * 60000, nowMs = Date.now(), nw = nowMs + MINNOTICE * 3600000, out = [];
