@@ -1,5 +1,5 @@
 {
- "generated": "2026-09-09",
+ "generated": "2026-09-10",
  "stamp": {
   "preparedFor": {
    "x": 42.52,
@@ -1294,8 +1294,8 @@
    "blurbV": 2
   },
   "wetransact-hubspot-app-installation-guide": {
-   "title": "WeTransact Hubspot App Installation guide",
-   "hash": "cc5ee6dfdc07b395",
+   "title": "WeTransact HubSpot App Installation guide",
+   "hash": "ed5d6deafbe8b8d6",
    "bytes": 213860,
    "file": "docs-pdf/wetransact-hubspot-app-installation-guide.pdf",
    "blurb": "The attached guide covers: WeTransact for HubSpot: Setup Guide → Before you start → Connect HubSpot to WeTransact → Add the cards to deal records → Verify.",
@@ -1376,8 +1376,8 @@
   },
   "benefits-limitation-and-troubleshooting-of-managed-applications": {
    "title": "Benefits, Limitation and troubleshooting of Managed Applications",
-   "hash": "30a7303c8c5a2566",
-   "bytes": 170883,
+   "hash": "65e8a80f0a71ddf8",
+   "bytes": 176385,
    "file": "docs-pdf/benefits-limitation-and-troubleshooting-of-managed-applications.pdf",
    "blurb": "The attached guide covers: Benefits of Managed Applications → Limitations and things to watch → Troubleshooting → FAQs.",
    "blurbSrc": "steps",
@@ -1385,8 +1385,8 @@
   },
   "build-managed-application-offer": {
    "title": "Build Managed Application Offer",
-   "hash": "47b6e2c318b2e915",
-   "bytes": 369103,
+   "hash": "acfe72aeeb0e5314",
+   "bytes": 375431,
    "file": "docs-pdf/build-managed-application-offer.pdf",
    "blurb": "The attached guide covers: Building the offer: the deployment package → mainTemplate.json → createUiDefinition.json → Working example → mainTemplate.json.",
    "blurbSrc": "steps",
@@ -1394,8 +1394,8 @@
   },
   "managed-application": {
    "title": "Managed Application",
-   "hash": "d445d65b13a1e814",
-   "bytes": 142307,
+   "hash": "22cc073fdf415b92",
+   "bytes": 147995,
    "file": "docs-pdf/managed-application.pdf",
    "blurb": "The attached guide covers: What is a Managed Application? → When to use a Managed Application → Key characteristics → Managed Application vs SaaS at a glance.",
    "blurbSrc": "steps",
@@ -1403,8 +1403,8 @@
   },
   "publisher-access-control-and-permissions": {
    "title": "Publisher Access control and permissions",
-   "hash": "005cb98144b0eb09",
-   "bytes": 336074,
+   "hash": "0d4a33bb5242fabc",
+   "bytes": 342185,
    "file": "docs-pdf/publisher-access-control-and-permissions.pdf",
    "blurb": "The attached guide covers: Updating your application → Commercial model → The flat fee limitation → Cancellation and refunds → Pricing policy disclaimer.",
    "blurbSrc": "steps",
@@ -1412,8 +1412,8 @@
   },
   "purchase-process-managed-application": {
    "title": "Purchase process - Managed Application",
-   "hash": "879c478e5a752dbc",
-   "bytes": 367864,
+   "hash": "514516ab960a4b78",
+   "bytes": 373657,
    "file": "docs-pdf/purchase-process-managed-application.pdf",
    "blurb": "The attached guide covers: Public plan → Private offer → Facts to keep in mind → Access control and permissions.",
    "blurbSrc": "steps",
