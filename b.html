@@ -126,7 +126,21 @@ function timeLabel(d){ return new Intl.DateTimeFormat("en-US",{timeZone:TZ,hour:
 function render(){
   const open = SLOTS.filter(s => s.status === "open" && !GONE.has(s.id) && new Date(s.start_utc) > new Date())
                     .sort((a,b)=> new Date(a.start_utc) - new Date(b.start_utc));
-  if (!open.length){ fail("🎉 All booked! Thank you."); return; }
+  if (!open.length){
+    // These are three completely different situations and they used to share one celebratory
+    // message, so a visitor whose times had just been withdrawn was told "All booked! Thank
+    // you." — which reads as a receipt for a booking they never made. The real confirmation
+    // is confirmView() in the overlay; this is only the list's empty state.
+    const now = new Date();
+    const withdrawn = SLOTS.some(s => s.status === "open" && GONE.has(s.id) && new Date(s.start_utc) > now);
+    const anyBooked = SLOTS.some(s => s.status === "booked");
+    const allPast = SLOTS.length > 0 && SLOTS.every(s => new Date(s.start_utc) <= now);
+    if (withdrawn) fail("These times are no longer available.<br><span style='font-size:12px'>Nothing was booked \u2014 please ask for a few new times.</span>");
+    else if (anyBooked) fail("\uD83C\uDF89 All booked! Thank you.");
+    else if (allPast) fail("These times have passed.<br><span style='font-size:12px'>Please ask for a few new ones.</span>");
+    else fail("No times are available right now.");
+    return;
+  }
   const byDay = {};
   open.forEach(s => { const k = dayKey(new Date(s.start_utc)); (byDay[k] = byDay[k] || []).push(s); });
   let html = "";
