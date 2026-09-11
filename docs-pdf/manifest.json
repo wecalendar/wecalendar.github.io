@@ -1,5 +1,5 @@
 {
- "generated": "2026-09-10",
+ "generated": "2026-09-11",
  "stamp": {
   "preparedFor": {
    "x": 42.52,
@@ -1032,51 +1032,6 @@
    "blurbSrc": "steps",
    "blurbV": 2
   },
-  "part-1-enroll-into-the-microsoft-transact-and-grow-incentive": {
-   "title": "Part 1 - Enroll into the Microsoft Transact & Grow Incentive",
-   "hash": "2cec81212ccd93b5",
-   "bytes": 273179,
-   "file": "docs-pdf/part-1-enroll-into-the-microsoft-transact-and-grow-incentive.pdf",
-   "blurb": "The attached guide covers: Click on Incentives → Find the Campaigns line and click on \"Enroll\" → You will have the Term and Conditions - please go ahead and click on \"Accept\".",
-   "blurbSrc": "steps",
-   "blurbV": 2
-  },
-  "part-2-filling-up-tax-details-non-us-countries": {
-   "title": "Part 2 - Filling Up Tax Details (Non US-Countries)",
-   "hash": "45d999a9288e94f3",
-   "bytes": 1021244,
-   "file": "docs-pdf/part-2-filling-up-tax-details-non-us-countries.pdf",
-   "blurb": "The attached guide covers: Click on the Button next to Campaigns → Click on the Edit pen → Click on\"Create a nex tax profile\" → Click on Continue → Click on Organization.",
-   "blurbSrc": "steps",
-   "blurbV": 2
-  },
-  "part-2-us-entities-filling-tax-profile-walktrough-example": {
-   "title": "Part 2 - (US Entities) Filling Tax Profile Walktrough example",
-   "hash": "e9105300aa918bf8",
-   "bytes": 743828,
-   "file": "docs-pdf/part-2-us-entities-filling-tax-profile-walktrough-example.pdf",
-   "blurb": "The attached guide covers: Click on the Button next to Campaigns → Click on Edit → Click on Create a New Tax Profile → Click on Continue → Click on Next.",
-   "blurbSrc": "steps",
-   "blurbV": 2
-  },
-  "part-3-adding-the-payment-profile": {
-   "title": "Part 3 - Adding the Payment Profile",
-   "hash": "51283aab96efde2d",
-   "bytes": 495229,
-   "file": "docs-pdf/part-3-adding-the-payment-profile.pdf",
-   "blurb": "The attached guide covers: Again - click on the Campaign line you just filled the Tax Details of → Select the newly created Tax Profile → Click on first circle next to Microosft Corporation and click on Edit → Click on \"Create a New Payment Profile\" → Click on Continue.",
-   "blurbSrc": "steps",
-   "blurbV": 2
-  },
-  "part-4-submitting-the-incentive-profile": {
-   "title": "Part 4 - Submitting the Incentive Profile",
-   "hash": "0ef7af78a6ceb0b1",
-   "bytes": 465625,
-   "file": "docs-pdf/part-4-submitting-the-incentive-profile.pdf",
-   "blurb": "The attached guide covers: Reselect the Campaign program we filled the Tax & Payment Profile of. And click on edit → Again, select the new tax profile → Add your Payment Currency and click Save → Repeat exactly the same process for line 2 → Repeat exactly the same process for line 3.",
-   "blurbSrc": "steps",
-   "blurbV": 2
-  },
   "private-plan": {
    "title": "Private Plan",
    "hash": "c64b805e751df0a3",
@@ -1358,10 +1313,10 @@
   },
   "guide-to-submitting-the-claim-for-ai-build-and-publish-marketplace-incentives-fy27": {
    "title": "Guide to Submitting the Claim for AI Build & Publish Marketplace Incentives FY27",
-   "hash": "3f1c544cac7515f3",
-   "bytes": 305219,
+   "hash": "49d41cc420d456dc",
+   "bytes": 341213,
    "file": "docs-pdf/guide-to-submitting-the-claim-for-ai-build-and-publish-marketplace-incentives-fy27.pdf",
-   "blurb": "The attached guide covers: Pre-Application Gates → Application Process → Access Partner Center and Click on Incentive Workspace → Confirm Enrollment and Tax Profile → Customer Claims.",
+   "blurb": "The attached guide covers: Pre-Application Gates → Application Process → Access Partner Center and Click on Incentive Workspace → Confirm Enrolment and Complete your Tax Profile → Click on Action.",
    "blurbSrc": "steps",
    "blurbV": 2
   },
@@ -1427,7 +1382,43 @@
    "blurb": "The attached guide covers: When to use a private plan → Key characteristics → How it works → How to publish a private plan → Steps.",
    "blurbSrc": "steps",
    "blurbV": 2
+  },
+  "how-do-complete-tax-and-payout-profile-for-the-incentive-campaign": {
+   "title": "How do complete Tax and payout profile for the incentive campaign?",
+   "hash": "5a025a113606c9eb",
+   "bytes": 105433,
+   "file": "docs-pdf/how-do-complete-tax-and-payout-profile-for-the-incentive-campaign.pdf",
+   "blurb": "The attached guide covers: Part 1 - (US Entities and non US) Filling Tax Profile Walkthrough example → Part 2 - Adding the Payment Profile → Part 3 - Submitting the Incentive Profile.",
+   "blurbSrc": "steps",
+   "blurbV": 2
+  },
+  "part-1-us-entities-and-non-us-entities-filling-tax-profile-walkthrough-example": {
+   "title": "Part 1 - (US Entities and Non Us Entities) Filling Tax Profile Walkthrough example",
+   "hash": "c70236ad7b5d3415",
+   "bytes": 136439,
+   "file": "docs-pdf/part-1-us-entities-and-non-us-entities-filling-tax-profile-walkthrough-example.pdf",
+   "blurb": "The attached guide covers: US Companies → Non-US Companies.",
+   "blurbSrc": "steps",
+   "blurbV": 2
+  },
+  "part-2-adding-the-payment-profile": {
+   "title": "Part 2 - Adding the Payment Profile",
+   "hash": "f023fabe73c3e7e6",
+   "bytes": 494821,
+   "file": "docs-pdf/part-2-adding-the-payment-profile.pdf",
+   "blurb": "The attached guide covers: Again - click on the Campaign line you just filled the Tax Details of → Select the newly created Tax Profile → Click on first circle next to Microosft Corporation and click on Edit → Click on \"Create a New Payment Profile\" → Click on Continue.",
+   "blurbSrc": "steps",
+   "blurbV": 2
+  },
+  "part-3-submitting-the-incentive-profile": {
+   "title": "Part 3 - Submitting the Incentive Profile",
+   "hash": "9c09e85035dc94b4",
+   "bytes": 466265,
+   "file": "docs-pdf/part-3-submitting-the-incentive-profile.pdf",
+   "blurb": "The attached guide covers: Reselect the Campaign program we filled the Tax & Payment Profile of. And click on edit → Again, select the new tax profile → Add your Payment Currency and click Save → Repeat exactly the same process for line 2 → Repeat exactly the same process for line 3.",
+   "blurbSrc": "steps",
+   "blurbV": 2
   }
  },
- "count": 157
+ "count": 156
 }
