@@ -1,5 +1,5 @@
 {
- "generated": "2026-09-16",
+ "generated": "2026-09-17",
  "stamp": {
   "preparedFor": {
    "x": 42.52,
@@ -1070,8 +1070,8 @@
   },
   "step-1-create-your-microsoft-work-account": {
    "title": "Step 1 — Create Your Microsoft Work Account",
-   "hash": "3a2c9da0a1a2494d",
-   "bytes": 488868,
+   "hash": "2f42b10a123cf7c7",
+   "bytes": 491774,
    "file": "docs-pdf/step-1-create-your-microsoft-work-account.pdf",
    "blurb": "The attached guide covers: Start the Process → Enter Your Details → Complete Payment → Set Up Multi-Factor Authentication (MFA) → Continue to Partner Center Registration.",
    "blurbSrc": "steps",
