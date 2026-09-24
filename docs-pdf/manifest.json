@@ -1,5 +1,5 @@
 {
- "generated": "2026-09-23",
+ "generated": "2026-09-24",
  "stamp": {
   "preparedFor": {
    "x": 42.52,
@@ -1418,7 +1418,16 @@
    "blurb": "The attached guide covers: Reselect the Campaign program we filled the Tax & Payment Profile of. And click on edit → Again, select the new tax profile → Add your Payment Currency and click Save → Repeat exactly the same process for line 2 → Repeat exactly the same process for line 3.",
    "blurbSrc": "steps",
    "blurbV": 2
+  },
+  "how-to-add-a-profile-as-the-billing-owner": {
+   "title": "How to add a profile as the billing owner",
+   "hash": "73ed2b6d7fb6d957",
+   "bytes": 208056,
+   "file": "docs-pdf/how-to-add-a-profile-as-the-billing-owner.pdf",
+   "blurb": "The attached guide covers: Then click Cost Management → Click on Access control → Then add the user you want as the billing admin.",
+   "blurbSrc": "steps",
+   "blurbV": 2
   }
  },
- "count": 156
+ "count": 157
 }
