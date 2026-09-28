@@ -1,6 +1,6 @@
 {
  "source": "https://docs.wetransact.io/sitemap.xml",
- "count": 157,
+ "count": 156,
  "docs": [
   {
    "slug": "account-verification-email-not-received-by-primary-contact",
@@ -12,7 +12,7 @@
   },
   {
    "slug": "api-set-up-automated-order-management-aom-automated-usage-reporting",
-   "title": "API set up automated order management AOM automated usage reporting"
+   "title": "API set up + Automated Order Management (AOM) + Automated Usage Reporting"
   },
   {
    "slug": "assign-global-admin-to-another-user-in-partner-center",
@@ -43,12 +43,12 @@
    "title": "Create a Support Ticket Outside Partner center"
   },
   {
-   "slug": "create-an-ip-cosell-support-ticket-acr",
-   "title": "Create an IP co-sell support ticket ACR"
-  },
-  {
    "slug": "create-an-ip-cosell-support-ticket-billed-sales",
    "title": "Create an IP co-sell support ticket billed sales"
+  },
+  {
+   "slug": "create-an-ip-cosell-support-ticket-acr",
+   "title": "Create an IP-cosell support ticket (ACR)"
   },
   {
    "slug": "create-azure-support-request-for-invoice-payment",
@@ -88,7 +88,7 @@
   },
   {
    "slug": "ecosystem-watchers-explore-partners-and-vendors-across-microsoft-marketplace",
-   "title": "Ecosystem watchers explore partners and vendors across Microsoft Marketplace"
+   "title": "Ecosystem Watchers - Explore Partners and Vendors Across Microsoft Marketplace"
   },
   {
    "slug": "emitting-a-private-plan",
@@ -108,7 +108,7 @@
   },
   {
    "slug": "finance-how-marketplace-finance-works",
-   "title": "Finance how Marketplace finance works"
+   "title": "Finance, how marketplace finance works"
   },
   {
    "slug": "find-out-who-the-azure-global-admin-is",
@@ -139,10 +139,6 @@
    "title": "How can I verify a user's rights to complete a purchase?"
   },
   {
-   "slug": "how-do-complete-tax-and-payout-profile-for-the-incentive-campaign",
-   "title": "How do complete tax and payout profile for the incentive campaign?"
-  },
-  {
    "slug": "how-do-i-add-a-subscription-id-to-the-supplemental-tab-in-the-wetransact-portal",
    "title": "How do I add a subscription ID to the supplemental tab in the WeTransact portal?"
   },
@@ -152,7 +148,7 @@
   },
   {
    "slug": "how-do-i-check-incentive-transact-and-grow-cashback",
-   "title": "How do I check incentive transact and grow cashback?"
+   "title": "How do I check Incentive (Transact & Grow) Cashback?"
   },
   {
    "slug": "how-do-i-check-who-has-owner-status",
@@ -164,7 +160,7 @@
   },
   {
    "slug": "how-do-i-export-a-technical-diagram-as-a-png",
-   "title": "How do I export a technical diagram as a PNG?"
+   "title": "How do I export a technical diagram as a .png?"
   },
   {
    "slug": "how-do-i-select-a-publisher-location-for-the-product-listing",
@@ -272,7 +268,7 @@
   },
   {
    "slug": "how-to-connect-an-email-account-for-outreach-campaigns",
-   "title": "How to connect an email account for outreach campaigns?"
+   "title": "How to connect an email account for Outreach campaigns?"
   },
   {
    "slug": "how-to-create-a-billing-support-request-in-microsoft-azure-portal",
@@ -368,7 +364,7 @@
   },
   {
    "slug": "how-to-leverage-the-wetransact-collaborative-customer-tab-for-enhanced-sales-strategies",
-   "title": "How to leverage the WeTransact collaborative customer tab for enhanced sales strategies?"
+   "title": "How to leverage the WeTransact Collaborative Customer Tab for enhanced sales strategies?"
   },
   {
    "slug": "how-to-pay-your-marketplace-invoices",
@@ -396,7 +392,7 @@
   },
   {
    "slug": "how-to-submit-the-ip-co-sell-documentation",
-   "title": "How to submit the IP co-sell documentation?"
+   "title": "How to submit the IP Co sell documentation?"
   },
   {
    "slug": "how-to-test-your-managed-application-package-before-publishing",
@@ -516,7 +512,7 @@
   },
   {
    "slug": "salesforce-installation-guide",
-   "title": "Salesforce installation guide"
+   "title": "SalesForce Installation Guide"
   },
   {
    "slug": "step-1-create-your-microsoft-work-account",
@@ -548,7 +544,7 @@
   },
   {
    "slug": "subscribe-to-the-wetransact-page-notifications-on-linkedin",
-   "title": "Subscribe to the WeTransact page notifications on LinkedIn"
+   "title": "Subscribe to the WeTransact Page notifications on LinkedIn"
   },
   {
    "slug": "the-steps-to-be-followed-by-your-global-admin-to-give-you-the-necessary-level-of-rights",
@@ -564,27 +560,19 @@
   },
   {
    "slug": "video-masterclasses-01-wetransact-marketplace-journey",
-   "title": "Video masterclasses 01 — WeTransact Marketplace journey"
-  },
-  {
-   "slug": "video-masterclasses-03the-marketplace-rewards-and-incentives",
-   "title": "Video masterclasses 03 — The Marketplace rewards and incentives"
-  },
-  {
-   "slug": "video-masterclasses-04-why-approaches-differ-based-on-your-audience-segmentation",
-   "title": "Video masterclasses 04 — Why approaches differ based on your audience segmentation"
-  },
-  {
-   "slug": "video-masterclasses-08-the-reseller-landscape",
-   "title": "Video masterclasses 08 — The reseller landscape"
-  },
-  {
-   "slug": "video-masterclasses-09build-your-reseller-offer",
-   "title": "Video masterclasses 09 — Build your reseller offer"
+   "title": "Video Masterclasses-01. WeTransact Marketplace journey"
   },
   {
    "slug": "video-masterclasses-02-the-three-marketplace-channels",
    "title": "Video Masterclasses-02. The Three Marketplace Channels"
+  },
+  {
+   "slug": "video-masterclasses-03the-marketplace-rewards-and-incentives",
+   "title": "Video Masterclasses-03.The Marketplace Rewards and Incentives"
+  },
+  {
+   "slug": "video-masterclasses-04-why-approaches-differ-based-on-your-audience-segmentation",
+   "title": "Video Masterclasses-04. Why Approaches Differ Based on Your Audience Segmentation"
   },
   {
    "slug": "video-masterclasses-05optimise-your-listing-on-the-storefronts",
@@ -597,6 +585,14 @@
   {
    "slug": "video-masterclasses-07-how-to-start-working-with-microsoft",
    "title": "Video Masterclasses-07. How to Start Working with Microsoft"
+  },
+  {
+   "slug": "video-masterclasses-08-the-reseller-landscape",
+   "title": "Video Masterclasses-08. The Reseller Landscape"
+  },
+  {
+   "slug": "video-masterclasses-09build-your-reseller-offer",
+   "title": "Video Masterclasses-09.Build Your Reseller Offer"
   },
   {
    "slug": "video-masterclasses-10find-your-first-resellers",
@@ -616,11 +612,11 @@
   },
   {
    "slug": "what-to-do-when-you-cant-lodge-a-claim-build-and-publish-ai-marketplace",
-   "title": "What to do when you cant lodge a claim build and publish AI Marketplace?"
+   "title": "What to Do When You Can't Lodge a Claim — Build and Publish AI Marketplace"
   },
   {
    "slug": "where-are-my-marketing-benefits-in-partner-center",
-   "title": "Where are my marketing benefits in Partner Center?"
+   "title": "Where are my marketing benefits in Partner Center ?"
   },
   {
    "slug": "where-to-find-the-azure-sponsorship",
