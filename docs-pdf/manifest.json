@@ -1,5 +1,5 @@
 {
- "generated": "2026-09-27",
+ "generated": "2026-09-28",
  "stamp": {
   "preparedFor": {
    "x": 42.52,
@@ -1383,15 +1383,6 @@
    "blurbSrc": "steps",
    "blurbV": 2
   },
-  "how-do-complete-tax-and-payout-profile-for-the-incentive-campaign": {
-   "title": "How do complete Tax and payout profile for the incentive campaign?",
-   "hash": "5a025a113606c9eb",
-   "bytes": 105433,
-   "file": "docs-pdf/how-do-complete-tax-and-payout-profile-for-the-incentive-campaign.pdf",
-   "blurb": "The attached guide covers: Part 1 - (US Entities and non US) Filling Tax Profile Walkthrough example → Part 2 - Adding the Payment Profile → Part 3 - Submitting the Incentive Profile.",
-   "blurbSrc": "steps",
-   "blurbV": 2
-  },
   "part-1-us-entities-and-non-us-entities-filling-tax-profile-walkthrough-example": {
    "title": "Part 1 - (US Entities and Non Us Entities) Filling Tax Profile Walkthrough example",
    "hash": "c70236ad7b5d3415",
@@ -1429,5 +1420,5 @@
    "blurbV": 2
   }
  },
- "count": 157
+ "count": 156
 }
