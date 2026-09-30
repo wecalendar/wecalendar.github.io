@@ -203,6 +203,26 @@
   .evt .rmx{ position:absolute; top:2px; right:5px; font-size:14px; font-weight:700; color:#9aa3b2; line-height:1; }
   .evt.rmable:hover .rmx{ color:#b91c1c; }
   #blockBtn:hover{ background:#F4F0FF !important; border-color:#C9BCFF !important; }
+  #statusBtn{ width:100%; margin-top:14px; display:flex; align-items:center; justify-content:center; gap:7px; background:#fff; border:1px solid var(--line); border-radius:10px; padding:10px; font-size:13px; font-weight:600; font-family:inherit; color:var(--ink); cursor:pointer; text-align:left; }
+  #statusBtn:hover{ background:#F4F0FF; border-color:#C9BCFF; }
+  #statusBtn.on{ justify-content:space-between; background:#FFF6EC; border-color:#F6D7B0; padding:9px 11px; }
+  #statusBtn.on:hover{ background:#FFF0DE; }
+  #statusBtn .stsub{ display:block; font-weight:500; font-size:11px; color:#9A6B2F; margin-top:1px; }
+  #statusBtn .stx{ color:#C79A62; font-size:17px; line-height:1; padding:0 2px; }
+  #statusBtn .stx:hover{ color:#b91c1c; }
+  #statusBtn + #blockBtn{ margin-top:8px !important; }
+  .stopt{ display:flex; align-items:center; gap:10px; width:100%; padding:8px 10px; border-radius:10px; font:inherit; font-size:13.5px; color:var(--ink); background:none; border:1px solid transparent; cursor:pointer; text-align:left; }
+  .stopt:hover{ background:#F7F5FE; }
+  .stopt.on{ background:#F0ECFF; border-color:#D6CCFA; }
+  .stopt .e{ font-size:17px; width:22px; text-align:center; }
+  .stopt .d{ margin-left:auto; font-size:12px; color:var(--muted2); }
+  .stchip{ border:1px solid var(--line); background:#fff; border-radius:999px; padding:6px 11px; font:inherit; font-size:12.5px; font-weight:600; color:var(--ink); cursor:pointer; }
+  .stchip:hover{ border-color:#C9BEF5; }
+  .stchip.on{ background:#F0ECFF; border-color:#5E43C8; color:#2C1C6C; }
+  body.dark #statusBtn{ background:var(--card); }
+  body.dark #statusBtn.on{ background:#2A2217; border-color:#5A4424; }
+  body.dark .stopt.on, body.dark .stchip.on{ background:#262045; color:var(--ink); }
+  body.dark .stchip{ background:var(--card); }
   #tourSpot{ position:fixed; border-radius:12px; box-shadow:0 0 0 9999px rgba(20,16,40,.55); z-index:4000; pointer-events:none; transition:left .2s, top .2s, width .2s, height .2s; }
   #tourTip{ position:fixed; z-index:4001; background:#fff; border-radius:14px; padding:16px; width:300px; max-width:90vw; box-shadow:0 18px 50px rgba(20,16,40,.32); }
   #tourTip .tt-title{ font-size:15px; font-weight:700; color:var(--ink); margin-bottom:5px; }
@@ -464,6 +484,7 @@
           <div style="font-size:12px; font-weight:600; color:var(--ink); margin-bottom:10px; display:flex; align-items:center; gap:6px;">🌴 Out of office <span id="ptoScope" style="font-weight:500; color:var(--muted2); font-size:11px;">· this week</span></div>
           <div id="ptoList"></div>
         </div>
+        <button id="statusBtn" type="button" title="Set a status — stay online but take no calls">🙂 Set status</button>
         <button id="blockBtn" title="Block time on your calendar (out of office)" style="width:100%; margin-top:14px; display:flex; align-items:center; justify-content:center; gap:7px; background:#fff; border:1px solid var(--line); border-radius:10px; padding:10px; font-size:13px; font-weight:600; font-family:inherit; color:var(--ink); cursor:pointer;">🚫 Set OOO</button>
       </aside>
 
@@ -566,6 +587,32 @@
   <div style="background:#fff; border-radius:18px; padding:22px 22px 20px; width:min(420px,94vw); box-shadow:0 24px 70px rgba(20,16,40,.3); position:relative;">
     <span id="loadModalClose" title="Close" style="position:absolute; top:13px; right:16px; cursor:pointer; font-size:20px; line-height:1; color:#B8B0DE;">×</span>
     <div id="loadModalBody"></div>
+  </div>
+</div>
+<div id="statusModal" style="display:none; position:fixed; inset:0; background:rgba(20,16,40,.45); z-index:1200; align-items:center; justify-content:center; padding:20px;">
+  <div style="background:var(--card,#fff); border-radius:18px; padding:22px; width:min(400px,94vw); max-height:92vh; overflow:auto; box-shadow:0 24px 70px rgba(20,16,40,.3);">
+    <h3 style="font-size:16px; font-weight:600; color:var(--ink); margin:0 0 4px;">🙂 Set a status</h3>
+    <div style="font-size:12px;color:var(--muted2);margin:0 0 14px;line-height:1.45">You're still working, you just don't want calls. Nobody can book you while it's on.</div>
+    <div style="display:flex;align-items:center;gap:8px;border:1px solid var(--line);border-radius:12px;padding:4px 6px 4px 4px;margin-bottom:12px">
+      <button type="button" id="stEmoji" title="Change emoji" style="border:none;background:#F4F1FC;border-radius:9px;width:36px;height:34px;font-size:18px;cursor:pointer">🤒</button>
+      <input type="text" id="stText" maxlength="60" placeholder="What's your status?" style="flex:1;min-width:0;border:none;outline:none;font:inherit;font-size:13.5px;color:var(--ink);background:transparent;padding:6px 2px">
+    </div>
+    <div id="stEmojiRow" style="display:none;flex-wrap:wrap;gap:4px;margin:-4px 0 12px"></div>
+    <div id="stPresets"></div>
+    <div style="font-size:12px;color:var(--muted2);font-weight:500;margin:14px 0 6px">No calls until</div>
+    <div id="stDur" style="display:flex;flex-wrap:wrap;gap:6px">
+      <button type="button" class="stchip" data-m="30">30 min</button>
+      <button type="button" class="stchip" data-m="60">1 hour</button>
+      <button type="button" class="stchip" data-m="120">2 hours</button>
+      <button type="button" class="stchip" data-m="today">Rest of today</button>
+      <button type="button" class="stchip" data-m="pick">Pick a time…</button>
+    </div>
+    <div id="stPickRow" style="display:none;margin-top:8px"><input type="time" id="stUntil" step="900" style="width:100%;box-sizing:border-box;border:1px solid var(--line);border-radius:10px;padding:9px 11px;font-size:13.5px;font-family:inherit;color:var(--ink);background:transparent;outline:none;width:140px"></div>
+    <div style="display:flex;gap:9px;font-size:12px;color:var(--muted2);margin-top:14px;line-height:1.4"><span>📅</span><span>Also blocks your Outlook calendar as <b style="font-weight:600;color:var(--ink)">Busy (private)</b> — colleagues see you're busy, not why.</span></div>
+    <div id="stMsg" style="font-size:12px;color:#b91c1c;margin-top:8px;min-height:14px"></div>
+    <button class="btn primary" id="stSave" style="width:100%;margin-top:6px">Set status</button>
+    <button id="stClear" style="display:none;width:100%;margin-top:8px;border:1px solid var(--line);background:none;border-radius:10px;padding:9px;color:#b91c1c;font:inherit;font-size:13px;font-weight:600;cursor:pointer">Clear status</button>
+    <button id="stCancel" style="width:100%;margin-top:8px;background:none;border:none;color:var(--muted2);font:inherit;font-size:13px;cursor:pointer">Cancel</button>
   </div>
 </div>
 <div id="blockModal" style="display:none; position:fixed; inset:0; background:rgba(20,16,40,.45); z-index:1200; align-items:center; justify-content:center; padding:20px;">
@@ -679,6 +726,7 @@ async function fetchCalendars(){
   const obj = await gget("/me/calendars?$select=id,name,hexColor,isDefaultCalendar&$top=50");
   return (obj.value || []).map(c => ({ id: c.id, name: c.name, isDefault: !!c.isDefaultCalendar }));
 }
+const STATUS_CAT = "WeCalendar status";
 function foreignOOO(ev){
   // Someone ELSE's out-of-office invite that landed on my calendar (e.g. a teammate
   // sending "I'm OOO" to the team). It's informational — it must NOT block my
@@ -694,7 +742,7 @@ function foreignOOO(ev){
 // who needs today. Anything with other attendees is a real meeting, never an overridable block.
 const FOCUS_RE = /^focus$|^(focus\s*(time|block|session)|deep\s*work|heads?[\s-]?down|no\s*meetings?)\b/;
 function isFocusEv(ev){
-  if (ev.isAllDay || ev.showAs === "oof") return false;
+  if (ev.isAllDay || ev.showAs === "oof" || (ev.categories || []).indexOf(STATUS_CAT) >= 0) return false;
   const myEm = (ME && ME.email || "").toLowerCase();
   const others = (ev.attendees || []).some(a => { const e = (a.emailAddress && a.emailAddress.address || "").toLowerCase(); return e && e !== myEm; });
   if (others) return false;
@@ -718,7 +766,7 @@ async function fetchEvents(weekStart, weekEnd, calIds){
       if (!r.ok) throw new Error("Graph " + r.status);
       const obj = await r.json();
       (obj.value || []).filter(ev => ev.start && ev.start.dateTime && ev.end && ev.end.dateTime && ev.showAs !== "free" && ev.showAs !== "workingElsewhere" && !(ev.responseStatus && ev.responseStatus.response === "declined") && (!ev.isAllDay || ev.showAs === "oof") && !foreignOOO(ev))
-        .forEach(ev => all.push({ id: ev.id, subject: ev.subject || "(busy)", start: new Date(ev.start.dateTime + "Z"), end: new Date(ev.end.dateTime + "Z"), allDay: !!ev.isAllDay, oof: ev.showAs === "oof", focus: isFocusEv(ev), join: (ev.onlineMeeting && ev.onlineMeeting.joinUrl) || null, web: ev.webLink || null, cancelId: (ev.body && ev.body.content && (/[?&]cancel=([0-9a-fA-F-]{36})/.exec(ev.body.content) || [])[1]) || null, org: (ev.organizer && ev.organizer.emailAddress && ev.organizer.emailAddress.name) || null, orgEmail: (ev.organizer && ev.organizer.emailAddress && ev.organizer.emailAddress.address) || null, att: (ev.attendees || []).map(function(a){ return { name: (a.emailAddress && (a.emailAddress.name || a.emailAddress.address)) || "", email: (a.emailAddress && a.emailAddress.address) || "", resp: (a.status && a.status.response) || "none" }; }) }));
+        .forEach(ev => all.push({ id: ev.id, subject: ev.subject || "(busy)", start: new Date(ev.start.dateTime + "Z"), end: new Date(ev.end.dateTime + "Z"), allDay: !!ev.isAllDay, oof: ev.showAs === "oof", st: (ev.categories || []).indexOf(STATUS_CAT) >= 0, focus: isFocusEv(ev), join: (ev.onlineMeeting && ev.onlineMeeting.joinUrl) || null, web: ev.webLink || null, cancelId: (ev.body && ev.body.content && (/[?&]cancel=([0-9a-fA-F-]{36})/.exec(ev.body.content) || [])[1]) || null, org: (ev.organizer && ev.organizer.emailAddress && ev.organizer.emailAddress.name) || null, orgEmail: (ev.organizer && ev.organizer.emailAddress && ev.organizer.emailAddress.address) || null, att: (ev.attendees || []).map(function(a){ return { name: (a.emailAddress && (a.emailAddress.name || a.emailAddress.address)) || "", email: (a.emailAddress && a.emailAddress.address) || "", resp: (a.status && a.status.response) || "none" }; }) }));
       next = obj["@odata.nextLink"] || null;
     }
   }));
@@ -1700,6 +1748,7 @@ async function load(){
   } catch(e){ console.error(e); status('<span class="err">Couldn’t load calendar events.</span>'); }
   if (S.people.length) await loadSchedules();
   renderAll();
+  refreshStatus();
 }
 function status(html){ document.getElementById("status").innerHTML = html; }
 
@@ -1838,7 +1887,8 @@ function renderBody(){
         el.insertAdjacentHTML("beforeend", '<span class="focx">⚡ offer</span>');
         el.onclick = e => { e.stopPropagation(); offerFocusBlock(ev); };
       }
-      if (ev.oof && ev.id){ el.classList.add("rmable"); el.title = "Click to remove this out-of-office block"; el.onclick = () => removeOOO(ev); el.insertAdjacentHTML("beforeend", '<span class="rmx">×</span>'); }
+      if (ev.st && ev.id && ev.end > now){ el.classList.add("rmable"); el.title = "Your status — click to change or clear it"; el.onclick = () => openStatus(); el.insertAdjacentHTML("beforeend", '<span class="rmx">×</span>'); }
+      else if (ev.oof && ev.id){ el.classList.add("rmable"); el.title = "Click to remove this out-of-office block"; el.onclick = () => removeOOO(ev); el.insertAdjacentHTML("beforeend", '<span class="rmx">×</span>'); }
       else if (ev.cancelId && ev.end > now){ el.classList.add("rmable"); el.title = "Click to cancel this booking"; el.onclick = () => confirmCancel(ev); el.insertAdjacentHTML("beforeend", '<span class="rmx">×</span>'); }
       if (ev.join && ev.end > now){
         const jb = document.createElement("a");
@@ -2513,7 +2563,7 @@ function dayLoad(d){
   const we = new Date(d.getFullYear(), d.getMonth(), d.getDate(), S.workEnd).getTime();
   let total = 0, work = 0, count = 0; const segs = [];
   (S.events || []).forEach(ev => {
-    if (ev.oof) return;
+    if (ev.oof || ev.st) return;
     const s = ev.start.getTime(), e = ev.end.getTime();
     const t = ovMin(s, e, ds, de); if (t > 0){ total += t; count++; }
     const w = ovMin(s, e, ws, we); if (w > 0){ work += w; segs.push([Math.max(s, ws), Math.min(e, we)]); }
@@ -2640,6 +2690,157 @@ function renderPTOBox(){
   box.style.display = "block";
 }
 
+// ---- set status (Slack-style: online, but no calls) ----
+// A status is a private Busy event on the host's Outlook calendar tagged with STATUS_CAT,
+// running from "now" to the chosen end. That event is what stops bookings (booking links
+// check free/busy), so it works across devices. Clearing it early trims the event to now.
+const ST_PRESETS = [
+  { e: "🤒", t: "Not feeling well", m: "today" },
+  { e: "🎧", t: "Heads down", m: "120" },
+  { e: "🚶", t: "Away", m: "60" },
+  { e: "🏠", t: "Personal errand", m: "60" },
+  { e: "🍽️", t: "Lunch", m: "60" },
+];
+const ST_EMOJI = ["🤒","🤧","😴","🎧","🚶","🏠","🍽️","🚗","👶","☕","📵","💬"];
+let MY_STATUS = null;   // { id, emoji, text, start: Date, end: Date }
+function parseStatusSubject(sub){
+  const m = /^(\p{Extended_Pictographic}(?:️|‍\p{Extended_Pictographic})*)\s*(.*)$/u.exec(sub || "");
+  return m ? { emoji: m[1], text: m[2] || "Busy" } : { emoji: "💬", text: sub || "Busy" };
+}
+async function refreshStatus(){
+  if (typeof account === "undefined" || !account) { MY_STATUS = null; renderStatus(); return; }
+  try {
+    const now = new Date(), until = new Date(now.getTime() + 36 * 3600000);
+    const obj = await gget("/me/calendarView?" + new URLSearchParams({ startDateTime: now.toISOString(), endDateTime: until.toISOString(), $select: "subject,start,end,categories,isCancelled", $orderby: "start/dateTime", $top: "50" }));
+    const hit = (obj.value || []).map(ev => ({ ev, s: new Date(ev.start.dateTime + (/[zZ]|[+-]\d\d:?\d\d$/.test(ev.start.dateTime) ? "" : "Z")), e: new Date(ev.end.dateTime + (/[zZ]|[+-]\d\d:?\d\d$/.test(ev.end.dateTime) ? "" : "Z")) }))
+      .find(x => !x.ev.isCancelled && (x.ev.categories || []).indexOf(STATUS_CAT) >= 0 && x.s <= now && x.e > now);
+    MY_STATUS = hit ? Object.assign({ id: hit.ev.id, start: hit.s, end: hit.e }, parseStatusSubject(hit.ev.subject)) : null;
+  } catch(e){ console.warn("status", e); }
+  renderStatus();
+}
+let stTimer = null;
+function renderStatus(){
+  const b = document.getElementById("statusBtn"); if (!b) return;
+  clearTimeout(stTimer);
+  if (MY_STATUS && MY_STATUS.end > new Date()){
+    const endTxt = MY_STATUS.end.toDateString() === new Date().toDateString() ? fmt(MY_STATUS.end, { hour: "numeric", minute: "2-digit" }) : fmt(MY_STATUS.end, { weekday: "short", hour: "numeric", minute: "2-digit" });
+    b.classList.add("on");
+    b.title = "Click to change your status";
+    b.innerHTML = '<span><span class="stl"></span><span class="stsub">No calls · until ' + endTxt + '</span></span><span class="stx" title="Clear status">×</span>';
+    b.querySelector(".stl").textContent = MY_STATUS.emoji + " " + MY_STATUS.text;
+    b.querySelector(".stx").onclick = e => { e.stopPropagation(); clearStatus(); };
+    stTimer = setTimeout(() => { MY_STATUS = null; renderStatus(); }, Math.min(MY_STATUS.end - new Date() + 500, 2147483000));
+  } else {
+    b.classList.remove("on");
+    b.title = "Set a status — stay online but take no calls";
+    b.textContent = "🙂 Set status";
+  }
+}
+function stEndFor(m, pickVal){
+  const now = new Date();
+  if (m === "today"){
+    const we = new Date(now.getFullYear(), now.getMonth(), now.getDate(), S.workEnd || 18, 0, 0, 0);
+    return we > now ? we : new Date(now.getFullYear(), now.getMonth(), now.getDate(), 23, 59, 0, 0);
+  }
+  if (m === "pick"){
+    if (!pickVal) return null;
+    const [h, mi] = pickVal.split(":").map(Number);
+    const d = new Date(now.getFullYear(), now.getMonth(), now.getDate(), h, mi, 0, 0);
+    return d > now ? d : null;
+  }
+  return new Date(now.getTime() + (+m) * 60000);
+}
+let stSel = { emoji: "🤒", m: "today" };
+function openStatus(){
+  const $ = id => document.getElementById(id);
+  const cur = MY_STATUS && MY_STATUS.end > new Date() ? MY_STATUS : null;
+  stSel = cur ? { emoji: cur.emoji, m: "pick" } : { emoji: "🤒", m: "today" };
+  $("stEmoji").textContent = stSel.emoji;
+  $("stText").value = cur ? cur.text : "Not feeling well";
+  $("stUntil").value = cur ? (String(cur.end.getHours()).padStart(2,"0") + ":" + String(cur.end.getMinutes()).padStart(2,"0")) : "";
+  $("stMsg").textContent = "";
+  $("stSave").textContent = cur ? "Update status" : "Set status";
+  $("stClear").style.display = cur ? "block" : "none";
+  $("stEmojiRow").style.display = "none";
+  stPaint();
+  $("statusModal").style.display = "flex";
+  setTimeout(() => $("stText").focus(), 30);
+}
+function stPaint(){
+  const $ = id => document.getElementById(id);
+  const txt = $("stText").value.trim();
+  document.querySelectorAll("#stPresets .stopt").forEach(o => o.classList.toggle("on", o.dataset.t === txt && o.dataset.e === stSel.emoji));
+  document.querySelectorAll("#stDur .stchip").forEach(c => c.classList.toggle("on", c.dataset.m === stSel.m));
+  $("stPickRow").style.display = stSel.m === "pick" ? "block" : "none";
+}
+async function saveStatus(){
+  const $ = id => document.getElementById(id), msg = $("stMsg");
+  const text = $("stText").value.trim();
+  msg.style.color = "#b91c1c";
+  if (!text){ msg.textContent = "Add a status, e.g. Not feeling well."; return; }
+  const end = stEndFor(stSel.m, $("stUntil").value);
+  if (!end){ msg.textContent = "Pick a time later today."; return; }
+  const now = new Date();
+  const subject = stSel.emoji + " " + text;
+  const cur = MY_STATUS && MY_STATUS.end > now ? MY_STATUS : null;
+  msg.style.color = "var(--muted2)"; msg.textContent = "Saving…";
+  try {
+    const tk = await token();
+    const H = { Authorization: "Bearer " + tk, "Content-Type": "application/json" };
+    const endISO = { dateTime: end.toISOString().replace("Z", ""), timeZone: "UTC" };
+    let r;
+    if (cur){
+      r = await fetch("https://graph.microsoft.com/v1.0/me/events/" + encodeURIComponent(cur.id), { method: "PATCH", headers: H, body: JSON.stringify({ subject, end: endISO }) });
+    } else {
+      const start = new Date(Math.floor(now.getTime() / 60000) * 60000);
+      r = await fetch("https://graph.microsoft.com/v1.0/me/events", { method: "POST", headers: H, body: JSON.stringify({
+        subject, showAs: "busy", sensitivity: "private", isReminderOn: false, categories: [STATUS_CAT],
+        body: { contentType: "text", content: "Set from WeCalendar — no calls while this status is on." },
+        start: { dateTime: start.toISOString().replace("Z", ""), timeZone: "UTC" }, end: endISO }) });
+    }
+    if (!r.ok) throw new Error("Graph " + r.status);
+    $("statusModal").style.display = "none";
+    toast(subject + " — no calls until " + fmt(end, { hour: "numeric", minute: "2-digit" }));
+    load();
+  } catch(e){ msg.style.color = "#b91c1c"; msg.textContent = "Couldn't save — " + ((e && e.message) || "try again"); }
+}
+async function clearStatus(){
+  const cur = MY_STATUS; if (!cur) return;
+  document.getElementById("statusModal").style.display = "none";
+  try {
+    const tk = await token(), now = new Date();
+    const url = "https://graph.microsoft.com/v1.0/me/events/" + encodeURIComponent(cur.id);
+    let r;
+    if (now - cur.start < 5 * 60000) r = await fetch(url, { method: "DELETE", headers: { Authorization: "Bearer " + tk } });
+    else r = await fetch(url, { method: "PATCH", headers: { Authorization: "Bearer " + tk, "Content-Type": "application/json" }, body: JSON.stringify({ end: { dateTime: now.toISOString().replace("Z", ""), timeZone: "UTC" } }) });
+    if (!r.ok && r.status !== 404) throw new Error("Graph " + r.status);
+    MY_STATUS = null; renderStatus();
+    toast("✓ Status cleared — you're open for calls again");
+    load();
+  } catch(e){ toast("Couldn't clear — " + ((e && e.message) || "try again")); }
+}
+(function(){
+  const $ = id => document.getElementById(id);
+  const modal = $("statusModal"), btn = $("statusBtn");
+  if (!modal || !btn) return;
+  const lbl = { today: "Rest of today", "60": "1 hour", "120": "2 hours", "30": "30 min" };
+  $("stPresets").innerHTML = ST_PRESETS.map(p => '<button type="button" class="stopt" data-e="' + p.e + '" data-t="' + p.t + '" data-m="' + p.m + '"><span class="e">' + p.e + '</span>' + p.t + '<span class="d">' + lbl[p.m] + '</span></button>').join("");
+  $("stPresets").querySelectorAll(".stopt").forEach(o => o.onclick = () => { stSel.emoji = o.dataset.e; stSel.m = o.dataset.m; $("stEmoji").textContent = o.dataset.e; $("stText").value = o.dataset.t; $("stMsg").textContent = ""; stPaint(); });
+  $("stEmojiRow").innerHTML = ST_EMOJI.map(e => '<button type="button" class="stchip" style="padding:4px 8px;font-size:16px">' + e + '</button>').join("");
+  $("stEmojiRow").querySelectorAll("button").forEach(b => b.onclick = () => { stSel.emoji = b.textContent; $("stEmoji").textContent = b.textContent; $("stEmojiRow").style.display = "none"; stPaint(); });
+  $("stEmoji").onclick = () => { const r = $("stEmojiRow"); r.style.display = r.style.display === "none" ? "flex" : "none"; };
+  $("stText").addEventListener("input", stPaint);
+  $("stText").addEventListener("keydown", e => { if (e.key === "Enter") saveStatus(); });
+  $("stDur").querySelectorAll(".stchip").forEach(c => c.onclick = () => { stSel.m = c.dataset.m; $("stMsg").textContent = ""; stPaint(); if (stSel.m === "pick") $("stUntil").focus(); });
+  btn.onclick = openStatus;
+  $("stSave").onclick = saveStatus;
+  $("stClear").onclick = clearStatus;
+  const close = () => { modal.style.display = "none"; };
+  $("stCancel").onclick = close;
+  modal.addEventListener("click", e => { if (e.target === modal) close(); });
+  document.addEventListener("keydown", e => { if (e.key === "Escape" && modal.style.display !== "none") close(); });
+})();
+
 // ---- block time / out of office ----
 (function(){
   const modal = document.getElementById("blockModal"), btn = document.getElementById("blockBtn");
@@ -2693,6 +2894,7 @@ const TOUR = [
   { sel: "#linkBtn", title: "Share it 📋", text: "Copy slots makes a booking link. Clients pick a slot — works for Google, Apple or Outlook, no account needed." },
   { sel: "#calBody", title: "Need to cancel? 🗑️", text: "Once a meeting's booked, just click it on your calendar to cancel — it's removed for everyone and the slot opens back up. (You or the guest can also cancel from the calendar invite.)" },
   { sel: "#viewTog", title: "Day or week 📆", text: "Switch the calendar between one day and the full week. Click any day header to zoom in." },
+  { sel: "#statusBtn", title: "Not up for calls? 🤒", text: "Set a status like Slack — not feeling well, heads down, away. You stay online, but nobody can book you until it ends." },
   { sel: "#blockBtn", title: "Going away? 🏖️", text: "Set OOO blocks time on your calendar so it's never offered. Click a block later to remove it." },
   { sel: "#ptoBox", title: "Who's off 🌴", text: "See teammates who are out of office, pulled from your calendar." },
   { sel: "#loadCard", title: "Your meeting load 🕘", text: "How much of your day and week is in meetings. Tap it to enlarge." },
