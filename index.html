@@ -2719,6 +2719,7 @@ async function refreshStatus(){
     MY_STATUS = hit ? Object.assign({ id: hit.ev.id, start: hit.s, end: hit.e }, parseStatusSubject(hit.ev.subject)) : null;
   } catch(e){ console.warn("status", e); }
   renderStatus();
+  teamsSweep();
 }
 let stTimer = null;
 function renderStatus(){
@@ -2731,7 +2732,7 @@ function renderStatus(){
     b.innerHTML = '<span class="stwrap"><span class="stl"></span><span class="stsub"> · until ' + endTxt + '</span></span><span class="stx" title="Clear status">×</span>';
     b.querySelector(".stl").textContent = MY_STATUS.emoji + " " + MY_STATUS.text;
     b.querySelector(".stx").onclick = e => { e.stopPropagation(); clearStatus(); };
-    stTimer = setTimeout(() => { MY_STATUS = null; renderStatus(); }, Math.min(MY_STATUS.end - new Date() + 500, 2147483000));
+    stTimer = setTimeout(() => { MY_STATUS = null; renderStatus(); teamsSweep(); }, Math.min(MY_STATUS.end - new Date() + 500, 2147483000));
   } else {
     b.classList.remove("on");
     b.title = "Set a status — stay online but take no calls";
@@ -2791,17 +2792,14 @@ async function teamsSet(subject, end){
   const errText = async r => { try { const j = await r.json(); return r.status + " " + ((j.error && (j.error.code + ": " + j.error.message)) || ""); } catch(e){ return String(r.status); } };
   let msgErr = null, presErr = null;
   try {
-    // 1) status message first (with expiry; retry without expiry if Teams rejects it)
-    const exp = end.toISOString().slice(0, 19);
-    let r = await fetch(G + "setStatusMessage", { method: "POST", headers: H, body: JSON.stringify({ statusMessage: { message: { content: subject, contentType: "text" }, expiryDateTime: { dateTime: exp, timeZone: "UTC" } } }) });
-    if (!r.ok){
-      console.warn("Teams setStatusMessage", await errText(r));
-      r = await fetch(G + "setStatusMessage", { method: "POST", headers: H, body: JSON.stringify({ statusMessage: { message: { content: subject, contentType: "text" } } }) });
-    }
+    // 1) status message first — no expiry, so Teams doesn't show "Display until…".
+    //    WeCalendar clears it itself (× button, or on next open once the status has ended).
+    const r = await fetch(G + "setStatusMessage", { method: "POST", headers: H, body: JSON.stringify({ statusMessage: { message: { content: subject, contentType: "text" } } }) });
     if (!r.ok) msgErr = await errText(r);
     // 2) then Away
     const p = await fetch(G + "setUserPreferredPresence", { method: "POST", headers: H, body: JSON.stringify({ availability: "Away", activity: "Away", expirationDuration: isoDur(end - new Date()) }) });
     if (!p.ok) presErr = await errText(p);
+    if (!msgErr){ try { localStorage.setItem("wecal_teams_msg", JSON.stringify({ subject, end: end.getTime() })); } catch(e){} }
   } catch(e){ msgErr = msgErr || (e && e.message) || "network error"; }
   if (msgErr) console.warn("Teams status message failed:", msgErr);
   if (presErr) console.warn("Teams presence failed:", presErr);
@@ -2812,6 +2810,7 @@ async function teamsSet(subject, end){
   return true;
 }
 async function teamsClear(){
+  try { localStorage.removeItem("wecal_teams_msg"); } catch(e){}
   const tk = await teamsToken(); if (!tk) return;
   const H = { Authorization: "Bearer " + tk, "Content-Type": "application/json" };
   const G = "https://graph.microsoft.com/v1.0/me/presence/";
@@ -2819,6 +2818,20 @@ async function teamsClear(){
     fetch(G + "setStatusMessage", { method: "POST", headers: H, body: JSON.stringify({ statusMessage: { message: { content: "", contentType: "text" } } }) }),
     fetch(G + "clearUserPreferredPresence", { method: "POST", headers: H }),
   ]).catch(() => {});
+}
+async function teamsSweep(){
+  let saved = null; try { saved = JSON.parse(localStorage.getItem("wecal_teams_msg") || "null"); } catch(e){}
+  if (!saved || (MY_STATUS && MY_STATUS.end > new Date()) || saved.end > Date.now()) return;
+  const tk = await teamsToken(); if (!tk) return;
+  try {
+    const r = await fetch("https://graph.microsoft.com/v1.0/me/presence", { headers: { Authorization: "Bearer " + tk } });
+    const j = r.ok ? await r.json() : null;
+    const cur = j && j.statusMessage && j.statusMessage.message && j.statusMessage.message.content;
+    if (cur === saved.subject){
+      await fetch("https://graph.microsoft.com/v1.0/me/presence/setStatusMessage", { method: "POST", headers: { Authorization: "Bearer " + tk, "Content-Type": "application/json" }, body: JSON.stringify({ statusMessage: { message: { content: "", contentType: "text" } } }) });
+    }
+    localStorage.removeItem("wecal_teams_msg");
+  } catch(e){}
 }
 async function paintTeamsRow(){
   const t = document.getElementById("stTeamsTxt"); if (!t) return;
