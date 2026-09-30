@@ -610,6 +610,7 @@
     </div>
     <div id="stPickRow" style="display:none;margin-top:8px"><input type="time" id="stUntil" step="900" style="width:100%;box-sizing:border-box;border:1px solid var(--line);border-radius:10px;padding:9px 11px;font-size:13.5px;font-family:inherit;color:var(--ink);background:transparent;outline:none;width:140px"></div>
     <div style="display:flex;gap:9px;font-size:12px;color:var(--muted2);margin-top:14px;line-height:1.4"><span>📅</span><span>Also blocks your Outlook calendar as <b style="font-weight:600;color:var(--ink)">Busy (private)</b> — colleagues see you're busy, not why.</span></div>
+    <div id="stTeams" style="display:flex;gap:9px;font-size:12px;color:var(--muted2);margin-top:8px;line-height:1.4"><span>💬</span><span id="stTeamsTxt">Teams: shows you as <b style="font-weight:600;color:#B7791F">Away</b> with the same emoji and message.</span></div>
     <div id="stMsg" style="font-size:12px;color:#b91c1c;margin-top:8px;min-height:14px"></div>
     <button class="btn primary" id="stSave" style="width:100%;margin-top:6px">Set status</button>
     <button id="stClear" style="display:none;width:100%;margin-top:8px;border:1px solid var(--line);background:none;border-radius:10px;padding:9px;color:#b91c1c;font:inherit;font-size:13px;font-weight:600;cursor:pointer">Clear status</button>
@@ -2765,6 +2766,7 @@ function openStatus(){
   $("stEmojiRow").style.display = "none";
   stPaint();
   $("statusModal").style.display = "flex";
+  paintTeamsRow();
   setTimeout(() => $("stText").focus(), 30);
 }
 function stPaint(){
@@ -2773,6 +2775,43 @@ function stPaint(){
   document.querySelectorAll("#stPresets .stopt").forEach(o => o.classList.toggle("on", o.dataset.t === txt && o.dataset.e === stSel.emoji));
   document.querySelectorAll("#stDur .stchip").forEach(c => c.classList.toggle("on", c.dataset.m === stSel.m));
   $("stPickRow").style.display = stSel.m === "pick" ? "block" : "none";
+}
+// ---- Teams sync: Away presence + same emoji/message (needs Presence.ReadWrite) ----
+const TEAMS_SCOPES = ["Presence.ReadWrite"];
+let teamsOK = null;   // null = unknown, true = token works, false = not connected / not approved
+async function teamsToken(){
+  try { const r = await pca.acquireTokenSilent({ scopes: TEAMS_SCOPES, account }); teamsOK = true; return r.accessToken; }
+  catch(e){ teamsOK = false; return null; }
+}
+function isoDur(ms){ const m = Math.max(5, Math.min(Math.round(ms / 60000), 7 * 24 * 60)); return "PT" + Math.floor(m / 60) + "H" + (m % 60) + "M"; }
+async function teamsSet(subject, end){
+  const tk = await teamsToken(); if (!tk) return false;
+  const H = { Authorization: "Bearer " + tk, "Content-Type": "application/json" };
+  const G = "https://graph.microsoft.com/v1.0/me/presence/";
+  const [a, b] = await Promise.all([
+    fetch(G + "setStatusMessage", { method: "POST", headers: H, body: JSON.stringify({ statusMessage: { message: { content: subject, contentType: "text" }, expiryDateTime: { dateTime: end.toISOString().replace("Z", ""), timeZone: "UTC" } } }) }),
+    fetch(G + "setUserPreferredPresence", { method: "POST", headers: H, body: JSON.stringify({ availability: "Away", activity: "Away", expirationDuration: isoDur(end - new Date()) }) }),
+  ]).catch(() => [{ ok: false }, { ok: false }]);
+  if (!a.ok || !b.ok){ teamsOK = false; return false; }
+  return true;
+}
+async function teamsClear(){
+  const tk = await teamsToken(); if (!tk) return;
+  const H = { Authorization: "Bearer " + tk, "Content-Type": "application/json" };
+  const G = "https://graph.microsoft.com/v1.0/me/presence/";
+  await Promise.all([
+    fetch(G + "setStatusMessage", { method: "POST", headers: H, body: JSON.stringify({ statusMessage: { message: { content: "", contentType: "text" } } }) }),
+    fetch(G + "clearUserPreferredPresence", { method: "POST", headers: H }),
+  ]).catch(() => {});
+}
+async function paintTeamsRow(){
+  const t = document.getElementById("stTeamsTxt"); if (!t) return;
+  if (teamsOK === null) await teamsToken();
+  if (teamsOK) t.innerHTML = 'Teams: shows you as <b style="font-weight:600;color:#B7791F">Away</b> with the same emoji and message.';
+  else {
+    t.innerHTML = 'Teams isn\'t connected yet. <a href="#" id="stTeamsCon" style="color:#5E43C8;font-weight:600">Connect Teams</a> to show you as Away with this status.';
+    document.getElementById("stTeamsCon").onclick = e => { e.preventDefault(); pca.acquireTokenRedirect({ scopes: TEAMS_SCOPES, account }); };
+  }
 }
 async function saveStatus(){
   const $ = id => document.getElementById(id), msg = $("stMsg");
@@ -2801,7 +2840,8 @@ async function saveStatus(){
     }
     if (!r.ok) throw new Error("Graph " + r.status);
     $("statusModal").style.display = "none";
-    toast(subject + " — no calls until " + fmt(end, { hour: "numeric", minute: "2-digit" }));
+    const teams = await teamsSet(subject, end);
+    toast(subject + " — no calls until " + fmt(end, { hour: "numeric", minute: "2-digit" }) + (teams ? " · Teams set to Away" : ""));
     load();
   } catch(e){ msg.style.color = "#b91c1c"; msg.textContent = "Couldn't save — " + ((e && e.message) || "try again"); }
 }
@@ -2816,6 +2856,7 @@ async function clearStatus(){
     else r = await fetch(url, { method: "PATCH", headers: { Authorization: "Bearer " + tk, "Content-Type": "application/json" }, body: JSON.stringify({ end: { dateTime: now.toISOString().replace("Z", ""), timeZone: "UTC" } }) });
     if (!r.ok && r.status !== 404) throw new Error("Graph " + r.status);
     MY_STATUS = null; renderStatus();
+    teamsClear();
     toast("✓ Status cleared — you're open for calls again");
     load();
   } catch(e){ toast("Couldn't clear — " + ((e && e.message) || "try again")); }
