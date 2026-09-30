@@ -2788,11 +2788,27 @@ async function teamsSet(subject, end){
   const tk = await teamsToken(); if (!tk) return false;
   const H = { Authorization: "Bearer " + tk, "Content-Type": "application/json" };
   const G = "https://graph.microsoft.com/v1.0/me/presence/";
-  const [a, b] = await Promise.all([
-    fetch(G + "setStatusMessage", { method: "POST", headers: H, body: JSON.stringify({ statusMessage: { message: { content: subject, contentType: "text" }, expiryDateTime: { dateTime: end.toISOString().replace("Z", ""), timeZone: "UTC" } } }) }),
-    fetch(G + "setUserPreferredPresence", { method: "POST", headers: H, body: JSON.stringify({ availability: "Away", activity: "Away", expirationDuration: isoDur(end - new Date()) }) }),
-  ]).catch(() => [{ ok: false }, { ok: false }]);
-  if (!a.ok || !b.ok){ teamsOK = false; return false; }
+  const errText = async r => { try { const j = await r.json(); return r.status + " " + ((j.error && (j.error.code + ": " + j.error.message)) || ""); } catch(e){ return String(r.status); } };
+  let msgErr = null, presErr = null;
+  try {
+    // 1) status message first (with expiry; retry without expiry if Teams rejects it)
+    const exp = end.toISOString().slice(0, 19);
+    let r = await fetch(G + "setStatusMessage", { method: "POST", headers: H, body: JSON.stringify({ statusMessage: { message: { content: subject, contentType: "text" }, expiryDateTime: { dateTime: exp, timeZone: "UTC" } } }) });
+    if (!r.ok){
+      console.warn("Teams setStatusMessage", await errText(r));
+      r = await fetch(G + "setStatusMessage", { method: "POST", headers: H, body: JSON.stringify({ statusMessage: { message: { content: subject, contentType: "text" } } }) });
+    }
+    if (!r.ok) msgErr = await errText(r);
+    // 2) then Away
+    const p = await fetch(G + "setUserPreferredPresence", { method: "POST", headers: H, body: JSON.stringify({ availability: "Away", activity: "Away", expirationDuration: isoDur(end - new Date()) }) });
+    if (!p.ok) presErr = await errText(p);
+  } catch(e){ msgErr = msgErr || (e && e.message) || "network error"; }
+  if (msgErr) console.warn("Teams status message failed:", msgErr);
+  if (presErr) console.warn("Teams presence failed:", presErr);
+  if (msgErr || presErr){
+    setTimeout(() => toast("⚠ Teams: " + (msgErr ? "status message didn't save (" + msgErr + ")" : "Away didn't save (" + presErr + ")")), 2600);
+    return !presErr;
+  }
   return true;
 }
 async function teamsClear(){
