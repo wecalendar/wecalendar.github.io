@@ -203,14 +203,15 @@
   .evt .rmx{ position:absolute; top:2px; right:5px; font-size:14px; font-weight:700; color:#9aa3b2; line-height:1; }
   .evt.rmable:hover .rmx{ color:#b91c1c; }
   #blockBtn:hover{ background:#F4F0FF !important; border-color:#C9BCFF !important; }
-  #statusBtn{ width:100%; margin-top:14px; display:flex; align-items:center; justify-content:center; gap:7px; background:#fff; border:1px solid var(--line); border-radius:10px; padding:10px; font-size:13px; font-weight:600; font-family:inherit; color:var(--ink); cursor:pointer; text-align:left; }
+  #statusBtn{ display:inline-flex; align-items:center; gap:6px; height:34px; max-width:340px; margin-left:4px; background:#fff; border:1px dashed #D6CCFA; border-radius:999px; padding:0 13px; font-size:12.5px; font-weight:600; font-family:inherit; color:#5E43C8; cursor:pointer; white-space:nowrap; flex-shrink:1; min-width:0; }
   #statusBtn:hover{ background:#F4F0FF; border-color:#C9BCFF; }
-  #statusBtn.on{ justify-content:space-between; background:#FFF6EC; border-color:#F6D7B0; padding:9px 11px; }
+  #statusBtn.on{ background:#FFF6EC; border:1px solid #F6D7B0; color:var(--ink); padding:0 8px 0 12px; }
   #statusBtn.on:hover{ background:#FFF0DE; }
-  #statusBtn .stsub{ display:block; font-weight:500; font-size:11px; color:#9A6B2F; margin-top:1px; }
-  #statusBtn .stx{ color:#C79A62; font-size:17px; line-height:1; padding:0 2px; }
+  #statusBtn .stwrap{ overflow:hidden; text-overflow:ellipsis; }
+  #statusBtn .stsub{ font-weight:500; color:#9A6B2F; }
+  #statusBtn .stx{ color:#C79A62; font-size:16px; line-height:1; padding:0 3px; margin-left:2px; }
   #statusBtn .stx:hover{ color:#b91c1c; }
-  #statusBtn + #blockBtn{ margin-top:8px !important; }
+  @media (max-width:760px){ #statusBtn .stsub{ display:none; } #statusBtn{ max-width:170px; } }
   .stopt{ display:flex; align-items:center; gap:10px; width:100%; padding:8px 10px; border-radius:10px; font:inherit; font-size:13.5px; color:var(--ink); background:none; border:1px solid transparent; cursor:pointer; text-align:left; }
   .stopt:hover{ background:#F7F5FE; }
   .stopt.on{ background:#F0ECFF; border-color:#D6CCFA; }
@@ -441,6 +442,7 @@
       <div class="grow"></div>
       <span class="avatar" id="avatar" title="Your profile — see Settings"></span>
       <span class="who" id="whoName" style="color:var(--ink);font-weight:600;"></span>
+      <button id="statusBtn" type="button" title="Set a status — stay online but take no calls">🙂 Set status</button>
       <div class="iconcluster">
       <button id="fbBtn" title="Send a suggestion">💡</button>
       <button id="tourBtn" title="Take a quick tour">?</button>
@@ -484,7 +486,6 @@
           <div style="font-size:12px; font-weight:600; color:var(--ink); margin-bottom:10px; display:flex; align-items:center; gap:6px;">🌴 Out of office <span id="ptoScope" style="font-weight:500; color:var(--muted2); font-size:11px;">· this week</span></div>
           <div id="ptoList"></div>
         </div>
-        <button id="statusBtn" type="button" title="Set a status — stay online but take no calls">🙂 Set status</button>
         <button id="blockBtn" title="Block time on your calendar (out of office)" style="width:100%; margin-top:14px; display:flex; align-items:center; justify-content:center; gap:7px; background:#fff; border:1px solid var(--line); border-radius:10px; padding:10px; font-size:13px; font-weight:600; font-family:inherit; color:var(--ink); cursor:pointer;">🚫 Set OOO</button>
       </aside>
 
@@ -2726,7 +2727,7 @@ function renderStatus(){
     const endTxt = MY_STATUS.end.toDateString() === new Date().toDateString() ? fmt(MY_STATUS.end, { hour: "numeric", minute: "2-digit" }) : fmt(MY_STATUS.end, { weekday: "short", hour: "numeric", minute: "2-digit" });
     b.classList.add("on");
     b.title = "Click to change your status";
-    b.innerHTML = '<span><span class="stl"></span><span class="stsub">No calls · until ' + endTxt + '</span></span><span class="stx" title="Clear status">×</span>';
+    b.innerHTML = '<span class="stwrap"><span class="stl"></span><span class="stsub"> · until ' + endTxt + '</span></span><span class="stx" title="Clear status">×</span>';
     b.querySelector(".stl").textContent = MY_STATUS.emoji + " " + MY_STATUS.text;
     b.querySelector(".stx").onclick = e => { e.stopPropagation(); clearStatus(); };
     stTimer = setTimeout(() => { MY_STATUS = null; renderStatus(); }, Math.min(MY_STATUS.end - new Date() + 500, 2147483000));
