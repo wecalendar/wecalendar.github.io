@@ -1,5 +1,5 @@
 {
- "generated": "2026-09-29",
+ "generated": "2026-09-30",
  "stamp": {
   "preparedFor": {
    "x": 42.52,
@@ -1418,7 +1418,16 @@
    "blurb": "The attached guide covers: Then click Cost Management → Click on Access control → Then add the user you want as the billing admin.",
    "blurbSrc": "steps",
    "blurbV": 2
+  },
+  "how-do-complete-tax-and-payout-profile-for-the-incentive-campaign": {
+   "title": "How do complete Tax and payout profile for the incentive campaign?",
+   "hash": "5a025a113606c9eb",
+   "bytes": 105433,
+   "file": "docs-pdf/how-do-complete-tax-and-payout-profile-for-the-incentive-campaign.pdf",
+   "blurb": "The attached guide covers: Part 1 - (US Entities and non US) Filling Tax Profile Walkthrough example → Part 2 - Adding the Payment Profile → Part 3 - Submitting the Incentive Profile.",
+   "blurbSrc": "steps",
+   "blurbV": 2
   }
  },
- "count": 156
+ "count": 157
 }
