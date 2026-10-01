@@ -1,5 +1,5 @@
 {
- "generated": "2026-09-30",
+ "generated": "2026-10-01",
  "stamp": {
   "preparedFor": {
    "x": 42.52,
@@ -827,8 +827,8 @@
   },
   "how-to-set-up-the-finance-tab-in-the-wetransact-portal": {
    "title": "How to Set Up the Finance Tab in the Wetransact Portal?",
-   "hash": "656baf4bd0d0ac02",
-   "bytes": 519187,
+   "hash": "882fa9b30953171a",
+   "bytes": 525799,
    "file": "docs-pdf/how-to-set-up-the-finance-tab-in-the-wetransact-portal.pdf",
    "blurb": "The attached guide covers: On Partner Center click on the little wheel on the top right → Click on Account settings → Click on User management → Click on Microsoft Entra Applications → Click Add Microsoft Entra Application.",
    "blurbSrc": "steps",
