@@ -1,5 +1,5 @@
 {
- "generated": "2026-10-01",
+ "generated": "2026-10-02",
  "stamp": {
   "preparedFor": {
    "x": 42.52,
@@ -147,15 +147,6 @@
    "bytes": 418961,
    "file": "docs-pdf/create-warmify-email-rule-in-outlook.pdf",
    "blurb": "The attached guide covers: Click on Rules → Click on Manage rules → Click on \"Add new rule\" → Set the name of the rule to\"Warmify\" → Select \"Subject includes\" condition.",
-   "blurbSrc": "steps",
-   "blurbV": 2
-  },
-  "creating-co-sell-deals-and-private-offers-in-salesforce": {
-   "title": "Creating Co-Sell Deals & Private Offers in Salesforce",
-   "hash": "396de3eb1fab60e3",
-   "bytes": 135673,
-   "file": "docs-pdf/creating-co-sell-deals-and-private-offers-in-salesforce.pdf",
-   "blurb": "The attached guide covers: Overview → Video.",
    "blurbSrc": "steps",
    "blurbV": 2
   },
@@ -1059,15 +1050,6 @@
    "blurbSrc": "steps",
    "blurbV": 2
   },
-  "salesforce-installation-guide": {
-   "title": "SalesForce Installation Guide",
-   "hash": "6672033280f43c77",
-   "bytes": 820097,
-   "file": "docs-pdf/salesforce-installation-guide.pdf",
-   "blurb": "The attached guide covers: Overview → Requirements → Install the Package → Video : Salesforce WeTransact Installation Demo → Step-by-Step.",
-   "blurbSrc": "steps",
-   "blurbV": 2
-  },
   "step-1-create-your-microsoft-work-account": {
    "title": "Step 1 — Create Your Microsoft Work Account",
    "hash": "2f42b10a123cf7c7",
@@ -1250,8 +1232,8 @@
   },
   "wetransact-hubspot-app-installation-guide": {
    "title": "WeTransact HubSpot App Installation guide",
-   "hash": "ed5d6deafbe8b8d6",
-   "bytes": 213860,
+   "hash": "cdffd48237bdaa5c",
+   "bytes": 219176,
    "file": "docs-pdf/wetransact-hubspot-app-installation-guide.pdf",
    "blurb": "The attached guide covers: WeTransact for HubSpot: Setup Guide → Before you start → Connect HubSpot to WeTransact → Add the cards to deal records → Verify.",
    "blurbSrc": "steps",
@@ -1427,7 +1409,34 @@
    "blurb": "The attached guide covers: Part 1 - (US Entities and non US) Filling Tax Profile Walkthrough example → Part 2 - Adding the Payment Profile → Part 3 - Submitting the Incentive Profile.",
    "blurbSrc": "steps",
    "blurbV": 2
+  },
+  "hubspot-creating-co-sell-deals-and-private-offers": {
+   "title": "HubSpot- Creating Co-Sell Deals & Private Offers",
+   "hash": "71b3b0d361ce76d3",
+   "bytes": 140394,
+   "file": "docs-pdf/hubspot-creating-co-sell-deals-and-private-offers.pdf",
+   "blurb": "The attached guide covers: Overview → Video.",
+   "blurbSrc": "steps",
+   "blurbV": 2
+  },
+  "salesforce-creating-co-sell-deals-and-private-offers": {
+   "title": "SalesForce - Creating Co-Sell Deals & Private Offers",
+   "hash": "3f865278d7f8edc5",
+   "bytes": 134999,
+   "file": "docs-pdf/salesforce-creating-co-sell-deals-and-private-offers.pdf",
+   "blurb": "The attached guide covers: Overview → Video.",
+   "blurbSrc": "steps",
+   "blurbV": 2
+  },
+  "wetransact-salesforce-installation-guide": {
+   "title": "WeTransact SalesForce Installation Guide",
+   "hash": "db8bb0616f6c5ea1",
+   "bytes": 821684,
+   "file": "docs-pdf/wetransact-salesforce-installation-guide.pdf",
+   "blurb": "The attached guide covers: Overview → Requirements → Install the Package → Video : Salesforce WeTransact Installation Demo → Step-by-Step.",
+   "blurbSrc": "steps",
+   "blurbV": 2
   }
  },
- "count": 157
+ "count": 158
 }
