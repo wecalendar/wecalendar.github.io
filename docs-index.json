@@ -1,6 +1,6 @@
 {
  "source": "https://docs.wetransact.io/sitemap.xml",
- "count": 157,
+ "count": 158,
  "docs": [
   {
    "slug": "account-verification-email-not-received-by-primary-contact",
@@ -12,7 +12,7 @@
   },
   {
    "slug": "api-set-up-automated-order-management-aom-automated-usage-reporting",
-   "title": "API set up automated order management AOM automated usage reporting"
+   "title": "API set up + Automated Order Management (AOM) + Automated Usage Reporting"
   },
   {
    "slug": "assign-global-admin-to-another-user-in-partner-center",
@@ -20,7 +20,7 @@
   },
   {
    "slug": "azure-credits",
-   "title": "Azure Credits"
+   "title": "Azure credits"
   },
   {
    "slug": "benefits-limitation-and-troubleshooting-of-managed-applications",
@@ -56,15 +56,11 @@
   },
   {
    "slug": "create-warmify-email-rule-in-gmail",
-   "title": "Create Warmify Email Rule in Gmail"
+   "title": "Create Warmify email rule in Gmail"
   },
   {
    "slug": "create-warmify-email-rule-in-outlook",
    "title": "Create Warmify email rule in Outlook"
-  },
-  {
-   "slug": "creating-co-sell-deals-and-private-offers-in-salesforce",
-   "title": "Creating co-sell deals and private offers in Salesforce"
   },
   {
    "slug": "csp-private-offer",
@@ -108,7 +104,7 @@
   },
   {
    "slug": "finance-how-marketplace-finance-works",
-   "title": "Finance how Marketplace finance works"
+   "title": "Finance, how marketplace finance works"
   },
   {
    "slug": "find-out-who-the-azure-global-admin-is",
@@ -364,7 +360,7 @@
   },
   {
    "slug": "how-to-know-which-customers-includes-a-microsoft-payment",
-   "title": "How to know which customers includes a Microsoft payment?"
+   "title": "How to know which customers includes a Microsoft Payment"
   },
   {
    "slug": "how-to-leverage-the-wetransact-collaborative-customer-tab-for-enhanced-sales-strategies",
@@ -412,7 +408,7 @@
   },
   {
    "slug": "how-to-update-payment-methods-in-microsoft-azure-portal",
-   "title": "How to update payment methods in Microsoft Azure Portal?"
+   "title": "How to update payment methods in Microsoft Azure portal?"
   },
   {
    "slug": "how-to-update-the-primary-contact-email-address-in-legal-info",
@@ -444,7 +440,11 @@
   },
   {
    "slug": "how-to-view-marketplace-listing-status",
-   "title": "How to view Marketplace listing status?"
+   "title": "How to view marketplace listing status?"
+  },
+  {
+   "slug": "hubspot-creating-co-sell-deals-and-private-offers",
+   "title": "HubSpot creating co-sell deals and private offers"
   },
   {
    "slug": "i-have-added-wetransact-but-supportbot-cant-log-in",
@@ -515,8 +515,8 @@
    "title": "Retrieving the ID managed application"
   },
   {
-   "slug": "salesforce-installation-guide",
-   "title": "Salesforce installation guide"
+   "slug": "salesforce-creating-co-sell-deals-and-private-offers",
+   "title": "Salesforce creating co-sell deals and private offers"
   },
   {
    "slug": "step-1-create-your-microsoft-work-account",
@@ -611,6 +611,10 @@
    "title": "WeTransact portal"
   },
   {
+   "slug": "wetransact-salesforce-installation-guide",
+   "title": "WeTransact Salesforce installation guide"
+  },
+  {
    "slug": "what-to-do-if-your-only-admin-has-left-the-company-no-access-to-your-microsoft-marketplace-listing",
    "title": "What to do if your only admin has left the company! No Access to Your Microsoft Marketplace Listing?"
   },
@@ -624,7 +628,7 @@
   },
   {
    "slug": "where-to-find-the-azure-sponsorship",
-   "title": "Where to find the Azure Sponsorship?"
+   "title": "Where to find the Azure sponsorship?"
   },
   {
    "slug": "where-to-find-your-private-offers",
