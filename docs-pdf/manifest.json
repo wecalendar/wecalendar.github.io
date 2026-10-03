@@ -1,5 +1,5 @@
 {
- "generated": "2026-10-02",
+ "generated": "2026-10-03",
  "stamp": {
   "preparedFor": {
    "x": 42.52,
@@ -1401,15 +1401,6 @@
    "blurbSrc": "steps",
    "blurbV": 2
   },
-  "how-do-complete-tax-and-payout-profile-for-the-incentive-campaign": {
-   "title": "How do complete Tax and payout profile for the incentive campaign?",
-   "hash": "5a025a113606c9eb",
-   "bytes": 105433,
-   "file": "docs-pdf/how-do-complete-tax-and-payout-profile-for-the-incentive-campaign.pdf",
-   "blurb": "The attached guide covers: Part 1 - (US Entities and non US) Filling Tax Profile Walkthrough example → Part 2 - Adding the Payment Profile → Part 3 - Submitting the Incentive Profile.",
-   "blurbSrc": "steps",
-   "blurbV": 2
-  },
   "hubspot-creating-co-sell-deals-and-private-offers": {
    "title": "HubSpot- Creating Co-Sell Deals & Private Offers",
    "hash": "71b3b0d361ce76d3",
@@ -1438,5 +1429,5 @@
    "blurbV": 2
   }
  },
- "count": 158
+ "count": 157
 }
