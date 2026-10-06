@@ -1,0 +1,78 @@
+diff --git a/index.html b/index.html
+index 5e3ec1c..4f415c7 100644
+--- a/index.html
++++ b/index.html
+@@ -1249,6 +1249,21 @@ function mateBusyWho(start, end){
+   }
+   return null;
+ }
++// ---- work-hours guard: nothing is ever offered outside workStart–workEnd ----
++// A slot must END by workEnd, so with 30-min slots and a 5 PM end the last start is 4:30 PM.
++function workBounds(d){
++  return [new Date(d.getFullYear(), d.getMonth(), d.getDate(), S.workStart).getTime(),
++          new Date(d.getFullYear(), d.getMonth(), d.getDate(), S.workEnd).getTime()];
++}
++function clampToWork(start, end){
++  const [ws, we] = workBounds(start);
++  const s = Math.max(start.getTime(), ws), e = Math.min(end.getTime(), we);
++  return (e - s >= (S.slotLen || 30) * 60000) ? { start: new Date(s), end: new Date(e) } : null;
++}
++function workHoursMsg(d){
++  const [ws, we] = workBounds(d);
++  return "⏰ Outside your work hours — last " + (S.slotLen || 30) + "-min slot starts at " + fmtTime(new Date(we - (S.slotLen || 30) * 60000)) + " (" + fmtTime(new Date(ws)) + "–" + fmtTime(new Date(we)) + ")";
++}
+ function hardConflict(start, end, skipIdx){
+   const BUF = (S.buffer || 0) * 60000;
+   // A teammate who is confirmed busy blocks the slot outright. They are an attendee on whatever
+@@ -1270,13 +1285,15 @@ function hardConflict(start, end, skipIdx){
+ // escape hatch, without having to switch on paint mode and drag over your own block.
+ function offerFocusBlock(ev){
+   if (S.paintMode) return;
+-  const now = Date.now(), en = new Date(ev.end.getTime());
++  const now = Date.now(); let en = new Date(ev.end.getTime());
+   const i = S.sel.findIndex(x => x.start < en && ev.start < x.end);
+   if (i >= 0){ S.sel.splice(i, 1); saveSel(); renderAll(); toast("↩ Kept as focus time — slot removed"); return; }
+   let stMs = Math.max(ev.start.getTime(), now);
+   if (S.minNotice) stMs = Math.max(stMs, now + S.minNotice * 3600000);
+   stMs = Math.ceil(stMs / (SNAP * 60000)) * SNAP * 60000;
+-  const st = new Date(stMs);
++  const cw = clampToWork(new Date(stMs), en);
++  if (!cw){ toast(workHoursMsg(new Date(stMs))); return; }
++  const st = cw.start; en = cw.end;
+   if (en - st < (S.slotLen || 30) * 60000){ toast("⏰ Not enough of that focus block left to offer"); return; }
+   if (hardConflict(st, en)){ toast("🚫 " + hardConflict(st, en) + " overlaps this block"); return; }
+   if (S.dayCap && S.sel.filter(x => keyOf(x.start) === keyOf(st)).length >= S.dayCap){ toast("🚫 Daily limit reached (" + S.dayCap + " slots/day)"); return; }
+@@ -1436,6 +1453,7 @@ async function aiSuggest(qRaw){
+   m = q.match(/before\s+(\d{1,2})(?::(\d{2}))?\s*(am|pm)?/); if (m) wE = Math.min(wE, clock(m[1], m[2], m[3]));
+   m = q.match(/between\s+(\d{1,2})(?::(\d{2}))?\s*(am|pm)?\s*(?:and|to|-)\s*(\d{1,2})(?::(\d{2}))?\s*(am|pm)?/);
+   if (m){ wS = clock(m[1], m[2], m[3] || m[6]); wE = clock(m[4], m[5], m[6]); }
++  wS = Math.max(wS, S.workStart * 60); wE = Math.min(wE, S.workEnd * 60);   // never suggest outside work hours
+   if (wE - wS < dur){ toast("That time window is too narrow for " + dur + "-min slots"); return; }
+   // date range (weekdays unless "weekend" mentioned)
+   const now = new Date();
+@@ -2224,9 +2242,12 @@ function attachPaint(col, dayStart){
+     if (!paint || paint.col !== col) return;
+     let s = paint.startMin, en = paint.endMin;
+     if (!paint.moved || en - s < S.slotLen) en = s + S.slotLen;
+-    const start = new Date(paint.dayStart.getTime() + s * 60000);
+-    const end   = new Date(paint.dayStart.getTime() + en * 60000);
++    let start = new Date(paint.dayStart.getTime() + s * 60000);
++    let end   = new Date(paint.dayStart.getTime() + en * 60000);
+     paint.el.remove(); paint = null;
++    const cw = clampToWork(start, end);
++    if (!cw){ toast(workHoursMsg(start)); return; }
++    start = cw.start; end = cw.end;
+     if (start < new Date()){ toast("⏰ You can't select a slot in the past"); return; }
+     if (S.minNotice && start < new Date(Date.now() + S.minNotice * 3600000)){ toast("⏰ Needs at least " + S.minNotice + " h notice"); return; }
+     if (S.dayCap && S.sel.filter(x => keyOf(x.start) === keyOf(start)).length >= S.dayCap){ toast("🚫 Daily limit reached (" + S.dayCap + " slots/day)"); return; }
+@@ -2273,7 +2294,9 @@ function bookingLink(start, end){
+ function dayKeyTz(d){ return new Intl.DateTimeFormat("en-CA", {timeZone:S.tz, year:"numeric", month:"2-digit", day:"2-digit"}).format(d); }
+ function splitForClient(){
+   const out = [], len = (S.slotLen || 30) * 60000;
+-  S.sel.slice().sort((a,b)=>a.start-b.start).forEach(w => {
++  S.sel.slice().sort((a,b)=>a.start-b.start).forEach(w0 => {
++    const w = clampToWork(w0.start, w0.end);   // drops/trims anything painted before this guard existed
++    if (!w) return;
+     const ws = w.start.getTime(), we = w.end.getTime();
+     let any = false;
+     for (let t = ws; t + len <= we; t += len){ out.push({ start: new Date(t), end: new Date(t + len) }); any = true; }
