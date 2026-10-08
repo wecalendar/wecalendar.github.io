@@ -866,7 +866,9 @@ var WECAL_TZ = (function(){
         + "<p style='margin:0 0 10px'>I'll keep you posted once it is completed. If you have any questions, please reach out to me directly.</p>"
     }
   ];
-  function tplHL(s, vals){ return String(s).replace(/\{([^}]+)\}/g, function(_, t){ var v = vals && vals[t]; if (v) return esc(v); return '<span style="background-color:#FFEC99;color:#1a1a1a;">[' + t + ']</span>'; }); }
+  function tplVal(vals, t){ if (!vals) return ""; if (vals[t]) return vals[t]; var k = String(t).toLowerCase(); for (var x in vals){ if (vals[x] && x.toLowerCase() === k) return vals[x]; } return ""; }
+  function linkA(u){ return "<a href='" + esc(u).replace(/'/g, "%27") + "'>" + esc(u) + "</a>"; }
+  function tplHL(s, vals){ return String(s).replace(/\{([^}]+)\}/g, function(_, t){ var v = tplVal(vals, t); if (v) return (/link$/i.test(t) && /^https?:\/\/\S+$/i.test(v)) ? linkA(v) : esc(v); return '<span style="background-color:#FFEC99;color:#1a1a1a;">[' + t + ']</span>'; }); }
   function tplPlain(s, vals){ return String(s).replace(/\{([^}]+)\}/g, function(_, t){ var v = vals && vals[t]; return v ? v : "[" + t + "]"; }); }
   /* ---- Company name from the recipient's email domain (fills {Company} in the subject) ---- */
   var CO_GENERIC = (function(){ var m = {}, l = ["gmail.com","googlemail.com","outlook.com","outlook.co.uk","hotmail.com","hotmail.co.uk","hotmail.fr","hotmail.es","live.com","live.co.uk","msn.com","yahoo.com","yahoo.co.uk","yahoo.fr","yahoo.es","ymail.com","icloud.com","me.com","mac.com","aol.com","proton.me","protonmail.com","pm.me","gmx.com","gmx.de","gmx.net","web.de","mail.com","mail.ru","yandex.com","yandex.ru","zoho.com","qq.com","163.com","126.com","naver.com","hey.com","fastmail.com","btinternet.com","sky.com","orange.fr","free.fr","wanadoo.fr","sfr.fr","laposte.net","telefonica.net","terra.com","uol.com.br","bol.com.br","comcast.net","verizon.net","att.net","sbcglobal.net","rediffmail.com"]; l.forEach(function(d){ m[d] = 1; }); return m; })();
@@ -948,6 +950,7 @@ var WECAL_TZ = (function(){
       recipCtx(function(ctx){
         var vals = {}; if (ctx.company) vals["Company"] = ctx.company; if (ctx.first) vals["First name"] = ctx.first;
         var me = csmFirstName(); if (me) vals["CSM name"] = me;
+        try { var bl = $("pbLink").value.trim(), pl = $("pbPortal").value.trim(); if (/^https?:\/\/\S+$/i.test(bl)) vals["Booking link"] = bl; if (/^https?:\/\/\S+$/i.test(pl)) vals["Portal link"] = pl; } catch(_){}
         setSubject(tplPlain(t.subject, vals));
         try { var pc = $("pbCompany"); if (pc && !pc.value && ctx.company) pc.value = ctx.company; } catch(_){}
         var who = [ctx.first, ctx.company].filter(Boolean).join(" · ");
@@ -1055,6 +1058,29 @@ var WECAL_TZ = (function(){
       });
     });
   }
+  /* Ruby 2026-10-08: the links typed for the playbook also fill the template's
+     highlighted [Portal link] / [Booking link] blanks in the email body. */
+  function pbFillBody(link, portal){
+    return new Promise(function(res){
+      var it = Office.context.mailbox && Office.context.mailbox.item;
+      if (!it || !it.body || (!link && !portal)) return res(0);
+      it.body.getAsync(Office.CoercionType.Html, function(r){
+        if (r.status !== Office.AsyncResultStatus.Succeeded) return res(0);
+        var html = r.value || "", n = 0;
+        function fill(label, url){
+          if (!url) return;
+          var lab = label.replace(/ /g, "(?:\\s|&nbsp;)+");
+          var wrapped = new RegExp("<span[^>]*>\\s*\\[" + lab + "\\]\\s*</span>", "gi");
+          var bare = new RegExp("\\[" + lab + "\\]", "gi");
+          html = html.replace(wrapped, function(){ n++; return linkA(url); }).replace(bare, function(){ n++; return linkA(url); });
+        }
+        fill("Portal link", portal);
+        fill("Booking link", link);
+        if (!n) return res(0);
+        it.body.setAsync(html, { coercionType: Office.CoercionType.Html }, function(r2){ res(r2.status === Office.AsyncResultStatus.Succeeded ? n : 0); });
+      });
+    });
+  }
   (function(){
     var btn = $("pbBtn"), form = $("pbForm"); if (!btn) return;
     btn.onclick = function(){ form.classList.toggle("hide"); if (!form.classList.contains("hide")){ try { $("pbCompany").focus(); } catch(e){} pbLoadLibs(); pbLoadAssets(); } };
@@ -1062,6 +1088,7 @@ var WECAL_TZ = (function(){
       var msg = $("pbMsg"), company = $("pbCompany").value.trim(), link = $("pbLink").value.trim();
       var portal = ($("pbPortal") ? $("pbPortal").value.trim() : "");
       if (portal && !/^https?:\/\/\S+$/i.test(portal)){ msg.className = "msg err"; msg.textContent = "The portal link needs to be a full https:// URL."; return; }
+      if (link && !/^https?:\/\/\S+$/i.test(link)){ msg.className = "msg err"; msg.textContent = "The booking link needs to be a full https:// URL."; return; }
       var it = Office.context.mailbox && Office.context.mailbox.item;
       if (!company){ msg.className = "msg err"; msg.textContent = "Type the client company name first."; return; }
       if (!ready || !it || !it.addFileAttachmentAsync){ msg.className = "msg err"; msg.textContent = "Open this while composing an email."; return; }
@@ -1075,7 +1102,8 @@ var WECAL_TZ = (function(){
       }
       pbBuild(company, link, portal)
         .then(function(b64){ return pbAttach64(it, b64, "WeTransact-Onboarding-Playbook" + (tok ? "-" + tok : "") + ".pdf"); })
-        .then(function(){ msg.className = "msg ok"; msg.textContent = "✓ Playbook for " + company + " attached." + (portal ? " Global Admin guide link personalised." : ""); })
+        .then(function(){ return pbFillBody(link, portal); })
+        .then(function(n){ msg.className = "msg ok"; msg.textContent = "✓ Playbook for " + company + " attached." + (portal ? " Global Admin guide link personalised." : "") + (n ? " Links added to your email." : ""); })
         .catch(function(e){
           pbAttachUrl(it, PB_FALLBACK_URL, "WeTransact-Onboarding-Playbook.pdf")
             .then(function(){ msg.className = "msg ok"; msg.textContent = "✓ Standard playbook attached (personalization failed: " + ((e && e.message) || "error") + ")."; })
