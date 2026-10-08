@@ -681,24 +681,18 @@ var WECAL_TZ = (function(){
     },
     /* 2 — A1 · Onboarding kickoff (Onboarding) */
     {
-      subject: "Welcome to WeTransact — let's get {Company} live in one week",
+      subject: "Welcome to WeTransact — let's get you live",
       body: ""
         + "<p>Hi {First name},</p>"
         + "<p>&nbsp;</p>"
-        + "<p>Welcome to WeTransact! I'm {CSM name}, your Customer Success Manager, and I'll get you live on Microsoft Marketplace.</p>"
-        + "<p>Your portal is already live 🎉: {Portal link} — log in with Microsoft SSO by clicking the Microsoft icon.</p>"
-        + "<p>For a full overview of what to expect, see the onboarding checklist 👉 <a href='https://bestpractices.wetransact.io/onboarding'>bestpractices.wetransact.io/onboarding</a></p>"
-        + "<p>📘 <b>Your onboarding playbook</b> — check the attached playbook for who does what. Each role card carries its own PDF link — just forward the right one-pager to your Global Admin, Finance and Marketing leads.</p>"
-        + "<p>⚠️ <b>Important:</b> only the Partner Center <b>Global Admin</b> can perform the onboarding process.</p>"
-        + "<p><b>Option A — Self-service, start today</b></p>"
-        + "<ol><li>Go to {Portal link} and log in with Microsoft SSO.</li><li>After signing in, select <b>Set up Partner Center</b> and follow the steps.</li></ol>"
-        + "<p>The flow walks you through at your own pace — complete as much as you can, and anything left pending we'll finish together on our calls. The more you complete upfront, the faster your listing goes live.</p>"
-        + "<p><b>Option B — Assisted, two short meetings with me</b></p>"
-        + "<ul><li><b>Partner Center setup (30 min)</b> — with your Global Admin: granting WeTransact access (<a href='https://docs.wetransact.io/step-6-grant-wetransact-access-to-partner-center'>how-to guide</a>) and your Tax &amp; Payout profile (everything Finance needs: <a href='https://wecalendar.github.io/Forward-to-Finance.pdf'>one-pager</a>).</li><li><b>Platform walkthrough (30 min)</b> — with your Product Marketing Manager: portal navigation, build &amp; publish your listing (collateral list: <a href='https://wecalendar.github.io/Forward-to-Marketing.pdf'>one-pager</a>).</li></ul>"
-        + "<p><b>Post onboarding:</b> Go-to-Market strategy meetings, once your listing has gone live.</p>"
-        + "<p><b>Action required:</b></p>"
-        + "<ul><li>Loop in your Finance controller, Product Marketing Manager and Partner Center Global Admin — the playbook tells each of them exactly what to prepare.</li><li>Choose self-service or assisted, and have the details ready before each meeting so we keep the one-week onboarding timeline we promise.</li></ul>"
-        + "<p>Do you think you'll have the finance details ready for this week's meeting? Let me know what works best — book a call here: {Booking link} or just send me your availability.</p>"
+        + "<p>Welcome to WeTransact! I'm {CSM name}, your Customer Success Manager, and I'll be guiding you onto Microsoft Marketplace.</p>"
+        + "<p>Your portal is live 🎉 {Portal link} — sign in with Microsoft SSO.</p>"
+        + "<p>There are two ways to get started. Note that only your Partner Center <b>Global Admin</b> can complete setup.</p>"
+        + "<p><b>Option A — Self-service</b><br>Log in, select <b>Set up Partner Center</b>, and follow the steps. We'll finish anything left pending together.</p>"
+        + "<p><b>Option B — Assisted (two 30-min calls with me)</b></p>"
+        + "<ul><li>Partner Center setup, with your Global Admin and Finance</li><li>Platform walkthrough, with your Product Marketing Manager</li></ul>"
+        + "<p>The attached <a href='https://wecalendar.github.io/WeTransact-Onboarding-Playbook.pdf'>playbook</a> shows what each person needs to prepare. Just forward the relevant one-pager to your <a href='https://wecalendar.github.io/Forward-to-Global-Admin.pdf'>Global Admin</a>, <a href='https://wecalendar.github.io/Forward-to-Finance.pdf'>Finance</a> and <a href='https://wecalendar.github.io/Forward-to-Marketing.pdf'>Marketing</a> leads.</p>"
+        + "<p>Which option works best for you? Book a time here: {Booking link}, or send me your availability.</p>"
     },
     /* 3 — A2 · Session recap (Onboarding) */
     {
