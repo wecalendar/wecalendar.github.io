@@ -1,5 +1,5 @@
 {
- "generated": "2026-10-07",
+ "generated": "2026-10-08",
  "stamp": {
   "preparedFor": {
    "x": 42.52,
@@ -557,8 +557,8 @@
   },
   "how-to-configure-multiple-publisher-ids-in-wetransact-portal": {
    "title": "How to configure multiple Publisher IDs in WeTransact portal?",
-   "hash": "4a3316c058d99d07",
-   "bytes": 547190,
+   "hash": "76018d4a428d0d03",
+   "bytes": 473302,
    "file": "docs-pdf/how-to-configure-multiple-publisher-ids-in-wetransact-portal.pdf",
    "blurb": "The attached guide covers: Click on Settings → Click on Account settings → Click on User management → Click on Microsoft Entra applications → Click on Create Microsoft Entra application, then click continue.",
    "blurbSrc": "steps",
@@ -818,8 +818,8 @@
   },
   "how-to-set-up-the-finance-tab-in-the-wetransact-portal": {
    "title": "How to Set Up the Finance Tab in the Wetransact Portal?",
-   "hash": "882fa9b30953171a",
-   "bytes": 525799,
+   "hash": "838c8243f1e5caec",
+   "bytes": 525804,
    "file": "docs-pdf/how-to-set-up-the-finance-tab-in-the-wetransact-portal.pdf",
    "blurb": "The attached guide covers: On Partner Center click on the little wheel on the top right → Click on Account settings → Click on User management → Click on Microsoft Entra Applications → Click Add Microsoft Entra Application.",
    "blurbSrc": "steps",
@@ -854,8 +854,8 @@
   },
   "how-to-update-credentials-for-finance-tab-in-the-wetransact-portal": {
    "title": "How to update credentials for finance Tab in the Wetransact Portal?",
-   "hash": "c29311f3aad9d17a",
-   "bytes": 432036,
+   "hash": "495f7abea7cb2ed9",
+   "bytes": 427911,
    "file": "docs-pdf/how-to-update-credentials-for-finance-tab-in-the-wetransact-portal.pdf",
    "blurb": "The attached guide covers: On Partner Center click on the little wheel on the top right → Click on Account settings → Click on User management → Click on Microsoft Entra Applications → Click Add Microsoft Entra Application.",
    "blurbSrc": "steps",
