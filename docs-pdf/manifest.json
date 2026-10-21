@@ -1,5 +1,5 @@
 {
- "generated": "2026-10-20",
+ "generated": "2026-10-21",
  "stamp": {
   "preparedFor": {
    "x": 42.52,
@@ -1436,7 +1436,16 @@
    "blurb": "The attached guide covers: Part 1 - (US Entities and non US) Filling Tax Profile Walkthrough example → Part 2 - Adding the Payment Profile → Part 3 - Submitting the Incentive Profile.",
    "blurbSrc": "steps",
    "blurbV": 2
+  },
+  "how-to-complete-the-frontier-accelerate-for-marketplace-eligibility-form-in-partner-center": {
+   "title": "How to complete the Frontier Accelerate for Marketplace eligibility form in Partner Center",
+   "hash": "53fa0b801b7caead",
+   "bytes": 333838,
+   "file": "docs-pdf/how-to-complete-the-frontier-accelerate-for-marketplace-eligibility-form-in-partner-center.pdf",
+   "blurb": "The attached guide covers: Overview → Before you start → Steps → Step 1 – Open the Membership workspace → Step 2 – Go to FA for Marketplace.",
+   "blurbSrc": "steps",
+   "blurbV": 2
   }
  },
- "count": 158
+ "count": 159
 }
