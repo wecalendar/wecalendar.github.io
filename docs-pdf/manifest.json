@@ -1,5 +1,5 @@
 {
- "generated": "2026-10-21",
+ "generated": "2026-10-22",
  "stamp": {
   "preparedFor": {
    "x": 42.52,
@@ -125,7 +125,7 @@
   },
   "create-azure-support-request-for-invoice-payment": {
    "title": "Create Azure Support Request for Invoice Payment",
-   "hash": "8e87cbcf91c661d5",
+   "hash": "55d1cd78bbe99d72",
    "bytes": 1201017,
    "file": "docs-pdf/create-azure-support-request-for-invoice-payment.pdf",
    "blurb": "The attached guide covers: Go to the question Mark → Click on Contact support → Click on Create a support request → Issue related to: Azure services → Type \"We would like to pay our invoice by bank transfer\".",
@@ -1088,7 +1088,7 @@
   },
   "step-5-complete-your-payout-and-tax-profile-48-hour-microsoft-validation": {
    "title": "Step 5 — Complete Your Payout & Tax Profile (48-hour Microsoft validation)",
-   "hash": "f25cc9b110e50ca5",
+   "hash": "24ab39ecfb73422e",
    "bytes": 136906,
    "file": "docs-pdf/step-5-complete-your-payout-and-tax-profile-48-hour-microsoft-validation.pdf",
    "blurb": "The attached guide covers: US Companies → Non-US Companies → Need Help?.",
@@ -1322,7 +1322,7 @@
   },
   "build-managed-application-offer": {
    "title": "Build Managed Application Offer",
-   "hash": "acfe72aeeb0e5314",
+   "hash": "80494f94ad41bfc4",
    "bytes": 375431,
    "file": "docs-pdf/build-managed-application-offer.pdf",
    "blurb": "The attached guide covers: Building the offer: the deployment package → mainTemplate.json → createUiDefinition.json → Working example → mainTemplate.json.",
@@ -1367,7 +1367,7 @@
   },
   "part-1-us-entities-and-non-us-entities-filling-tax-profile-walkthrough-example": {
    "title": "Part 1 - (US Entities and Non Us Entities) Filling Tax Profile Walkthrough example",
-   "hash": "c70236ad7b5d3415",
+   "hash": "924cbc79fc0b45ab",
    "bytes": 136439,
    "file": "docs-pdf/part-1-us-entities-and-non-us-entities-filling-tax-profile-walkthrough-example.pdf",
    "blurb": "The attached guide covers: US Companies → Non-US Companies.",
@@ -1394,10 +1394,10 @@
   },
   "how-to-add-a-profile-as-the-billing-owner": {
    "title": "How to add a profile as the billing owner",
-   "hash": "73ed2b6d7fb6d957",
-   "bytes": 208056,
+   "hash": "2b1790b22cfa0402",
+   "bytes": 363829,
    "file": "docs-pdf/how-to-add-a-profile-as-the-billing-owner.pdf",
-   "blurb": "The attached guide covers: Then click Cost Management → Click on Access control → Then add the user you want as the billing admin.",
+   "blurb": "The attached guide covers: Overview → Before you start → Steps → Step 1 – Open Cost Management → Step 2 – Go to your billing account.",
    "blurbSrc": "steps",
    "blurbV": 2
   },
@@ -1421,31 +1421,40 @@
   },
   "wetransact-salesforce-installation-guide": {
    "title": "WeTransact SalesForce Installation Guide",
-   "hash": "db8bb0616f6c5ea1",
+   "hash": "e37d94f368f63a96",
    "bytes": 821684,
    "file": "docs-pdf/wetransact-salesforce-installation-guide.pdf",
    "blurb": "The attached guide covers: Overview → Requirements → Install the Package → Video : Salesforce WeTransact Installation Demo → Step-by-Step.",
    "blurbSrc": "steps",
    "blurbV": 2
   },
-  "how-do-complete-tax-and-payout-profile-for-the-incentive-campaign": {
-   "title": "How do complete Tax and payout profile for the incentive campaign?",
-   "hash": "5a025a113606c9eb",
-   "bytes": 215515,
-   "file": "docs-pdf/how-do-complete-tax-and-payout-profile-for-the-incentive-campaign.pdf",
-   "blurb": "The attached guide covers: Part 1 - (US Entities and non US) Filling Tax Profile Walkthrough example → Part 2 - Adding the Payment Profile → Part 3 - Submitting the Incentive Profile.",
+  "frontier-accelerate-for-marketplace-fixing-a-greyed-out-buy-now-button": {
+   "title": "Frontier Accelerate for Marketplace: Fixing a Greyed-Out Buy Now Button",
+   "hash": "5928d7998ba5c3a0",
+   "bytes": 621659,
+   "file": "docs-pdf/frontier-accelerate-for-marketplace-fixing-a-greyed-out-buy-now-button.pdf",
+   "blurb": "The attached guide covers: The issue → Link your billing account and profile → If no billing account is linked → If a billing profile is already linked → Buy the no-cost offer.",
    "blurbSrc": "steps",
    "blurbV": 2
   },
-  "how-to-complete-the-frontier-accelerate-for-marketplace-eligibility-form-in-partner-center": {
-   "title": "How to complete the Frontier Accelerate for Marketplace eligibility form in Partner Center",
-   "hash": "53fa0b801b7caead",
-   "bytes": 333838,
-   "file": "docs-pdf/how-to-complete-the-frontier-accelerate-for-marketplace-eligibility-form-in-partner-center.pdf",
+  "how-to-enroll-in-frontier-accelerate-program": {
+   "title": "How to enroll in Frontier Accelerate Program",
+   "hash": "ad718855a5a7bda1",
+   "bytes": 447709,
+   "file": "docs-pdf/how-to-enroll-in-frontier-accelerate-program.pdf",
    "blurb": "The attached guide covers: Overview → Before you start → Steps → Step 1 – Open the Membership workspace → Step 2 – Go to FA for Marketplace.",
+   "blurbSrc": "steps",
+   "blurbV": 2
+  },
+  "how-to-fix-the-not-approved-in-the-private-marketplace-error-when-purchasing-an-offer": {
+   "title": "How to fix the \"not approved in the Private Marketplace\" error when purchasing an offer",
+   "hash": "ca5d5f25df96b1fc",
+   "bytes": 341926,
+   "file": "docs-pdf/how-to-fix-the-not-approved-in-the-private-marketplace-error-when-purchasing-an-offer.pdf",
+   "blurb": "The attached guide covers: Overview → Before you start → Steps → Step 1 – Open Marketplace in the Azure portal → Step 2 – Open Private Marketplace.",
    "blurbSrc": "steps",
    "blurbV": 2
   }
  },
- "count": 159
+ "count": 160
 }
