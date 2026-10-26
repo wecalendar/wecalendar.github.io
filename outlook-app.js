@@ -550,6 +550,7 @@ var WECAL_TZ = (function(){
           var we2 = zInstant(d.getFullYear(), d.getMonth(), d.getDate(), WE);
           if (scope === "week" && we2 <= nowMs) return;
           var mid = new Date(Math.floor((ws2 + we2) / 2)), key = dayKey(mid);
+          if (scope === "week" && key === dayKey(new Date())) return;   // week = upcoming days; today goes through "Select slots for day"
           VIEWDAYS.push({ key: key, label: fmtDay(mid) });
           if (offDays[d.getFullYear() + "-" + d.getMonth() + "-" + d.getDate()]){ OFFV[key] = true; return; }
           busy.forEach(function(b){ if (b.end.getTime() > Math.max(ws2, nowMs) && b.start.getTime() < we2) BUSY.push({ start: b.start, end: b.end, subject: b.subject, mtg: b.mtg, focus: b.focus, key: key }); });
