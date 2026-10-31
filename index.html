@@ -603,6 +603,46 @@
   .nt-empty { display:flex; flex-direction:column; align-items:center; text-align:center; gap:4px; padding:22px 18px 26px; }
   .nt-empty b { font-family:var(--wt-font-display); font-weight:600; font-size:16px; color:var(--ink); margin-top:6px; }
   .nt-empty span { font-size:13px; color:var(--muted2); }
+
+  /* ==== new-meeting bar (2026-10-31) ==== */
+  #ntBar { position:fixed; top:14px; left:50%; z-index:3500; display:flex; align-items:center; gap:12px; width:min(520px, calc(100vw - 24px)); box-sizing:border-box;
+    padding:10px 10px 10px 12px; border-radius:16px; color:#fff; background:linear-gradient(105deg,#021774 0%,#402C93 100%); box-shadow:0 18px 40px rgba(1,13,64,.35);
+    transform:translate(-50%, -140%); opacity:0; pointer-events:none; transition:transform .45s cubic-bezier(.2,.9,.3,1.15), opacity .3s ease; }
+  #ntBar.show { transform:translate(-50%, 0); opacity:1; pointer-events:auto; }
+  #ntBar img { width:40px; height:40px; border-radius:11px; flex:none; }
+  #ntBar .nb-text { flex:1; min-width:0; display:flex; flex-direction:column; }
+  #ntBar .nb-text b { font-family:var(--wt-font-display); font-weight:600; font-size:15px; letter-spacing:-.01em; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+  #ntBar .nb-text span { font-size:12.5px; color:#C5BDFB; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+  #ntBar .nb-view { border:none; border-radius:10px; padding:9px 16px; font:inherit; font-size:13px; font-weight:600; color:#021774; background:#FFE163; cursor:pointer; flex:none; }
+  #ntBar .nb-view:hover { background:#FFCE00; }
+  #ntBar .nb-x { border:none; background:none; color:#C5BDFB; font-size:22px; line-height:1; padding:2px 6px; cursor:pointer; flex:none; }
+  #ntBar .nb-x:hover { color:#fff; }
+  @media (prefers-reduced-motion: reduce){ #ntBar { transition:opacity .2s ease; transform:translate(-50%, 0); } }
+
+  /* cancel variant of the bar: Octavia drifts in on her paraglider */
+  #ntBar.cancel { background:linear-gradient(105deg,#010D40 0%,#402C93 70%,#A80072 140%); padding-left:70px; overflow:visible; }
+  #ntBar.cancel .nb-oct { position:absolute; left:8px; bottom:-4px; width:54px; height:auto; border-radius:0; filter:drop-shadow(0 8px 14px rgba(1,13,64,.45)); }
+  #ntBar.cancel .nb-view { background:#F8AFE1; color:#021774; }
+  #ntBar.cancel .nb-view:hover { background:#F36DC8; }
+
+  /* ==== out-of-office section (2026-10-31) ==== */
+  .oo-box { margin-top:16px; background:var(--surface); border:1px solid var(--line); border-radius:16px; padding:12px 12px 6px; }
+  .oo-head { display:flex; align-items:center; gap:10px; margin-bottom:10px; }
+  .oo-head .sbtile { width:30px; height:30px; }
+  .oo-head b { display:block; font-family:var(--wt-font-display); font-weight:600; font-size:14px; color:var(--ink); letter-spacing:-.01em; }
+  .oo-head #ptoScope { font-size:11.5px; color:var(--muted2); }
+  .oo-day { padding:8px 0 6px; border-top:1px solid var(--line2); }
+  .oo-date { display:flex; align-items:center; gap:6px; font-size:11.5px; font-weight:700; color:var(--muted2); margin-bottom:6px; }
+  .oo-day.today .oo-date { color:#5E43C8; } body.dark .oo-day.today .oo-date { color:#C5BDFB; }
+  .oo-pill { font-size:10.5px; font-weight:700; color:#021774; background:#FFE163; border-radius:999px; padding:1px 7px; }
+  .oo-person { display:flex; align-items:center; gap:9px; padding:3px 0; }
+  .oo-av { width:24px; height:24px; border-radius:50%; flex:none; display:inline-flex; align-items:center; justify-content:center; font-size:10px; font-weight:800; font-family:var(--wt-font-display); }
+  .oo-name { font-size:13px; color:var(--ink); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+  .oo-empty { display:flex; flex-direction:column; align-items:center; text-align:center; gap:2px; padding:4px 4px 10px; border-top:1px solid var(--line2); }
+  .oo-empty img { width:110px; height:auto; margin:6px 0 2px; }
+  .oo-empty b { font-family:var(--wt-font-display); font-weight:600; font-size:14px; color:var(--ink); }
+  .oo-empty span { font-size:12px; color:var(--muted2); }
+  #ptoBox + #blockBtn, .oo-box ~ #blockBtn { margin-top:8px !important; }
 </style>
 </head>
 <body>
@@ -712,8 +752,8 @@
           <div id="loadToday"></div>
           <div id="loadWeekMini" style="display:none;"></div>
         </div>
-        <div id="ptoBox" style="display:none; margin-top:16px; border-top:1px solid var(--line); padding-top:13px;">
-          <div style="font-size:12px; font-weight:600; color:var(--ink); margin-bottom:10px; display:flex; align-items:center; gap:6px;"><svg class="ic" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 21h18"/><path d="M12 21V9"/><path d="M12 9c-3-3-7-2-8 0 3-1 5 0 8 0zM12 9c3-3 7-2 8 0-3-1-5 0-8 0zM12 9c-1-4 1-6 3-6"/></svg> Out of office <span id="ptoScope" style="font-weight:500; color:var(--muted2); font-size:11px;">· this week</span></div>
+        <div id="ptoBox" class="oo-box" style="display:none;">
+          <div class="oo-head"><img class="sbtile" src="brand/tile-paper-plane.png" alt=""><div><b>Out of office</b><span id="ptoScope">· this week</span></div></div>
           <div id="ptoList"></div>
         </div>
         <button id="blockBtn" title="Block time on your calendar (out of office)" style="width:100%; margin-top:14px; display:flex; align-items:center; justify-content:center; gap:7px; background:#fff; border:1px solid var(--line); border-radius:10px; padding:10px; font-size:13px; font-weight:600; font-family:inherit; color:var(--ink); cursor:pointer;"><img class="sbtile" src="brand/tile-paper-plane.png" alt=""> Set out of office</button>
@@ -888,6 +928,7 @@
     </div>
   </div>
 </div>
+<div id="ntBar" role="status" aria-live="polite"></div>
 <div id="ntPop" role="dialog" aria-label="Notifications"><div class="nt-head"><span>Notifications</span></div><div id="ntList"></div></div>
 <div id="tourOverlay" style="display:none; position:fixed; inset:0; z-index:3999;">
   <div id="tourSpot"></div>
@@ -2449,7 +2490,7 @@ async function doCancelBooking(){
   try {
     const r = await fetch(FN + "/cancel-booking", { method: "POST", headers: { "Content-Type": "application/json", apikey: WECAL.SUPABASE_ANON_KEY, Authorization: "Bearer " + WECAL.SUPABASE_ANON_KEY }, body: JSON.stringify({ bookingId: ev.cancelId }) });
     const j = await r.json().catch(() => ({}));
-    if (r.ok && j.ok){ toast("✓ Booking cancelled — slot re-opened"); load(); }
+    if (r.ok && j.ok){ if (window.WecalNotify) WecalNotify.cancelled({ id: ev.cancelId, subject: ev.subject, start: ev.start, end: ev.end }); else toast("Booking cancelled — slot re-opened"); load(); }
     else { toast("Couldn’t cancel — " + (j.reason || "try again")); }
   } catch(e){ toast("Couldn’t cancel — " + ((e && e.message) || "try again")); }
 }
@@ -2944,18 +2985,21 @@ function renderPTOBox(){
   }
   if (scope) scope.textContent = S.dayView ? "· this day" : (trimmed ? "· rest of this week" : "· this week");
   let html = "", total = 0;
+  const tones = ["#EBE7FF:#402C93", "#FDEBF7:#A80072", "#FFF7D3:#AF5D00", "#E2F9F4:#05614B", "#E1E4FF:#021774"];
+  const toneOf = n => { let h = 0; for (const ch of n) h = (h * 31 + ch.charCodeAt(0)) >>> 0; return tones[h % tones.length].split(":"); };
+  const initials = n => n.split(/\s+/).filter(Boolean).slice(0, 2).map(w => w[0].toUpperCase()).join("");
   days.forEach(d => {
     const names = ptoNamesForDay(d);
     if (!names.length) return;
     total += names.length;
     const isToday = keyOf(d) === todayK;
     const dlbl = fmt(new Date(d.getFullYear(), d.getMonth(), d.getDate(), 12), { weekday: "short", day: "numeric" });
-    html += '<div style="margin-bottom:11px;">'
-      + '<div style="font-size:11px; font-weight:600; color:' + (isToday ? '#5E43C8' : 'var(--muted2)') + '; margin-bottom:5px; letter-spacing:.02em;">' + dlbl + (isToday ? ' · today' : '') + '</div>'
-      + names.map(n => '<div style="font-size:12.5px; color:var(--ink); padding:2px 0; display:flex; gap:8px; align-items:center;"><span style="width:6px; height:6px; border-radius:50%; background:#098768; flex:none;"></span>' + n.replace(/</g, "&lt;") + '</div>').join("")
+    html += '<div class="oo-day' + (isToday ? ' today' : '') + '">'
+      + '<div class="oo-date">' + dlbl + (isToday ? '<span class="oo-pill">Today</span>' : '') + '</div>'
+      + names.map(n => { const t = toneOf(n), safe = n.replace(/</g, "&lt;"); return '<div class="oo-person"><span class="oo-av" style="background:' + t[0] + ';color:' + t[1] + '">' + initials(n).replace(/</g, "&lt;") + '</span><span class="oo-name">' + safe + '</span></div>'; }).join("")
       + '</div>';
   });
-  list.innerHTML = total ? html : '<div style="font-size:12.5px; color:var(--muted2);">No one’s off ' + (S.dayView ? "that day" : (trimmed ? "for the rest of this week" : "this week")) + '. 🎉</div>';
+  list.innerHTML = total ? html : '<div class="oo-empty"><img src="brand/octavia-surfer.webp" alt="" width="120"><b>Everyone\u2019s in.</b><span>No one\u2019s off ' + (S.dayView ? "that day" : (trimmed ? "for the rest of this week" : "this week")) + '.</span></div>';
   box.style.display = "block";
 }
 

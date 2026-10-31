@@ -46,4 +46,18 @@
   .dh.today .dn { animation: wt-pop .5s ease both; }
   .btn.primary, .nt-act { transition: background .15s ease, box-shadow .15s ease, translate .12s ease; }
   .btn.primary:hover, .nt-act:hover { translate: 0 -1px; }
+  /* New-meeting bar: slides in, then floats with a soft glow; the calendar icon wiggles on arrival */
+  @keyframes wt-glow { 0%,100% { box-shadow: 0 18px 40px rgba(1,13,64,.35), 0 0 0 0 rgba(130,102,244,0); } 50% { box-shadow: 0 24px 48px rgba(1,13,64,.40), 0 0 0 6px rgba(130,102,244,.18); } }
+  @keyframes wt-wiggle { 0%,100% { rotate: 0deg; scale: 1; } 20% { rotate: -12deg; scale: 1.12; } 40% { rotate: 10deg; } 60% { rotate: -6deg; } 80% { rotate: 3deg; } }
+  #ntBar.show { animation: wt-float 3.2s ease-in-out .5s infinite, wt-glow 3.2s ease-in-out .5s infinite; }
+  #ntBar.show img { animation: wt-wiggle .9s ease .35s both, wt-float 2.4s ease-in-out 1.3s infinite; }
+  #ntBar.show .nb-view { animation: wt-pop .4s ease .45s both; }
+  /* Cancel bar + cancelled page: Octavia drifts down on her paraglider and keeps swaying */
+  @keyframes wt-drift-in { 0% { opacity: 0; translate: -10px -46px; rotate: -14deg; } 70% { opacity: 1; translate: 0 3px; rotate: 5deg; } 100% { translate: 0 0; rotate: 0deg; } }
+  @keyframes wt-sway { 0%,100% { rotate: -5deg; translate: 0 0; } 50% { rotate: 5deg; translate: 0 -6px; } }
+  #ntBar.cancel.show .nb-oct, .cx-oct { transform-origin: 50% 0; animation: wt-drift-in 1.1s cubic-bezier(.2,.8,.3,1) both, wt-sway 3.6s ease-in-out 1.1s infinite; }
+  /* Out-of-office section */
+  .oo-empty img { animation: wt-float 4.5s ease-in-out infinite; }
+  .oo-person { animation: wt-slide .35s ease both; }
+  .oo-day:nth-child(2) .oo-person { animation-delay: .06s; } .oo-day:nth-child(n+3) .oo-person { animation-delay: .12s; }
 }

@@ -68,7 +68,7 @@
   function refresh(){
     return fetchFeed().then(function(remote){
       var s = st();
-      items = localItems().concat(remote).filter(function(it){ return s.dismissed.indexOf(it.id) < 0; })
+      items = localItems().concat(storedItems(), remote).filter(function(it){ return s.dismissed.indexOf(it.id) < 0; })
         .sort(function(a, b){ return (b.urgent ? 1 : 0) - (a.urgent ? 1 : 0) || new Date(b.date) - new Date(a.date); });
       paint();
     });
@@ -81,6 +81,7 @@
     if (dot){ dot.textContent = n > 9 ? "9+" : String(n); dot.style.display = n ? "flex" : "none"; }
     if (btn) btn.setAttribute("aria-label", n ? "Notifications, " + n + " new" : "Notifications");
     if (btn) btn.classList.toggle("has-unread", n > 0);
+    var base = document.title.replace(/^\(\d+\+?\) /, ""); document.title = (n ? "(" + (n > 9 ? "9+" : n) + ") " : "") + base;
     var list = document.getElementById("ntList"); if (!list) return;
     if (!items.length){
       list.innerHTML = '<div class="nt-empty"><img src="brand/octavia-paraglider.webp" alt="" width="110"><b>You\'re all caught up.</b><span>New notices from WeCalendar show up here.</span></div>';
@@ -130,6 +131,130 @@
     btn.setAttribute("aria-expanded", show ? "true" : "false");
   }
 
+
+  // ---- notifications WeCalendar raises itself and keeps (e.g. new meetings) ----
+  var STORE_DAYS = 14;
+  function storeKey(){ return "wecalNotifyStore:" + (me() || "anon"); }
+  function storedItems(){
+    try {
+      var all = JSON.parse(localStorage.getItem(storeKey()) || "[]");
+      return all.filter(function(it){ return daysSince(new Date(it.date).getTime()) < STORE_DAYS; });
+    } catch(e){ return []; }
+  }
+  function addStored(list){
+    var all = storedItems(), ids = all.map(function(x){ return x.id; });
+    list.forEach(function(it){ if (ids.indexOf(it.id) < 0) all.unshift(it); });
+    try { localStorage.setItem(storeKey(), JSON.stringify(all.slice(0, 40))); } catch(e){}
+  }
+
+  // ---- new-meeting watcher ----
+  // Every 2 minutes (and when the tab comes back into view) WeCalendar reads the next 14 days
+  // of your Outlook calendar. A meeting it hasn't seen before, created in the last 3 days,
+  // raises a notification and the slide-down bar. The first check only remembers what is
+  // already there, so nobody gets a flood of alerts on their first visit.
+  var WATCH_MS = 2 * 60 * 1000, watching = false, watchBusy = false;
+  function seenKey(){ return "wecalSeenMeetings:" + (me() || "anon"); }
+  function fmtWhen(start, end){
+    try {
+      var d = new Intl.DateTimeFormat(undefined, { weekday: "short", day: "numeric", month: "short" }).format(start);
+      var t = new Intl.DateTimeFormat(undefined, { hour: "numeric", minute: "2-digit" });
+      return d + " · " + t.format(start) + "–" + t.format(end);
+    } catch(e){ return ""; }
+  }
+  function silentToken(){
+    try { return pca.acquireTokenSilent({ scopes: SCOPES, account: account }).then(function(r){ return r.accessToken; }); }
+    catch(e){ return Promise.reject(e); }
+  }
+  function checkMeetings(){
+    if (watchBusy || document.hidden || !me()) return;
+    watchBusy = true;
+    var now = new Date(), until = new Date(now.getTime() + 14 * 86400000);
+    silentToken().then(function(tk){
+      var url = "https://graph.microsoft.com/v1.0/me/calendarView?" + new URLSearchParams({
+        startDateTime: now.toISOString(), endDateTime: until.toISOString(),
+        $select: "id,subject,start,end,createdDateTime,organizer,isOrganizer,isCancelled,showAs,responseStatus,webLink", $orderby: "start/dateTime", $top: "200"
+      });
+      return fetch(url, { headers: { Authorization: "Bearer " + tk, Prefer: 'outlook.timezone="UTC"' } });
+    }).then(function(r){ return r && r.ok ? r.json() : null; }).then(function(j){
+      if (!j) return;
+      var cx = (j.value || []).filter(function(ev){ return ev.id && ev.isCancelled; });
+      var cxKey = "wecalSeenCancels:" + me(), cxSeenRaw = null; try { cxSeenRaw = localStorage.getItem(cxKey); } catch(e){}
+      var cxSeen = cxSeenRaw ? JSON.parse(cxSeenRaw) : null;
+      if (cxSeen){
+        var cxNew = cx.filter(function(ev){ return cxSeen.indexOf(ev.id) < 0; });
+        if (cxNew.length){
+          cancelled(cxNew.map(function(ev){ return { id: ev.id, subject: (ev.subject || "").replace(/^Canceled:\s*|^Cancelled:\s*/i, ""),
+            start: new Date(ev.start.dateTime + "Z"), end: new Date(ev.end.dateTime + "Z"),
+            by: ev.organizer && ev.organizer.emailAddress ? (ev.organizer.emailAddress.name || ev.organizer.emailAddress.address) : "" }; }));
+          try { if (typeof load === "function") load(); } catch(e){}
+        }
+      }
+      try { localStorage.setItem(cxKey, JSON.stringify((cxSeen || []).concat(cx.map(function(ev){ return ev.id; })).filter(function(id, i, a){ return a.indexOf(id) === i; }).slice(-300))); } catch(e){}
+      var evs = (j.value || []).filter(function(ev){
+        return ev.id && !ev.isCancelled && ev.showAs !== "free" && !(ev.responseStatus && ev.responseStatus.response === "declined");
+      });
+      var seenRaw = null; try { seenRaw = localStorage.getItem(seenKey()); } catch(e){}
+      var seen = seenRaw ? JSON.parse(seenRaw) : null;
+      var ids = evs.map(function(ev){ return ev.id; });
+      if (seen){
+        var fresh = evs.filter(function(ev){
+          return seen.indexOf(ev.id) < 0 && ev.createdDateTime && daysSince(new Date(ev.createdDateTime).getTime()) < 3;
+        });
+        if (fresh.length){
+          var made = fresh.map(function(ev){
+            var start = new Date(ev.start.dateTime + "Z"), end = new Date(ev.end.dateTime + "Z");
+            var who = !ev.isOrganizer && ev.organizer && ev.organizer.emailAddress ? (ev.organizer.emailAddress.name || ev.organizer.emailAddress.address) : "";
+            return { id: "mtg-" + ev.id, date: new Date().toISOString(), tile: "calendar",
+              title: "New meeting: " + (ev.subject || "(no title)"),
+              body: fmtWhen(start, end) + (who ? " · from " + who : ""),
+              action: ev.webLink ? { label: "Open in Outlook", url: ev.webLink } : null,
+              _when: fmtWhen(start, end) };
+          });
+          addStored(made);
+          refresh();
+          showBar(made);
+          try { if (typeof load === "function") load(); } catch(e){}   // redraw the week so the meeting appears
+        }
+      }
+      var keep = (seen || []).concat(ids).filter(function(id, i, a){ return a.indexOf(id) === i; }).slice(-600);
+      try { localStorage.setItem(seenKey(), JSON.stringify(keep)); } catch(e){}
+    }).catch(function(){}).then(function(){ watchBusy = false; });
+  }
+  function startMeetingWatch(){
+    if (watching) return; watching = true;
+    setTimeout(checkMeetings, 4000);
+    setInterval(checkMeetings, WATCH_MS);
+    document.addEventListener("visibilitychange", function(){ if (!document.hidden) checkMeetings(); });
+  }
+
+  // ---- slide-down bar ----
+  var barTimer = null;
+  function showBar(list, kind){
+    var bar = document.getElementById("ntBar"); if (!bar || !list.length) return;
+    var cancel = kind === "cancel", first = list[0];
+    var title = list.length === 1 ? first.title : list.length + (cancel ? " meetings cancelled" : " new meetings");
+    var sub = list.length === 1 ? (first._when || first.body || "") : list.map(function(x){ return x.title.replace(/^(New meeting|Meeting cancelled): /, ""); }).slice(0, 3).join(" · ");
+    bar.className = cancel ? "cancel" : "";
+    bar.innerHTML = (cancel ? '<img class="nb-oct" src="brand/octavia-paraglider.webp" alt="">' : '<img src="brand/tile-calendar.png" alt="">') +
+      '<div class="nb-text"><b>' + esc(title) + '</b><span>' + esc(sub) + '</span></div>' +
+      '<button type="button" class="nb-view">View</button>' +
+      '<button type="button" class="nb-x" aria-label="Close">&times;</button>';
+    bar.querySelector(".nb-view").onclick = function(){ hideBar(); toggle(true); };
+    bar.querySelector(".nb-x").onclick = hideBar;
+    void bar.offsetWidth; bar.classList.add("show");
+    clearTimeout(barTimer); barTimer = setTimeout(hideBar, 9000);
+  }
+  // Called by the app when you cancel a meeting yourself, and by the watcher for cancellations by others.
+  function cancelled(evs, quiet){
+    var made = evs.map(function(ev){
+      var when = ev.start && ev.end ? fmtWhen(new Date(ev.start), new Date(ev.end)) : "";
+      return { id: "cxl-" + (ev.id || ev.cancelId || Date.now()), date: new Date().toISOString(), tile: "paper-plane",
+        title: "Meeting cancelled: " + (ev.subject || "(no title)"), body: when + (ev.by ? " · by " + ev.by : ""), _when: when + (ev.by ? " · by " + ev.by : "") };
+    });
+    addStored(made); refresh(); if (!quiet) showBar(made, "cancel");
+  }
+  function hideBar(){ var bar = document.getElementById("ntBar"); if (bar) bar.classList.remove("show"); }
+
   function start(){
     if (started) return; started = true;
     var btn = document.getElementById("ntBtn"); if (!btn) return;
@@ -153,7 +278,8 @@
       } catch(e){}
     });
     setInterval(refresh, POLL_MS);
+    startMeetingWatch();
   }
 
-  window.WecalNotify = { start: start, refresh: refresh, open: function(){ toggle(true); } };
+  window.WecalNotify = { start: start, refresh: refresh, open: function(){ toggle(true); }, check: checkMeetings, cancelled: function(ev){ cancelled([ev]); }, _showBar: showBar };
 })();
