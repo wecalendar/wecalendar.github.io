@@ -4,19 +4,15 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>WeCalendar — Analytics</title>
-<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect x='8' y='14' width='84' height='78' rx='14' fill='%237C6FF7'/%3E%3Crect x='8' y='34' width='84' height='58' rx='10' fill='%23fff'/%3E%3C/svg%3E">
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 128 128'%3E%3Cdefs%3E%3ClinearGradient id='g' x1='0' y1='0' x2='1' y2='1'%3E%3Cstop offset='0' stop-color='%237A5AEA'/%3E%3Cstop offset='1' stop-color='%23402C93'/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect width='128' height='128' rx='28' fill='url%28%23g%29'/%3E%3Crect x='26' y='32' width='76' height='66' rx='12' fill='%23fff'/%3E%3Crect x='26' y='32' width='76' height='16' rx='8' fill='%23EBE7FF'/%3E%3Crect x='26' y='40' width='76' height='8' fill='%23EBE7FF'/%3E%3Crect x='42' y='24' width='7' height='16' rx='3.5' fill='%23021774'/%3E%3Crect x='79' y='24' width='7' height='16' rx='3.5' fill='%23021774'/%3E%3Ccircle cx='43' cy='62' r='5' fill='%23C5BDFB'/%3E%3Ccircle cx='64' cy='62' r='5' fill='%23C5BDFB'/%3E%3Crect x='76' y='54' width='16' height='16' rx='4.5' fill='%2310D0A0'/%3E%3Ccircle cx='43' cy='82' r='5' fill='%23C5BDFB'/%3E%3Ccircle cx='64' cy='82' r='5' fill='%23C5BDFB'/%3E%3Ccircle cx='84' cy='82' r='5' fill='%23C5BDFB'/%3E%3C/svg%3E">
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4"></script>
 <script src="wecal-config.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@azure/msal-browser@3/lib/msal-browser.min.js"></script>
+<link rel="stylesheet" href="wt-brand.css">
 <style>
-  @font-face{font-family:'Greycliff CF';src:url('GreycliffCF-Light.ttf') format('truetype');font-weight:300;font-display:swap}
-  @font-face{font-family:'Greycliff CF';src:url('GreycliffCF-Medium.ttf') format('truetype');font-weight:400 500;font-display:swap}
-  @font-face{font-family:'Greycliff CF';src:url('GreycliffCF-Bold.ttf') format('truetype');font-weight:600 700;font-display:swap}
-  :root{ --accent:#5E43C8; --ink:#2C1C6C; --muted:#656578; --line:#E2DBFF; --green:#12B76A; }
+  :root{ --accent:#5E43C8; --ink:#021774; --muted:#4E5D9E; --line:#E1E4FF; --green:#098768; }
   *{ box-sizing:border-box; margin:0; padding:0; }
-  body{ font-family:'Greycliff CF','Plus Jakarta Sans',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif; background:#FBF9FF; color:var(--ink); padding:28px 18px; }
+  body{ font-family:'Manrope',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif; background:#F3F5FF; color:var(--ink); padding:28px 18px; }
   .wrap{ max-width:920px; margin:0 auto; }
   .top{ display:flex; align-items:baseline; gap:12px; margin-bottom:6px; }
   .wordmark{ font-size:15px; font-weight:600; } .wordmark .a1{ color:var(--accent); } .wordmark .a2{ color:var(--ink); }
@@ -30,18 +26,31 @@
   .panel{ background:#fff; border:1px solid var(--line); border-radius:14px; padding:18px; margin-bottom:18px; }
   .panel h2{ font-size:15px; font-weight:600; margin-bottom:14px; }
   table{ width:100%; border-collapse:collapse; font-size:13.5px; }
-  th,td{ text-align:left; padding:9px 8px; border-bottom:1px solid #F0ECFF; }
+  th,td{ text-align:left; padding:9px 8px; border-bottom:1px solid #EBE7FF; }
   th{ color:var(--muted); font-weight:600; font-size:12px; text-transform:uppercase; letter-spacing:.04em; }
   td.num,th.num{ text-align:right; }
   .msg{ color:var(--muted); padding:40px; text-align:center; }
   .reload{ margin-left:auto; border:1px solid var(--line); background:#fff; border-radius:9px; padding:6px 12px; font-family:inherit; font-size:13px; cursor:pointer; color:var(--ink); }
-  .reload:hover{ background:#F4F0FF; }
+  .reload:hover{ background:#EBE7FF; }
+
+  /* ==== WeTransact rebrand (2026-10-31) ==== */
+  body{ font-family:var(--wt-font-body); background:linear-gradient(180deg,#EBE7FF 0,#F3F5FF 340px) fixed,#F3F5FF; -webkit-font-smoothing:antialiased; }
+  .wordmark, h1, .panel h2, .card .n{ font-family:var(--wt-font-display); }
+  .wordmark{ font-size:18px; font-weight:700; letter-spacing:-.02em; } .wordmark .a1{ color:#8266F4; }
+  h1{ font-size:40px; font-weight:500; letter-spacing:-.03em; line-height:1.15; }
+  .card, .panel{ border-radius:20px; box-shadow:0 18px 40px rgba(31,23,89,.06); }
+  .card .n{ font-size:34px; letter-spacing:-.06em; }
+  .card.hl{ background:linear-gradient(180deg,#010D40,#402C93); border-color:transparent; }
+  .card.hl .n{ color:#fff; } .card.hl .l{ color:#C5BDFB; }
+  .panel h2{ font-size:18px; letter-spacing:-.02em; }
+  th{ text-transform:none; letter-spacing:0; font-size:12.5px; }
+  .reload{ border-color:#D9DDE8; color:#0B1336; border-radius:12px; padding:8px 14px; }
 </style>
 </head>
 <body>
 <div class="wrap">
   <div class="top">
-    <span class="wordmark"><span class="a1">we</span><span class="a2">calendar</span></span>
+    <img src="brand/logo-colour.svg" alt="WeTransact" style="height:22px;align-self:center"><span class="wordmark"><span class="a1">we</span><span class="a2">calendar</span></span>
     <button class="reload" onclick="load()">↻ Refresh</button>
   </div>
   <h1>Booking analytics</h1>
@@ -101,7 +110,7 @@ function render(s){
   chart = new Chart(document.getElementById("chart"), {
     type: "bar",
     data: { labels, datasets: [
-      { label: "Views", data: links.map(l => l.views), backgroundColor: "#C9BCFF" },
+      { label: "Views", data: links.map(l => l.views), backgroundColor: "#C5BDFB" },
       { label: "Bookings", data: links.map(l => l.bookings), backgroundColor: "#5E43C8" },
     ]},
     options: { responsive: true, scales: { y: { beginAtZero: true, ticks: { precision: 0 } } }, plugins: { legend: { position: "bottom" } } },

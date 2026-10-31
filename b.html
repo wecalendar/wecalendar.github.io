@@ -4,19 +4,15 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Book a time — WeCalendar</title>
-<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect x='8' y='14' width='84' height='78' rx='14' fill='%235E43C8'/%3E%3Crect x='8' y='34' width='84' height='58' rx='10' fill='%23fff'/%3E%3Crect x='22' y='46' width='18' height='14' rx='4' fill='%23e8e5ff'/%3E%3Crect x='46' y='46' width='18' height='14' rx='4' fill='%235E43C8'/%3E%3Crect x='22' y='68' width='18' height='14' rx='4' fill='%23e8e5ff'/%3E%3Crect x='46' y='68' width='18' height='14' rx='4' fill='%23e8e5ff'/%3E%3Ccircle cx='30' cy='8' r='7' fill='%232C1C6C'/%3E%3Ccircle cx='70' cy='8' r='7' fill='%232C1C6C'/%3E%3C/svg%3E">
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 128 128'%3E%3Cdefs%3E%3ClinearGradient id='g' x1='0' y1='0' x2='1' y2='1'%3E%3Cstop offset='0' stop-color='%237A5AEA'/%3E%3Cstop offset='1' stop-color='%23402C93'/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect width='128' height='128' rx='28' fill='url%28%23g%29'/%3E%3Crect x='26' y='32' width='76' height='66' rx='12' fill='%23fff'/%3E%3Crect x='26' y='32' width='76' height='16' rx='8' fill='%23EBE7FF'/%3E%3Crect x='26' y='40' width='76' height='8' fill='%23EBE7FF'/%3E%3Crect x='42' y='24' width='7' height='16' rx='3.5' fill='%23021774'/%3E%3Crect x='79' y='24' width='7' height='16' rx='3.5' fill='%23021774'/%3E%3Ccircle cx='43' cy='62' r='5' fill='%23C5BDFB'/%3E%3Ccircle cx='64' cy='62' r='5' fill='%23C5BDFB'/%3E%3Crect x='76' y='54' width='16' height='16' rx='4.5' fill='%2310D0A0'/%3E%3Ccircle cx='43' cy='82' r='5' fill='%23C5BDFB'/%3E%3Ccircle cx='64' cy='82' r='5' fill='%23C5BDFB'/%3E%3Ccircle cx='84' cy='82' r='5' fill='%23C5BDFB'/%3E%3C/svg%3E">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.3/dist/confetti.browser.min.js"></script>
 <script src="wecal-config.js"></script>
+<link rel="stylesheet" href="wt-brand.css">
 <style>
-  @font-face{font-family:'Greycliff CF';src:url('GreycliffCF-Light.ttf') format('truetype');font-weight:300;font-display:swap}
-  @font-face{font-family:'Greycliff CF';src:url('GreycliffCF-Medium.ttf') format('truetype');font-weight:400 500;font-display:swap}
-  @font-face{font-family:'Greycliff CF';src:url('GreycliffCF-Bold.ttf') format('truetype');font-weight:600 700;font-display:swap}
-  :root{ --accent:#5E43C8; --accent-d:#402C93; --ink:#2C1C6C; --muted:#656578; --line:#E2DBFF; --green:#12B76A; --green-d:#039855; }
+  :root{ --accent:#5E43C8; --accent-d:#402C93; --ink:#021774; --muted:#4E5D9E; --line:#E1E4FF; --green:#098768; --green-d:#05614B; }
   *{ box-sizing:border-box; margin:0; padding:0; }
-  body{ font-family:'Greycliff CF','Plus Jakarta Sans',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif; background:#FBF9FF; color:var(--ink); font-size:14px; min-height:100vh; display:flex; justify-content:center; padding:28px 16px; }
+  body{ font-family:'Manrope',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif; background:#F3F5FF; color:var(--ink); font-size:14px; min-height:100vh; display:flex; justify-content:center; padding:28px 16px; }
   .card{ width:100%; max-width:560px; background:#fff; border:1px solid var(--line); border-radius:20px; box-shadow:0 8px 40px rgba(44,28,108,.08); overflow:hidden; }
   .hd{ padding:26px 28px 18px; border-bottom:1px solid var(--line); text-align:center; }
   .wtmark{ height:58px; display:block; margin:0 auto 6px; }
@@ -32,7 +28,7 @@
   .tzres{ position:absolute; z-index:30; top:calc(100% + 4px); left:0; width:262px; max-width:78vw; max-height:240px; overflow:auto; background:#fff; border:1px solid var(--line); border-radius:10px; box-shadow:0 12px 28px rgba(0,0,0,.12); padding:4px; text-align:left; }
   .tzres.hide{ display:none; }
   .tzres div{ display:flex; gap:8px; align-items:center; padding:6px 8px; border-radius:7px; cursor:pointer; font-size:12.5px; color:var(--ink); }
-  .tzres div:hover{ background:#F0ECFF; }
+  .tzres div:hover{ background:#EBE7FF; }
   .tzres .off{ margin-left:auto; color:var(--muted); font-size:11.5px; white-space:nowrap; }
   .body{ padding:18px 28px 26px; }
   .day{ font-size:13px; font-weight:700; color:var(--ink); margin:18px 0 8px; }
@@ -43,7 +39,7 @@
   .empty,.msg{ text-align:center; color:var(--muted); padding:36px 10px; font-size:14px; line-height:1.6; }
   .spin{ display:inline-block; width:16px; height:16px; border:2px solid var(--line); border-top-color:var(--accent); border-radius:50%; animation:sp .8s linear infinite; }
   @keyframes sp{ to{ transform:rotate(360deg); } }
-  .foot{ padding:0 28px 22px; font-size:11.5px; color:#a99fce; text-align:center; }
+  .foot{ padding:0 28px 22px; font-size:11.5px; color:#7A7D9C; text-align:center; }
   /* modal */
   .ov{ position:fixed; inset:0; background:rgba(44,28,108,.45); display:none; align-items:center; justify-content:center; padding:18px; z-index:30; }
   .ov.on{ display:flex; }
@@ -58,7 +54,7 @@
   .btn:disabled{ opacity:.6; cursor:default; }
   .btn.sec{ background:none; color:var(--muted); margin-top:8px; font-weight:500; }
   .err{ color:#b91c1c; font-size:12.5px; margin-top:10px; min-height:16px; }
-  .ok-ico{ width:54px; height:54px; border-radius:50%; background:#E6FBF1; color:var(--green-d); display:flex; align-items:center; justify-content:center; margin:0 auto 14px; font-size:26px; }
+  .ok-ico{ width:54px; height:54px; border-radius:50%; background:#E2F9F4; color:var(--green-d); display:flex; align-items:center; justify-content:center; margin:0 auto 14px; font-size:26px; }
   .joinbtn{ display:inline-block; margin-top:14px; background:var(--accent); color:#fff; text-decoration:none; border-radius:999px; padding:10px 22px; font-weight:600; font-size:14px; }
 
   /* beauty pass 2026-07-19 — matches web app polish */
@@ -74,22 +70,49 @@
   @keyframes popin{ from{ opacity:0; transform:translateY(6px);} to{ opacity:1; transform:none;} }
   .modal{ animation:popin .18s ease; box-shadow:0 20px 60px rgba(20,16,40,.30); }
   .modal input{ transition:border-color .15s ease, box-shadow .15s ease; }
-  .modal input:focus{ border-color:#C9BCFF; box-shadow:0 0 0 3px rgba(94,67,200,.10); }
+  .modal input:focus{ border-color:#C5BDFB; box-shadow:0 0 0 3px rgba(94,67,200,.10); }
+
+  /* ==== WeTransact rebrand (2026-10-31) ==== */
+  :root{ --accent:#5E43C8; --accent-d:#402C93; --ink:#021774; --muted:#4E5D9E; --line:#E1E4FF; --green:#098768; --green-d:#05614B; }
+  body{ font-family:var(--wt-font-body); background:linear-gradient(180deg,#EBE7FF 0,#F3F5FF 420px) fixed, #F3F5FF; -webkit-font-smoothing:antialiased; }
+  :focus-visible{ outline:2px solid #FFCE00; outline-offset:2px; }
+  .card{ border-radius:30px; border-color:var(--line); box-shadow:0 18px 40px rgba(31,23,89,.08); }
+  .hd{ background:url('brand/grid-on-dark.svg') center/cover no-repeat, linear-gradient(180deg,#021774 0%,#402C93 70%,#5E43C8 100%); background-blend-mode:hard-light,normal; border-bottom:none; padding:30px 28px 24px; color:#fff; }
+  .wtlogo{ display:block; height:24px; width:auto; margin:0 auto 4px; }
+  h1{ font-family:var(--wt-font-display); font-size:28px; font-weight:500; letter-spacing:-.03em; line-height:1.15; color:#fff; margin:18px 0 6px; }
+  .sub{ color:#FDEBF7; font-size:14px; }
+  .tzrow{ color:#C5BDFB; white-space:nowrap; }
+  .tzwrap input{ border-color:rgba(255,255,255,.25); background:rgba(255,255,255,.10); color:#fff; border-radius:10px; padding:6px 10px; }
+  .tzwrap input::placeholder{ color:#C5BDFB; }
+  .tzwrap input:focus{ border-color:#fff; background:rgba(255,255,255,.16); }
+  .tzres{ border-color:var(--line); border-radius:12px; box-shadow:0 12px 32px rgba(32,36,138,.14); }
+  .tzres div:hover{ background:#EBE7FF; }
+  .body{ padding:22px 28px 28px; }
+  .day{ font-family:var(--wt-font-display); font-size:15px; font-weight:600; letter-spacing:-.01em; margin:22px 0 10px; }
+  .slot{ border:1px solid #8CE8D1; background:#E2F9F4; color:#05614B; border-radius:12px; padding:11px 8px; font-size:14px; }
+  .slot:hover{ background:#098768; border-color:#098768; color:#fff; box-shadow:0 8px 18px -6px rgba(9,135,104,.5); }
+  .foot{ color:#7A7D9C; font-size:12px; }
+  .ov{ background:rgba(1,13,64,.55); }
+  .modal{ border-radius:20px; box-shadow:0 32px 64px rgba(11,10,51,.25); }
+  .modal h2{ font-family:var(--wt-font-display); font-size:20px; letter-spacing:-.02em; color:var(--ink); }
+  .modal .when{ color:#5E43C8; }
+  .modal input{ border-color:#D9DDE8; border-radius:12px; }
+  .modal input:focus{ border-color:#8266F4; box-shadow:0 0 0 3px rgba(130,102,244,.16); }
+  .btn{ border-radius:12px; background:linear-gradient(105deg,#5E43C8,#7A5AEA); box-shadow:0 2px 8px rgba(94,67,200,.22); }
+  .btn:hover{ background:linear-gradient(105deg,#513AAD,#6B4AD8); box-shadow:0 10px 24px -4px rgba(94,67,200,.34); }
+  .btn.sec{ background:none; color:var(--muted); }
+  .ok-ico{ background:#E2F9F4; color:#098768; }
+  .joinbtn{ border-radius:12px; background:linear-gradient(105deg,#5E43C8,#7A5AEA); }
+  .err{ color:#C0254F; }
 </style>
 </head>
 <body>
   <div class="card">
     <div class="hd">
-      <svg class="wtmark" viewBox="100 145 350 250" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="WeTransact">
-        <circle fill="#F0479C" cx="168.56" cy="181.36" r="20.67"/>
-        <circle fill="#F0479C" cx="381.44" cy="181.36" r="20.67"/>
-        <circle fill="#2C1C6C" cx="274.92" cy="207.22" r="20.67"/>
-        <path fill="#2C1C6C" d="M397.77,244.73c-.01-8.96-7.31-16.24-16.27-16.24s-16.26,7.3-16.26,16.27v54.37c0,14.86-5.38,28.97-15.16,39.74-15.43,16.99-28.76,18.45-39.75,17.62l-7.43-.56,3.93-6.33c8.21-13.22,12.54-28.43,12.54-43.98l-.18-5.65c-.19-24.29-20.09-44.05-44.37-44.05s-43.68,19.21-44.37,43.09v4.27c0,16.34,4.59,32.33,13.27,46.25l3.89,6.24-7.33.65c-14.52,1.28-28.41-3.41-39.11-13.21-10.54-9.65-16.58-23.35-16.58-37.6l-.1-61.06c-.01-8.96-7.31-16.24-16.27-16.24s-16.26,7.3-16.26,16.26v63.85c0,31.87,18.36,60.49,46.78,72.91,25.06,10.96,51.5,10.62,74.44-.93l2.05-1.03,2.04,1.04c10.7,5.45,22.08,8.43,33.83,8.85,22.85.8,44.63-7.5,61.15-23.43,16.53-15.94,25.63-37.33,25.63-60.22l-.1-60.88ZM285.75,304.01c0,13.79-4.01,26.95-10.96,38.1-6.62-10.53-10.52-22.94-10.52-36.27l-.18-7.8h0c0-5.98,4.85-10.83,10.83-10.83s10.83,4.85,10.83,10.83h0v5.96Z"/>
-      </svg>
-      <span class="wordmark"><span class="a1">we</span><span class="a2">transact</span></span>
+      <img class="wtlogo" src="brand/logo-on-dark.svg" alt="WeTransact" width="160" height="25">
       <h1 id="title">Loading…</h1>
       <div class="sub" id="sub">Pick a time that works for you.</div>
-      <div class="tzrow">🌐 Times shown in <span class="tzwrap"><input type="text" id="tzIn" autocomplete="off" spellcheck="false" placeholder="Search a city…"><div id="tzRes" class="tzres hide"></div></span></div>
+      <div class="tzrow"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true" style="vertical-align:-2px"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c2.5 2.6 4 5.6 4 9s-1.5 6.4-4 9c-2.5-2.6-4-5.6-4-9s1.5-6.4 4-9z"/></svg> Times shown in <span class="tzwrap"><input type="text" id="tzIn" autocomplete="off" spellcheck="false" placeholder="Search a city…"><div id="tzRes" class="tzres hide"></div></span></div>
     </div>
     <div class="body"><div id="list"><div class="msg"><span class="spin"></span></div></div></div>
     <div class="foot">Powered by WeCalendar · one-click booking, no account needed</div>
@@ -192,7 +215,7 @@ function buildTzSel(){
       const nm = document.createElement("span");
       nm.textContent = z.region ? z.city + " \u00b7 " + z.region : z.city;
       const of = document.createElement("span"); of.className = "off"; of.textContent = WECAL_TZ.offLabel(z.zone);
-      if (z.zone === TZ) row.style.background = "#F0ECFF";
+      if (z.zone === TZ) row.style.background = "#EBE7FF";
       row.appendChild(nm); row.appendChild(of);
       row.onmousedown = e => { e.preventDefault(); TZ = z.zone; inp.value = label(TZ); box.classList.add("hide"); render(); };
       box.appendChild(row);
@@ -332,7 +355,7 @@ function confirmView(joinUrl, name, whenStr, bookingId){
     (safeJoin ? '<div style="text-align:center"><a class="joinbtn" href="'+safeJoin+'" target="_blank" rel="noopener">Join link</a></div>' : '')+
     '<button class="btn sec" id="done" style="margin-top:18px">Done</button>';
   $("done").onclick = () => { closeModal(); render(); };
-  if (window.confetti) { try { window.confetti({ particleCount: 130, spread: 78, origin: { y: 0.6 }, colors: ['#5E43C8','#12B76A','#C9BCFF','#FFC400'] }); } catch(e){} }
+  if (window.confetti) { try { window.confetti({ particleCount: 130, spread: 78, origin: { y: 0.6 }, colors: ['#5E43C8','#098768','#C5BDFB','#FFCE00'] }); } catch(e){} }
 }
 
 function greeting(){ const h = new Date().getHours(); return h < 12 ? "Good morning! ☀️" : h < 18 ? "Good afternoon! 👋" : "Good evening! 🌙"; }
