@@ -104,6 +104,16 @@
   .ok-ico{ background:#E2F9F4; color:#098768; }
   .joinbtn{ border-radius:12px; background:linear-gradient(105deg,#5E43C8,#7A5AEA); }
   .err{ color:#C0254F; }
+  /* Octavia moments (2026-10-31) */
+  .msg{ display:flex; flex-direction:column; align-items:center; gap:14px; padding:28px 10px 34px; }
+  .msg .oct{ width:200px; height:auto; }
+  .msgt{ color:var(--ink); font-size:15px; line-height:1.55; }
+  .msgt b{ font-family:var(--wt-font-display); font-weight:500; font-size:24px; letter-spacing:-.03em; display:inline-block; margin-bottom:4px; }
+  .msgt .ms{ color:var(--muted); font-size:14px; }
+  .ok-hero{ margin:-24px -24px 14px; height:190px; border-radius:20px 20px 0 0; overflow:hidden; display:flex; align-items:flex-end; justify-content:center;
+    background:url('brand/grid-on-dark.svg') center/cover no-repeat, linear-gradient(180deg,#021774 0%,#402C93 55%,#8266F4 100%); background-blend-mode:hard-light,normal; }
+  .ok-hero img{ width:190px; height:auto; margin-bottom:-22px; filter:drop-shadow(0 14px 24px rgba(1,13,64,.35)); }
+  .modal h2{ font-size:24px; font-weight:500; letter-spacing:-.03em; }
 </style>
 </head>
 <body>
@@ -197,7 +207,11 @@ var WECAL_TZ = (function(){
 let sb = null, LINK = null, SLOTS = [], GONE = new Set(), TZ = Intl.DateTimeFormat().resolvedOptions().timeZone;
 
 
-function fail(msg){ $("list").innerHTML = '<div class="msg">' + msg + '</div>'; }
+function fail(msg, pose){
+  // pose: an Octavia illustration for the state (brand/octavia-<pose>.webp); errors default to "confused"
+  const img = pose === false ? '' : '<img class="oct" src="brand/octavia-' + (pose || 'confused') + '.webp" alt="" width="200">';
+  $("list").innerHTML = '<div class="msg">' + img + '<div class="msgt">' + msg + '</div></div>';
+}
 
 // Visitors arrive from anywhere, so the picker is a search box over every city in
 // WECAL_TZ (plus every IANA zone) rather than a shortlist — typing "Tel Aviv" works
@@ -244,10 +258,10 @@ function render(){
     const withdrawn = SLOTS.some(s => s.status === "open" && GONE.has(s.id) && new Date(s.start_utc) > now);
     const anyBooked = SLOTS.some(s => s.status === "booked");
     const allPast = SLOTS.length > 0 && SLOTS.every(s => new Date(s.start_utc) <= now);
-    if (withdrawn) fail("These times are no longer available.<br><span style='font-size:12px'>Nothing was booked \u2014 please ask for a few new times.</span>");
-    else if (anyBooked) fail("\uD83C\uDF89 All booked! Thank you.");
-    else if (allPast) fail("These times have passed.<br><span style='font-size:12px'>Please ask for a few new ones.</span>");
-    else fail("No times are available right now.");
+    if (withdrawn) fail("<b>These times are gone.</b><br><span class='ms'>Nothing was booked \u2014 ask your host for a few new times.</span>");
+    else if (anyBooked) fail("<b>All booked.</b><br><span class='ms'>Every time on this link has been taken.</span>", "headset");
+    else if (allPast) fail("<b>These times have passed.</b><br><span class='ms'>Ask your host for a few new ones.</span>");
+    else fail("<b>No times are open right now.</b><br><span class='ms'>Check back soon or ask your host for new times.</span>", "headset");
     return;
   }
   const byDay = {};
@@ -349,8 +363,8 @@ function confirmView(joinUrl, name, whenStr, bookingId){
   const safeJoin = (joinUrl && /^https?:\/\/[^\s"'<>]+$/i.test(joinUrl)) ? joinUrl : "";
   const first = ((name || "").trim().split(/\s+/)[0] || "").replace(/[<>&"]/g, "");
   $("modal").innerHTML =
-    '<div class="ok-ico">✓</div>'+
-    '<h2 style="text-align:center">You’re booked' + (first ? ", " + first : "") + '! 🎉</h2>'+
+    '<div class="ok-hero"><img src="brand/octavia-trophy-confetti.webp" alt="" width="190"></div>'+
+    '<h2 style="text-align:center">You’re booked' + (first ? ", " + first : "") + '.</h2>'+
     '<p style="text-align:center;color:var(--muted);margin-top:6px;font-size:13.5px">' + (whenStr ? whenStr + ". " : "") + 'A calendar invite is on its way to your inbox.</p>'+
     (safeJoin ? '<div style="text-align:center"><a class="joinbtn" href="'+safeJoin+'" target="_blank" rel="noopener">Join link</a></div>' : '')+
     '<button class="btn sec" id="done" style="margin-top:18px">Done</button>';
@@ -390,14 +404,14 @@ async function init(){
   const cancelId = new URLSearchParams(location.search).get("cancel");
   if (cancelId){ renderCancel(cancelId); return; }
   buildTzSel();
-  if (!slug){ fail("This booking link is missing its code."); return; }
+  if (!slug){ fail("<b>This link is missing its code.</b><br><span class='ms'>Copy the full link from your email and try again.</span>"); return; }
   if (!C.SUPABASE_URL || !C.SUPABASE_ANON_KEY){
     fail("Booking isn’t configured yet.<br><span style='font-size:12px'>The host needs to finish backend setup (wecalendar-backend/README.md).</span>"); return;
   }
   sb = window.supabase.createClient(C.SUPABASE_URL, C.SUPABASE_ANON_KEY);
 
   const { data: link } = await sb.from("links").select("id,title,tz,status").eq("slug", slug).maybeSingle();
-  if (!link || link.status !== "active"){ fail("This booking link has expired or doesn’t exist."); return; }
+  if (!link || link.status !== "active"){ fail("<b>This link has expired.</b><br><span class='ms'>Nothing was booked \u2014 ask your host for a fresh link.</span>"); return; }
   LINK = link;
   $("title").textContent = link.title || "Book a time";
   $("sub").textContent = greeting() + " Pick a time that works for you — it books instantly.";

@@ -544,6 +544,38 @@
   @media (max-width:1260px){ .appname.center { position:static; transform:none; } }
   @media (max-width:800px){ .hero { grid-template-columns:1fr; } .hero-left { padding:36px 24px 30px; } .hero-left h2 { font-size:30px; }
     .hero-right { min-height:0; border-top:none; padding:28px 24px 210px; } .octavia { width:220px; right:50%; transform:translateX(50%); bottom:-10px; } .mini-card { max-width:none; } }
+
+  /* ==== Octavia moments + pictogram tiles (2026-10-31) ==== */
+  .pv-empty { display:flex; flex-direction:column; align-items:center; text-align:center; gap:6px; padding:4px 4px 2px; }
+  .pv-empty img { width:140px; height:auto; margin-bottom:2px; }
+  .pv-empty > b { font-family:var(--wt-font-display); font-weight:600; font-size:17px; letter-spacing:-.02em; color:var(--ink); }
+  .pv-empty span { font-size:12.5px; line-height:1.5; color:var(--muted2); }
+  #preview:has(.pv-empty) { background:linear-gradient(180deg,#EBE7FF 0%,#FFFFFF 100%); }
+  body.dark #preview:has(.pv-empty) { background:linear-gradient(180deg,rgba(159,146,248,.14) 0%,rgba(255,255,255,.02) 100%); }
+  .sb-h#meetWithH, .sb-h#calsH { display:flex; align-items:center; gap:10px; }
+  .sb-h#meetWithH::before, .sb-h#calsH::before { content:""; width:34px; height:34px; border-radius:10px; flex:none; background:center/cover no-repeat; }
+  .sb-h#meetWithH::before { background-image:url('brand/tile-people.png'); }
+  .sb-h#calsH::before { background-image:url('brand/tile-calendar.png'); }
+  .sbtile { width:28px; height:28px; border-radius:8px; vertical-align:middle; flex:none; }
+  #loadCard .sbtile { width:30px; height:30px; margin-right:4px; }
+  #loadCard > div:first-child > span:first-child { display:inline-flex; align-items:center; gap:4px; font-family:var(--wt-font-display); font-size:14px !important; }
+  #blockBtn { padding:7px 10px !important; gap:10px !important; }
+  #focusEmoji { font-size:0 !important; width:36px; height:36px; border-radius:10px; background:url('brand/tile-lightbulb.png') center/cover no-repeat; }
+  .oo-card { padding-top:0 !important; }
+  .oo-hero { margin:0 -22px 14px; height:180px; padding-top:8px; box-sizing:border-box; display:flex; align-items:center; justify-content:center; background:linear-gradient(180deg,#EBE7FF 0%,#FFFFFF 100%); }
+  .oo-hero img { width:220px; height:auto; }
+  .oo-title { font-family:var(--wt-font-display); font-size:24px; font-weight:500; letter-spacing:-.03em; color:#021774; margin:0 0 4px; }
+  .oo-sub { font-size:13px; color:#4E5D9E; line-height:1.5; margin:0 0 16px; }
+  #tourTip .tt-art { display:none; margin:-16px -16px 14px; height:160px; border-radius:20px 20px 0 0; overflow:hidden; align-items:flex-end; justify-content:center;
+    background:url('brand/grid-on-dark.svg') center/cover no-repeat, var(--wt-gradient-hero); background-blend-mode:hard-light, normal; }
+  #tourTip .tt-art img { width:160px; height:auto; margin-bottom:-18px; filter:drop-shadow(0 12px 22px rgba(1,13,64,.35)); }
+  #tourTip.wide { width:360px; padding:16px 20px 18px; }
+  #tourTip.wide .tt-art { margin:-16px -20px 16px; }
+  #tourTip.wide .tt-title { font-size:24px; font-weight:500; letter-spacing:-.03em; }
+  #tourTip .tt-steps { display:none; flex-direction:column; gap:10px; margin-top:14px; }
+  #tourTip .tt-steps div { display:flex; align-items:center; gap:12px; font-size:13.5px; color:#4E5D9E; }
+  #tourTip .tt-steps img { width:36px; height:36px; border-radius:10px; }
+  #tourSkip { color:#4E5D9E; }
 </style>
 </head>
 <body>
@@ -646,7 +678,7 @@
         <div id="calList"><div class="sb-note">Loading…</div></div>
         <div id="loadCard" title="Your meeting load — tap to enlarge" style="display:none; margin-top:18px; background:#fff; border:1px solid #E1E4FF; border-radius:14px; padding:11px 12px; cursor:pointer;">
           <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:7px;">
-            <span style="color:#021774; font-weight:600; font-size:12px;"><svg class="ic" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg> Meeting load</span>
+            <span style="color:#021774; font-weight:600; font-size:12px;"><img class="sbtile" src="brand/tile-hourglass.png" alt=""> Meeting load</span>
             <span style="color:#9FA7CA; font-size:12px;">⤢</span>
           </div>
           <div id="loadToday"></div>
@@ -656,7 +688,7 @@
           <div style="font-size:12px; font-weight:600; color:var(--ink); margin-bottom:10px; display:flex; align-items:center; gap:6px;"><svg class="ic" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 21h18"/><path d="M12 21V9"/><path d="M12 9c-3-3-7-2-8 0 3-1 5 0 8 0zM12 9c3-3 7-2 8 0-3-1-5 0-8 0zM12 9c-1-4 1-6 3-6"/></svg> Out of office <span id="ptoScope" style="font-weight:500; color:var(--muted2); font-size:11px;">· this week</span></div>
           <div id="ptoList"></div>
         </div>
-        <button id="blockBtn" title="Block time on your calendar (out of office)" style="width:100%; margin-top:14px; display:flex; align-items:center; justify-content:center; gap:7px; background:#fff; border:1px solid var(--line); border-radius:10px; padding:10px; font-size:13px; font-weight:600; font-family:inherit; color:var(--ink); cursor:pointer;"><svg class="ic" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M5.6 5.6l12.8 12.8"/></svg> Set out of office</button>
+        <button id="blockBtn" title="Block time on your calendar (out of office)" style="width:100%; margin-top:14px; display:flex; align-items:center; justify-content:center; gap:7px; background:#fff; border:1px solid var(--line); border-radius:10px; padding:10px; font-size:13px; font-weight:600; font-family:inherit; color:var(--ink); cursor:pointer;"><img class="sbtile" src="brand/tile-paper-plane.png" alt=""> Set out of office</button>
       </aside>
 
       <div class="calwrap">
@@ -685,7 +717,7 @@
             <button data-l="15">15m</button><button data-l="30">30m</button><button data-l="60">60m</button>
           </div>
         </div>
-        <div id="preview" style="margin-top:12px"><span style="color:var(--muted2)">Hit the green + on the calendar, then click or drag to paint availability slots — a hyperlinked snippet appears here.</span></div>
+        <div id="preview" style="margin-top:12px"><div class="pv-empty"><img src="brand/octavia-paraglider.webp" alt="" width="150"><b>Paint your first slots.</b><span>Hit the green + and drag on your week. Your times land here, then <b>Copy slots</b> makes a booking page.</span></div></div>
         <div class="hint">Green + toggles paint mode; otherwise hover meetings to read them. Click a painted slot to remove it. Standard slots are 30 min; drag for longer (snaps to 15 min). Times shown in <b id="tzLabel"></b>.</div>
         <div class="hint" id="jointNote" style="display:none"></div>
         <div class="panel-btns">
@@ -788,8 +820,10 @@
   </div>
 </div>
 <div id="blockModal" style="display:none; position:fixed; inset:0; background:rgba(20,16,40,.45); z-index:1200; align-items:center; justify-content:center; padding:20px;">
-  <div style="background:#fff; border-radius:18px; padding:22px; width:min(380px,94vw); box-shadow:0 24px 70px rgba(20,16,40,.3);">
-    <h3 style="font-size:16px; font-weight:600; color:var(--ink); margin:0 0 14px;">🚫 Block time</h3>
+  <div class="oo-card" style="background:#fff; border-radius:24px; padding:22px; width:min(400px,94vw); box-shadow:0 32px 64px rgba(11,10,51,.25); overflow:hidden;">
+    <div class="oo-hero"><img src="brand/octavia-surfer.webp" alt="" width="220"></div>
+    <h3 class="oo-title">Time off, sorted.</h3>
+    <p class="oo-sub">We block your calendar and keep these days off every booking link.</p>
     <div style="font-size:12px;color:var(--muted2);margin:0 0 4px;font-weight:500">Title</div>
     <input type="text" id="blkTitle" value="Out of office" style="width:100%;border:1px solid var(--line);border-radius:10px;padding:9px 11px;font-size:13px;font-family:inherit;color:var(--ink);outline:none">
     <div style="display:flex;gap:10px;margin-top:10px">
@@ -829,8 +863,14 @@
 <div id="tourOverlay" style="display:none; position:fixed; inset:0; z-index:3999;">
   <div id="tourSpot"></div>
   <div id="tourTip">
+    <div class="tt-art" id="tourArt"><img id="tourArtImg" src="brand/octavia-headset.webp" alt=""></div>
     <div class="tt-title" id="tourTitle"></div>
     <div class="tt-text" id="tourText"></div>
+    <div class="tt-steps" id="tourSteps">
+      <div><img src="brand/tile-cursor.png" alt="">Paint the times you're free</div>
+      <div><img src="brand/tile-sealed-envelope.png" alt="">Copy the slots into your email</div>
+      <div><img src="brand/tile-checklist.png" alt="">Clients book in one click</div>
+    </div>
     <div class="tt-foot"><span class="tt-count" id="tourCount"></span><span class="tt-btns"><button id="tourSkip">Skip</button><button id="tourBack">Back</button><button id="tourNext">Next</button></span></div>
   </div>
 </div>
@@ -2501,7 +2541,7 @@ function buildHTML(url, slots){
 function renderPreview(){
   const el = document.getElementById("preview");
   if (!S.sel.length){
-    el.innerHTML = '<span style="color:var(--muted2)">Hit the green + and paint your free slots — they\'ll appear here. Then hit <b>Copy slots</b> for a booking page anyone can use.</span>';
+    el.innerHTML = '<div class="pv-empty"><img src="brand/octavia-paraglider.webp" alt="" width="150"><b>Paint your first slots.</b><span>Hit the green + and drag on your week. Your times land here, then <b>Copy slots</b> makes a booking page.</span></div>';
   } else {
     const byDay = {};
     S.sel.slice().sort((a,b)=>a.start-b.start).forEach(x => { const k = dayKeyTz(x.start); (byDay[k] = byDay[k] || []).push(x); });
@@ -3155,23 +3195,23 @@ async function clearStatus(){
 
 // ---- first-run guided tour ----
 const TOUR = [
-  { sel: null, title: "Welcome to WeCalendar 👋", text: "A 30-second tour of the essentials — you can skip anytime." },
-  { sel: "#calBody", title: "Mark when you're free 🗓️", text: "Hit the green + then drag on the calendar. Drag a big block — clients see it split into bookable slots." },
-  { sel: "#fillDayBtn", title: "Auto-fill a day ✨", text: "Don't want to drag? This drops in your open blocks for the focused day automatically." },
-  { sel: "#fillWeekBtn", title: "…or the whole week ✨", text: "Same idea, across every open block in the week." },
-  { sel: "#linkBtn", title: "Share it 📋", text: "Copy slots makes a booking link. Clients pick a slot — works for Google, Apple or Outlook, no account needed." },
-  { sel: "#calBody", title: "Need to cancel? 🗑️", text: "Once a meeting's booked, just click it on your calendar to cancel — it's removed for everyone and the slot opens back up. (You or the guest can also cancel from the calendar invite.)" },
-  { sel: "#viewTog", title: "Day or week 📆", text: "Switch the calendar between one day and the full week. Click any day header to zoom in." },
-  { sel: "#statusBtn", title: "Not up for calls? 🤒", text: "Set a status like Slack — not feeling well, heads down, away. You stay online, but nobody can book you until it ends." },
-  { sel: "#blockBtn", title: "Going away? 🏖️", text: "Set OOO blocks time on your calendar so it's never offered. Click a block later to remove it." },
-  { sel: "#ptoBox", title: "Who's off 🌴", text: "See teammates who are out of office, pulled from your calendar." },
-  { sel: "#loadCard", title: "Your meeting load 🕘", text: "How much of your day and week is in meetings. Tap it to enlarge." },
-  { sel: "#focusCard", title: "Focus tip 💡", text: "A productivity nudge that adapts to how busy your day is." },
-  { sel: null, title: "You're all set 🚀", text: "That's the tour! Replay it anytime from the ? button up top." },
+  { sel: null, title: "Welcome to WeCalendar.", text: "A 30-second tour of the essentials. Skip anytime." },
+  { sel: "#calBody", title: "Mark when you're free", text: "Hit the green + then drag on the calendar. Drag a big block — clients see it split into bookable slots." },
+  { sel: "#fillDayBtn", title: "Auto-fill a day", text: "Don't want to drag? This drops in your open blocks for the focused day automatically." },
+  { sel: "#fillWeekBtn", title: "…or the whole week", text: "Same idea, across every open block in the week." },
+  { sel: "#linkBtn", title: "Share it", text: "Copy slots makes a booking link. Clients pick a slot — works for Google, Apple or Outlook, no account needed." },
+  { sel: "#calBody", title: "Need to cancel?", text: "Once a meeting's booked, just click it on your calendar to cancel — it's removed for everyone and the slot opens back up. (You or the guest can also cancel from the calendar invite.)" },
+  { sel: "#viewTog", title: "Day or week", text: "Switch the calendar between one day and the full week. Click any day header to zoom in." },
+  { sel: "#statusBtn", title: "Not up for calls?", text: "Set a status like Slack — not feeling well, heads down, away. You stay online, but nobody can book you until it ends." },
+  { sel: "#blockBtn", title: "Going away?", text: "Set OOO blocks time on your calendar so it's never offered. Click a block later to remove it." },
+  { sel: "#ptoBox", title: "Who's off", text: "See teammates who are out of office, pulled from your calendar." },
+  { sel: "#loadCard", title: "Your meeting load", text: "How much of your day and week is in meetings. Tap it to enlarge." },
+  { sel: "#focusCard", title: "Focus tip", text: "A productivity nudge that adapts to how busy your day is." },
+  { sel: null, title: "You're all set.", text: "That's the tour. Replay it anytime from the ? button up top." },
 ];
 let tourSteps = [], tourCur = 0;
 function tourPlaceTip(tip, r){
-  const tw = 300, th = tip.offsetHeight || 150;
+  const tw = tip.offsetWidth || 300, th = tip.offsetHeight || 150;
   let left = r.left; if (left + tw > innerWidth - 12) left = innerWidth - tw - 12; if (left < 12) left = 12;
   let top = r.bottom + 12; if (top + th > innerHeight - 12) top = r.top - th - 12; if (top < 12) top = 12;
   tip.style.left = left + "px"; tip.style.top = top + "px";
@@ -3182,7 +3222,13 @@ function tourShow(n){
   document.getElementById("tourText").textContent = step.text;
   document.getElementById("tourCount").textContent = (n + 1) + " / " + tourSteps.length;
   document.getElementById("tourBack").style.visibility = n === 0 ? "hidden" : "visible";
-  document.getElementById("tourNext").textContent = (n === tourSteps.length - 1) ? "Done" : "Next";
+  document.getElementById("tourNext").textContent = (n === tourSteps.length - 1) ? "Done" : (n === 0 ? "Show me around" : "Next");
+  // Octavia bookends the tour: headset to welcome, star rider to finish
+  const isLast = n === tourSteps.length - 1, art = n === 0 ? "headset" : (isLast && !step.sel ? "star-rider" : "");
+  document.getElementById("tourArt").style.display = art ? "flex" : "none";
+  if (art) document.getElementById("tourArtImg").src = "brand/octavia-" + art + ".webp";
+  document.getElementById("tourSteps").style.display = n === 0 ? "flex" : "none";
+  document.getElementById("tourTip").classList.toggle("wide", !!art);
   const spot = document.getElementById("tourSpot"), tip = document.getElementById("tourTip");
   const el = step.sel ? document.querySelector(step.sel) : null;
   if (el){
@@ -3195,7 +3241,7 @@ function tourShow(n){
     }, 230);
   } else {
     spot.style.left = (innerWidth / 2) + "px"; spot.style.top = (innerHeight / 2) + "px"; spot.style.width = "0px"; spot.style.height = "0px";
-    tip.style.left = Math.max(12, innerWidth / 2 - 150) + "px"; tip.style.top = Math.max(12, innerHeight / 2 - 90) + "px";
+    requestAnimationFrame(() => { tip.style.left = Math.max(12, (innerWidth - tip.offsetWidth) / 2) + "px"; tip.style.top = Math.max(12, (innerHeight - tip.offsetHeight) / 2) + "px"; });
   }
 }
 function startTour(){

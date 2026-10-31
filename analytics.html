@@ -45,6 +45,18 @@
   .panel h2{ font-size:18px; letter-spacing:-.02em; }
   th{ text-transform:none; letter-spacing:0; font-size:12.5px; }
   .reload{ border-color:#D9DDE8; color:#0B1336; border-radius:12px; padding:8px 14px; }
+  /* Octavia + pictograms (2026-10-31) */
+  .hero{ position:relative; overflow:hidden; border-radius:30px; margin:16px 0 22px; padding:38px 40px; min-height:200px; box-sizing:border-box;
+    background:url('brand/grid-on-dark.svg') center/cover no-repeat, linear-gradient(180deg,#010D40 0%,#402C93 100%); background-blend-mode:hard-light,normal; color:#fff; }
+  .hero .eyebrow{ font-size:15px; font-weight:500; color:#C5BDFB; }
+  .hero h1{ color:#fff; margin:8px 0 10px; max-width:520px; font-size:38px; }
+  .hero .sub{ color:#FDEBF7; margin:0; max-width:480px; }
+  .hero .oct{ position:absolute; right:28px; top:50%; transform:translateY(-50%); width:220px; height:auto; filter:drop-shadow(0 16px 28px rgba(1,13,64,.4)); pointer-events:none; }
+  .cards{ grid-template-columns:repeat(3,minmax(0,1fr)); }
+  .reload{ white-space:nowrap; }
+  @media (max-width:700px){ .cards{ grid-template-columns:repeat(2,minmax(0,1fr)); } .top .wordmark{ display:none; } }
+  .card .tile{ width:44px; height:44px; border-radius:12px; display:block; margin-bottom:12px; }
+  @media (max-width:700px){ .hero{ padding:28px 24px 200px; } .hero h1{ font-size:30px; } .hero .oct{ top:auto; bottom:-10px; right:50%; transform:translateX(50%); width:190px; } }
 </style>
 </head>
 <body>
@@ -53,8 +65,12 @@
     <img src="brand/logo-colour.svg" alt="WeTransact" style="height:22px;align-self:center"><span class="wordmark"><span class="a1">we</span><span class="a2">calendar</span></span>
     <button class="reload" onclick="load()">↻ Refresh</button>
   </div>
-  <h1>Booking analytics</h1>
-  <div class="sub" id="sub">Loading…</div>
+  <div class="hero">
+    <span class="eyebrow">Booking analytics</span>
+    <h1>Every link you shared, and who booked.</h1>
+    <div class="sub" id="sub">Loading…</div>
+    <img class="oct" src="brand/octavia-star-rider.webp" alt="" width="240">
+  </div>
   <div id="content" style="display:none">
     <div class="cards" id="cards"></div>
     <div class="panel"><h2>Views vs. bookings by link</h2><canvas id="chart" height="120"></canvas></div>
@@ -69,7 +85,7 @@ const AUTH = { clientId: "d64e24c4-3c00-4b04-9ab0-e337d5fcc34b", tenantId: "wetr
 const pca = new msal.PublicClientApplication({ auth: { clientId: AUTH.clientId, authority: "https://login.microsoftonline.com/" + AUTH.tenantId, redirectUri: window.location.origin + window.location.pathname }, cache: { cacheLocation: "localStorage" } });
 const fmt = (n) => (n ?? 0).toLocaleString();
 
-function card(n, label, hl){ return '<div class="card'+(hl?' hl':'')+'"><div class="n">'+n+'</div><div class="l">'+label+'</div></div>'; }
+function card(n, label, hl, tile){ return '<div class="card'+(hl?' hl':'')+'">' + (tile ? '<img class="tile" src="brand/tile-'+tile+'.png" alt="">' : '') + '<div class="n">'+n+'</div><div class="l">'+label+'</div></div>'; }
 
 async function load(){
   document.getElementById("sub").textContent = "Loading…";
@@ -97,12 +113,12 @@ function render(s){
   document.getElementById("msg").style.display = "none";
   document.getElementById("sub").textContent = "Across " + fmt(s.links) + " booking link" + (s.links === 1 ? "" : "s") + " · updates live each time you open this page.";
   document.getElementById("cards").innerHTML =
-    card(fmt(s.views), "Link views") +
-    card(fmt(s.slot_clicks), "Slot clicks") +
-    card(fmt(s.bookings), "Bookings", true) +
-    card((s.booking_rate ?? 0) + "%", "Booking rate", true) +
-    card(s.avg_time_to_book_min != null ? Math.round(s.avg_time_to_book_min) + "m" : "—", "Avg time to book") +
-    card(fmt(s.no_shows), "No‑shows");
+    card(fmt(s.views), "Link views", false, "chart") +
+    card(fmt(s.slot_clicks), "Slot clicks", false, "cursor") +
+    card(fmt(s.bookings), "Bookings", true, "calendar") +
+    card((s.booking_rate ?? 0) + "%", "Booking rate", true, "trophy") +
+    card(s.avg_time_to_book_min != null ? Math.round(s.avg_time_to_book_min) + "m" : "—", "Avg time to book", false, "hourglass") +
+    card(fmt(s.no_shows), "No‑shows", false, "people");
 
   const links = s.by_link || [];
   const labels = links.map(l => (l.title || l.slug || "—").slice(0, 22));
