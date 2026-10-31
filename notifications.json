@@ -1,0 +1,14 @@
+{
+  "_help": "Announcements shown in WeCalendar's notification bell. Add an item to the top of the list; give it a new unique id. Optional fields: tile (brand/tile-<name>.png: calendar, chart, checklist, cursor, hourglass, lightbulb, paper-plane, people, sealed-envelope, trophy), action {label, url}, audience ('all', or a list of emails / '@domain'), until (YYYY-MM-DD).",
+  "items": [
+    {
+      "id": "2026-10-31-new-look",
+      "date": "2026-10-31",
+      "title": "WeCalendar has a new look",
+      "body": "WeCalendar and your booking pages now use the new WeTransact brand, with Octavia along for the ride.",
+      "tile": "trophy",
+      "audience": "all",
+      "until": "2026-12-31"
+    }
+  ]
+}
