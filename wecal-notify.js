@@ -80,6 +80,7 @@
     var n = unreadCount(), dot = document.getElementById("ntDot"), btn = document.getElementById("ntBtn");
     if (dot){ dot.textContent = n > 9 ? "9+" : String(n); dot.style.display = n ? "flex" : "none"; }
     if (btn) btn.setAttribute("aria-label", n ? "Notifications, " + n + " new" : "Notifications");
+    if (btn) btn.classList.toggle("has-unread", n > 0);
     var list = document.getElementById("ntList"); if (!list) return;
     if (!items.length){
       list.innerHTML = '<div class="nt-empty"><img src="brand/octavia-paraglider.webp" alt="" width="110"><b>You\'re all caught up.</b><span>New notices from WeCalendar show up here.</span></div>';
