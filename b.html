@@ -352,7 +352,7 @@ async function doBook(slotId){
       const s = SLOTS.find(x=>x.id===slotId); if (s) s.status = "booked";
       setTimeout(() => { closeModal(); render(); }, 1400); return;
     }
-    if (!r.ok || !j.ok){ $("mErr").textContent = "Something went wrong — please try again."; btn.disabled=false; btn.textContent="Book it"; booking=false; return; }
+    if (!r.ok || !j.ok){ const why = String(j.reason || j.error || j.message || ("HTTP " + r.status)).slice(0, 140); $("mErr").textContent = "Something went wrong — please try again. (" + why + ")"; console.warn("book-slot failed", r.status, j); btn.disabled=false; btn.textContent="Book it"; booking=false; return; }
     const s = SLOTS.find(x=>x.id===slotId); if (s) s.status = "booked";
     const whenStr = s ? "See you " + new Intl.DateTimeFormat("en-US", { timeZone: TZ, weekday: "long" }).format(new Date(s.start_utc)) + " at " + timeLabel(new Date(s.start_utc)) : "";
     confirmView(j.joinUrl, name, whenStr, j.bookingId);
