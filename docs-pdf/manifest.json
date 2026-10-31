@@ -1,5 +1,5 @@
 {
- "generated": "2026-10-30",
+ "generated": "2026-10-31",
  "stamp": {
   "preparedFor": {
    "x": 42.52,
@@ -1454,7 +1454,16 @@
    "blurb": "The attached guide covers: Overview → Before you start → Steps → Step 1 – Open Marketplace in the Azure portal → Step 2 – Open Private Marketplace.",
    "blurbSrc": "steps",
    "blurbV": 2
+  },
+  "how-do-complete-tax-and-payout-profile-for-the-incentive-campaign": {
+   "title": "How do complete Tax and payout profile for the incentive campaign?",
+   "hash": "5a025a113606c9eb",
+   "bytes": 215514,
+   "file": "docs-pdf/how-do-complete-tax-and-payout-profile-for-the-incentive-campaign.pdf",
+   "blurb": "The attached guide covers: Part 1 - (US Entities and non US) Filling Tax Profile Walkthrough example → Part 2 - Adding the Payment Profile → Part 3 - Submitting the Incentive Profile.",
+   "blurbSrc": "steps",
+   "blurbV": 2
   }
  },
- "count": 160
+ "count": 161
 }
