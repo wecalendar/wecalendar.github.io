@@ -405,7 +405,7 @@ function renderCancel(id){
       const r = await fetch(FN + "/cancel-booking", { method: "POST", headers: { "Content-Type": "application/json", apikey: C.SUPABASE_ANON_KEY, Authorization: "Bearer " + C.SUPABASE_ANON_KEY }, body: JSON.stringify({ bookingId: id }) });
       const j = await r.json().catch(() => ({}));
       if (r.ok && j.ok){
-        $("list").innerHTML = '<div class="msg" style="text-align:center"><div class="ok-ico">✓</div><p style="font-size:16px;color:var(--ink);font-weight:600;margin-top:8px">Your meeting is cancelled.</p><p style="font-size:13px;color:var(--muted);margin-top:4px">The time has been freed up — you can close this page.</p></div>';
+        $("list").innerHTML = '<div class="msg" style="text-align:center"><img class="cx-oct" src="brand/octavia-paraglider.webp" alt="" width="170" style="width:170px;height:auto"><p style="font-family:var(--wt-font-display);font-size:24px;letter-spacing:-.03em;color:var(--ink);font-weight:500;margin-top:8px">Your meeting is cancelled.</p><p style="font-size:13px;color:var(--muted);margin-top:4px">The time has been freed up — you can close this page.</p></div>';
       } else if (j.reason === "not_found"){
         $("cxErr").textContent = "Couldn’t find that booking — it may already be cancelled."; btn.disabled = false; btn.textContent = "Yes, cancel it";
       } else {
