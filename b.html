@@ -114,6 +114,20 @@
     background:url('brand/grid-on-dark.svg') center/cover no-repeat, linear-gradient(180deg,#021774 0%,#402C93 55%,#8266F4 100%); background-blend-mode:hard-light,normal; }
   .ok-hero img{ width:190px; height:auto; margin-bottom:-22px; filter:drop-shadow(0 14px 24px rgba(1,13,64,.35)); }
   .modal h2{ font-size:24px; font-weight:500; letter-spacing:-.03em; }
+  /* Octavia (2026-10-31): fully visible in the banner, faint watermark behind the time slots */
+  .card{ position:relative; z-index:1; display:flex; flex-direction:column; }
+  .hd{ position:relative; overflow:hidden; }
+  .hd > *{ position:relative; z-index:1; }
+  .hd::after{ content:""; position:absolute; z-index:0; pointer-events:none; right:-6px; bottom:-14px; width:150px; height:160px;
+    background:url('brand/octavia-headset.webp') right bottom/contain no-repeat; filter:drop-shadow(0 10px 20px rgba(1,13,64,.35)); }
+  @media (min-width:641px){ .hd{ padding-left:120px; padding-right:120px; } }
+  .body{ position:relative; flex:1; isolation:isolate; }
+  .body::before{ content:""; position:absolute; z-index:-1; pointer-events:none; right:-30px; bottom:-20px; width:360px; height:380px;
+    background:url('brand/octavia-rocket.webp') right bottom/contain no-repeat; opacity:.07; }
+  .foot{ position:relative; }
+  @media (max-width:640px){ .tzrow{ white-space:normal; flex-wrap:wrap; }
+    .hd::after{ width:84px; height:90px; right:6px; top:6px; bottom:auto; background-position:right top; }
+    .body::before{ width:250px; height:260px; right:-30px; } }
 </style>
 </head>
 <body>
@@ -372,7 +386,7 @@ function confirmView(joinUrl, name, whenStr, bookingId){
   if (window.confetti) { try { window.confetti({ particleCount: 130, spread: 78, origin: { y: 0.6 }, colors: ['#5E43C8','#098768','#C5BDFB','#FFCE00'] }); } catch(e){} }
 }
 
-function greeting(){ const h = new Date().getHours(); return h < 12 ? "Good morning! ☀️" : h < 18 ? "Good afternoon! 👋" : "Good evening! 🌙"; }
+function greeting(){ const h = new Date().getHours(); return h < 12 ? "Good morning." : h < 18 ? "Good afternoon." : "Good evening."; }
 
 function renderCancel(id){
   $("title").textContent = "Cancel booking";
