@@ -1,0 +1,49 @@
+/* WeCalendar motion (2026-10-31). Subtle, brand-friendly animation.
+   Everything sits inside prefers-reduced-motion: no-preference, so people who ask
+   their system for less motion get a completely still interface.
+   Floats use the `translate` property so they never fight an element's own `transform`. */
+@media (prefers-reduced-motion: no-preference){
+
+  @keyframes wt-float  { 0%,100% { translate: 0 0; } 50% { translate: 0 -8px; } }
+  @keyframes wt-rise   { from { opacity: 0; translate: 0 10px; } to { opacity: 1; translate: 0 0; } }
+  @keyframes wt-pop    { 0% { opacity: 0; scale: .6; } 70% { opacity: 1; scale: 1.06; } 100% { scale: 1; } }
+  @keyframes wt-bounce-in { 0% { opacity: 0; translate: 0 40px; scale: .8; } 60% { opacity: 1; translate: 0 -8px; scale: 1.04; } 100% { translate: 0 0; scale: 1; } }
+  @keyframes wt-ring   { 0%,60%,100% { rotate: 0deg; } 10% { rotate: 14deg; } 20% { rotate: -12deg; } 30% { rotate: 9deg; } 40% { rotate: -6deg; } 50% { rotate: 3deg; } }
+  @keyframes wt-slide  { from { opacity: 0; translate: 12px 0; } to { opacity: 1; translate: 0 0; } }
+
+  /* Octavia: a gentle float wherever she appears */
+  .octavia, .pv-empty img, .oo-hero img, .nt-empty img, .msg .oct, .hero .oct, #tourTip .tt-art img
+    { animation: wt-float 4.5s ease-in-out infinite; }
+  .hd::after { animation: wt-float 4.5s ease-in-out infinite; }               /* booking page banner */
+  .body::before { animation: wt-float 7s ease-in-out infinite; }              /* faint watermark, slower */
+  .ok-hero img { animation: wt-bounce-in .7s cubic-bezier(.2,.9,.3,1.2) both, wt-float 4.5s ease-in-out .7s infinite; }
+
+  /* Sign-in: the mini calendar fills in, then the slot ticks pop */
+  .mini .cell { animation: wt-pop .45s ease both; }
+  .mini .cell:nth-child(4)  { animation-delay: .10s; } .mini .cell:nth-child(5)  { animation-delay: .16s; } .mini .cell:nth-child(6)  { animation-delay: .22s; }
+  .mini .cell:nth-child(7)  { animation-delay: .28s; } .mini .cell:nth-child(8)  { animation-delay: .34s; } .mini .cell:nth-child(9)  { animation-delay: .40s; }
+  .mini .cell:nth-child(10) { animation-delay: .46s; } .mini .cell:nth-child(11) { animation-delay: .52s; } .mini .cell:nth-child(12) { animation-delay: .58s; }
+  .mini .cell:nth-child(13) { animation-delay: .64s; } .mini .cell:nth-child(14) { animation-delay: .70s; } .mini .cell:nth-child(15) { animation-delay: .76s; }
+  .hero-left > * { animation: wt-rise .5s ease both; }
+  .hero-left > :nth-child(2) { animation-delay: .06s; } .hero-left > :nth-child(3) { animation-delay: .12s; } .hero-left > :nth-child(4) { animation-delay: .18s; }
+  .hero-left > :nth-child(5) { animation-delay: .24s; } .hero-left > :nth-child(6) { animation-delay: .30s; } .hero-left > :nth-child(7) { animation-delay: .36s; }
+
+  /* Booking page: days and slots fade up one after another */
+  #list .day, #list .slots .slot { animation: wt-rise .4s ease both; }
+  #list .slots .slot:nth-child(2) { animation-delay: .04s; } #list .slots .slot:nth-child(3) { animation-delay: .08s; }
+  #list .slots .slot:nth-child(4) { animation-delay: .12s; } #list .slots .slot:nth-child(5) { animation-delay: .16s; }
+  #list .slots .slot:nth-child(6) { animation-delay: .20s; } #list .slots .slot:nth-child(n+7) { animation-delay: .24s; }
+  .slot { transition: background .15s ease, color .15s ease, translate .15s ease, box-shadow .15s ease; }
+  .slot:hover { translate: 0 -2px; }
+
+  /* Notifications: the bell rings when something is unread, items slide in */
+  #ntBtn.has-unread svg { transform-origin: 50% 10%; animation: wt-ring 1.8s ease .8s 3; }
+  .nt-dot { animation: wt-pop .35s ease both; }
+  #ntPop .nt-item { animation: wt-slide .35s ease both; }
+  #ntPop .nt-item:nth-child(2) { animation-delay: .07s; } #ntPop .nt-item:nth-child(3) { animation-delay: .14s; } #ntPop .nt-item:nth-child(n+4) { animation-delay: .2s; }
+
+  /* Calendar: today's date chip and new popovers */
+  .dh.today .dn { animation: wt-pop .5s ease both; }
+  .btn.primary, .nt-act { transition: background .15s ease, box-shadow .15s ease, translate .12s ease; }
+  .btn.primary:hover, .nt-act:hover { translate: 0 -1px; }
+}
