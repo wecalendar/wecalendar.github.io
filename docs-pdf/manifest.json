@@ -1,5 +1,5 @@
 {
- "generated": "2026-11-02",
+ "generated": "2026-11-03",
  "stamp": {
   "preparedFor": {
    "x": 42.52,
@@ -17,7 +17,7 @@
  "docs": {
   "finance-how-marketplace-finance-works": {
    "title": "Finance, how marketplace finance works",
-   "hash": "d8e4fd44ee4d9182",
+   "hash": "41ebdf82d8aa9cb6",
    "bytes": 188583,
    "file": "docs-pdf/finance-how-marketplace-finance-works.pdf",
    "blurb": "The attached guide covers: Summary → The three parties → The end-to-end flow → The transaction fee → Taxes.",
@@ -62,8 +62,8 @@
   },
   "api-set-up-automated-order-management-aom-automated-usage-reporting": {
    "title": "API set up + Automated Order Management (AOM) + Automated Usage Reporting",
-   "hash": "57eb20f378284a96",
-   "bytes": 414795,
+   "hash": "b7b6e2ea737e6786",
+   "bytes": 414901,
    "file": "docs-pdf/api-set-up-automated-order-management-aom-automated-usage-reporting.pdf",
    "blurb": "The attached guide covers: 1 API Access → Introduction → Order Process → 3 Subscription Activation → 2 Activation via API.",
    "blurbSrc": "steps",
@@ -161,8 +161,8 @@
   },
   "csp-private-offer-vs-resale-enabled-offer": {
    "title": "CSP private offer vs Resale Enabled Offer",
-   "hash": "e0c6c9efd5a11da4",
-   "bytes": 205334,
+   "hash": "aa9d436ed79daa0f",
+   "bytes": 205407,
    "file": "docs-pdf/csp-private-offer-vs-resale-enabled-offer.pdf",
    "blurb": "The attached guide covers: Model 1 — CSP private offer → Transaction flow → Key facts → Model 2 — Resale enabled offer (REO) → Transaction flow.",
    "blurbSrc": "steps",
@@ -287,10 +287,10 @@
   },
   "how-do-i-add-a-subscription-id-to-the-supplemental-tab-in-the-wetransact-portal": {
    "title": "How do I add a subscription ID to the supplemental tab in the WeTransact portal?",
-   "hash": "945ee8df10821087",
-   "bytes": 319400,
+   "hash": "d6caa37eeb495d58",
+   "bytes": 261833,
    "file": "docs-pdf/how-do-i-add-a-subscription-id-to-the-supplemental-tab-in-the-wetransact-portal.pdf",
-   "blurb": "The attached guide covers: Click on My product listings → Click on your product listing → Click on Listing and Pricing → Scroll down to the Publication details → Check I agree, under Subscription ID section.",
+   "blurb": "The attached guide covers: Click on My product listings → Click on your product listing → Click on Listing and Pricing → Choose the option and click on Save → Click on Update.",
    "blurbSrc": "steps",
    "blurbV": 2
   },
@@ -998,8 +998,8 @@
   },
   "metering-limitations-and-faq": {
    "title": "Metering limitations and FAQ",
-   "hash": "c68985a26bbfd74c",
-   "bytes": 188655,
+   "hash": "d206a0788e987f3b",
+   "bytes": 188785,
    "file": "docs-pdf/metering-limitations-and-faq.pdf",
    "blurb": "The attached guide covers: What does \"per subscription + per metric + per hour\" actually mean? → Two reports for different customers — no problem → Two reports for different metrics — no problem → Two reports for the same customer, same metric, different hours — fine → …",
    "blurbSrc": "steps",
@@ -1133,8 +1133,8 @@
   },
   "unable-to-verify-account-legal-info": {
    "title": "Unable to verify Account - Legal Info",
-   "hash": "ae39018f8b25295b",
-   "bytes": 298364,
+   "hash": "b0e59b3ac239320e",
+   "bytes": 299232,
    "file": "docs-pdf/unable-to-verify-account-legal-info.pdf",
    "blurb": "The attached guide covers: Verify the Partner Tab first → Partner Tab in Pending status → Identity Verification Process → ‍ Employment verification → Verify Developer Tab.",
    "blurbSrc": "steps",
@@ -1232,7 +1232,7 @@
   },
   "wetransact-hubspot-app-installation-guide": {
    "title": "WeTransact HubSpot App Installation guide",
-   "hash": "cdffd48237bdaa5c",
+   "hash": "682213a674fd3401",
    "bytes": 219176,
    "file": "docs-pdf/wetransact-hubspot-app-installation-guide.pdf",
    "blurb": "The attached guide covers: WeTransact for HubSpot: Setup Guide → Before you start → Connect HubSpot to WeTransact → Add the cards to deal records → Verify.",
@@ -1295,8 +1295,8 @@
   },
   "guide-to-submitting-the-claim-for-ai-build-and-publish-marketplace-incentives-fy27": {
    "title": "Guide to Submitting the Claim for AI Build & Publish Marketplace Incentives FY27",
-   "hash": "48eb3fe67cbd60b5",
-   "bytes": 833010,
+   "hash": "6d811897179cf11c",
+   "bytes": 437204,
    "file": "docs-pdf/guide-to-submitting-the-claim-for-ai-build-and-publish-marketplace-incentives-fy27.pdf",
    "blurb": "The attached guide covers: Pre-Application Gates → Payout Tiers → Application Process → Access Partner Center and Click on Incentive Workspace → Check Enrolment and Complete your Tax Profile.",
    "blurbSrc": "steps",
@@ -1313,8 +1313,8 @@
   },
   "benefits-limitation-and-troubleshooting-of-managed-applications": {
    "title": "Benefits, Limitation and troubleshooting of Managed Applications",
-   "hash": "65e8a80f0a71ddf8",
-   "bytes": 176385,
+   "hash": "492492b732335eed",
+   "bytes": 176464,
    "file": "docs-pdf/benefits-limitation-and-troubleshooting-of-managed-applications.pdf",
    "blurb": "The attached guide covers: Benefits of Managed Applications → Limitations and things to watch → Troubleshooting → FAQs.",
    "blurbSrc": "steps",
@@ -1331,8 +1331,8 @@
   },
   "managed-application": {
    "title": "Managed Application",
-   "hash": "22cc073fdf415b92",
-   "bytes": 147995,
+   "hash": "a90d9a744a502c75",
+   "bytes": 148068,
    "file": "docs-pdf/managed-application.pdf",
    "blurb": "The attached guide covers: What is a Managed Application? → When to use a Managed Application → Key characteristics → Managed Application vs SaaS at a glance.",
    "blurbSrc": "steps",
@@ -1340,8 +1340,8 @@
   },
   "publisher-access-control-and-permissions": {
    "title": "Publisher Access control and permissions",
-   "hash": "0d4a33bb5242fabc",
-   "bytes": 342185,
+   "hash": "bb4f37b132667a4a",
+   "bytes": 342264,
    "file": "docs-pdf/publisher-access-control-and-permissions.pdf",
    "blurb": "The attached guide covers: Updating your application → Commercial model → The flat fee limitation → Cancellation and refunds → Pricing policy disclaimer.",
    "blurbSrc": "steps",
@@ -1349,8 +1349,8 @@
   },
   "purchase-process-managed-application": {
    "title": "Purchase process - Managed Application",
-   "hash": "514516ab960a4b78",
-   "bytes": 373657,
+   "hash": "44b7ceca50d63f85",
+   "bytes": 373737,
    "file": "docs-pdf/purchase-process-managed-application.pdf",
    "blurb": "The attached guide covers: Public plan → Private offer → Facts to keep in mind → Access control and permissions.",
    "blurbSrc": "steps",
@@ -1358,8 +1358,8 @@
   },
   "emitting-a-private-plan": {
    "title": "Emitting a Private Plan",
-   "hash": "11ff973c43350cd3",
-   "bytes": 246532,
+   "hash": "c8e4d14f3fecd0d1",
+   "bytes": 246611,
    "file": "docs-pdf/emitting-a-private-plan.pdf",
    "blurb": "The attached guide covers: When to use a private plan → Key characteristics → How it works → How to publish a private plan → Steps.",
    "blurbSrc": "steps",
@@ -1455,12 +1455,12 @@
    "blurbSrc": "steps",
    "blurbV": 2
   },
-  "how-do-complete-tax-and-payout-profile-for-the-incentive-campaign": {
-   "title": "How do complete Tax and payout profile for the incentive campaign?",
-   "hash": "5a025a113606c9eb",
-   "bytes": 215514,
-   "file": "docs-pdf/how-do-complete-tax-and-payout-profile-for-the-incentive-campaign.pdf",
-   "blurb": "The attached guide covers: Part 1 - (US Entities and non US) Filling Tax Profile Walkthrough example → Part 2 - Adding the Payment Profile → Part 3 - Submitting the Incentive Profile.",
+  "supplemental-content-declaring-how-your-product-is-hosted-on-azure": {
+   "title": "Supplemental Content: declaring how your product is hosted on Azure",
+   "hash": "d302075cea51cb84",
+   "bytes": 210743,
+   "file": "docs-pdf/supplemental-content-declaring-how-your-product-is-hosted-on-azure.pdf",
+   "blurb": "The attached guide covers: What is the Supplemental Content section? → What you need to do? → Which option describes your product? → Examples of Partially built on Azure → Examples of Not built on Azure.",
    "blurbSrc": "steps",
    "blurbV": 2
   }
