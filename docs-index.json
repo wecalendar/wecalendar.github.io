@@ -1,6 +1,6 @@
 {
  "source": "https://docs.wetransact.io/sitemap.xml",
- "count": 161,
+ "count": 166,
  "docs": [
   {
    "slug": "account-verification-email-not-received-by-primary-contact",
@@ -119,8 +119,16 @@
    "title": "Fixing Legal Profile Issues"
   },
   {
+   "slug": "free-trial-and-self-setup",
+   "title": "Free Trial & Self-Setup"
+  },
+  {
    "slug": "frontier-accelerate-for-marketplace-fixing-a-greyed-out-buy-now-button",
    "title": "Frontier Accelerate for Marketplace: Fixing a Greyed-Out Buy Now Button"
+  },
+  {
+   "slug": "glossary-of-microsoft-marketplace-terms",
+   "title": "Glossary of Microsoft Marketplace terms"
   },
   {
    "slug": "guide-to-submitting-the-claim-for-ai-build-and-publish-marketplace-incentives-fy27",
@@ -200,7 +208,7 @@
   },
   {
    "slug": "how-does-a-csp-resell-a-marketplace-solution-direct-csps",
-   "title": "How does a CSP resell a Marketplace solution direct CSPs?"
+   "title": "How does a CSP resell a Marketplace Solution ? (Direct CSPs)"
   },
   {
    "slug": "how-to-accept-a-private-offer-customer-walkthrough",
@@ -479,6 +487,10 @@
    "title": "Managed Application"
   },
   {
+   "slug": "marketplace-pipeline-what-youll-find-in-leads-and-deals",
+   "title": "Marketplace Pipeline: What You'll Find in Leads and Deals"
+  },
+  {
    "slug": "metering-limitations-and-faq",
    "title": "Metering limitations and FAQ"
   },
@@ -645,6 +657,14 @@
   {
    "slug": "where-to-find-your-private-offers",
    "title": "Where to find your Private Offers ?"
+  },
+  {
+   "slug": "who-does-what-you-wetransact-and-microsoft",
+   "title": "Who does what: you, WeTransact and Microsoft"
+  },
+  {
+   "slug": "why-sell-through-microsoft-marketplace",
+   "title": "Why sell through Microsoft Marketplace"
   }
  ]
 }
