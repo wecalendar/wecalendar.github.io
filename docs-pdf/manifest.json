@@ -1,5 +1,5 @@
 {
- "generated": "2026-11-04",
+ "generated": "2026-11-05",
  "stamp": {
   "preparedFor": {
    "x": 42.52,
@@ -1463,7 +1463,52 @@
    "blurb": "The attached guide covers: What is the Supplemental Content section? → What you need to do? → Which option describes your product? → Examples of Partially built on Azure → Examples of Not built on Azure.",
    "blurbSrc": "steps",
    "blurbV": 2
+  },
+  "free-trial-and-self-setup": {
+   "title": "Free Trial & Self-Setup",
+   "hash": "9ffc2809df7d7ed5",
+   "bytes": 181397,
+   "file": "docs-pdf/free-trial-and-self-setup.pdf",
+   "blurb": "The attached guide covers: Start your free trial → How to add users to your account → How to upgrade your plan when you're ready.",
+   "blurbSrc": "steps",
+   "blurbV": 2
+  },
+  "glossary-of-microsoft-marketplace-terms": {
+   "title": "Glossary of Microsoft Marketplace terms",
+   "hash": "406df473db85f68f",
+   "bytes": 172789,
+   "file": "docs-pdf/glossary-of-microsoft-marketplace-terms.pdf",
+   "blurb": "The attached guide covers: Marketplace and offers → Customers and contracts → Programs and co-sell → Microsoft roles → Microsoft calendar.",
+   "blurbSrc": "steps",
+   "blurbV": 2
+  },
+  "marketplace-pipeline-what-youll-find-in-leads-and-deals": {
+   "title": "Marketplace Pipeline: What You'll Find in Leads and Deals",
+   "hash": "b57da00f964de82d",
+   "bytes": 123290,
+   "file": "docs-pdf/marketplace-pipeline-what-youll-find-in-leads-and-deals.pdf",
+   "blurb": "The attached guide covers: What is Marketplace Pipeline? → Video walkthrough → Leads → Deals.",
+   "blurbSrc": "steps",
+   "blurbV": 2
+  },
+  "who-does-what-you-wetransact-and-microsoft": {
+   "title": "Who does what: you, WeTransact and Microsoft",
+   "hash": "a7a1d95a870a0a15",
+   "bytes": 147260,
+   "file": "docs-pdf/who-does-what-you-wetransact-and-microsoft.pdf",
+   "blurb": "The attached guide covers: Responsibilities at each stage → How it changes by plan → Who to contact → FAQs.",
+   "blurbSrc": "steps",
+   "blurbV": 2
+  },
+  "why-sell-through-microsoft-marketplace": {
+   "title": "Why sell through Microsoft Marketplace",
+   "hash": "003754024244676b",
+   "bytes": 154429,
+   "file": "docs-pdf/why-sell-through-microsoft-marketplace.pdf",
+   "blurb": "The attached guide covers: What it changes in your sales cycle → Why your customers prefer it → What it takes to get there → Good to know → FAQs.",
+   "blurbSrc": "steps",
+   "blurbV": 2
   }
  },
- "count": 161
+ "count": 166
 }
