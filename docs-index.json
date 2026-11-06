@@ -1,6 +1,6 @@
 {
  "source": "https://docs.wetransact.io/sitemap.xml",
- "count": 166,
+ "count": 167,
  "docs": [
   {
    "slug": "account-verification-email-not-received-by-primary-contact",
@@ -281,6 +281,10 @@
   {
    "slug": "how-to-create-a-billing-support-request-in-microsoft-azure-portal",
    "title": "How to Create a Billing Support Request in Microsoft Azure Portal?"
+  },
+  {
+   "slug": "how-to-create-a-deal-in-marketplace-pipeline",
+   "title": "How to Create a Deal in Marketplace Pipeline"
   },
   {
    "slug": "how-to-create-a-microsoft-support-ticket-without-a-partner-center-account",
@@ -587,6 +591,10 @@
    "title": "Unable to verify Account - Legal Info"
   },
   {
+   "slug": "video-masterclasses-09build-your-reseller-offer",
+   "title": "Video masterclasses 09 — Build your reseller offer"
+  },
+  {
    "slug": "video-masterclasses-01-wetransact-marketplace-journey",
    "title": "Video Masterclasses-01. WeTransact Marketplace journey"
   },
@@ -617,10 +625,6 @@
   {
    "slug": "video-masterclasses-08-the-reseller-landscape",
    "title": "Video Masterclasses-08. The Reseller Landscape"
-  },
-  {
-   "slug": "video-masterclasses-09build-your-reseller-offer",
-   "title": "Video Masterclasses-09.Build Your Reseller Offer"
   },
   {
    "slug": "video-masterclasses-10find-your-first-resellers",
