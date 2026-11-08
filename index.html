@@ -946,13 +946,14 @@
 </div>
 <div id="fbOverlay" style="display:none; position:fixed; inset:0; z-index:4100; background:rgba(20,16,40,.45); align-items:center; justify-content:center;">
   <div style="background:#fff; border-radius:16px; padding:20px; width:340px; max-width:92vw; box-shadow:0 18px 50px rgba(20,16,40,.32);">
-    <div style="font-size:15px; font-weight:700; color:var(--ink); margin-bottom:6px;">Suggest something 💡</div>
-    <div style="font-size:12.5px; color:var(--muted2); margin-bottom:10px;">Ideas, bugs, anything — it goes straight to the WeCalendar team.</div>
-    <textarea id="fbText" rows="4" placeholder="What would make WeCalendar better?" style="width:100%; box-sizing:border-box; border:1px solid var(--line); border-radius:10px; padding:10px 12px; font-family:inherit; font-size:13px; color:var(--ink); resize:vertical; outline:none;"></textarea>
+    <div id="fbTitle" style="font-size:15px; font-weight:700; color:var(--ink); margin-bottom:6px;">Suggest something 💡</div>
+    <div id="fbDesc" style="font-size:12.5px; color:var(--muted2); margin-bottom:10px; line-height:1.45;">WeCalendar is managed by <b>Ruby Sran</b>. If anything looks broken or isn’t working, write it here — it goes to Ruby as a Teams message and opens a chat with her.</div>
+    <div id="fbErr" style="display:none; font-size:11.5px; font-family:ui-monospace,Menlo,Consolas,monospace; color:#92400E; background:#FFF4E6; border:1px solid #FACC8E; border-radius:8px; padding:8px 10px; margin-bottom:10px; max-height:90px; overflow:auto; white-space:pre-wrap; word-break:break-word;"></div>
+    <textarea id="fbText" rows="4" placeholder="What’s broken, or what would make WeCalendar better?" style="width:100%; box-sizing:border-box; border:1px solid var(--line); border-radius:10px; padding:10px 12px; font-family:inherit; font-size:13px; color:var(--ink); resize:vertical; outline:none;"></textarea>
     <div id="fbStatus" style="font-size:12px; color:#b91c1c; min-height:14px; margin-top:6px;"></div>
     <div style="display:flex; justify-content:flex-end; gap:8px; margin-top:6px;">
       <button id="fbCancel" style="border:none; background:#EFF0F6; color:var(--ink); border-radius:8px; padding:8px 14px; font-family:inherit; font-size:13px; font-weight:600; cursor:pointer;">Cancel</button>
-      <button id="fbSend" style="border:none; background:#5E43C8; color:#fff; border-radius:8px; padding:8px 14px; font-family:inherit; font-size:13px; font-weight:600; cursor:pointer;">Send</button>
+      <button id="fbSend" style="border:none; background:#5E43C8; color:#fff; border-radius:8px; padding:8px 14px; font-family:inherit; font-size:13px; font-weight:600; cursor:pointer;">Send to Ruby</button>
     </div>
   </div>
 </div>
@@ -2699,7 +2700,7 @@ async function createBookingLink(){
     toast("📋 Slots copied — paste to share");
     if (S.people.length){ S.people = []; S.schedules = {}; renderChips(); renderBody(); toast("📋 Slots copied — teammates cleared"); }
     S.sel = []; saveSel(); renderAll();   // link is made — start the next one clean
-  } catch(e){ status(""); toast("Error creating link"); }
+  } catch(e){ status(""); toast("Error creating link — " + ((e && e.message) || "unknown")); }
 }
 // one-click calendar link: auto-builds slots from your free time over the next 2 weeks,
 // then publishes and copies a booking link — same mechanics as Copy slots, zero painting
@@ -2780,7 +2781,7 @@ async function quickCalendarLink(){
     try { await navigator.clipboard.writeText(j.url); } catch(e){}
     document.getElementById("preview").innerHTML = '🔗 Your calendar link (next 2 weeks, ' + slots.length + ' slots): <a href="' + j.url + '" target="_blank" rel="noopener">' + j.url + '</a>';
     toast("🔗 Calendar link copied — share it anywhere");
-  } catch(e){ status(""); toast("Error creating calendar link"); }
+  } catch(e){ status(""); toast("Error creating calendar link — " + ((e && e.message) || "unknown")); }
   if (btn) btn.disabled = false;
 }
 { const b = document.getElementById("myLinkBtn"); if (b){ b.onclick = quickCalendarLink; if (!WECAL_ON) b.style.display = "none"; } }
@@ -3334,38 +3335,122 @@ function maybeStartTour(){ try { if (localStorage.getItem("tourSeen")) return; }
   document.getElementById("tourBtn").onclick = startTour;
   document.addEventListener("keydown", e => { if (e.key === "Escape" && document.getElementById("tourOverlay").style.display === "block") endTour(); });
 })();
-// ---- feedback / suggestion box (emails the owner) ----
+// ---- feedback / problem reports → Teams chat with the owner (email kept as a backup) ----
+const FB_OWNER = { name: "Ruby Sran", email: "ruby.sran@wetransact.io" };
+const FB_CHAT_SCOPES = ["Chat.Create", "ChatMessage.Send"];
+let FB_ERR = "";            // technical details attached when the box was opened by an error
+const FB_SEEN = new Set();  // each distinct error pops the box once per session
+function fbEsc(t){ return String(t).replace(/[&<>"]/g, c => ({ "&":"&amp;", "<":"&lt;", ">":"&gt;", '"':"&quot;" }[c])); }
 function closeFb(){ var o = document.getElementById("fbOverlay"); if (o) o.style.display = "none"; }
-function sendFeedback(){
-  var ta = document.getElementById("fbText"), st = document.getElementById("fbStatus"), btn = document.getElementById("fbSend");
-  var t = (ta.value || "").trim();
-  if (!t){ if (st){ st.style.color = "#b91c1c"; st.textContent = "Type a quick note first."; } ta.focus(); return; }
-  var who = (typeof S !== "undefined" && S.profileName) || (typeof ME !== "undefined" && ME.name) || "";
-  var em = (typeof ME !== "undefined" && ME.email) || "";
-  var base = (typeof WECAL !== "undefined" && (WECAL.FN_BASE || (WECAL.SUPABASE_URL ? WECAL.SUPABASE_URL + "/functions/v1" : ""))) || "";
-  var key = (typeof WECAL !== "undefined" && WECAL.SUPABASE_ANON_KEY) || "";
-  if (!base || !key){ if (st){ st.style.color = "#b91c1c"; st.textContent = "Feedback isn't set up yet."; } return; }
-  btn.disabled = true; btn.textContent = "Sending…"; if (st){ st.style.color = "var(--muted2)"; st.textContent = ""; }
-  fetch(base + "/send-feedback", { method: "POST", headers: { "Content-Type": "application/json", apikey: key, Authorization: "Bearer " + key }, body: JSON.stringify({ message: t, name: who, email: em }) })
-    .then(function(r){ return r.json().catch(function(){ return {}; }); })
-    .then(function(j){
-      if (j && j.ok){ if (st){ st.style.color = "#05614B"; st.textContent = "Thanks — your suggestion was sent! 🎉"; } ta.value = ""; setTimeout(function(){ closeFb(); btn.disabled = false; btn.textContent = "Send"; }, 1300); }
-      else { if (st){ st.style.color = "#b91c1c"; st.textContent = (j && j.error === "not_configured") ? "Feedback isn't set up on the server yet." : "Couldn't send — please try again."; } btn.disabled = false; btn.textContent = "Send"; }
-    })
-    .catch(function(){ if (st){ st.style.color = "#b91c1c"; st.textContent = "Network error — please try again."; } btn.disabled = false; btn.textContent = "Send"; });
+function openFb(errText){
+  FB_ERR = errText || "";
+  const ta = document.getElementById("fbText"), st = document.getElementById("fbStatus"), box = document.getElementById("fbErr");
+  const btn = document.getElementById("fbSend");
+  ta.value = ""; if (st) st.textContent = ""; btn.disabled = false; btn.textContent = "Send to Ruby";
+  document.getElementById("fbTitle").textContent = FB_ERR ? "Something went wrong ⚠️" : "Suggest something 💡";
+  document.getElementById("fbDesc").innerHTML = FB_ERR
+    ? "WeCalendar hit a problem. It’s managed by <b>Ruby Sran</b> — send her this and she’ll get a Teams message with the details below."
+    : "WeCalendar is managed by <b>Ruby Sran</b>. If anything looks broken or isn’t working, write it here — it goes to Ruby as a Teams message and opens a chat with her.";
+  ta.placeholder = FB_ERR ? "What were you doing when this happened? (optional)" : "What’s broken, or what would make WeCalendar better?";
+  box.style.display = FB_ERR ? "block" : "none"; box.textContent = FB_ERR;
+  document.getElementById("fbOverlay").style.display = "flex";
+  setTimeout(() => ta.focus(), 30);
+}
+// Called for real failures. Never interrupts an open dialog or repeats the same error.
+function reportProblem(where, detail){
+  try {
+    const msg = String(detail && detail.message || detail || "").slice(0, 400);
+    const key = where + "|" + msg;
+    if (FB_SEEN.has(key)) return; FB_SEEN.add(key);
+    const o = document.getElementById("fbOverlay");
+    if (!o || o.style.display === "flex" || (account == null && where === "script")) return;
+    const env = [
+      "Error: " + (msg || where),
+      "When: " + new Date().toLocaleString("en-GB", { timeZone: (typeof S !== "undefined" && S.tz) || undefined }) + " (" + ((typeof S !== "undefined" && S.tz) || "") + ")",
+      "Where: " + (DLG ? "Outlook add-in window" : "web app") + " · " + location.pathname,
+      "Browser: " + navigator.userAgent.replace(/^Mozilla\/5\.0 /, "").slice(0, 140),
+    ].join("\n");
+    openFb(env);
+  } catch(e){}
+}
+function fbMessageText(note){
+  const who = (typeof S !== "undefined" && S.profileName) || ME.name || ME.email || "Someone";
+  return { who, plain: (FB_ERR ? "⚠️ WeCalendar problem report" : "💡 WeCalendar feedback") + " from " + who + "\n\n" + (note || "(no note)") + (FB_ERR ? "\n\n" + FB_ERR : ""),
+    html: "<p><b>" + (FB_ERR ? "⚠️ WeCalendar problem report" : "💡 WeCalendar feedback") + "</b> from " + fbEsc(who) + "</p><p>" + fbEsc(note || "(no note)").replace(/\n/g, "<br>") + "</p>" +
+          (FB_ERR ? "<pre>" + fbEsc(FB_ERR) + "</pre>" : "") };
+}
+async function fbChatToken(){
+  if (!account) return null;
+  try { return (await pca.acquireTokenSilent({ scopes: FB_CHAT_SCOPES, account })).accessToken; } catch(e){}
+  if (DLG) return null;   // popups don't work inside the Outlook dialog — use the Teams link instead
+  try { return (await pca.acquireTokenPopup({ scopes: FB_CHAT_SCOPES, account })).accessToken; } catch(e){ return null; }
+}
+async function fbSendTeams(html){
+  const tk = await fbChatToken(); if (!tk) return false;
+  const G = "https://graph.microsoft.com/v1.0/", H = { Authorization: "Bearer " + tk, "Content-Type": "application/json" };
+  const member = upn => ({ "@odata.type": "#microsoft.graph.aadUserConversationMember", roles: ["owner"], "user@odata.bind": G + "users('" + encodeURIComponent(upn) + "')" });
+  // oneOnOne returns the existing chat between the two people if there is one
+  const c = await fetch(G + "chats", { method: "POST", headers: H, body: JSON.stringify({ chatType: "oneOnOne", members: [member(ME.email), member(FB_OWNER.email)] }) });
+  const cj = await c.json().catch(() => ({}));
+  if (!c.ok || !cj.id) { console.warn("Teams chat create failed", c.status, cj); return false; }
+  const m = await fetch(G + "chats/" + encodeURIComponent(cj.id) + "/messages", { method: "POST", headers: H, body: JSON.stringify({ body: { contentType: "html", content: html } }) });
+  if (!m.ok) { console.warn("Teams message failed", m.status); return false; }
+  return true;
+}
+function fbEmailBackup(plain, who){
+  const base = (typeof WECAL !== "undefined" && WECAL.FN_BASE) || "", key = (typeof WECAL !== "undefined" && WECAL.SUPABASE_ANON_KEY) || "";
+  if (!base || !key) return Promise.resolve(false);
+  return fetch(base + "/send-feedback", { method: "POST", headers: { "Content-Type": "application/json", apikey: key, Authorization: "Bearer " + key }, body: JSON.stringify({ message: plain, name: who, email: ME.email || "" }) })
+    .then(r => r.json().catch(() => ({}))).then(j => !!(j && j.ok)).catch(() => false);
+}
+async function sendFeedback(){
+  const ta = document.getElementById("fbText"), st = document.getElementById("fbStatus"), btn = document.getElementById("fbSend");
+  const note = (ta.value || "").trim();
+  if (!note && !FB_ERR){ st.style.color = "#b91c1c"; st.textContent = "Type a quick note first."; ta.focus(); return; }
+  const { who, plain, html } = fbMessageText(note);
+  btn.disabled = true; btn.textContent = "Sending…"; st.style.color = "var(--muted2)"; st.textContent = "";
+  const isOwner = String(ME.email || "").toLowerCase() === FB_OWNER.email;
+  const emailed = fbEmailBackup(plain, who);   // always keep a copy, whatever happens in Teams
+  let teams = false;
+  if (!isOwner){ try { teams = await fbSendTeams(html); } catch(e){ teams = false; } }
+  const done = text => { st.style.color = "#05614B"; st.textContent = text; ta.value = ""; setTimeout(closeFb, 1800); };
+  if (teams) return done("Sent to Ruby on Teams — she’ll reply in your chat with her. 🎉");
+  if (!isOwner){
+    // No Teams permission (or it was declined): open Teams with the message ready to send.
+    const url = "https://teams.microsoft.com/l/chat/0/0?users=" + encodeURIComponent(FB_OWNER.email) + "&message=" + encodeURIComponent(plain.slice(0, 1500));
+    const w = window.open(url, "_blank"); try { if (w) w.opener = null; } catch(e){}
+    if (w !== null || !DLG){ await emailed; return done("Teams opened with your message — just press Send. 💬"); }
+  }
+  if (await emailed) return done("Thanks — it’s been sent to Ruby. 🎉");
+  st.style.color = "#b91c1c"; st.textContent = "Couldn’t send — please message Ruby Sran on Teams directly."; btn.disabled = false; btn.textContent = "Send to Ruby";
 }
 (function(){
   var b = document.getElementById("fbBtn"); if (!b) return;
-  b.onclick = function(){ document.getElementById("fbText").value = ""; var s = document.getElementById("fbStatus"); if (s) s.textContent = ""; document.getElementById("fbOverlay").style.display = "flex"; setTimeout(function(){ document.getElementById("fbText").focus(); }, 60); };
+  b.title = "Report a problem or suggest something — goes to Ruby on Teams";
+  b.onclick = function(){ openFb(""); };
   document.getElementById("fbCancel").onclick = closeFb;
   document.getElementById("fbSend").onclick = sendFeedback;
   document.getElementById("fbOverlay").addEventListener("click", function(e){ if (e.target.id === "fbOverlay") closeFb(); });
   document.addEventListener("keydown", function(e){ if (e.key === "Escape" && document.getElementById("fbOverlay").style.display === "flex") closeFb(); });
+  // Unexpected script errors from WeCalendar's own code (not browser extensions) open the same box.
+  window.addEventListener("error", function(e){
+    if (!e || !e.message || /ResizeObserver|Script error/i.test(e.message)) return;
+    if (e.filename && !/wecalendar\.github\.io|localhost/.test(e.filename)) return;
+    reportProblem("script", e.message + (e.lineno ? " (line " + e.lineno + ")" : ""));
+  });
+  window.addEventListener("unhandledrejection", function(e){
+    const r = e && e.reason; const m = String((r && r.message) || r || "");
+    if (!m || /AbortError|BrowserAuthError|interaction_in_progress|user_cancelled|popup_window_error/i.test(m)) return;
+    reportProblem("script", m);
+  });
 })();
 
+// Failures shown as toasts also offer the report box (not guidance messages like "Paint some slots first").
+const FB_ERR_TOAST = /^(Couldn['’]t (create|clear|remove|cancel)|Error |Booking backend not set up)/;
 function toast(msg){
   const t = document.getElementById("toast"); t.textContent = msg;
   t.classList.add("show"); setTimeout(() => t.classList.remove("show"), 2200);
+  if (FB_ERR_TOAST.test(String(msg))) setTimeout(() => reportProblem("action", msg), 600);
 }
 </script>
 <script src="wecal-notify.js"></script>

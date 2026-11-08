@@ -1602,3 +1602,28 @@ var WECAL_TZ = (function(){
 
   (function restoreAuth(){ var a = loadAuth(); if (a){ TOKEN = a.token; EMAIL = a.email || ""; loadSettings(); loadProfile(); $("signedout").classList.add("hide"); $("picker").classList.remove("hide"); drawMiniCal(); } try { applyCSMGate(); } catch(e){} })();
 })();
+
+// ---- "Report to Ruby": unexpected failures in the add-in get a one-click Teams report ----
+(function(){
+  var OWNER = "ruby.sran@wetransact.io";
+  var FAIL = /^(Couldn['\u2019]t|Something went wrong|Sign in didn['\u2019]t complete|Error)/;
+  function link(el){
+    if (!el || !el.classList || !el.classList.contains("err") || el.querySelector(".wc-report")) return;
+    var text = (el.textContent || "").trim(); if (!FAIL.test(text)) return;
+    var who = ""; try { who = Office.context.mailbox.userProfile.displayName || ""; } catch(e){}
+    var msg = "\u26A0\uFE0F WeCalendar Outlook add-in problem" + (who ? " from " + who : "") + "\n\n" + text + "\n\nWhen: " + new Date().toString().slice(0, 33) + "\nBrowser: " + navigator.userAgent.slice(0, 140);
+    var a = document.createElement("a");
+    a.className = "wc-report"; a.href = "https://teams.microsoft.com/l/chat/0/0?users=" + encodeURIComponent(OWNER) + "&message=" + encodeURIComponent(msg);
+    a.target = "_blank"; a.rel = "noopener"; a.textContent = "Report to Ruby on Teams";
+    a.style.cssText = "display:inline-block;margin-left:6px;font-weight:600;color:inherit;text-decoration:underline;";
+    el.appendChild(document.createTextNode(" ")); el.appendChild(a);
+  }
+  new MutationObserver(function(ms){ ms.forEach(function(m){ var t = m.target.nodeType === 1 ? m.target : m.target.parentElement; if (t && t.closest) link(t.closest(".msg")); }); })
+    .observe(document.body, { subtree: true, childList: true, characterData: true, attributes: true, attributeFilter: ["class"] });
+  window.addEventListener("error", function(e){
+    if (!e || !e.message || (e.filename && !/wecalendar\.github\.io/.test(e.filename))) return;
+    var m = document.getElementById("msg"); if (!m) return;
+    m.className = "msg err"; m.textContent = "Something went wrong in WeCalendar: " + e.message;
+  });
+})();
+
