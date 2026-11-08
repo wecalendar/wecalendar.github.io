@@ -1,3 +1,4 @@
+// check-availability.FIXED6 (2026-11-08): keeps the rotated Microsoft refresh token.
 // check-availability.FIXED5 (2026-11-08): a failed token refresh is recorded on host_tokens.check_ok.
 // check-availability.FIXED4 (2026-11-08) = FIXED3 + ROLLING LINKS. A link marked rolling (made with
 // "Copy my calendar link") is topped up on every visit to the next 14 days of the host's working
@@ -145,7 +146,7 @@ const json = (b, status = 200) =>
 
 const sb = createClient(Deno.env.get("SUPABASE_URL"), Deno.env.get("SUPABASE_SERVICE_ROLE_KEY"));
 
-async function msAccessToken(refreshToken) {
+async function msAccessToken(refreshToken, hostId = null) {
   const tenant = Deno.env.get("MS_TENANT") ?? "common";
   const r = await fetch(`https://login.microsoftonline.com/${tenant}/oauth2/v2.0/token`, {
     method: "POST",
@@ -159,7 +160,14 @@ async function msAccessToken(refreshToken) {
     }),
   });
   if (!r.ok) throw new Error("MS token refresh failed");
-  return (await r.json()).access_token;
+  const j = await r.json();
+  // Microsoft returns a fresh refresh token on every use. Keep it, or the stored one dies ~90 days
+  // after the person connected however often it's used (AADSTS700082 — 26 of 36 hosts on 2026-11-08).
+  if (hostId && j.refresh_token && j.refresh_token !== refreshToken) {
+    try { await sb.rpc("store_host_token", { p_host: hostId, p_provider: "microsoft", p_token: j.refresh_token, p_scope: j.scope ?? null }); }
+    catch (e) { console.error("store rotated token failed:", String(e)); }
+  }
+  return j.access_token;
 }
 
 Deno.serve(async (req) => {
@@ -190,7 +198,7 @@ Deno.serve(async (req) => {
   const busy = [];
   try {
     let tk;
-    try { tk = await msAccessToken(refresh); }
+    try { tk = await msAccessToken(refresh, link.host_id); }
     catch (e) {   // record it so the host sees "Reconnect your calendar" in WeCalendar
       await sb.from("host_tokens").update({ check_ok: false, checked_at: new Date().toISOString() }).eq("host_id", link.host_id).eq("provider", "microsoft");
       throw e;

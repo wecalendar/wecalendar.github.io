@@ -1,3 +1,4 @@
+// publish-link — FIXED6 (2026-11-08): keeps the rotated Microsoft refresh token.
 // publish-link — FIXED5 (2026-11-08): body.check → is MY booking connection working? body.checkAll →
 // (owner only) test every host's connection. Both record host_tokens.check_ok / checked_at.
 // Requires connection-check.sql.
@@ -27,7 +28,7 @@ const cors = {
 const OWNERS = ["ruby.sran@wetransact.io"];   // may run the all-hosts connection sweep
 
 // Same refresh as check-availability / book-slot. Throws when Microsoft refuses the stored token.
-async function msAccessToken(refreshToken) {
+async function msAccessToken(refreshToken, hostId = null) {
   const tenant = Deno.env.get("MS_TENANT") ?? "common";
   const r = await fetch(`https://login.microsoftonline.com/${tenant}/oauth2/v2.0/token`, {
     method: "POST",
@@ -45,14 +46,21 @@ async function msAccessToken(refreshToken) {
     try { const j = await r.json(); code = String(j.error_codes?.[0] ?? j.error ?? ""); } catch (_e) { /* ignore */ }
     throw new Error("refresh_failed:" + code);
   }
-  return (await r.json()).access_token;
+  const j = await r.json();
+  // Microsoft returns a fresh refresh token on every use. Keep it, or the stored one dies ~90 days
+  // after the person connected however often it's used (AADSTS700082 — 26 of 36 hosts on 2026-11-08).
+  if (hostId && j.refresh_token && j.refresh_token !== refreshToken) {
+    try { await sb.rpc("store_host_token", { p_host: hostId, p_provider: "microsoft", p_token: j.refresh_token, p_scope: j.scope ?? null }); }
+    catch (e) { console.error("store rotated token failed:", String(e)); }
+  }
+  return j.access_token;
 }
 // Is this host's stored Microsoft calendar connection usable right now? Records the result.
 async function checkHost(hostId) {
   const { data: refresh } = await sb.rpc("get_host_token", { p_host: hostId, p_provider: "microsoft" });
   if (!refresh) return { connected: false, reason: "not_connected" };
   let ok = true, reason = "";
-  try { await msAccessToken(refresh); } catch (e) { ok = false; reason = String(e.message || e).replace(/^refresh_failed:?/, "") || "expired"; }
+  try { await msAccessToken(refresh, hostId); } catch (e) { ok = false; reason = String(e.message || e).replace(/^refresh_failed:?/, "") || "expired"; }
   await sb.from("host_tokens").update({ check_ok: ok, checked_at: new Date().toISOString() }).eq("host_id", hostId).eq("provider", "microsoft");
   return ok ? { connected: true } : { connected: false, reason: "expired", code: reason };
 }
