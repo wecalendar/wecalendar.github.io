@@ -502,7 +502,8 @@ var WECAL_TZ = (function(){
     var y, mo, da, wd;
     if (date){ y = date.getFullYear(); mo = date.getMonth(); da = date.getDate(); wd = (date.getDay() + 6) % 7; }
     else { var p = {}; new Intl.DateTimeFormat("en-CA", { timeZone: TZ, year: "numeric", month: "2-digit", day: "2-digit", weekday: "short" }).formatToParts(new Date()).forEach(function(x){ p[x.type] = x.value; }); y = +p.year; mo = +p.month - 1; da = +p.day; wd = { Mon: 0, Tue: 1, Wed: 2, Thu: 3, Fri: 4, Sat: 5, Sun: 6 }[p.weekday]; }
-    var base = Date.UTC(y, mo, da, 12) - wd * 86400000;
+    // On a Saturday or Sunday "this week" has already ended, so use the coming Mon–Fri instead.
+    var base = Date.UTC(y, mo, da, 12) - wd * 86400000 + (wd >= 5 ? 7 * 86400000 : 0);
     var out = []; for (var i = 0; i < 5; i++){ var d = new Date(base + i * 86400000); out.push(new Date(d.getUTCFullYear(), d.getUTCMonth(), d.getUTCDate())); } return out;
   }
   function focusDate(){ if (SELDAY){ var p = SELDAY.split("-"); return new Date(+p[0], +p[1], +p[2]); } var q = {}; new Intl.DateTimeFormat("en-CA", { timeZone: TZ, year: "numeric", month: "2-digit", day: "2-digit" }).formatToParts(new Date()).forEach(function(x){ q[x.type] = x.value; }); return new Date(+q.year, +q.month - 1, +q.day); }
