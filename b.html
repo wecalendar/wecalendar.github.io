@@ -317,7 +317,7 @@ function openModal(id){
   const s = SLOTS.find(x => x.id === id);
   if (!s) return;
   booking = false;
-  if (sb && LINK) sb.from("analytics_events").insert({ link_id: LINK.id, type: "slot_click", meta:{ slotId:id } });
+  if (sb && LINK) track("slot_click", { slotId:id });
   const when = dayLabel(new Date(s.start_utc)) + " · " + timeLabel(new Date(s.start_utc)) + "–" + timeLabel(new Date(s.end_utc));
   $("modal").innerHTML =
     '<h2>Confirm your booking</h2><div class="when">'+when+'</div>'+
@@ -415,6 +415,14 @@ function renderCancel(id){
   };
 }
 
+// supabase-js query builders are lazy: an insert is only sent once it is awaited or .then()'d.
+// These used to be fire-and-forget without either, so no view or slot click was ever recorded.
+function track(type, meta){
+  if (!sb || !LINK) return;
+  const row = { link_id: LINK.id, type };
+  if (meta) row.meta = meta;
+  sb.from("analytics_events").insert(row).then(r => { if (r && r.error) console.warn("analytics", type, r.error.message); }, () => {});
+}
 async function init(){
   const cancelId = new URLSearchParams(location.search).get("cancel");
   if (cancelId){ renderCancel(cancelId); return; }
@@ -433,7 +441,7 @@ async function init(){
 
   const { data: slots } = await sb.from("slots").select("id,start_utc,end_utc,status").eq("link_id", link.id);
   SLOTS = slots || [];
-  sb.from("analytics_events").insert({ link_id: link.id, type: "view" });
+  track("view");
   render();
   recheck();
   document.addEventListener("visibilitychange", () => { if (!document.hidden) recheck(); });
