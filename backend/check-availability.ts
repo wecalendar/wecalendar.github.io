@@ -1,3 +1,4 @@
+// check-availability.FIXED5 (2026-11-08): a failed token refresh is recorded on host_tokens.check_ok.
 // check-availability.FIXED4 (2026-11-08) = FIXED3 + ROLLING LINKS. A link marked rolling (made with
 // "Copy my calendar link") is topped up on every visit to the next 14 days of the host's working
 // hours, at the link's slot length, so a link in a signature or old email never runs out of times.
@@ -188,7 +189,12 @@ Deno.serve(async (req) => {
 
   const busy = [];
   try {
-    const tk = await msAccessToken(refresh);
+    let tk;
+    try { tk = await msAccessToken(refresh); }
+    catch (e) {   // record it so the host sees "Reconnect your calendar" in WeCalendar
+      await sb.from("host_tokens").update({ check_ok: false, checked_at: new Date().toISOString() }).eq("host_id", link.host_id).eq("provider", "microsoft");
+      throw e;
+    }
     const min = new Date(Math.min(...open.map((s) => +new Date(s.start_utc)))).toISOString();
     const max = new Date(Math.max(...open.map((s) => +new Date(s.end_utc)))).toISOString();
     let next = "https://graph.microsoft.com/v1.0/me/calendarView?" + new URLSearchParams({
