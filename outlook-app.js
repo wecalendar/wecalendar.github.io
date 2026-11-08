@@ -128,21 +128,65 @@
     + '.oltip.hide{display:none}.oltip img{width:54px;flex:none;margin-top:2px}.oltip b{color:#021774}'
     + '.oltip ol{margin:6px 0 8px 16px;padding:0;color:#402C93;font-size:12.5px;line-height:1.45}.oltip li{margin:3px 0}'
     + '.oltip button{border:none;background:#5E43C8;color:#fff;border-radius:8px;padding:5px 12px;font:inherit;font-size:12px;font-weight:600;cursor:pointer}';
+  /* ---- WeTransact brand redesign (2026-11-08) — appended so it overrides the older rules above ---- */
+  STYLE += ""
+    + ":root{--accent:#5E43C8;--accent-d:#402C93;--ink:#021774;--muted:#4E5D9E;--line:#E1E4FF}"
+    + "body{background:#F7F7FD!important}#app{padding:14px 14px 22px!important;color:var(--ink)}"
+    + ".hdr{position:relative;overflow:hidden;border-radius:18px;padding:16px 16px 15px;margin:0 0 14px;color:#fff;min-height:116px;background:url('brand/grid-on-dark.svg') center/cover no-repeat,linear-gradient(160deg,#010D40 0%,#21177A 55%,#402C93 100%);background-blend-mode:hard-light,normal;box-shadow:0 10px 26px -10px rgba(1,13,64,.55)}"
+    + ".hlogo{height:15px;display:block;opacity:.95}"
+    + ".hname{font-family:'Plus Jakarta Sans',sans-serif;font-size:21px;font-weight:600;letter-spacing:-.02em;margin:10px 0 3px;color:#fff}"
+    + ".hsub{font-size:12px;line-height:1.45;color:#E9E4FF;max-width:64%}"
+    + ".hoct{position:absolute;right:-6px;bottom:-12px;width:96px;filter:drop-shadow(0 10px 16px rgba(1,13,64,.5));pointer-events:none}"
+    + ".sect{font-family:'Plus Jakarta Sans',sans-serif;font-size:11px;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:#7A6FB8;margin:16px 2px 8px}"
+    + ".act{width:100%;display:flex;align-items:center;gap:11px;text-align:left;background:#fff;border:1px solid var(--line);border-radius:14px;padding:10px 12px 10px 10px;margin:0 0 8px;cursor:pointer;font-family:inherit;color:var(--ink);box-shadow:0 1px 2px rgba(2,23,116,.04);transition:border-color .15s ease,box-shadow .15s ease,transform .12s ease}"
+    + ".act:hover{border-color:#C5BDFB;box-shadow:0 6px 16px -6px rgba(94,67,200,.28);transform:translateY(-1px)}.act:active{transform:none}.act:disabled{opacity:.55;cursor:default;transform:none}"
+    + ".act .ati{width:36px;height:36px;border-radius:10px;flex:none}"
+    + ".act .atx{flex:1;min-width:0;display:flex;flex-direction:column}"
+    + ".act .att{font-size:13.5px;font-weight:700;color:var(--ink);line-height:1.25}"
+    + ".act .atd{font-size:11.5px;color:var(--muted);margin-top:2px;line-height:1.35}"
+    + ".act .arw{font-size:20px;color:#9F92F8;line-height:1;flex:none}"
+    + ".act .chev{font-size:11px;color:#9F92F8;flex:none;margin-left:0;transition:transform .15s}"
+    + ".act.hero{background:linear-gradient(135deg,#F3F0FF 0%,#EEF3FF 100%);border-color:#D5CCFF}"
+    + ".tplbtn,.tplbtn:hover{background:#fff;color:var(--ink);padding:10px 12px 10px 10px;font-size:inherit;font-weight:inherit}"
+    + ".tpl.open .tplbtn{background:#fff;border-radius:14px 14px 0 0;border-color:#C5BDFB;margin-bottom:0;box-shadow:none;transform:none}"
+    + ".tpl.open .tplbtn .chev{transform:rotate(180deg)}"
+    + ".tplmenu{border:1px solid #C5BDFB;border-top:1px solid var(--line);border-radius:0 0 14px 14px;margin-bottom:8px;background:#fff}"
+    + ".tplgrp{background:#F7F5FF;color:#7A6FB8}.tplopt:hover{background:#F3F0FF}"
+    + ".btn{border-radius:12px;padding:11px 12px;font-size:13.5px;font-weight:700;background:linear-gradient(90deg,#5E43C8 0%,#8266F4 100%);box-shadow:0 6px 16px -6px rgba(94,67,200,.55)}"
+    + ".btn:hover{background:linear-gradient(90deg,#402C93 0%,#5E43C8 100%);box-shadow:0 8px 18px -6px rgba(94,67,200,.6)}"
+    + ".btn.sec{background:#fff;color:var(--accent);border:1px solid var(--line);box-shadow:none;font-weight:600}.btn.sec:hover{background:#F3F0FF;border-color:#C5BDFB}"
+    + ".btn.green{background:linear-gradient(90deg,#098768 0%,#10B48A 100%);box-shadow:0 6px 16px -6px rgba(9,135,104,.55)}.btn.green:hover{background:linear-gradient(90deg,#05614B 0%,#098768 100%)}"
+    + ".row2{display:flex;gap:8px}.row2 .btn{margin-top:10px;padding:10px 8px;font-size:12.5px}"
+    + "label{font-size:11.5px;font-weight:600;color:var(--muted);margin:12px 2px 6px}"
+    + "textarea,input[type=text],select{border-radius:12px;border-color:var(--line);background:#fff}"
+    + ".seg{border:none;background:#EEEBFB;border-radius:999px;padding:3px;gap:3px}"
+    + ".seg button{border-radius:999px;background:transparent;font-weight:600;color:#4E5D9E;padding:7px}"
+    + ".seg button.on{background:linear-gradient(90deg,#5E43C8,#8266F4);color:#fff;box-shadow:0 3px 8px -2px rgba(94,67,200,.5)}"
+    + ".mcal{border-radius:14px;background:#fff;padding:10px}.mc-head{font-family:'Plus Jakarta Sans',sans-serif}"
+    + ".mc-day{border-radius:9px}.mc-day.sel{background:linear-gradient(135deg,#5E43C8,#8266F4)}"
+    + ".weeknav{background:#EEEBFB;border-radius:12px}"
+    + ".chip{background:#EBE7FF;color:#402C93}"
+    + ".dkwrap{border-radius:14px;background:#fff;margin:-2px 0 8px}"
+    + ".oltip{border-radius:16px;margin:0 0 12px}"
+    + ".sohero{display:flex;align-items:center;gap:12px;background:#fff;border:1px solid var(--line);border-radius:14px;padding:10px 12px;font-size:12.5px;color:var(--muted);line-height:1.45}.sohero img{width:58px;flex:none}"
+    + ".msg.ok{background:#E2F9F4;border-radius:10px;padding:8px 10px;color:#05614B}.msg.err{background:#FFF1F3;border-radius:10px;padding:8px 10px;color:#9F1239}"
+    + ".or{display:none}#mcMsg:empty,#msg:empty{display:none}#mcMsg{margin:2px 0 4px}";
   var HTML = ''
-    + '<div class="brand"><span class="a1">we</span><span class="a2">calendar</span></div>'
-    + '<div class="sub">Pick your free times here — it drops a booking link into your email and your recipient books instantly.</div>'
-    + '<div id="signedout"><button class="btn" id="signin">Sign in to WeCalendar</button><div class="msg" id="soMsg"></div></div>'
+    + '<div class="hdr"><img class="hlogo" src="brand/logo-on-dark.svg" alt="WeTransact"><div class="hname">WeCalendar</div>'
+    +   '<div class="hsub">Offer times, share your link and send guides &mdash; right from this email.</div><img class="hoct" src="brand/octavia-rocket.webp" alt=""></div>'
+    + '<div id="signedout"><div class="sohero"><img src="brand/octavia-headset.webp" alt=""><div>Sign in once with your WeTransact account to use WeCalendar in Outlook.</div></div><button class="btn" id="signin">Sign in to WeCalendar</button><div class="msg" id="soMsg"></div></div>'
     + '<div id="picker" class="hide">'
     +   '<div id="olTip" class="oltip hide">'
     +     '<img src="brand/octavia-laptop.webp" alt="">'
     +     '<div><b>Welcome to WeCalendar in Outlook</b>'
     +     '<ol><li><b>Copy my calendar link</b> &mdash; one link that always shows your next 2 weeks.</li>'
     +     '<li><b>Pick a day or week</b>, tick times, then <b>Insert</b> &mdash; they land in this email as booking buttons.</li>'
-    +     '<li><b>Insert a guide</b> &mdash; attach a WeTransact guide as a PDF.</li></ol>'
+    +     '<li><b>Insert a guide</b> or use an <b>email template</b> &mdash; ready-made WeTransact emails and guides.</li></ol>'
     +     '<button type="button" id="olTipOk">Got it</button></div>'
     +   '</div>'
+    +   '<div class="sect">Write faster</div>'
     +   '<div class="tpl hide" id="tpl">'
-    +     '<button class="tplbtn" id="tplBtn" type="button">&#128231; CSM email templates<span class="chev">&#9662;</span></button>'
+    +     '<button class="act tplbtn" id="tplBtn" type="button"><img class="ati" src="brand/tile-sealed-envelope.png" alt=""><span class="atx"><span class="att">Email templates</span><span class="atd">Onboarding, go-live &amp; GTM emails</span></span><span class="chev">&#9662;</span></button>'
     +     '<div class="tplmenu hide" id="tplMenu">'
     +       '<div class="tplgrp">Pre-onboarding</div>'
     +       '<div class="tplopt" data-tpl="0"><span class="ic">&#128179;</span><div><div class="tt">Purchase your WeTransact plan</div><div class="td">How to buy on Microsoft Marketplace</div></div></div>'
@@ -166,7 +210,7 @@
     +       '<div class="tplopt" data-tpl="14"><span class="ic">&#9200;</span><div><div class="tt">GTM sessions follow-up</div><div class="td">Unused sessions in their plan</div></div></div>'
     +     '</div>'
     +     '<div class="tplhint hide" id="tplHint">Pick one — it fills the subject &amp; body. Edit the highlighted blanks before sending.</div>'
-    +     '<button class="btn sec" id="pbBtn" type="button" style="margin-top:8px">&#128216; Attach onboarding playbook</button>'
+    +     '<button class="act" id="pbBtn" type="button"><img class="ati" src="brand/tile-checklist.png" alt=""><span class="atx"><span class="att">Attach onboarding playbook</span><span class="atd">Personalised PDF for the client</span></span><span class="arw">&#8250;</span></button>'
     +     '<div id="pbForm" class="hide">'
     +       '<label>Client company name</label>'
     +       '<input type="text" id="pbCompany" autocomplete="off" placeholder="e.g. SmartFense">'
@@ -178,7 +222,7 @@
     +       '<div class="msg" id="pbMsg"></div>'
     +     '</div>'
     +   '</div>'
-    +   '<button class="btn sec" id="dkBtn" type="button" style="margin-top:8px" title="Search WeTransact Docs, attach the guide as a branded PDF or drop the link into your email">&#128196; Insert a guide</button>'
+    +   '<button class="act" id="dkBtn" type="button" title="Search WeTransact Docs, attach the guide as a branded PDF or drop the link into your email"><img class="ati" src="brand/tile-lightbulb.png" alt=""><span class="atx"><span class="att">Insert a guide</span><span class="atd">Attach WeTransact docs as a PDF or link</span></span><span class="arw">&#8250;</span></button>'
     +   '<div id="dkPanel" class="dkwrap hide">'
     +     '<input type="text" id="dkIn" autocomplete="off" placeholder="Search a guide — or paste a docs link">'
     +     '<div id="dkRes" class="dkres"></div>'
@@ -188,14 +232,15 @@
     +       '<span><span class="tt">Include instructions</span><br><span class="td">Adds a short summary of each guide to the email</span></span>'
     +     '</div>'
     +     '<div class="dkprev hide" id="dkPrev"></div>'
-    +     '<button class="btn" id="dkGo" type="button" style="margin-top:10px">&#128216; Attach as PDF</button>'
+    +     '<button class="btn" id="dkGo" type="button" style="margin-top:10px">Attach as PDF</button>'
     +     '<button class="btn sec" id="dkIns" type="button" style="margin-top:8px">Insert links instead</button>'
     +     '<div class="msg" id="dkMsg"></div>'
     +   '</div>'
-    +   '<div class="or hide" id="tplOr" style="margin:8px 0 2px">or share your free times</div>'
-    +   '<button class="btn sec" id="mcBtn" type="button" style="margin-top:8px" title="Instantly create and copy a booking link from your free time over the next 2 weeks — no painting needed">&#128279; Copy my calendar link</button>'
+    +   '<div class="or hide" id="tplOr"></div>'
+    +   '<div class="sect">Share your time</div>'
+    +   '<button class="act hero" id="mcBtn" type="button" title="Create and copy a booking link that always shows your free time for the next 2 weeks"><img class="ati" src="brand/tile-calendar.png" alt=""><span class="atx"><span class="att">Copy my calendar link</span><span class="atd">Always shows your next 2 weeks &mdash; safe in a signature</span></span><span class="arw">&#8250;</span></button>'
     +   '<div class="msg" id="mcMsg"></div>'
-    +   '<div class="or" style="margin:12px 0 2px">or pick specific times</div>'
+    +   '<div class="sect">Pick specific times</div>'
     +   '<label>Slot length</label>'
     +   '<div class="seg" id="seg"><button data-l="15">15m</button><button data-l="30" class="on">30m</button><button data-l="60">60m</button></div>'
     +   '<label>Show times in</label>'
@@ -206,11 +251,10 @@
     +   '<div class="chips" id="mateChips"></div>'
     +   '<label>Pick a day</label>'
     +   '<div class="mcal" id="mcal"></div>'
-    +   '<button class="btn sec" id="pickDay">✨ Select slots for day</button>'
-    +   '<button class="btn sec" id="pickWeek">✨ Select slots for week</button>'
+    +   '<div class="row2"><button class="btn sec" id="pickDay">Select for day</button><button class="btn sec" id="pickWeek">Select for week</button></div>'
     +   '<div id="weekNav" class="weeknav hide"><button id="wkPrev" type="button">&#8249;</button><span id="wkLabel"></span><button id="wkNext" type="button">&#8250;</button></div>'
     +   '<div class="slots" id="slots"></div>'
-    +   '<div id="actions" style="display:none"><button class="btn green" id="insertLink" style="margin-top:0">📋 Copy slots</button><button class="btn sec" id="clearBtn">Clear selection</button></div>'
+    +   '<div id="actions" style="display:none"><button class="btn green" id="insertLink" style="margin-top:0">Insert times in email</button><button class="btn sec" id="clearBtn">Clear selection</button></div>'
     +   '<div class="msg" id="msg"></div>'
     + '</div>';
 
@@ -951,7 +995,8 @@ var WECAL_TZ = (function(){
   function setSubject(text){ try { var it = Office.context.mailbox && Office.context.mailbox.item; if (it && it.subject && it.subject.setAsync){ it.subject.setAsync(text); } } catch(e){} }
   var CSM_ALLOW = (function(){ var m = {}, list = ["ruby.sran@wetransact.io", "divyashree.g@wetransact.io", "em.labrador@wetransact.io", "javier.albala@wetransact.io", "leya.zheng@wetransact.io", "paula.jimenez@wetransact.io", "thaddeus.uzornne@wetransact.io", "thomas.roche@wetransact.io", "mariana.figueiredo@wetransact.io", "alexandre.pascal@wetransact.io", "nikki.maan@wetransact.io"]; list.forEach(function(e){ m[e] = 1; }); return m; })();
   function currentUserEmail(){ var e = ""; try { e = (Office.context && Office.context.mailbox && Office.context.mailbox.userProfile && Office.context.mailbox.userProfile.emailAddress) || ""; } catch(_){} if (!e) e = EMAIL || ""; return String(e).trim().toLowerCase(); }
-  function isCSM(){ var e = currentUserEmail(); return /@wetransact\.io$/.test(e) && !!CSM_ALLOW[e]; }
+  // Email templates and the onboarding playbook are open to everyone at WeTransact (2026-11-08); CSM_ALLOW is kept for reference only.
+  function isCSM(){ var e = currentUserEmail(); return /@wetransact\.io$/.test(e); }
   /* signed-in CSM's own first name — fills {CSM name} */
   function csmFirstName(){
     var em = currentUserEmail(), dn = "";
