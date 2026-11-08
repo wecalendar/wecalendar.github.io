@@ -124,11 +124,23 @@
     + '.grow.free.focusrow input{accent-color:#D97706}'
     + '.grow.free.focusrow:hover{box-shadow:0 3px 10px rgba(217,119,6,.18)}';
 
+  STYLE += '.oltip{display:flex;gap:10px;align-items:flex-start;background:linear-gradient(135deg,#F3F0FF,#EEF3FF);border:1px solid #DCD5FF;border-radius:14px;padding:12px;margin:2px 0 12px;position:relative}'
+    + '.oltip.hide{display:none}.oltip img{width:54px;flex:none;margin-top:2px}.oltip b{color:#021774}'
+    + '.oltip ol{margin:6px 0 8px 16px;padding:0;color:#402C93;font-size:12.5px;line-height:1.45}.oltip li{margin:3px 0}'
+    + '.oltip button{border:none;background:#5E43C8;color:#fff;border-radius:8px;padding:5px 12px;font:inherit;font-size:12px;font-weight:600;cursor:pointer}';
   var HTML = ''
     + '<div class="brand"><span class="a1">we</span><span class="a2">calendar</span></div>'
     + '<div class="sub">Pick your free times here — it drops a booking link into your email and your recipient books instantly.</div>'
     + '<div id="signedout"><button class="btn" id="signin">Sign in to WeCalendar</button><div class="msg" id="soMsg"></div></div>'
     + '<div id="picker" class="hide">'
+    +   '<div id="olTip" class="oltip hide">'
+    +     '<img src="brand/octavia-laptop.webp" alt="">'
+    +     '<div><b>Welcome to WeCalendar in Outlook</b>'
+    +     '<ol><li><b>Copy my calendar link</b> &mdash; one link that always shows your next 2 weeks.</li>'
+    +     '<li><b>Pick a day or week</b>, tick times, then <b>Insert</b> &mdash; they land in this email as booking buttons.</li>'
+    +     '<li><b>Insert a guide</b> &mdash; attach a WeTransact guide as a PDF.</li></ol>'
+    +     '<button type="button" id="olTipOk">Got it</button></div>'
+    +   '</div>'
     +   '<div class="tpl hide" id="tpl">'
     +     '<button class="tplbtn" id="tplBtn" type="button">&#128231; CSM email templates<span class="chev">&#9662;</span></button>'
     +     '<div class="tplmenu hide" id="tplMenu">'
@@ -1626,5 +1638,14 @@ var WECAL_TZ = (function(){
     var m = document.getElementById("msg"); if (!m) return;
     m.className = "msg err"; m.textContent = "Something went wrong in WeCalendar: " + e.message;
   });
+})();
+
+// ---- first-time tip in the add-in (shown once per person) ----
+(function(){
+  var KEY = "wecal_addin_tip_seen";
+  function show(){ var t = document.getElementById("olTip"), p = document.getElementById("picker"); if (!t || !p || p.classList.contains("hide")) return false; var seen = false; try { seen = localStorage.getItem(KEY) === "1"; } catch(e){} t.classList.toggle("hide", seen); return true; }
+  var b = document.getElementById("olTipOk"); if (b) b.onclick = function(){ try { localStorage.setItem(KEY, "1"); } catch(e){} document.getElementById("olTip").classList.add("hide"); };
+  var p = document.getElementById("picker"); if (!p) return;
+  if (!show()) new MutationObserver(function(_, o){ if (show()) o.disconnect(); }).observe(p, { attributes: true, attributeFilter: ["class"] });
 })();
 
