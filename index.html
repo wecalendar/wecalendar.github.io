@@ -643,6 +643,39 @@
   .oo-empty b { font-family:var(--wt-font-display); font-weight:600; font-size:14px; color:var(--ink); }
   .oo-empty span { font-size:12px; color:var(--muted2); }
   #ptoBox + #blockBtn, .oo-box ~ #blockBtn { margin-top:8px !important; }
+  /* help menu + Outlook guide (2026-11-08) */
+  #helpMenu{ display:none; position:absolute; top:calc(100% + 8px); right:0; z-index:70; width:290px; background:var(--surface,#fff); border:1px solid var(--line); border-radius:16px; padding:6px; box-shadow:0 18px 44px rgba(20,16,40,.16); }
+  #helpMenu.on{ display:block; animation:popin .16s ease; }
+  #helpMenu button{ display:flex; gap:11px; align-items:center; width:100%; text-align:left; border:none; background:none; padding:9px 10px; border-radius:11px; cursor:pointer; font-family:inherit; color:var(--ink); }
+  #helpMenu button:hover{ background:#F3F0FF; }
+  #helpMenu img{ width:34px; height:34px; border-radius:9px; flex:none; }
+  #helpMenu b{ display:block; font-size:13.5px; font-weight:600; }
+  #helpMenu small{ display:block; font-size:12px; color:var(--muted2); margin-top:1px; }
+  #olGuide{ display:none; position:fixed; inset:0; z-index:4000; background:rgba(20,16,40,.45); align-items:center; justify-content:center; padding:18px; }
+  #olGuide .og{ background:var(--surface,#fff); border-radius:22px; width:min(560px,96vw); max-height:92vh; overflow:auto; box-shadow:0 24px 70px rgba(20,16,40,.32); }
+  #olGuide .og-hd{ position:relative; overflow:hidden; padding:24px 26px 22px; color:#fff; border-radius:22px 22px 0 0; background:url('brand/grid-on-dark.svg') center/cover no-repeat, linear-gradient(180deg,#010D40 0%,#402C93 100%); background-blend-mode:hard-light,normal; }
+  #olGuide .og-hd h3{ font-family:var(--wt-font-display,inherit); font-size:24px; font-weight:600; letter-spacing:-.02em; margin:4px 0 6px; max-width:330px; color:#fff; }
+  #olGuide .og-hd p{ font-size:13.5px; color:#FDEBF7; max-width:330px; line-height:1.45; }
+  #olGuide .og-hd img{ position:absolute; right:14px; bottom:-14px; width:150px; filter:drop-shadow(0 12px 22px rgba(1,13,64,.45)); }
+  #olGuide .og-eb{ font-size:12px; font-weight:600; color:#C5BDFB; letter-spacing:.02em; }
+  #olGuide .og-bd{ padding:20px 26px 22px; }
+  #olGuide h4{ font-size:13px; font-weight:700; color:var(--ink); margin:2px 0 10px; display:flex; align-items:center; gap:8px; }
+  #olGuide h4 i{ font-style:normal; font-size:11px; font-weight:700; color:#5E43C8; background:#EBE7FF; border-radius:999px; padding:2px 8px; }
+  #olGuide ol{ list-style:none; counter-reset:s; margin:0 0 18px; }
+  #olGuide ol li{ counter-increment:s; display:flex; gap:11px; font-size:13.5px; color:var(--ink); line-height:1.45; padding:6px 0; }
+  #olGuide ol li::before{ content:counter(s); flex:none; width:22px; height:22px; border-radius:50%; background:#5E43C8; color:#fff; font-size:12px; font-weight:700; display:inline-flex; align-items:center; justify-content:center; margin-top:1px; }
+  #olGuide .og-url{ display:flex; gap:6px; margin-top:7px; }
+  #olGuide .og-url code{ flex:1; min-width:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; font-size:12px; background:#F3F5FF; border:1px solid #E1E4FF; border-radius:8px; padding:6px 9px; color:#402C93; }
+  #olGuide .og-url button, #olGuide .og-ft button{ border:none; border-radius:8px; padding:6px 12px; font:inherit; font-size:12.5px; font-weight:600; cursor:pointer; background:#5E43C8; color:#fff; }
+  #olGuide .og-grid{ display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-bottom:16px; }
+  #olGuide .og-card{ border:1px solid var(--line); border-radius:14px; padding:12px 13px; }
+  #olGuide .og-card img{ width:32px; height:32px; border-radius:8px; margin-bottom:7px; display:block; }
+  #olGuide .og-card > b{ display:block; font-size:13px; color:var(--ink); margin-bottom:3px; }
+  #olGuide .og-card span{ font-size:12.5px; color:var(--muted2); line-height:1.45; }
+  #olGuide .og-note{ font-size:12.5px; color:var(--muted2); background:#FFF8E6; border:1px solid #FBE3A6; border-radius:10px; padding:9px 11px; line-height:1.45; }
+  #olGuide .og-ft{ display:flex; justify-content:space-between; align-items:center; gap:10px; padding:0 26px 22px; font-size:12.5px; color:var(--muted2); }
+  #olGuide .og-ft button.sec{ background:#EFF0F6; color:var(--ink); }
+  @media (max-width:560px){ #olGuide .og-grid{ grid-template-columns:1fr; } #olGuide .og-hd img{ width:110px; opacity:.5; } }
 </style>
 </head>
 <body>
@@ -714,7 +747,13 @@
       <button id="statusBtn" type="button" title="Set a status — stay online but take no calls">Set status</button>
       <div class="iconcluster">
       <button id="fbBtn" title="Send a suggestion"><svg class="ic" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 18h6M10 21h4"/><path d="M12 3a6 6 0 0 0-3.6 10.8c.6.5 1 1.2 1.1 2V16h5v-.2c.1-.8.5-1.5 1.1-2A6 6 0 0 0 12 3z"/></svg></button>
-      <button id="tourBtn" title="Take a quick tour">?</button>
+      <span style="position:relative;display:inline-flex">
+        <button id="tourBtn" title="Help">?</button>
+        <div id="helpMenu" role="menu">
+          <button data-h="outlook"><img src="brand/tile-sealed-envelope.png" alt=""><span><b>Use WeCalendar in Outlook</b><small>Install the add-in and use it in your emails</small></span></button>
+          <button data-h="tour"><img src="brand/tile-lightbulb.png" alt=""><span><b>Take the quick tour</b><small>30 seconds on the essentials</small></span></button>
+        </div>
+      </span>
       <button class="gearbtn" id="setBtn" title="Settings" aria-label="Settings">
         <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 1 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 1 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 1 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 1 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
       </button>
@@ -955,6 +994,34 @@
       <button id="fbCancel" style="border:none; background:#EFF0F6; color:var(--ink); border-radius:8px; padding:8px 14px; font-family:inherit; font-size:13px; font-weight:600; cursor:pointer;">Cancel</button>
       <button id="fbSend" style="border:none; background:#5E43C8; color:#fff; border-radius:8px; padding:8px 14px; font-family:inherit; font-size:13px; font-weight:600; cursor:pointer;">Send to Ruby</button>
     </div>
+  </div>
+</div>
+<div id="olGuide" role="dialog" aria-label="Use WeCalendar in Outlook">
+  <div class="og">
+    <div class="og-hd">
+      <div class="og-eb">WeCalendar for Outlook</div>
+      <h3>Book meetings without leaving your email.</h3>
+      <p>The add-in sits next to any email you write: pick your free times, drop a booking link in, send.</p>
+      <img src="brand/octavia-laptop.webp" alt="">
+    </div>
+    <div class="og-bd">
+      <h4>Install it once <i>2 minutes</i></h4>
+      <ol>
+        <li><span>In Outlook, open <b>Apps</b> (or <b>Get Add-ins</b>) and choose <b>My add-ins</b>.</span></li>
+        <li><span>Pick <b>Add a custom add-in → Add from URL</b> and paste:
+          <div class="og-url"><code id="ogUrl">https://wecalendar.github.io/outlook-manifest.xml</code><button id="ogCopy">Copy</button></div></span></li>
+        <li><span>Start a new email — <b>WeCalendar</b> now appears in the ribbon. Sign in once with your WeTransact account.</span></li>
+      </ol>
+      <h4>Use it while you write an email</h4>
+      <div class="og-grid">
+        <div class="og-card"><img src="brand/tile-calendar.png" alt=""><b>Offer specific times</b><span>Pick day or Pick week, tick the times, then <b>Insert</b> — they land in your email as one-click booking buttons.</span></div>
+        <div class="og-card"><img src="brand/tile-cursor.png" alt=""><b>Copy my calendar link</b><span>One link that always shows your next 2 weeks of free time. Safe to keep in your signature.</span></div>
+        <div class="og-card"><img src="brand/tile-checklist.png" alt=""><b>Insert a guide</b><span>Search the WeTransact docs and attach a guide as a PDF, or drop in the link.</span></div>
+        <div class="og-card"><img src="brand/tile-people.png" alt=""><b>Meet with teammates</b><span>Add colleagues and only times you’re all free are offered — they’re invited automatically.</span></div>
+      </div>
+      <div class="og-note">Don’t see <b>Add from URL</b>? Your Outlook may be managed by IT — message Ruby Sran and she’ll get it added for you.</div>
+    </div>
+    <div class="og-ft"><span>Stuck? Use the 💡 button to tell Ruby.</span><span style="display:flex;gap:8px"><button class="sec" id="ogTour">Take the tour</button><button id="ogClose">Got it</button></span></div>
   </div>
 </div>
 <div class="tzpop" id="tzPop">
@@ -3333,7 +3400,18 @@ function maybeStartTour(){ try { if (localStorage.getItem("tourSeen")) return; }
   next.onclick = () => { if (tourCur >= tourSteps.length - 1) endTour(); else tourShow(tourCur + 1); };
   document.getElementById("tourBack").onclick = () => { if (tourCur > 0) tourShow(tourCur - 1); };
   document.getElementById("tourSkip").onclick = endTour;
-  document.getElementById("tourBtn").onclick = startTour;
+  (function(){
+    const btn = document.getElementById("tourBtn"), menu = document.getElementById("helpMenu"), g = document.getElementById("olGuide");
+    btn.onclick = (e) => { e.stopPropagation(); menu.classList.toggle("on"); };
+    document.addEventListener("click", (e) => { if (!menu.contains(e.target) && e.target !== btn) menu.classList.remove("on"); });
+    menu.querySelector('[data-h="tour"]').onclick = () => { menu.classList.remove("on"); startTour(); };
+    menu.querySelector('[data-h="outlook"]').onclick = () => { menu.classList.remove("on"); openOutlookGuide(); };
+    document.getElementById("ogClose").onclick = () => { g.style.display = "none"; };
+    document.getElementById("ogTour").onclick = () => { g.style.display = "none"; startTour(); };
+    g.addEventListener("click", (e) => { if (e.target === g) g.style.display = "none"; });
+    document.getElementById("ogCopy").onclick = async () => { try { await navigator.clipboard.writeText(document.getElementById("ogUrl").textContent); document.getElementById("ogCopy").textContent = "Copied ✓"; setTimeout(() => document.getElementById("ogCopy").textContent = "Copy", 1600); } catch(e){} };
+    window.openOutlookGuide = () => { g.style.display = "flex"; };
+  })();
   document.addEventListener("keydown", e => { if (e.key === "Escape" && document.getElementById("tourOverlay").style.display === "block") endTour(); });
 })();
 // ---- feedback / problem reports → Teams chat with the owner (email kept as a backup) ----

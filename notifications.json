@@ -2,6 +2,19 @@
   "_help": "Announcements shown in WeCalendar's notification bell. Add an item to the top of the list; give it a new unique id. Optional fields: tile (brand/tile-<name>.png: calendar, chart, checklist, cursor, hourglass, lightbulb, paper-plane, people, sealed-envelope, trophy), action {label, url}, audience ('all', or a list of emails / '@domain'), until (YYYY-MM-DD).",
   "items": [
     {
+      "id": "2026-11-08-outlook-addin",
+      "date": "2026-11-08",
+      "tile": "sealed-envelope",
+      "title": "WeCalendar is in Outlook too",
+      "body": "Offer your times, share your calendar link and attach WeTransact guides without leaving the email you’re writing. Takes 2 minutes to set up.",
+      "action": {
+        "label": "Show me how",
+        "run": "outlook-guide"
+      },
+      "audience": "all",
+      "until": "2026-12-31"
+    },
+    {
       "id": "2026-11-08-reconnect-celine",
       "date": "2026-11-08",
       "urgent": true,

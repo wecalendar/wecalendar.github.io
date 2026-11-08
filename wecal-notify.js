@@ -106,6 +106,7 @@
         var it = items[+el.getAttribute("data-i")]; if (!it) return;
         markRead(it.id);
         if (it.action && it.action.run === "reconnect"){ e.preventDefault(); try { location.href = consentUrl("microsoft"); } catch(err){} }
+        if (it.action && it.action.run === "outlook-guide"){ e.preventDefault(); try { window.openOutlookGuide(); } catch(err){} }
       });
     });
     [].forEach.call(list.querySelectorAll(".nt-x"), function(el){
@@ -282,4 +283,6 @@
   }
 
   window.WecalNotify = { start: start, refresh: refresh, open: function(){ toggle(true); }, check: checkMeetings, cancelled: function(ev){ cancelled([ev]); }, _showBar: showBar };
+  // If sign-in finished before this file loaded, the app's WecalNotify.start() call was missed — start now.
+  try { if (typeof ME !== "undefined" && ME && ME.email && document.getElementById("appView") && document.getElementById("appView").style.display !== "none") start(); } catch(e){}
 })();
