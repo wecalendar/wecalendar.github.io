@@ -1,5 +1,5 @@
 {
- "generated": "2026-11-07",
+ "generated": "2026-11-08",
  "stamp": {
   "preparedFor": {
    "x": 42.52,
@@ -1517,25 +1517,7 @@
    "blurb": "The attached guide covers: Purpose → Before you start (required checks) → Three ways to create a deal → Option A --> Create a deal from a lead → Open the Leads tab.",
    "blurbSrc": "steps",
    "blurbV": 2
-  },
-  "how-do-complete-tax-and-payout-profile-for-the-incentive-campaign": {
-   "title": "How do complete Tax and payout profile for the incentive campaign?",
-   "hash": "5a025a113606c9eb",
-   "bytes": 187106,
-   "file": "docs-pdf/how-do-complete-tax-and-payout-profile-for-the-incentive-campaign.pdf",
-   "blurb": "The attached guide covers: Part 1 - (US Entities and non US) Filling Tax Profile Walkthrough example → Part 2 - Adding the Payment Profile → Part 3 - Submitting the Incentive Profile.",
-   "blurbSrc": "steps",
-   "blurbV": 2
-  },
-  "marketplace-pipeline": {
-   "title": "Marketplace pipeline",
-   "hash": "8d4031938e51bb63",
-   "bytes": 93417,
-   "file": "docs-pdf/marketplace-pipeline.pdf",
-   "blurb": "The attached guide covers: Marketplace Pipeline: What You'll Find in Leads and Deals → How to Create a Deal in Marketplace Pipeline.",
-   "blurbSrc": "steps",
-   "blurbV": 2
   }
  },
- "count": 169
+ "count": 167
 }
