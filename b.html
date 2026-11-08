@@ -296,8 +296,12 @@ function render(){
 // Live availability: ask the host's real calendar which offered times are still free,
 // so a time taken on another link (or by any meeting) disappears here too. Best-effort:
 // if the check-availability function isn't deployed or errors, we just keep showing open slots.
+async function reloadSlots(){
+  const { data } = await sb.from("slots").select("id,start_utc,end_utc,status").eq("link_id", LINK.id);
+  if (data) SLOTS = data;
+}
 async function recheck(){
-  if (!FN || !slug || !SLOTS.length) return;
+  if (!FN || !slug) return;   // runs even with no times left: a rolling link is topped up here
   try {
     const r = await fetch(FN + "/check-availability", {
       method: "POST",
@@ -305,6 +309,7 @@ async function recheck(){
       body: JSON.stringify({ slug }),
     });
     const j = await r.json().catch(() => ({}));
+    if (j && j.added > 0) await reloadSlots();
     if (j && Array.isArray(j.freeIds)){
       const free = new Set(j.freeIds);
       GONE = new Set(SLOTS.filter(s => s.status === "open" && !free.has(s.id)).map(s => s.id));
@@ -442,6 +447,8 @@ async function init(){
   const { data: slots } = await sb.from("slots").select("id,start_utc,end_utc,status").eq("link_id", link.id);
   SLOTS = slots || [];
   track("view");
+  // Nothing bookable yet? Let the server top the link up first rather than flashing "times have passed".
+  if (!SLOTS.some(s => s.status === "open" && new Date(s.start_utc) > new Date())){ $("list").innerHTML = '<div class="msg"><div class="msgt">Loading times…</div></div>'; await recheck(); }
   render();
   recheck();
   document.addEventListener("visibilitychange", () => { if (!document.hidden) recheck(); });
