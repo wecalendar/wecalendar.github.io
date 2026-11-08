@@ -803,7 +803,7 @@
           <button class="btn" id="fillWeekBtn" style="flex:1" title="Auto-select your open slots across the whole week you're viewing — skips meetings, buffers and past times"><svg class="ic" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3l1.8 5.2L19 10l-5.2 1.8L12 17l-1.8-5.2L5 10l5.2-1.8z"/><path d="M19 16l.7 1.8 1.8.7-1.8.7L19 21l-.7-1.8-1.8-.7 1.8-.7z"/></svg> Select slots for week</button>
         </div>
         <div class="panel-btns">
-          <button class="btn" id="myLinkBtn" style="flex:1" title="Instantly create and copy a booking link from your free time over the next 2 weeks — no painting needed"><svg class="ic" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M10 14a4.5 4.5 0 0 0 6.4 0l3-3a4.5 4.5 0 0 0-6.4-6.4l-1 1"/><path d="M14 10a4.5 4.5 0 0 0-6.4 0l-3 3a4.5 4.5 0 0 0 6.4 6.4l1-1"/></svg> Copy my calendar link</button>
+          <button class="btn" id="myLinkBtn" style="flex:1" title="Create and copy a booking link that always shows your free time for the next 2 weeks — it never runs out, so it\u2019s safe in a signature"><svg class="ic" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M10 14a4.5 4.5 0 0 0 6.4 0l3-3a4.5 4.5 0 0 0-6.4-6.4l-1 1"/><path d="M14 10a4.5 4.5 0 0 0-6.4 0l-3 3a4.5 4.5 0 0 0 6.4 6.4l1-1"/></svg> Copy my calendar link</button>
         </div>
         <div id="focusCard" title="Tap for another tip" style="display:none; margin-top:20px; background:#fff; border:1px solid #E1E4FF; border-radius:16px; padding:15px 16px; cursor:pointer;">
           <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:11px;">
@@ -2768,6 +2768,7 @@ async function quickCalendarLink(){
       body: JSON.stringify({
         title: document.getElementById("subj").value || ("Meeting with " + pname()),
         tz: S.tz,
+        rolling: true,
         slots: slots.slice(0, 400).map(x => ({ start: x.start.toISOString(), end: x.end.toISOString() })),
         attendees: S.people.map(p => p.email),
         videoLink: S.linkVid || "",
@@ -2779,7 +2780,7 @@ async function quickCalendarLink(){
     if (!r.ok || !j.url){ status(""); toast("Couldn't create link" + (j.detail ? ": " + j.detail : "")); if (btn) btn.disabled = false; return; }
     status("");
     try { await navigator.clipboard.writeText(j.url); } catch(e){}
-    document.getElementById("preview").innerHTML = '🔗 Your calendar link (next 2 weeks, ' + slots.length + ' slots): <a href="' + j.url + '" target="_blank" rel="noopener">' + j.url + '</a>';
+    document.getElementById("preview").innerHTML = '🔗 Your calendar link — always shows your next 2 weeks of free time: <a href="' + j.url + '" target="_blank" rel="noopener">' + j.url + '</a>';
     toast("🔗 Calendar link copied — share it anywhere");
   } catch(e){ status(""); toast("Error creating calendar link — " + ((e && e.message) || "unknown")); }
   if (btn) btn.disabled = false;

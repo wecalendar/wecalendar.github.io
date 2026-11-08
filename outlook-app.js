@@ -1510,7 +1510,7 @@ var WECAL_TZ = (function(){
     });
   }
   function mcPublish(slots){
-    return fetch(WC.FN_BASE + "/publish-link", { method: "POST", headers: { "Content-Type": "application/json", apikey: WC.SUPABASE_ANON_KEY, Authorization: "Bearer " + TOKEN }, body: JSON.stringify({ title: "Meeting with " + (NAME || niceName(EMAIL) || "me"), tz: TZ, slots: slots.map(function(x){ return { start: x.start.toISOString(), end: x.end.toISOString() }; }), attendees: [], videoLink: "", settings: { workStart: WS, workEnd: WE, buffer: BUF, minNotice: MINNOTICE, dayCap: DAYCAP } }) })
+    return fetch(WC.FN_BASE + "/publish-link", { method: "POST", headers: { "Content-Type": "application/json", apikey: WC.SUPABASE_ANON_KEY, Authorization: "Bearer " + TOKEN }, body: JSON.stringify({ title: "Meeting with " + (NAME || niceName(EMAIL) || "me"), tz: TZ, slots: slots.map(function(x){ return { start: x.start.toISOString(), end: x.end.toISOString() }; }), attendees: [], videoLink: "", rolling: true, settings: { workStart: WS, workEnd: WE, buffer: BUF, minNotice: MINNOTICE, dayCap: DAYCAP } }) })
       .then(function(r){ return r.json().then(function(j){ return { status: r.status, j: j }; }); })
       .then(function(o){ if (o.status === 412 || (o.j && o.j.error === "not_connected")) throw { notConnected: true }; if (!o.j || !o.j.url) throw new Error((o.j && o.j.detail) || "couldn't create link"); return o.j.url; });
   }
@@ -1584,7 +1584,7 @@ var WECAL_TZ = (function(){
       }).then(function(res){
         msg.className = "msg ok";
         msg.innerHTML = (res.copied ? "&#10003; Calendar link copied" : "&#10003; Link ready — copy it below")
-          + " (next 2 weeks, " + res.n + " slots) &middot; <a href='#' id='mcIns'>insert in email</a>"
+          + " &mdash; always shows your next 2 weeks &middot; <a href='#' id='mcIns'>insert in email</a>"
           + "<div style='margin-top:4px;font-weight:400;word-break:break-all'><a href='" + res.url + "' target='_blank' rel='noopener'>" + res.url + "</a></div>";
         var ins = $("mcIns");
         if (ins) ins.onclick = function(e){
