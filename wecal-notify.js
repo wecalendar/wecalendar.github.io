@@ -32,9 +32,38 @@
   function fmtDate(d){ try { return new Date(d).toLocaleDateString(undefined, { day:"numeric", month:"short" }); } catch(e){ return ""; } }
 
   // ---- built-in checks ----
+  // ---- server check: does my stored calendar connection actually work? (2026-11-08) ----
+  // Asks publish-link {check:true} at most every 6 hours; the answer decides the reconnect alert.
+  var CHECK_KEY = "wecalConnCheck", CHECK_EVERY = 6 * 3600000;
+  function cachedCheck(){ try { var c = JSON.parse(localStorage.getItem(CHECK_KEY) || "null"); return c && c.who === me() ? c : null; } catch(e){ return null; } }
+  function serverCheck(force){
+    var on = false; try { on = !!WECAL_ON; } catch(e){}
+    if (!on || !me()) return Promise.resolve();
+    var c = cachedCheck(); if (!force && c && Date.now() - c.at < CHECK_EVERY) return Promise.resolve();
+    var base = ""; try { base = WECAL.FN_BASE; } catch(e){}
+    if (!base || typeof pca === "undefined" || !account) return Promise.resolve();
+    return pca.acquireTokenSilent({ scopes: SCOPES, account: account })
+      .then(function(t){ return fetch(base + "/publish-link", { method: "POST", headers: { "Content-Type": "application/json", apikey: WECAL.SUPABASE_ANON_KEY, Authorization: "Bearer " + t.accessToken }, body: JSON.stringify({ check: true }) }); })
+      .then(function(r){ return r.ok ? r.json() : null; })
+      .then(function(j){ if (j && typeof j.connected === "boolean"){ try { localStorage.setItem(CHECK_KEY, JSON.stringify({ who: me(), at: Date.now(), connected: j.connected, reason: j.reason || "" })); } catch(e){} } })
+      .catch(function(){});
+  }
   function localItems(){
     var out = [];
     var on = false; try { on = !!WECAL_ON; } catch(e){}
+    var chk = cachedCheck();
+    if (on && chk && !chk.connected){
+      out.push({
+        id: "reconnect-broken", local: true, urgent: true, tile: "calendar", date: new Date().toISOString(),
+        title: "Reconnect your calendar",
+        body: chk.reason === "not_connected"
+          ? "Your calendar isn’t connected for booking yet, so clients can’t book your links. Connect it — it takes a few seconds."
+          : "WeCalendar lost access to your Outlook calendar, so clients can’t book your links right now. Reconnect it — it takes a few seconds and your links start working again.",
+        action: { label: "Reconnect calendar", run: "reconnect" }
+      });
+      return out;
+    }
+    if (on && chk && chk.connected) return out;   // server confirmed it works — no age-based guess needed
     if (on){
       var at = +(localStorage.getItem("bookingConnectedAt") || 0);
       if (!at || daysSince(at) > RECONNECT_AFTER_DAYS){
@@ -262,7 +291,8 @@
     btn.addEventListener("click", function(e){ e.stopPropagation(); toggle(); });
     document.addEventListener("click", function(e){ var pop = document.getElementById("ntPop"); if (pop && pop.style.display === "block" && !pop.contains(e.target)) toggle(false); });
     document.addEventListener("keydown", function(e){ if (e.key === "Escape") toggle(false); });
-    refresh().then(function(){
+    if (new URLSearchParams(location.search).get("connected")) { try { localStorage.removeItem(CHECK_KEY); } catch(e){} }
+    serverCheck(false).then(refresh).then(function(){
       // On sign-in, show every unread notification on screen (once per browser session).
       // If the welcome tour is running, wait for it to close first.
       try {

@@ -15,22 +15,6 @@
       "until": "2026-12-31"
     },
     {
-      "id": "2026-11-08-reconnect-celine",
-      "date": "2026-11-08",
-      "urgent": true,
-      "tile": "calendar",
-      "title": "Reconnect your calendar",
-      "body": "WeCalendar lost access to your Outlook calendar, so clients can't book your links right now. Reconnect it — it takes a few seconds and your existing links start working again.",
-      "action": {
-        "label": "Reconnect calendar",
-        "run": "reconnect"
-      },
-      "audience": [
-        "celine.andreu@wetransact.io"
-      ],
-      "until": "2026-11-30"
-    },
-    {
       "id": "2026-10-31-new-look",
       "date": "2026-10-31",
       "title": "WeCalendar has a new look",
