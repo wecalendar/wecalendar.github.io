@@ -1,3 +1,6 @@
+// check-availability.FIXED7 (2026-11-09): a rolling link never offers a time outside the host's
+// current working hours (in the link's time zone) — stored slots from older settings or another
+// zone used to stay bookable (8–9 PM offered with a 12–8 PM day).
 // check-availability.FIXED6 (2026-11-08): keeps the rotated Microsoft refresh token.
 // check-availability.FIXED5 (2026-11-08): a failed token refresh is recorded on host_tokens.check_ok.
 // check-availability.FIXED4 (2026-11-08) = FIXED3 + ROLLING LINKS. A link marked rolling (made with
@@ -121,6 +124,21 @@ function rollingTimes(nowMs, tz, workStart, workEnd, lenMin, noticeH, days = 14)
   }
   return out;
 }
+// Is this slot inside the host's CURRENT working hours, on the wall clock of the link's time zone?
+// The booking page used to show every stored open slot, so a time generated under older settings,
+// or in a different zone than the host works in, stayed bookable after work hours.
+function inWorkHours(s, tz, workStart, workEnd) {
+  const a = +new Date(s.start_utc), b = +new Date(s.end_utc);
+  const { ymd } = localParts(a, tz);
+  const at = (h) => {
+    const m = Math.round(h * 60);
+    const hh = String(Math.floor(m / 60)).padStart(2, "0"), mm = String(m % 60).padStart(2, "0");
+    return gInstant({ dateTime: `${ymd}T${hh}:${mm}:00`, timeZone: tz });
+  };
+  const lo = at(workStart ?? 9), hi = at(workEnd ?? 18);
+  if (!isFinite(lo) || !isFinite(hi)) return true;   // never empty the page over a bad zone
+  return a >= lo && b <= hi;
+}
 async function topUpRolling(link, host) {
   const { data: all } = await sb.from("slots").select("start_utc,end_utc").eq("link_id", link.id);
   const rows = all ?? [];
@@ -187,7 +205,8 @@ Deno.serve(async (req) => {
   if (link.rolling) { try { added = await topUpRolling(link, host); } catch (e) { console.error("rolling:", String(e)); } }
 
   const { data: slots } = await sb.from("slots").select("id,start_utc,end_utc").eq("link_id", link.id).eq("status", "open");
-  const open = (slots ?? []).filter((s) => new Date(s.end_utc) > new Date());
+  const open = (slots ?? []).filter((s) => new Date(s.end_utc) > new Date())
+    .filter((s) => !link.rolling || !host || inWorkHours(s, link.tz || "UTC", host.work_start, host.work_end));
   if (!open.length) return json({ freeIds: [], added });
 
   // Need the host's Microsoft token to read their real calendar. If unavailable, treat all open
