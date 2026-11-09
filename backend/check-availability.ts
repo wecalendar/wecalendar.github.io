@@ -1,3 +1,5 @@
+// check-availability.FIXED8 (2026-11-09): focus time blocks rolling ("my calendar link") links; it
+// stays bookable only on hand-picked links.
 // check-availability.FIXED7 (2026-11-09): a rolling link never offers a time outside the host's
 // current working hours (in the link's time zone) — stored slots from older settings or another
 // zone used to stay bookable (8–9 PM offered with a 12–8 PM day).
@@ -237,7 +239,9 @@ Deno.serve(async (req) => {
         if (ev.showAs === "free" || ev.showAs === "workingElsewhere") continue;
         if (ev.responseStatus?.response === "declined") continue;
         if (ev.showAs === "oof" && ev.isOrganizer === false) continue; // someone else's OOO invite — informational, not a block
-        if (isFocusEvent(ev)) continue;                    // host's own focus time — offered on purpose, keep the slot bookable
+        // Focus time stays bookable only on hand-picked links, where the host chose to offer it.
+        // "My calendar link" (rolling) times are filled in automatically, so focus time blocks them.
+        if (!link.rolling && isFocusEvent(ev)) continue;
         busy.push([+new Date(ev.start.dateTime + "Z"), +new Date(ev.end.dateTime + "Z")]);
       }
       next = j["@odata.nextLink"] ?? null;
