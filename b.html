@@ -47,6 +47,8 @@
   .modal{ width:100%; max-width:400px; background:#fff; border-radius:16px; padding:24px; }
   .modal h2{ font-size:17px; font-weight:600; margin-bottom:4px; }
   .modal .when{ font-size:13px; color:var(--accent-d); font-weight:600; margin-bottom:16px; }
+  .modal .pnote{ font-size:11.5px; line-height:1.45; color:var(--muted); margin:10px 0 0; }
+  .modal .pnote a{ color:inherit; text-decoration:underline; }
   .modal label{ display:block; font-size:12px; color:var(--muted); margin:12px 0 4px; }
   .modal input{ width:100%; border:1px solid var(--line); border-radius:10px; padding:10px 12px; font-size:14px; font-family:inherit; color:var(--ink); outline:none; }
   .modal input:focus{ border-color:var(--accent); }
@@ -140,7 +142,7 @@
       <div class="tzrow"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true" style="vertical-align:-2px"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c2.5 2.6 4 5.6 4 9s-1.5 6.4-4 9c-2.5-2.6-4-5.6-4-9s1.5-6.4 4-9z"/></svg> Times shown in <span class="tzwrap"><input type="text" id="tzIn" autocomplete="off" spellcheck="false" placeholder="Search a city…"><div id="tzRes" class="tzres hide"></div></span></div>
     </div>
     <div class="body"><div id="list"><div class="msg"><span class="spin"></span></div></div></div>
-    <div class="foot">Powered by WeCalendar · one-click booking, no account needed</div>
+    <div class="foot">Powered by WeCalendar · one-click booking, no account needed · <a href="https://wetransact.io/privacypolicy" target="_blank" rel="noopener" style="color:inherit">Privacy</a></div>
   </div>
 
   <div class="ov" id="ov">
@@ -296,9 +298,14 @@ function render(){
 // Live availability: ask the host's real calendar which offered times are still free,
 // so a time taken on another link (or by any meeting) disappears here too. Best-effort:
 // if the check-availability function isn't deployed or errors, we just keep showing open slots.
+// The page can only fetch its own link (by slug) — the tables themselves are not publicly readable.
+async function fetchPage(){
+  const { data, error } = await sb.rpc("booking_page", { p_slug: slug });
+  return error ? null : data;
+}
 async function reloadSlots(){
-  const { data } = await sb.from("slots").select("id,start_utc,end_utc,status").eq("link_id", LINK.id);
-  if (data) SLOTS = data;
+  const p = await fetchPage();
+  if (p && Array.isArray(p.slots)) SLOTS = p.slots;
 }
 async function recheck(){
   if (!FN || !slug) return;   // runs even with no times left: a rolling link is topped up here
@@ -332,6 +339,7 @@ function openModal(id){
     '<div id="guestWrap"></div>'+
     '<button type="button" id="addGuest" style="background:none;border:none;color:var(--accent);font:inherit;font-size:13px;cursor:pointer;padding:6px 0 0">+ Add a teammate</button>'+
     '<div class="err" id="mErr"></div>'+
+    '<p class="pnote">Your name and email are used only to schedule this meeting and send the invite. They are erased 30 days after the meeting. <a href="https://wetransact.io/privacypolicy" target="_blank" rel="noopener">Privacy policy</a></p>'+
     '<button class="btn" id="confirm">Book it</button>'+
     '<button class="btn sec" id="cancel">Cancel</button>';
   $("ov").classList.add("on");
@@ -438,32 +446,23 @@ async function init(){
   }
   sb = window.supabase.createClient(C.SUPABASE_URL, C.SUPABASE_ANON_KEY);
 
-  const { data: link } = await sb.from("links").select("id,title,tz,status").eq("slug", slug).maybeSingle();
+  const page = await fetchPage();
+  const link = page && page.link;
   if (!link || link.status !== "active"){ fail("<b>This link has expired.</b><br><span class='ms'>Nothing was booked \u2014 ask your host for a fresh link.</span>"); return; }
   LINK = link;
   $("title").textContent = link.title || "Book a time";
   $("sub").textContent = greeting() + " Pick a time that works for you — it books instantly.";
 
-  const { data: slots } = await sb.from("slots").select("id,start_utc,end_utc,status").eq("link_id", link.id);
-  SLOTS = slots || [];
+  SLOTS = page.slots || [];
   track("view");
   // Nothing bookable yet? Let the server top the link up first rather than flashing "times have passed".
   if (!SLOTS.some(s => s.status === "open" && new Date(s.start_utc) > new Date())){ $("list").innerHTML = '<div class="msg"><div class="msgt">Loading times…</div></div>'; await recheck(); }
   render();
   recheck();
   document.addEventListener("visibilitychange", () => { if (!document.hidden) recheck(); });
-  setInterval(recheck, 60000);
-
-  // live slot-locking: when any slot flips status, reflect it immediately
-  sb.channel("slots-" + link.id)
-    .on("postgres_changes",
-      { event: "UPDATE", schema: "public", table: "slots", filter: "link_id=eq." + link.id },
-      (payload) => {
-        const i = SLOTS.findIndex(x => x.id === payload.new.id);
-        if (i >= 0) SLOTS[i] = payload.new; else SLOTS.push(payload.new);
-        if (!$("ov").classList.contains("on")) render();
-      })
-    .subscribe();
+  // Taken times disappear on the next recheck; book-slot claims a slot atomically, so two people
+  // can never book the same time. (Live table updates needed the tables to be publicly readable.)
+  setInterval(async () => { await reloadSlots(); recheck(); }, 60000);
 }
 $("ov").addEventListener("click", (e)=>{ if (e.target.id === "ov") closeModal(); });
 init();
