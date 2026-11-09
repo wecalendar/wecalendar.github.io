@@ -1,3 +1,6 @@
+// book-slot — FIXED11 (2026-11-09): anti-abuse. Names can't carry links; teammates must share the
+// booker's company domain (max 3); daily caps per booker and per link; rate limits use the real
+// IP; automatic links refuse out-of-hours times and treat focus time as busy.
 // book-slot.FIXED (2026-11-08): keeps the rotated Microsoft refresh token, so connections stop expiring.
 // book-slot — FIXED10 = FIXED9 + the final availability check now covers the link's CO-HOSTS
 // ("Meet With" teammates), not just the host. A slot a teammate is busy for is refused with
@@ -49,6 +52,42 @@ function companyFromEmail(email, fallbackName) {
     .replace(/\b\w/g, (c) => c.toUpperCase());
   return pretty || name;
 }
+// ---- anti-abuse ---------------------------------------------------------------------------------
+// The real visitor IP. x-forwarded-for's first entry is whatever the caller sent, so rate limits
+// keyed on it could be bypassed by faking the header.
+function clientIp(req) {
+  const cf = (req.headers.get("cf-connecting-ip") || "").trim();
+  if (cf) return cf;
+  const xff = (req.headers.get("x-forwarded-for") || "").split(",").map((x) => x.trim()).filter(Boolean);
+  return xff.length ? xff[xff.length - 1] : "unknown";
+}
+// A booker's name ends up in the invite title and attendee list sent from a host's real mailbox,
+// so it may only look like a name: no links, domains, emails or markup.
+function cleanName(raw) {
+  let n = String(raw || "").normalize("NFKC")
+    .replace(/[\u0000-\u001f\u007f-\u009f\u200b-\u200f\u202a-\u202e\u2060-\u206f]/g, "")
+    .replace(/https?:\/\/\S*/gi, "").replace(/\bwww\.\S*/gi, "")
+    .replace(/\S+@\S+/g, "").replace(/\b[\w-]+\.(com|net|org|io|co|info|biz|xyz|app|link|site|online|top|ru|cn|me|ly|gl|to|cc|tk)\b\S*/gi, "")
+    .replace(/[<>{}\[\]\\|`$^~=*#%]/g, "").replace(/\s+/g, " ").trim();
+  return n.slice(0, 60).trim();
+}
+const EMAIL_RE = /^[^\s@<>()",;:]{1,64}@[a-z0-9.-]{1,253}\.[a-z]{2,24}$/i;
+// Wall-clock work hours check in the link's zone (same rule as check-availability).
+function wallInstant(ymd, minutes, tz) {
+  const hh = String(Math.floor(minutes / 60)).padStart(2, "0"), mm = String(minutes % 60).padStart(2, "0");
+  const t = Date.parse(`${ymd}T${hh}:${mm}:00Z`);
+  const off = (ms) => { const p = {}; new Intl.DateTimeFormat("en-US", { timeZone: tz, hourCycle: "h23", year: "numeric", month: "2-digit", day: "2-digit", hour: "2-digit", minute: "2-digit" }).formatToParts(new Date(ms)).forEach((q) => { p[q.type] = q.value; }); return (Date.UTC(+p.year, +p.month - 1, +p.day, +p.hour, +p.minute) - ms) / 60000; };
+  return t - off(t - off(t) * 60000) * 60000;
+}
+function withinWorkHours(startIso, endIso, tz, ws, we) {
+  try {
+    const a = +new Date(startIso), b = +new Date(endIso);
+    const ymd = new Intl.DateTimeFormat("en-CA", { timeZone: tz, year: "numeric", month: "2-digit", day: "2-digit" }).format(new Date(a));
+    const lo = wallInstant(ymd, Math.round((ws ?? 9) * 60), tz), hi = wallInstant(ymd, Math.round((we ?? 18) * 60), tz);
+    return !isFinite(lo) || !isFinite(hi) || (a >= lo && b <= hi);
+  } catch (_e) { return true; }
+}
+
 function buildSubject(baseTitle, email, name) {
   const base = (baseTitle && String(baseTitle).trim()) || "Meeting";
   const company = companyFromEmail(email, name);
@@ -162,7 +201,7 @@ async function coHostBusy(accessToken, emails, fromIso, toIso) {
   return out;
 }
 
-async function msHasConflict(accessToken, startUtc, endUtc) {
+async function msHasConflict(accessToken, startUtc, endUtc, focusIsFree = true) {
   const url = "https://graph.microsoft.com/v1.0/me/calendarView?" + new URLSearchParams({
     startDateTime: startUtc, endDateTime: endUtc, "$select": "start,end,showAs,responseStatus,isOrganizer,subject,categories,attendees,isAllDay", "$top": "50",
   });
@@ -175,7 +214,7 @@ async function msHasConflict(accessToken, startUtc, endUtc) {
     ev.showAs !== "free" && ev.showAs !== "workingElsewhere" &&
     ev.responseStatus?.response !== "declined" &&
     !(ev.showAs === "oof" && ev.isOrganizer === false) && // someone else's OOO invite — informational, not a conflict
-    !isFocusEvent(ev) &&                                  // host's own focus time — offered on purpose, not a conflict
+    !(focusIsFree && isFocusEvent(ev)) &&                                  // host's own focus time — offered on purpose, not a conflict
     (+new Date(ev.start.dateTime + "Z") < b) && (+new Date(ev.end.dateTime + "Z") > a));
 }
 async function createMicrosoftEvent(refreshToken, ev, accessToken) {
@@ -231,18 +270,30 @@ Deno.serve(async (req) => {
   if (req.method === "OPTIONS") return new Response("ok", { headers: cors });
   if (req.method !== "POST") return json({ error: "POST only" }, 405);
 
-  const ip = (req.headers.get("x-forwarded-for") || "").split(",")[0].trim() || "unknown";
+  const ip = clientIp(req);
   const { data: allowed } = await sb.rpc("rate_check", { p_bucket: "book:" + ip, p_limit: 20, p_window_secs: 60 });
   if (allowed === false) return json({ ok: false, reason: "rate_limited" }, 429);
 
-  const { slotId, name, email, guests } = await req.json();
-  if (!slotId || !name || !email) return json({ error: "missing fields" }, 400);
-  if (typeof email !== "string" || !/.+@.+\..+/.test(email) || String(name).length > 120) {
-    return json({ error: "invalid name or email" }, 400);
-  }
-  const cleanGuests = Array.isArray(guests)
-    ? [...new Set(guests.map((g) => String(g).trim().toLowerCase()).filter((g) => /.+@.+\..+/.test(g) && g !== String(email).toLowerCase()))].slice(0, 10)
+  const body = await req.json().catch(() => ({}));
+  const slotId = body.slotId, guests = body.guests;
+  const email = String(body.email || "").trim().toLowerCase();
+  const name = cleanName(body.name);
+  if (!slotId || !email) return json({ error: "missing fields" }, 400);
+  if (!EMAIL_RE.test(email) || name.length < 2) return json({ error: "invalid name or email" }, 400);
+  // "Bring your team": teammates only, i.e. the booker's own company domain (none for free
+  // mail providers), max 3. Otherwise a stranger could make a host's mailbox invite anyone.
+  const domain = email.split("@")[1];
+  const cleanGuests = (Array.isArray(guests) && !FREE_EMAIL.has(domain))
+    ? [...new Set(guests.map((g) => String(g).trim().toLowerCase()).filter((g) => EMAIL_RE.test(g) && g !== email && g.split("@")[1] === domain))].slice(0, 3)
     : [];
+
+  // Daily caps: the same booker, and the same link, can't be used to mass-send invites.
+  const { data: okEmail } = await sb.rpc("rate_check", { p_bucket: "bookemail:" + email, p_limit: 3, p_window_secs: 86400 });
+  if (okEmail === false) return json({ ok: false, reason: "rate_limited" }, 429);
+  const { data: pre } = await sb.from("slots").select("link_id").eq("id", slotId).maybeSingle();
+  if (!pre) return json({ ok: false, reason: "taken" }, 409);
+  const { data: okLink } = await sb.rpc("rate_check", { p_bucket: "booklink:" + pre.link_id, p_limit: 15, p_window_secs: 86400 });
+  if (okLink === false) return json({ ok: false, reason: "rate_limited" }, 429);
 
   const { data: claim, error: claimErr } = await sb.rpc("book_slot", { p_slot: slotId, p_name: name, p_email: email });
   if (claimErr) return json({ ok: false, reason: "taken" }, 409);
@@ -254,8 +305,13 @@ Deno.serve(async (req) => {
   };
 
   const { data: slot } = await sb.from("slots").select("start_utc,end_utc,link_id").eq("id", slotId).single();
-  const { data: link } = await sb.from("links").select("title,host_id,attendees").eq("id", slot.link_id).single();
-  const { data: host } = await sb.from("hosts").select("default_provider,video_link").eq("id", link.host_id).single();
+  const { data: link } = await sb.from("links").select("title,host_id,attendees,tz,rolling,status").eq("id", slot.link_id).single();
+  const { data: host } = await sb.from("hosts").select("default_provider,video_link,work_start,work_end").eq("id", link.host_id).single();
+  if (link.status !== "active") { await rollback(); return json({ ok: false, reason: "no_longer_available" }, 409); }
+  // Automatic calendar links never book outside the host's working hours.
+  if (link.rolling && !withinWorkHours(slot.start_utc, slot.end_utc, link.tz || "UTC", host.work_start, host.work_end)) {
+    await rollback(); return json({ ok: false, reason: "no_longer_available" }, 409);
+  }
   const { data: toks } = await sb.from("host_tokens").select("provider").eq("host_id", link.host_id);
   if (!toks || !toks.length) { await rollback(); return json({ ok: false, reason: "host_not_connected" }, 502); }
 
@@ -270,7 +326,7 @@ Deno.serve(async (req) => {
   if (chosenProvider === "microsoft") {
     try {
       msToken = await msAccessToken(refreshToken, link.host_id);
-      if (await msHasConflict(msToken, slot.start_utc, slot.end_utc)) {
+      if (await msHasConflict(msToken, slot.start_utc, slot.end_utc, !link.rolling)) {
         await rollback();
         return json({ ok: false, reason: "no_longer_available" }, 409);
       }
