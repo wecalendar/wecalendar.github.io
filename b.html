@@ -462,9 +462,11 @@ async function init(){
   SLOTS = page.slots || [];
   track("view");
   // Nothing bookable yet? Let the server top the link up first rather than flashing "times have passed".
-  if (!SLOTS.some(s => s.status === "open" && new Date(s.start_utc) > new Date())){ $("list").innerHTML = '<div class="msg"><div class="msgt">Loading times…</div></div>'; await recheck(); }
+  // Never show a time before the host's calendar has been checked: showing the stored list first
+  // displayed busy times for a few seconds. If the check is slow, fall back after 10 s.
+  $("list").innerHTML = '<div class="msg"><div class="msgt">Loading times…</div></div>';
+  await Promise.race([recheck(), new Promise(r => setTimeout(r, 10000))]);
   render();
-  recheck();
   document.addEventListener("visibilitychange", () => { if (!document.hidden) recheck(); });
   // Taken times disappear on the next recheck; book-slot claims a slot atomically, so two people
   // can never book the same time. (Live table updates needed the tables to be publicly readable.)
