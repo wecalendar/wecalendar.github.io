@@ -252,7 +252,20 @@ function buildTzSel(){
       box.appendChild(row);
     });
     box.classList.remove("hide");
+    place();
   }
+  // The header and card clip anything that overflows them, so the list floats above the page,
+  // pinned under the input, instead of being cut off by the banner.
+  function place(){
+    if (box.classList.contains("hide")) return;
+    const r = inp.getBoundingClientRect();
+    box.style.position = "fixed";
+    box.style.top = (r.bottom + 4) + "px";
+    box.style.left = Math.max(8, Math.min(r.left, window.innerWidth - box.offsetWidth - 8)) + "px";
+    box.style.zIndex = "60";
+  }
+  window.addEventListener("resize", place);
+  window.addEventListener("scroll", place, true);
   inp.value = label(TZ);
   inp.onfocus = () => { inp.select(); show(""); };
   inp.oninput = () => show(inp.value);
