@@ -1,3 +1,4 @@
+// publish-link — FIXED7 (2026-11-09): writes the published work hours back to the host row.
 // publish-link — FIXED6 (2026-11-08): keeps the rotated Microsoft refresh token.
 // publish-link — FIXED5 (2026-11-08): body.check → is MY booking connection working? body.checkAll →
 // (owner only) test every host's connection. Both record host_tokens.check_ok / checked_at.
@@ -132,7 +133,15 @@ async function checkHost(hostId) {
                                                                                                             }
                                                                                                               if (!r.slug) return json({ error: "could not create link", detail: JSON.stringify(r) }, 500);
 
-                                                                                                                // "Copy my calendar link" links roll: check-availability keeps them topped up to the next 14 days.
+                                                                                                                // The host's working hours drive every rolling top-up and the booking-page work-hours check, so make
+  // sure the stored row matches what was just published (not only what it was when the host was created).
+  try {
+    await sb.from("hosts").update({
+      work_start: s.workStart ?? 9, work_end: s.workEnd ?? 18, buffer_min: s.buffer ?? 0,
+      min_notice_h: s.minNotice ?? 0, day_cap: s.dayCap ?? 0,
+    }).ilike("email", email);
+  } catch (e) { console.error("host settings sync failed:", String(e)); }
+  // "Copy my calendar link" links roll: check-availability keeps them topped up to the next 14 days.
   if (body.rolling === true) await sb.from("links").update({ rolling: true }).eq("slug", r.slug);
   return json({ slug: r.slug, url: `${APP_URL}b.html?l=${r.slug}`, count: r.count ?? 0 });
                                                                                                                 });

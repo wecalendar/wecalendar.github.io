@@ -1620,9 +1620,21 @@ function mateBusyWho(start, end){
 }
 // ---- work-hours guard: nothing is ever offered outside workStart–workEnd ----
 // A slot must END by workEnd, so with 30-min slots and a 5 PM end the last start is 4:30 PM.
+// Work hours are a wall clock in the MAIN time zone (S.tz) — the zone a calendar link is published
+// with and the server tops it up in. Building them with the browser's own zone made the link and
+// the server disagree whenever the two zones differ (e.g. a laptop on Lisbon time, working in Spain).
+function wallMs(d, hour){
+  const local = new Date(d.getFullYear(), d.getMonth(), d.getDate(), hour).getTime();
+  if (!S.tz || S.tz === LOCAL_TZ) return local;
+  try {
+    const t = Date.UTC(d.getFullYear(), d.getMonth(), d.getDate(), hour);
+    const off = (ms) => { const p = {}; new Intl.DateTimeFormat("en-US", { timeZone: S.tz, hourCycle: "h23", year: "numeric", month: "2-digit", day: "2-digit", hour: "2-digit", minute: "2-digit" }).formatToParts(new Date(ms)).forEach(q => { p[q.type] = q.value; }); return (Date.UTC(+p.year, +p.month - 1, +p.day, +p.hour, +p.minute) - ms) / 60000; };
+    const r = t - off(t - off(t) * 60000) * 60000;
+    return isFinite(r) ? r : local;
+  } catch(e){ return local; }
+}
 function workBounds(d){
-  return [new Date(d.getFullYear(), d.getMonth(), d.getDate(), S.workStart).getTime(),
-          new Date(d.getFullYear(), d.getMonth(), d.getDate(), S.workEnd).getTime()];
+  return [wallMs(d, S.workStart), wallMs(d, S.workEnd)];
 }
 function clampToWork(start, end){
   const [ws, we] = workBounds(start);
@@ -1909,8 +1921,7 @@ function dayForFill(){
   return days.find(d => keyOf(d) === tk) || days[0];
 }
 function freeWindows(d){
-  const ws = new Date(d.getFullYear(), d.getMonth(), d.getDate(), S.workStart).getTime();
-  const we = new Date(d.getFullYear(), d.getMonth(), d.getDate(), S.workEnd).getTime();
+  const [ws, we] = workBounds(d);
   const minLen = (S.slotLen || 30) * 60000, BUF = (S.buffer || 0) * 60000;
   let cur = Math.max(ws, Date.now() + (S.minNotice || 0) * 3600000);
   const busy = [];
@@ -2824,8 +2835,7 @@ async function quickCalendarLink(){
     for (let i = 0; i < 14; i++){
       const d = new Date(rangeStart.getFullYear(), rangeStart.getMonth(), rangeStart.getDate() + i);
       if (d.getDay() === 0 || d.getDay() === 6) continue;
-      const wsD = new Date(d.getFullYear(), d.getMonth(), d.getDate(), S.workStart).getTime();
-      const weD = new Date(d.getFullYear(), d.getMonth(), d.getDate(), S.workEnd).getTime();
+      const [wsD, weD] = workBounds(d);
       const dayBusy = [];
       evs.forEach(ev => {
         if (ev.allDay && !ev.oof) return;
