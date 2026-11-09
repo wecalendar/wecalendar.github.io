@@ -142,7 +142,7 @@
       <div class="tzrow"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true" style="vertical-align:-2px"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c2.5 2.6 4 5.6 4 9s-1.5 6.4-4 9c-2.5-2.6-4-5.6-4-9s1.5-6.4 4-9z"/></svg> Times shown in <span class="tzwrap"><input type="text" id="tzIn" autocomplete="off" spellcheck="false" placeholder="Search a city…"><div id="tzRes" class="tzres hide"></div></span></div>
     </div>
     <div class="body"><div id="list"><div class="msg"><span class="spin"></span></div></div></div>
-    <div class="foot">Powered by WeCalendar · one-click booking, no account needed · <a href="https://wetransact.io/privacypolicy" target="_blank" rel="noopener" style="color:inherit">Privacy</a></div>
+    <div class="foot">Powered by WeCalendar · one-click booking, no account needed · <a id="privLink" href="https://wetransact.io/privacypolicy" target="_blank" rel="noopener" style="color:inherit">Privacy</a></div>
   </div>
 
   <div class="ov" id="ov">
@@ -303,6 +303,10 @@ async function fetchPage(){
   const { data, error } = await sb.rpc("booking_page", { p_slug: slug });
   return error ? null : data;
 }
+// Each company's own privacy policy, by the host's organisation (booking_page returns only the org).
+const PRIVACY = { wetransact: "https://wetransact.io/privacypolicy", awssome: "https://www.awssome.io/privacy-policy" };
+let ORG = "wetransact";
+function privacyUrl(){ return PRIVACY[ORG] || PRIVACY.wetransact; }
 async function reloadSlots(){
   const p = await fetchPage();
   if (p && Array.isArray(p.slots)) SLOTS = p.slots;
@@ -339,7 +343,7 @@ function openModal(id){
     '<div id="guestWrap"></div>'+
     '<button type="button" id="addGuest" style="background:none;border:none;color:var(--accent);font:inherit;font-size:13px;cursor:pointer;padding:6px 0 0">+ Add a teammate</button>'+
     '<div class="err" id="mErr"></div>'+
-    '<p class="pnote">Your name and email are used only to schedule this meeting and send the invite. They are erased 30 days after the meeting. <a href="https://wetransact.io/privacypolicy" target="_blank" rel="noopener">Privacy policy</a></p>'+
+    '<p class="pnote">Your name and email are used only to schedule this meeting and send the invite. They are erased 30 days after the meeting. <a href="'+privacyUrl()+'" target="_blank" rel="noopener">Privacy policy</a></p>'+
     '<button class="btn" id="confirm">Book it</button>'+
     '<button class="btn sec" id="cancel">Cancel</button>';
   $("ov").classList.add("on");
@@ -450,6 +454,8 @@ async function init(){
   const link = page && page.link;
   if (!link || link.status !== "active"){ fail("<b>This link has expired.</b><br><span class='ms'>Nothing was booked \u2014 ask your host for a fresh link.</span>"); return; }
   LINK = link;
+  if (page.org && PRIVACY[page.org]) ORG = page.org;
+  { const pl = document.getElementById("privLink"); if (pl) pl.href = privacyUrl(); }
   $("title").textContent = link.title || "Book a time";
   $("sub").textContent = greeting() + " Pick a time that works for you — it books instantly.";
 

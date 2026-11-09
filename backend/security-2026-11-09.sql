@@ -42,3 +42,15 @@ drop policy if exists anon_read_slots on public.slots;
 -- Analytics now go through publish-link (company sign-in checked server-side).
 revoke execute on function public.get_stats() from public, anon, authenticated;
 grant  execute on function public.get_stats() to service_role;
+
+-- PART C (2026-11-09) — booking_page also says which company the host is from (never the email),
+-- so the booking form links to the right privacy policy (WeTransact or AWSsome).
+create or replace function public.booking_page(p_slug text) returns jsonb
+language sql stable security definer set search_path = public as $$
+  select jsonb_build_object(
+    'link',  jsonb_build_object('id', l.id, 'title', l.title, 'tz', l.tz, 'status', l.status),
+    'org',   case when lower(h.email) like '%@awssome.io' then 'awssome' else 'wetransact' end,
+    'slots', coalesce((select jsonb_agg(jsonb_build_object('id', s.id, 'start_utc', s.start_utc, 'end_utc', s.end_utc, 'status', s.status) order by s.start_utc)
+                       from slots s where s.link_id = l.id), '[]'::jsonb))
+  from links l left join hosts h on h.id = l.host_id where l.slug = p_slug and l.status = 'active'
+$$;
