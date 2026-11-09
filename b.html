@@ -352,7 +352,7 @@ function openModal(id){
     '<h2>Confirm your booking</h2><div class="when">'+when+'</div>'+
     '<label>Your name</label><input id="gName" autocomplete="name">'+
     '<label>Your email</label><input id="gEmail" type="email" autocomplete="email">'+
-    '<label style="margin-bottom:2px">Bring your team <span style="color:var(--muted);font-weight:400">(optional)</span></label>'+
+    '<label style="margin-bottom:2px">Bring your team <span style="color:var(--muted);font-weight:400">(optional · same company email domain, up to 3)</span></label>'+
     '<div id="guestWrap"></div>'+
     '<button type="button" id="addGuest" style="background:none;border:none;color:var(--accent);font:inherit;font-size:13px;cursor:pointer;padding:6px 0 0">+ Add a teammate</button>'+
     '<div class="err" id="mErr"></div>'+
@@ -367,7 +367,7 @@ function openModal(id){
 }
 function addGuestRow(){
   const wrap = $("guestWrap");
-  if (wrap.querySelectorAll(".gGuest").length >= 10) return;
+  if (wrap.querySelectorAll(".gGuest").length >= 3) return;
   const row = document.createElement("div");
   row.style.cssText = "display:flex;gap:6px;align-items:center;margin-top:8px";
   row.innerHTML = '<input class="gGuest" type="email" placeholder="teammate@company.com" autocomplete="off" style="flex:1">'+
@@ -397,6 +397,8 @@ async function doBook(slotId){
       const s = SLOTS.find(x=>x.id===slotId); if (s) s.status = "booked";
       setTimeout(() => { closeModal(); render(); }, 1400); return;
     }
+    if (r.status === 429 || j.reason === "rate_limited"){ $("mErr").textContent = "Too many bookings from this email or link today — please try again tomorrow or contact your host."; btn.disabled=false; btn.textContent="Book it"; booking=false; return; }
+    if (j.error === "invalid name or email"){ $("mErr").textContent = "Please enter your name (no links) and a valid email."; btn.disabled=false; btn.textContent="Book it"; booking=false; return; }
     if (!r.ok || !j.ok){ const why = String(j.reason || j.error || j.message || ("HTTP " + r.status)).slice(0, 140); $("mErr").textContent = "Something went wrong — please try again. (" + why + ")"; console.warn("book-slot failed", r.status, j); btn.disabled=false; btn.textContent="Book it"; booking=false; return; }
     const s = SLOTS.find(x=>x.id===slotId); if (s) s.status = "booked";
     const whenStr = s ? "See you " + new Intl.DateTimeFormat("en-US", { timeZone: TZ, weekday: "long" }).format(new Date(s.start_utc)) + " at " + timeLabel(new Date(s.start_utc)) : "";
