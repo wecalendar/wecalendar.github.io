@@ -96,12 +96,18 @@ async function load(){
     return;
   }
   try {
-    const r = await fetch(C.SUPABASE_URL + "/rest/v1/rpc/get_stats", {
+    // Stats are only served to a signed-in company account, checked on the server.
+    const acct = pca.getActiveAccount() || (pca.getAllAccounts()[0] || null);
+    let tk;
+    try { tk = (await pca.acquireTokenSilent({ scopes: ["User.Read"], account: acct })).accessToken; }
+    catch (e) { pca.acquireTokenRedirect({ scopes: ["User.Read"], account: acct }); return; }
+    const r = await fetch((C.FN_BASE || (C.SUPABASE_URL + "/functions/v1")) + "/publish-link", {
       method: "POST",
-      headers: { apikey: C.SUPABASE_ANON_KEY, Authorization: "Bearer " + C.SUPABASE_ANON_KEY, "Content-Type": "application/json" },
-      body: "{}",
+      headers: { apikey: C.SUPABASE_ANON_KEY, Authorization: "Bearer " + tk, "Content-Type": "application/json" },
+      body: JSON.stringify({ stats: true }),
     });
     const s = await r.json();
+    if (!r.ok) throw new Error(s.error || ("HTTP " + r.status));
     render(s);
   } catch (e) {
     document.getElementById("msg").style.display = "block";

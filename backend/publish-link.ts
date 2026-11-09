@@ -1,3 +1,4 @@
+// publish-link — FIXED8 (2026-11-09): body.stats → analytics dashboard (company sign-in only).
 // publish-link — FIXED7 (2026-11-09): writes the published work hours back to the host row.
 // publish-link — FIXED6 (2026-11-08): keeps the rotated Microsoft refresh token.
 // publish-link — FIXED5 (2026-11-08): body.check → is MY booking connection working? body.checkAll →
@@ -90,6 +91,12 @@ async function checkHost(hostId) {
     const { data: host } = await sb.from("hosts").select("id").ilike("email", email).maybeSingle();
     if (!host) return json({ connected: false, reason: "not_connected" });
     return json(await checkHost(host.id));
+  }
+  // Analytics dashboard: the stats function is no longer callable with the public key.
+  if (body.stats === true) {
+    const { data: stats, error: statsErr } = await sb.rpc("get_stats");
+    if (statsErr) return json({ error: "stats unavailable", detail: statsErr.message }, 500);
+    return json(stats);
   }
   if (body.checkAll === true) {
     if (!OWNERS.includes(email)) return json({ error: "not allowed" }, 403);
