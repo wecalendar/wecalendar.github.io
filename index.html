@@ -890,6 +890,8 @@
     </div>
   </div>
   <h3 style="margin-top:14px">Work hours</h3>
+  <div class="row">Time zone <button type="button" class="tzchip" id="homeTzBtn" style="margin-left:6px;max-width:190px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;"></button></div>
+  <div class="row" style="font-size:11.5px;line-height:1.4;">Your work hours and booking links always use this zone, whatever time zone the calendar is showing.</div>
   <div class="row">From <select id="whStart"></select> to <select id="whEnd"></select></div>
   <div class="row"><label style="display:flex;align-items:center;gap:8px;cursor:pointer;"><input type="checkbox" id="wkndChk" style="width:15px;height:15px;accent-color:var(--blue);"> Show weekends</label></div>
   <h3 style="margin-top:14px">Booking rules</h3>
@@ -1472,7 +1474,10 @@ const S = {
   week: 0,
   dayView: null,
   pto: [],
-  tz: LOCAL_TZ,   // main timezone ALWAYS starts at the browser's local zone; changing it lasts only for the current visit
+  // homeTz: the zone the host WORKS in — saved in Settings. Work hours and every booking link use it.
+  // tz: the zone the calendar is SHOWN in — the header chip; changing it is view-only and lasts one visit.
+  homeTz: (() => { try { const z = localStorage.getItem("homeTz"); if (z){ new Intl.DateTimeFormat("en", { timeZone: z }); return z; } } catch(e){} return LOCAL_TZ; })(),
+  tz: null,
   tzs: (() => { try { const a = JSON.parse(localStorage.getItem("tzRulers") || "[]"); const old = localStorage.getItem("tzSecond"); if (old && !a.includes(old)) a.push(old); return a.slice(0,3); } catch(e){ return []; } })(),   // up to 3 extra rulers
   workStart: +(localStorage.getItem("wh1") || 9),
   workEnd:   +(localStorage.getItem("wh2") || 18),
@@ -1491,6 +1496,8 @@ const S = {
   people: [],        // {email,name,color}
   schedules: {},     // email -> [{start,end}]
 };
+S.tz = S.homeTz;   // the view opens in the host's own zone
+try { if (!localStorage.getItem("homeTz")) localStorage.setItem("homeTz", S.homeTz); } catch(e){}
 
 // ---- settings popover (work hours) ----
 const setPop = document.getElementById("setPop");
@@ -1500,6 +1507,34 @@ for (let hh = 5; hh <= 23; hh++){
   whStart.add(new Option(lbl, hh)); whEnd.add(new Option(lbl, hh));
 }
 whStart.value = S.workStart; whEnd.value = S.workEnd;
+const homeTzBtn = document.getElementById("homeTzBtn");
+function homeTzLabel(z){ return z.split("/").pop().replace(/_/g, " ") + " (" + tzAbbr(z) + ")"; }
+function renderHomeTz(){ homeTzBtn.textContent = homeTzLabel(S.homeTz); homeTzBtn.title = S.homeTz; }
+function setHomeTz(z){
+  const viewWasHome = S.tz === S.homeTz;
+  S.homeTz = z; try { localStorage.setItem("homeTz", z); } catch(e){}
+  if (viewWasHome) S.tz = z;
+  renderHomeTz(); renderAll();
+  toast("🕒 Work hours and booking links now use " + homeTzLabel(z));
+}
+homeTzBtn.onclick = e => { e.stopPropagation(); openTzPop(homeTzBtn, "home"); };
+// Travelling, or a laptop clock changed? Ask once per visit rather than silently publishing in the wrong zone.
+function tzMismatchCheck(){
+  if (S.homeTz === LOCAL_TZ) return;
+  try { if (sessionStorage.getItem("tzAsked") === S.homeTz + "|" + LOCAL_TZ) return; } catch(e){}
+  const now = Date.now(), off = (z) => { const p = {}; new Intl.DateTimeFormat("en-US", { timeZone: z, hourCycle: "h23", year: "numeric", month: "2-digit", day: "2-digit", hour: "2-digit", minute: "2-digit" }).formatToParts(new Date(now)).forEach(q => { p[q.type] = q.value; }); return Date.UTC(+p.year, +p.month - 1, +p.day, +p.hour, +p.minute); };
+  try { if (off(S.homeTz) === off(LOCAL_TZ)) return; } catch(e){ return; }   // same clock today (e.g. Lisbon vs London) — nothing to ask
+  const bar = document.createElement("div"); bar.id = "tzMismatch";
+  bar.style.cssText = "position:fixed;left:50%;bottom:18px;transform:translateX(-50%);z-index:1100;background:var(--card,#fff);color:var(--ink);border:1px solid var(--line);border-radius:14px;box-shadow:0 12px 40px rgba(20,16,40,.18);padding:12px 14px;font-size:13px;display:flex;gap:10px;align-items:center;flex-wrap:wrap;max-width:min(560px,94vw)";
+  const msg = document.createElement("span");
+  msg.textContent = "🕒 Your computer is on " + homeTzLabel(LOCAL_TZ) + ", but your links use " + homeTzLabel(S.homeTz) + ".";
+  const use = document.createElement("button"); use.className = "todaybtn"; use.textContent = "Switch to " + LOCAL_TZ.split("/").pop().replace(/_/g, " ");
+  const keep = document.createElement("button"); keep.className = "linklike"; keep.textContent = "Keep " + S.homeTz.split("/").pop().replace(/_/g, " ");
+  const done = () => { try { sessionStorage.setItem("tzAsked", S.homeTz + "|" + LOCAL_TZ); } catch(e){} bar.remove(); };
+  use.onclick = () => { done(); setHomeTz(LOCAL_TZ); };
+  keep.onclick = done;
+  bar.append(msg, use, keep); document.body.appendChild(bar);
+}
 async function saveHostSettings(){ try { if (!account) return; const tk = await token(); await fetch(WECAL.FN_BASE + "/host-settings", { method: "POST", headers: { "Content-Type": "application/json", apikey: WECAL.SUPABASE_ANON_KEY, Authorization: "Bearer " + tk }, body: JSON.stringify({ save: true, workStart: S.workStart, workEnd: S.workEnd, buffer: S.buffer, minNotice: S.minNotice, dayCap: S.dayCap }) }); } catch(e){} }
 whStart.onchange = () => { S.workStart = +whStart.value; if (S.workEnd <= S.workStart){ S.workEnd = Math.min(S.workStart+1,23); whEnd.value = S.workEnd; localStorage.setItem("wh2", S.workEnd); } localStorage.setItem("wh1", whStart.value); renderBody(); saveHostSettings(); };
 whEnd.onchange = () => { S.workEnd = +whEnd.value; if (S.workEnd <= S.workStart){ S.workStart = Math.max(S.workEnd-1,5); whStart.value = S.workStart; localStorage.setItem("wh1", S.workStart); } localStorage.setItem("wh2", whEnd.value); renderBody(); saveHostSettings(); };
@@ -1620,15 +1655,16 @@ function mateBusyWho(start, end){
 }
 // ---- work-hours guard: nothing is ever offered outside workStart–workEnd ----
 // A slot must END by workEnd, so with 30-min slots and a 5 PM end the last start is 4:30 PM.
-// Work hours are a wall clock in the MAIN time zone (S.tz) — the zone a calendar link is published
+// Work hours are a wall clock in the HOST'S time zone (S.homeTz) — the zone a calendar link is published
 // with and the server tops it up in. Building them with the browser's own zone made the link and
 // the server disagree whenever the two zones differ (e.g. a laptop on Lisbon time, working in Spain).
 function wallMs(d, hour){
   const local = new Date(d.getFullYear(), d.getMonth(), d.getDate(), hour).getTime();
-  if (!S.tz || S.tz === LOCAL_TZ) return local;
+  const Z = S.homeTz;
+  if (!Z || Z === LOCAL_TZ) return local;
   try {
     const t = Date.UTC(d.getFullYear(), d.getMonth(), d.getDate(), hour);
-    const off = (ms) => { const p = {}; new Intl.DateTimeFormat("en-US", { timeZone: S.tz, hourCycle: "h23", year: "numeric", month: "2-digit", day: "2-digit", hour: "2-digit", minute: "2-digit" }).formatToParts(new Date(ms)).forEach(q => { p[q.type] = q.value; }); return (Date.UTC(+p.year, +p.month - 1, +p.day, +p.hour, +p.minute) - ms) / 60000; };
+    const off = (ms) => { const p = {}; new Intl.DateTimeFormat("en-US", { timeZone: Z, hourCycle: "h23", year: "numeric", month: "2-digit", day: "2-digit", hour: "2-digit", minute: "2-digit" }).formatToParts(new Date(ms)).forEach(q => { p[q.type] = q.value; }); return (Date.UTC(+p.year, +p.month - 1, +p.day, +p.hour, +p.minute) - ms) / 60000; };
     const r = t - off(t - off(t) * 60000) * 60000;
     return isFinite(r) ? r : local;
   } catch(e){ return local; }
@@ -1736,7 +1772,7 @@ function tzLongName(){
 
 // ---- tz popover ----
 const tzPop = document.getElementById("tzPop"), tzSearch = document.getElementById("tzSearch"), tzList = document.getElementById("tzList");
-let tzTarget = "main";   // "main" | "add" | {idx} of S.tzs
+let tzTarget = "main";   // "main" (view) | "home" (Settings) | "add" | {idx} of S.tzs
 function openTzPop(anchor, target){
   tzTarget = (target === undefined || target === null) ? "main" : target;
   const r = anchor.getBoundingClientRect();
@@ -1764,7 +1800,7 @@ function renderTzList(q){
     rm.onclick = () => { S.tzs.splice(tzTarget, 1); saveTzs(); tzPop.style.display = "none"; renderAll(); };
     tzList.appendChild(rm);
   }
-  const current = (typeof tzTarget === "number") ? S.tzs[tzTarget] : (tzTarget === "main" ? S.tz : null);
+  const current = (typeof tzTarget === "number") ? S.tzs[tzTarget] : (tzTarget === "main" ? S.tz : tzTarget === "home" ? S.homeTz : null);
   items.forEach(z => {
     const d = document.createElement("div"); d.className = "tzitem";
     if (z.name === current){ d.style.background = "var(--blue-light)"; d.style.fontWeight = "600"; }
@@ -1775,7 +1811,8 @@ function renderTzList(q){
     d.onclick = () => {
       if (tzTarget === "add"){ if (z.name !== S.tz && !S.tzs.includes(z.name) && S.tzs.length < 3) S.tzs.push(z.name); saveTzs(); }
       else if (typeof tzTarget === "number"){ S.tzs[tzTarget] = z.name; saveTzs(); }
-      else { S.tz = z.name; }   // session-only: next load snaps back to LOCAL_TZ
+      else if (tzTarget === "home"){ tzPop.style.display = "none"; setHomeTz(z.name); return; }
+      else { S.tz = z.name; }   // view only, this visit: links and work hours keep using S.homeTz
       tzPop.style.display = "none"; renderAll();
     };
     tzList.appendChild(d);
@@ -2127,7 +2164,7 @@ async function loadCalendars(){
 
 // ---- load ----
 let loadSeq = 0;
-async function boot(){ await loadCalendars(); load(); }
+async function boot(){ renderHomeTz(); tzMismatchCheck(); await loadCalendars(); load(); }
 async function load(){
   const seq = ++loadSeq;
   const [ws, we] = weekRange();
@@ -2188,7 +2225,7 @@ function renderHeadAndMonth(){
   });
   const gut = document.createElement("div"); gut.className = "gut"; gut.style.flexDirection = "column";
   const chip = document.createElement("button"); chip.className = "tzchip"; chip.textContent = tzAbbr(S.tz);
-  chip.title = WECAL_TZ.label(S.tz) + " (" + S.tz + ") — main timezone (labels & email)";
+  chip.title = "Showing " + WECAL_TZ.label(S.tz) + " (" + S.tz + ") — view only. Work hours and booking links use " + S.homeTz + " (Settings).";
   chip.onclick = e => { e.stopPropagation(); openTzPop(chip); };
   gut.appendChild(chip);
   if (S.tzs.length < 3){
@@ -2763,7 +2800,7 @@ async function createBookingLink(){
       headers: { "Content-Type":"application/json", apikey: WECAL.SUPABASE_ANON_KEY, Authorization: "Bearer " + tk },
       body: JSON.stringify({
         title: document.getElementById("subj").value || ("Meeting with " + pname()),
-        tz: S.tz,
+        tz: S.homeTz,
         slots: clientSlots.map(x => ({ start: x.start.toISOString(), end: x.end.toISOString() })),
         attendees: S.people.map(p => p.email),
         videoLink: S.linkVid || "",
@@ -2864,7 +2901,7 @@ async function quickCalendarLink(){
       headers: { "Content-Type":"application/json", apikey: WECAL.SUPABASE_ANON_KEY, Authorization: "Bearer " + tk },
       body: JSON.stringify({
         title: document.getElementById("subj").value || ("Meeting with " + pname()),
-        tz: S.tz,
+        tz: S.homeTz,
         rolling: true,
         slots: slots.slice(0, 400).map(x => ({ start: x.start.toISOString(), end: x.end.toISOString() })),
         attendees: S.people.map(p => p.email),
